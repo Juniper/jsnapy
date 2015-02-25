@@ -1,13 +1,13 @@
 import yaml
 from lxml import etree
-import Testop
+import testop
 import os
 
 
 class Comparator:
 
     def compare_reply(self, tests, *args):
-        op = Testop.Operator()
+        op = testop.Operator()
         for i in range(1, len(tests)):
             x_path = tests[i]['iterate']['xpath']
             id = tests[i]['iterate']['id']

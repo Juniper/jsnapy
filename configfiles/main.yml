@@ -3,6 +3,6 @@ hosts:
       username : regress
       passwd: MaRtInI
 tests:
-   - /Users/jpriyal/PycharmProjects/jsnap-py/ConfigFiles/Tests.yml
+   - /Users/jpriyal/PycharmProjects/jsnap-py/configfiles/tests.yml
 
 
