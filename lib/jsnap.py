@@ -5,8 +5,8 @@ import argparse
 from hosts import Hosts
 from snap import Parse
 from check import Comparator
+from Testop import Operator
 import os
-
 
 class Jsnap:
 
@@ -100,3 +100,6 @@ if d.args.snap is True:
     d.generate_rpc_reply(mainfile)
 if d.args.check is True or d.args.snapcheck is True:
     d.compare_tests(mainfile)
+    obj= Operator()
+    obj.final_result()
+

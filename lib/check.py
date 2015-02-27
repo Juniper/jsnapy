@@ -1,23 +1,25 @@
 import yaml
 from lxml import etree
-import testoperator
+import Testop
 import os
 
 
 class Comparator:
+    def __init__(self):
+        self.op = Testop.Operator()
 
     def compare_reply(self, tests, *args):
-        op = testoperator.Operator()
         for i in range(1, len(tests)):
             x_path = tests[i]['iterate']['xpath']
-            id = tests[i]['iterate']['id']
+            id=tests[i]['iterate']['id']
             for path in tests[i]['iterate']['tests']:
                 values = ['err', 'info']
                 testvalues = path.keys()
                 testop = [
                     tvalue for tvalue in testvalues if tvalue not in values][0]
                 ele = path[testop]
-                ele_list = [i.strip() for i in ele.split(',')]
+                if ele is not None:
+                    ele_list = [i.strip() for i in ele.split(',')]
                 err_mssg = path['err']
                 info_mssg = path['info']
                 pre_snap_file = args[0]
@@ -36,7 +38,8 @@ class Comparator:
                     except IOError as e:
                         print "\n ******** Error Occurred **********", e.message
                     else:
-                        op.define_operator(
+                        # automated_operator.test_operator(testop, x_path, ele_list, err_mssg, info_mssg, xml1, xml2)
+                        self.op.define_operator(
                             testop,
                             x_path,
                             id,
@@ -46,7 +49,8 @@ class Comparator:
                             xml1,
                             xml2)
                 else:
-                    op.define_operator(
+                    #automated_operator.test_operator(testop, x_path, ele_list, err_mssg, info_mssg, xml1)
+                    self.op.define_operator(
                         testop,
                         x_path,
                         ele_list,
@@ -57,7 +61,7 @@ class Comparator:
 
     def generate_test_files(self, main_file, devices, check, *args):
         tests_files = []
-        path = os.getcwd()
+        path= os.getcwd()
         for tfiles in main_file['tests']:
             tfiles = open(tfiles, 'r')
             tfiles = yaml.load(tfiles)
@@ -69,11 +73,9 @@ class Comparator:
                     command = t[val][0]['command']
                     name = '_'.join(command.split())
                     for d in devices:
-                        pre_snap_file = path + '/' + 'snapshots' + '/' + \
-                            str(d) + '_' + args[0] + '_' + name + '.xml'
+                        pre_snap_file = path + '/' + 'snapshots' + '/' + str(d) + '_' + args[0] + '_' + name + '.xml'
                         if (check is True):
-                            post_snap_file = path + '/' + 'snapshots' + '/' + \
-                                str(d) + '_' + args[1] + '_' + name + '.xml'
+                            post_snap_file = path + '/' + 'snapshots' + '/' + str(d) + '_' + args[1] + '_' + name + '.xml'
                             self.compare_reply(
                                 t[val],
                                 pre_snap_file,
@@ -83,11 +85,9 @@ class Comparator:
                 else:
                     rpc = t[val][0]['rpc']
                     for d in devices:
-                        pre_snap_file = path + '/' + 'snapshots' + '/' + \
-                            str(d) + '_' + args[0] + '_' + rpc + '.xml'
+                        pre_snap_file = path + '/' + 'snapshots' + '/' + str(d) + '_' + args[0] + '_' + rpc + '.xml'
                         if (check is True):
-                            post_snap_file = path + '/' + 'snapshots' + '/' + \
-                                str(d) + '_' + args[1] + '_' + rpc + '.xml'
+                            post_snap_file = path + '/' + 'snapshots' + '/'  + str(d) + '_' + args[1] + '_' + rpc + '.xml'
                             self.compare_reply(
                                 t[val],
                                 pre_snap_file,

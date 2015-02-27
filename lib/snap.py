@@ -8,7 +8,7 @@ class Parse:
         self.command_list = []
         self.rpc_list = []
         self.test_included = []
-        path = os.getcwd()
+        path= os.getcwd()
         for t in test_file['tests_include']:
             self.test_included.append(t)
             if (test_file[t][0].keys()[0] == 'command'):
@@ -20,6 +20,7 @@ class Parse:
                     rpc_reply = dev.rpc.cli(command, format='xml')
                     ofile = devices[dev] + '_' + name + '.' + 'xml'
                     o_file = path + '/' + 'snapshots' + '/' + ofile
+                    #o_file = devices[dev] + '_' + name + '.'+'xml'
                     with open(o_file, 'w') as f:
                         f.write(etree.tostring(rpc_reply))
             else:
