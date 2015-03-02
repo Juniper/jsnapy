@@ -12,8 +12,8 @@ setup(name = "jsnap-py",
     packages=find_packages('lib'),
     package_data={
         'jsnap.configs': ['*.yml'],
-    scripts = ["runner"],
     },
+    scripts = ["jsnap"],
     install_requires = ['junos-eznc'],
     classifiers=[
         'Environment :: Console',
