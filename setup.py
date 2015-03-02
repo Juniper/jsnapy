@@ -12,7 +12,7 @@ setup(name = "jsnap-py",
     #packages=find_packages('lib'),
     packages= ['jsnap','jsnap.configs'],
     package_data={
-        'jsnap.configs': ['*.yml'],
+        'jsnap.configs': ['*.yml']
     },
     scripts = ["jsnap"],
     install_requires = ['junos-eznc'],
