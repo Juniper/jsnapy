@@ -2,10 +2,10 @@
 
 import yaml
 import argparse
-from hosts import Hosts
-from snap import Parse
-from check import Comparator
-from Testop import Operator
+from jnpr.jsnap.hosts import Hosts
+from jnpr.jsnap.snap import Parse
+from jnpr.jsnap.check import Comparator
+from jnpr.jsnap.testop import Operator
 import os
 
 class Jsnap:
