@@ -10,7 +10,7 @@ setup(name = "jsnap-py",
     url="http://www.github.com/Juniper/jsnap-py",
     package_dir={'': 'lib'},
     #packages=find_packages('lib'),
-    packages= ['jsnap','jsnap.configs'],
+    packages= ['jnpr.jsnap','jnpr.jsnap.configs'],
     package_data={
         'jsnap.configs': ['*.yml']
     },
