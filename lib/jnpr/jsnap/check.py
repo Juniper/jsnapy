@@ -6,7 +6,7 @@ import os
 
 class Comparator:
     def __init__(self):
-        self.op = Testop.Operator()
+        self.op = testop.Operator()
 
     def compare_reply(self, tests, *args):
         for i in range(1, len(tests)):
