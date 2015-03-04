@@ -5,8 +5,9 @@ import argparse
 from hosts import Hosts
 from snap import Parse
 from check import Comparator
-from testop import Operator
+from Testop import Operator
 import os
+import subprocess
 
 class Jsnap:
 
@@ -15,6 +16,7 @@ class Jsnap:
         self.parser = argparse.ArgumentParser()
         group = self.parser.add_mutually_exclusive_group()
         # for mutually exclusive gp, can not use both options
+
         group.add_argument(
             '--snap',
             action='store_true',
@@ -27,16 +29,24 @@ class Jsnap:
             '--snapcheck',
             action='store_true',
             help='check current snapshot')
+        group.add_argument(
+            "--init",
+            action="store_true",
+            help="init file",
+            )
+
         self.parser.add_argument(
             "out_file1",
-            help="output file")       # make it optional
+            nargs='?',
+            help="output file1")       # make it optional
         self.parser.add_argument(
             "out_file2",
             nargs='?',
-            help="output file",
+            help="output file2",
             type=str)       # make it optional
         self.parser.add_argument(
             "file",
+            nargs='?',
             help="config file to take snapshot",
             type=str)
         self.parser.add_argument("-t", "--hostname", help="hostname", type=str)
@@ -50,10 +60,10 @@ class Jsnap:
             "--login",
             help="username to login",
             type=str)
+        self.args = self.parser.parse_args()
 
     def get_hosts(self):
         os.chdir('..')
-        self.args = self.parser.parse_args()
         config_file = self.args.file
         output_file = self.args.out_file1
         path = os.getcwd()
@@ -93,13 +103,24 @@ class Jsnap:
                 chk,
                 self.args.out_file1)
 
+    def generate_init(self):
+        p = subprocess.Popen(["mkdir", "snapshots"], stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        print "output is",out, "error is",err
+        p = subprocess.Popen(["cp","-r","/Library/Python/2.7/site-packages/jnpr/jsnap/configs","."], stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        print "output is",out, "error is",err
 
 d = Jsnap()
-mainfile = d.get_hosts()
-if d.args.snap is True:
-    d.generate_rpc_reply(mainfile)
-if d.args.check is True or d.args.snapcheck is True:
-    d.compare_tests(mainfile)
-    obj= Operator()
-    obj.final_result()
+if d.args.init is True:
+    d.generate_init()
+
+else:
+    mainfile = d.get_hosts()
+    if d.args.snap is True:
+        d.generate_rpc_reply(mainfile)
+    if d.args.check is True or d.args.snapcheck is True:
+        d.compare_tests(mainfile)
+        obj= Operator()
+        obj.final_result()
 

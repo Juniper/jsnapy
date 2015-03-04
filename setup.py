@@ -1,4 +1,5 @@
-from setuptools import setup, find_packages
+#from setuptools import setup, find_packages
+from distutils.core import setup
 
 setup(name = "jsnap-py",
     version = "0.1",
@@ -10,10 +11,11 @@ setup(name = "jsnap-py",
     url="http://www.github.com/Juniper/jsnap-py",
     package_dir={'': 'lib'},
     #packages=find_packages('lib'),
-    packages= ['jsnap','jsnap.configs'],
+    packages= ['jnpr.jsnap','jnpr.jsnap.configs'],
     package_data={
-        'jsnap.configs': ['*.yml']
+        'jnpr.jsnap.configs': ['*.yml']
     },
+#    zip_safe= False,
     scripts = ["jsnap"],
     install_requires = ['junos-eznc'],
     classifiers=[
