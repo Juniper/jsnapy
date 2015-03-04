@@ -1,6 +1,6 @@
 import yaml
 from lxml import etree
-import testop
+import Testop
 import os
 
 

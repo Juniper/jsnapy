@@ -45,8 +45,7 @@ class Jsnap:
             help="output file2",
             type=str)       # make it optional
         self.parser.add_argument(
-            "file",
-            nargs='?',
+            "-f","--file",
             help="config file to take snapshot",
             type=str)
         self.parser.add_argument("-t", "--hostname", help="hostname", type=str)
@@ -63,11 +62,11 @@ class Jsnap:
         self.args = self.parser.parse_args()
 
     def get_hosts(self):
-        os.chdir('..')
-        config_file = self.args.file
+        #os.chdir('..')
+        conf_file = self.args.file
         output_file = self.args.out_file1
-        path = os.getcwd()
-        conf_file = path + '/' + 'ConfigFiles' + '/' + config_file
+        #path = os.getcwd()
+        #conf_file = path + '/' + 'ConfigFiles' + '/' + config_file
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
@@ -107,19 +106,16 @@ class Jsnap:
         p = subprocess.Popen(["mkdir", "snapshots"], stdout=subprocess.PIPE)
         out, err = p.communicate()
         print "output is",out, "error is",err
-        if err:
-	   print "\n ******** Error in making directory *************\n"
         p = subprocess.Popen(["cp","-r","/Library/Python/2.7/site-packages/jnpr/jsnap/configs","."], stdout=subprocess.PIPE)
         out, err = p.communicate()
         print "output is",out, "error is",err
-        if err:
-           print "\n ********* Error in copying config files *************\n"
 
 d = Jsnap()
+print "files are: ",d.args.file, d.args.out_file1, d.args.out_file2
 if d.args.init is True:
     d.generate_init()
 
-else:
+elif(d.args.file):
     mainfile = d.get_hosts()
     if d.args.snap is True:
         d.generate_rpc_reply(mainfile)
