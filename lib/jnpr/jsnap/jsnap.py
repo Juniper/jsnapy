@@ -107,9 +107,13 @@ class Jsnap:
         p = subprocess.Popen(["mkdir", "snapshots"], stdout=subprocess.PIPE)
         out, err = p.communicate()
         print "output is",out, "error is",err
+        if err:
+	   print "\n ******** Error in making directory *************\n"
         p = subprocess.Popen(["cp","-r","/Library/Python/2.7/site-packages/jnpr/jsnap/configs","."], stdout=subprocess.PIPE)
         out, err = p.communicate()
         print "output is",out, "error is",err
+        if err:
+           print "\n ********* Error in copying config files *************\n"
 
 d = Jsnap()
 if d.args.init is True:
