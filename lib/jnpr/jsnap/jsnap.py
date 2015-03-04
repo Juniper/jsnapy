@@ -5,7 +5,7 @@ import argparse
 from hosts import Hosts
 from snap import Parse
 from check import Comparator
-from Testop import Operator
+from testop import Operator
 import os
 import subprocess
 
