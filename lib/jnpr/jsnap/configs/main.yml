@@ -1,8 +1,8 @@
 hosts:
-    - devices: 10.209.16.204
+  - devices: 10.209.16.204
       username : regress
       passwd: MaRtInI
 tests:
-   - /Users/jpriyal/PycharmProjects/jsnap-py/configfiles/tests.yml
+  - /Users/jpriyal/PycharmProjects/jsnap-py/configfiles/tests.yml
 
 

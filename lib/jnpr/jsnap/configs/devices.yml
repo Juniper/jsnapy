@@ -1,37 +1,29 @@
 MX:                      # for multiple hostnames assuming login credentials are same for all
-    - 10.209.16.204:
-        username: root
-        passwd: Embe1mpls
-        output: out_mx240_b
-    - 10.209.16.205:
-        username: regress
-        passwd: MaRtInI
-        output: out_mx240_a
-    - 10.209.16.208:
-        username: root
-        passwd: Embe1mpls
-        output: out_mx240_j
+  - 10.209.16.203:
+      username: root
+      passwd: Embe1mpls
+  - 10.209.16.204:
+      username: regress
+      passwd: MaRtInI
+  - 10.209.16.205:
+      username: root
+      passwd: Embe1mpls
 
 EX:                      # for multiple hostnames assuming login credentials are same for all
-    - 10.209.3.223:
-        username: regress
-        passwd: MaRtInI
-        output: out_ex4200_b
-    - 10.209.11.170:
-        username: regress
-        passwd: MaRtInI
-        output: out_ex4200-a
+  - 10.209.16.206:
+      username: regress
+      passwd: MaRtInI
+  - 10.209.16.212:
+      username: regress
+      passwd: MaRtInI
 
 QFX:                      # for multiple hostnames assuming login credentials are same for all
-    - 10.209.11.187:
-        username: regress
-        passwd: MaRtInI
-        output: out_qfx_a
-    - 10.209.11.188:
-        username: regress
-        passwd: MaRtInI
-        output: out_qfx_b
-    - 10.209.11.189:
-        username: root
-        passwd: Embe1mpls
-        output: out_qfx_c
+  - 10.209.16.214:
+      username: regress
+      passwd: MaRtInI
+  - 10.209.16.221:
+      username: regress
+      passwd: MaRtInI
+  - 10.209.16.222:
+      username: root
+      passwd: Embe1mpls

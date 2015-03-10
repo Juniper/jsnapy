@@ -1,15 +1,19 @@
 import re
 import colorama
+from collections import defaultdict
 
 
 class Operator:
 
-    result = 0
+    result = True
     no_failed = 0
     no_passed = 0
+    test_details = defaultdict(list)
 
+    # call methods based on test operation specified, eg if testop is
+    # is-equal, then it will call is_equal function
     def define_operator(
-            self, testop, x_path, ele_list, err_mssg, info_mssg, *args):
+            self, testop, x_path, ele_list, err_mssg, info_mssg, teston, id=0, xml1=None, xml2=None):
         try:
             getattr(
                 self,
@@ -20,21 +24,31 @@ class Operator:
                 ele_list,
                 err_mssg,
                 info_mssg,
-                *args)
+                teston,
+                id,
+                xml1,
+                xml2)
         except AttributeError as e:
-            print "\n  ****************Test case not defined !!!!! ***************\n " \
+            print "\n****************Test case not defined !!!!! ***************\n " \
                   "error message :", e.message
         except:
-            print "\n *****************Undefined error occurred, please check test cases " \
-                  "!!! ******************\n"
+            print "\n*****************Undefined error occurred, please check test cases " \
+                "!!! ******************\n"
 
-    def all_same(self, x_path, ele_list, err_mssg, info_mssg, *args):
+    def all_same(
+            self, x_path, ele_list, err_mssg, info_mssg, teston, id, xml1, xml2):
+        print (
+            colorama.Fore.BLUE +
+            "\n***************** Performing all-same Test Operation *****************")
         res = True
-        xml1 = args[0]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "all-same"
         try:
             element = ele_list[0]
         except IndexError as e:
-            print "\n ************** Error occurred while accessing test element ****" \
+            print "\n************** Error occurred while accessing test element ****" \
                   "*********", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
@@ -51,24 +65,34 @@ class Operator:
             Operator.no_failed = Operator.no_failed + 1
             print (
                 colorama.Fore.RED +
-                '\n ************Overall Result of Test case: all-same failed *******************\n' +
+                '\nFinal result of all-same: FAILED\n' +
                 err_mssg)
+            tresult['result'] = 'Failed'
         else:
             Operator.no_passed = Operator.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                '\n ************* Overall Result of Test case: all-same passed ******************\n' +
+                '\nFinal result of all-same: PASSED \n' +
                 info_mssg)
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
-    def is_equal(self, x_path, ele_list, err_mssg, info_mssg, *args):
+    def is_equal(
+            self, x_path, ele_list, err_mssg, info_mssg, teston, id, xml1, xml2):
+        print (
+            colorama.Fore.BLUE +
+            "\n***************** Performing is-equal Test Operation ***************** ")
         colorama.init(autoreset=True)
         res = True
-        xml1 = args[0]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "is-equal"
         try:
             element = ele_list[0]
             value = ele_list[1]
         except IndexError as e:
-            print "\n ************** Error occurred while accessing test element *****" \
+            print "\n************** Error occurred while accessing test element *****" \
                   "********", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
@@ -82,23 +106,33 @@ class Operator:
             Operator.no_failed = Operator.no_failed + 1
             print (
                 colorama.Fore.RED +
-                "\n ************ Test case is-equal failed *********************\n" +
+                "\nFinal result of is-equal: FAILED \n" +
                 err_mssg)
+            tresult['result'] = 'Failed'
         else:
             Operator.no_passed = Operator.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                "\n ************* Overall result of is-equal passed *************\n" +
+                "\nFinal result of is-equal: PASSED \n" +
                 info_mssg)
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
-    def not_equal(self, x_path, ele_list, err_mssg, info_mssg, *args):
+    def not_equal(
+            self, x_path, ele_list, err_mssg, info_mssg, teston, id, xml1, xml2):
+        print (
+            colorama.Fore.BLUE +
+            "\n***************** Performing not-equal Test Operation ***************** ")
         res = True
-        xml1 = args[0]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "not-equal"
         try:
             element = ele_list[0]
             value = ele_list[1]
         except IndexError as e:
-            print "\n ************** Error occurred while accessing test element *******" \
+            print "\n************** Error occurred while accessing test element *******" \
                   "******", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
@@ -114,25 +148,34 @@ class Operator:
             Operator.no_failed = Operator.no_failed + 1
             print (
                 colorama.Fore.RED +
-                "\n ************ Test case not-equal failed *********************\n" +
+                "\nFinal result of not-equal: FAILED \n" +
                 err_mssg)
+            tresult['result'] = 'Failed'
         else:
             Operator.no_passed = Operator.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                "\n ************ Test case not-equal passed *********************\n" +
+                "\nFinal result of not-equal: PASSED \n" +
                 info_mssg)
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
-    def in_range(self, x_path, ele_list, err_mssg, info_mssg, *args):
+    def in_range(
+            self, x_path, ele_list, err_mssg, info_mssg, teston, id, xml1, xml2):
+        print (
+            colorama.Fore.BLUE +
+            "\n***************** Performing in-range Test Operation ***************** ")
         res = True
-        xml1 = args[0]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "in-range"
         try:
             element = ele_list[0]
             range1 = int(ele_list[1])
             range2 = int(ele_list[2])
         except IndexError as e:
-            print "\n ************** Error occurred while accessing test element **********" \
-                  "**\n", e.message
+            print "\n************** Error occurred while accessing test element **********\n", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
             for node_path in nodes:
@@ -146,23 +189,33 @@ class Operator:
             Operator.no_failed = Operator.no_failed + 1
             print (
                 colorama.Fore.RED +
-                "\n ************ Test case in-range failed *********************\n" +
+                "\n Final result of in-range: FAILED \n" +
                 err_mssg)
+            tresult['result'] = 'Failed'
         else:
             Operator.no_passed = Operator.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                "\n ************ Test case in-range passed *********************\n" +
+                "\n Final result of in-range: PASSED\n" +
                 info_mssg)
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
-    def is_gt(self, x_path, ele_list, err_mssg, info_mssg, *args):
+    def is_gt(self, x_path, ele_list, err_mssg,
+              info_mssg, teston, id, xml1, xml2):
+        print (
+            colorama.Fore.BLUE +
+            "\n***************** Performing is-gt Test Operation ***************** ")
         res = True
-        xml1 = args[0]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "is-gt"
         try:
             element = ele_list[0]
             val1 = int(ele_list[1])
         except IndexError as e:
-            print "\n ************** Error occurred while accessing test element ******" \
+            print "\n************** Error occurred while accessing test element ******" \
                   "*******", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
@@ -175,23 +228,33 @@ class Operator:
             Operator.no_failed = Operator.no_failed + 1
             print (
                 colorama.Fore.RED +
-                "\n ************ Test case is-gt failed *********************\n" +
+                "\nFinal result of is-gt: FAILED \n" +
                 err_mssg)
+            tresult['result'] = 'Failed'
         else:
             Operator.no_passed = Operator.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                "\n ************ Test case is-gt passed *********************\n" +
+                "\nFinal result of is-gt: PASSED \n" +
                 info_mssg)
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
-    def is_lt(self, x_path, ele_list, err_mssg, info_mssg, *args):
+    def is_lt(self, x_path, ele_list, err_mssg,
+              info_mssg, teston, id, xml1, xml2):
+        print (
+            colorama.Fore.BLUE +
+            "\n***************** Performing is-lt Test Operation ***************** ")
         res = True
-        xml1 = args[0]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "is-lt"
         try:
             element = ele_list[0]
             val1 = int(ele_list[1])
         except IndexError as e:
-            print "\n ************** Error occured while accessing test element **********" \
+            print "\n************** Error occured while accessing test element **********" \
                   "***", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
@@ -204,24 +267,36 @@ class Operator:
                         res = False
         if res is False:
             Operator.no_failed = Operator.no_failed + 1
-            print (colorama.Fore.RED + "\n **********"
-                   "*** Test case is-lt failed *********************\n" + err_mssg)
+            print (
+                colorama.Fore.RED +
+                "\n Final Result of is-lt: FAILED" +
+                err_mssg)
+            tresult['result'] = 'Failed'
         else:
             Operator.no_passed = Operator.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                "\n ************* Test case is-lt passed *********************\n" +
+                "\nFinal result of is-lt: PASSED\n" +
                 info_mssg)
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
-    def not_range(self, x_path, ele_list, err_mssg, info_mssg, *args):
+    def not_range(
+            self, x_path, ele_list, err_mssg, info_mssg, teston, id, xml1, xml2):
+        print (
+            colorama.Fore.BLUE +
+            "\n***************** Performing not-range Test Operation ***************** ")
         res = True
-        xml1 = args[0]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "not-range"
         try:
             element = ele_list[0]
             range1 = int(ele_list[1])
             range2 = int(ele_list[2])
         except IndexError as e:
-            print "\n ************** Error occurred while accessing test element ****" \
+            print "\n************** Error occurred while accessing test element ****" \
                   "*********", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
@@ -234,23 +309,33 @@ class Operator:
             Operator.no_failed = Operator.no_failed + 1
             print (
                 colorama.Fore.RED +
-                "\n ************ Test case not-range failed *********************\n" +
+                "\nFinal result of not-range: FAILED \n" +
                 err_mssg)
+            tresult['result'] = 'Failed'
         else:
             Operator.no_passed = Operator.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                "\n ************ Test case not-range passed *********************\n" +
+                "\nFinal result of not-range: PASSED \n" +
                 info_mssg)
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
-    def contains(self, x_path, ele_list, err_mssg, info_mssg, *args):
+    def contains(
+            self, x_path, ele_list, err_mssg, info_mssg, teston, id, xml1, xml2):
+        print (
+            colorama.Fore.BLUE +
+            "\n***************** Performing contains Test Operation ***************** ")
         res = True
-        xml1 = args[0]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "contains"
         try:
             element = ele_list[0]
             value = int(ele_list[1])
         except IndexError as e:
-            print "\n ************** Error occurred while accessing test element *" \
+            print "\n************** Error occurred while accessing test element *" \
                   "************", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
@@ -263,25 +348,34 @@ class Operator:
             Operator.no_failed = Operator.no_failed + 1
             print (
                 colorama.Fore.RED +
-                "\n ************ Test case contains failed *****************"
-                "****\n" +
+                "\nFinal result of contains: FAILED" +
                 err_mssg)
+            tresult['result'] = 'Failed'
         else:
             Operator.no_passed = Operator.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                "\n ************ Test case contains passed *********************\n" +
+                "\nFinal result of contains: PASSED\n" +
                 info_mssg)
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
-    def is_in(self, x_path, ele_list, err_mssg, info_mssg, *args):
+    def is_in(self, x_path, ele_list, err_mssg,
+              info_mssg, teston, id, xml1, xml2):
+        print (
+            colorama.Fore.BLUE +
+            "\n***************** Performing is-in Test Operation ***************** ")
         res = True
-        xml1 = args[0]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "is-in"
         try:
             element = ele_list[0]
             values = int(ele_list[1])
             value_list = [v.strip() for v in values.split(' ')]
         except IndexError as e:
-            print "\n ************** Error occurred while accessing test element *" \
+            print "\n************** Error occurred while accessing test element *" \
                   "************", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
@@ -294,24 +388,34 @@ class Operator:
             Operator.no_failed = Operator.no_failed + 1
             print (
                 colorama.Fore.RED +
-                "\n ************ Test case is-in failed *********************\n" +
+                "\nFinal result of is-in: FAILED \n" +
                 err_mssg)
+            tresult['result'] = 'Failed'
         else:
             Operator.no_passed = Operator.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                "\n ************ Test case is-in passed *********************\n" +
+                "\nFinal result of is-in: PASSED \n" +
                 info_mssg)
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
-    def not_in(self, x_path, ele_list, err_mssg, info_mssg, *args):
+    def not_in(self, x_path, ele_list, err_mssg,
+               info_mssg, teston, id, xml1, xml2):
+        print (
+            colorama.Fore.BLUE +
+            "\n***************** Performing not-in Test Operation ***************** ")
         res = True
-        xml1 = args[0]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "not-in"
         try:
             element = ele_list[0]
             values = int(ele_list[1])
             value_list = [v.strip() for v in values.split(' ')]
         except IndexError as e:
-            print "\n ************** Error occurred while accessing test element *" \
+            print "\n************** Error occurred while accessing test element *" \
                   "************", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
@@ -324,29 +428,34 @@ class Operator:
             Operator.no_failed = Operator.no_failed + 1
             print (
                 colorama.Fore.RED +
-                "\n ************* Test case not-in failed *********************\n" +
+                "\nFinal result of not-in: FAILED \n" +
                 err_mssg)
+            tresult['result'] = 'Failed'
         else:
             Operator.no_passed = Operator.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                "\n ************* Test case not-in passed *******************\n" +
+                "\nFinal result of not-in: PASSED \n" +
                 info_mssg)
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
     # operator requiring two operands
 
-    def no_diff(self, x_path, id_list, ele_list, err_mssg, info_mssg, *args):
+    def no_diff(self, x_path, ele_list, err_mssg,
+                info_mssg, teston, id_list, xml1, xml2):
         print (
             colorama.Fore.BLUE +
-            "\n ********* Running no_diff test cases *************** \n")
+            "\n***************** Performing no-diff Test Operation ***************** ")
         res = True
-        xml1 = args[0]
-        xml2 = args[1]
         data1 = {}
         data2 = {}
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "no-diff"
         pathx = xml1.xpath(
             '//physical-interface[normalize-space(name)="ge-0/0/0"]')
-        print "pathx", pathx
         node1 = xml1.xpath(x_path)
         node2 = xml2.xpath(x_path)
 
@@ -359,7 +468,7 @@ class Operator:
                 if values is not None:
                     val.append(values.text)
             data1[tuple(val)] = path
-        print data1
+        # print data1
 
         for path in node2:
             xlist = [path.find(id) for id in id_list]
@@ -368,7 +477,7 @@ class Operator:
                 if values is not None:
                     val.append(values.text)
             data2[tuple(val)] = path
-        print data2
+        # print data2
 
         # what if there are extra data added in one list
         for k in data1:
@@ -385,21 +494,31 @@ class Operator:
                 res = False
         if res is False:
             Operator.no_failed = Operator.no_failed + 1
-            print "Test Failed", err_mssg
+            print (
+                colorama.Fore.RED +
+                "\nFinal result of no-diff: FAILED \n" +
+                err_mssg)
+            tresult['result'] = 'Failed'
+
         else:
-            print "Test Passed", info_mssg
+            print (
+                colorama.Fore.GREEN +
+                "\nFinal result of no-diff: PASSED \n" +
+                info_mssg)
             Operator.no_passed = Operator.no_passed + 1
-        print "\n total tests passed: ", Operator.no_passed
-        print "\n total tests failed: ", Operator.no_failed
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
     def list_not_less(
-            self, x_path, id_list, ele_list, err_mssg, info_mssg, *args):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, id_list, xml1, xml2):
         print (
             colorama.Fore.BLUE +
-            "\n ********* Running list-not-less test cases *************** \n")
+            "\n***************** Performing list-not-less Test Operation ***************** ")
         res = True
-        xml1 = args[0]
-        xml2 = args[1]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "list-not-less"
         data1 = {}
         data2 = {}
         node1 = xml1.xpath(x_path)
@@ -438,28 +557,37 @@ class Operator:
                         if val1 not in val_list2:
                             res = False
                             print "missing node :", val1, "for element tag ", ele_xpath1[0].tag, \
-                                "and parent element", ele_xpath1[0].getparent().tag
+                                "and parent element", ele_xpath1[
+                                    0].getparent().tag
             else:
                 print "\n id miss match"
                 res = False
         if res is False:
             Operator.no_failed = Operator.no_failed + 1
-            print "Test Failed", err_mssg
+            tresult['result'] = 'Failed'
+            print (
+                colorama.Fore.RED +
+                "\nFinal result of list-not-less: FAILED \n" +
+                err_mssg)
         else:
-            print "Test Passed", info_mssg
+            print (
+                colorama.Fore.GREEN +
+                "\nFinal result of list-not-less: PASSED \n" +
+                info_mssg)
             Operator.no_passed = Operator.no_passed + 1
-
-        print "\n total tests passed: ", Operator.no_passed
-        print "\n total tests failed: ", Operator.no_failed
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
     def list_not_more(
-            self, x_path, id_list, ele_list, err_mssg, info_mssg, *args):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, id_list, xml1, xml2):
         print (
             colorama.Fore.BLUE +
-            "\n ********* Running list-not-more test cases *************** \n")
+            "\n***************** Performing list-not-more Test Operation ***************** ")
         res = True
-        xml1 = args[0]
-        xml2 = args[1]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "list-not-more"
         data1 = {}
         data2 = {}
         node1 = xml1.xpath(x_path)
@@ -498,26 +626,35 @@ class Operator:
                         if val2 not in val_list1:
                             res = False
                             print "missing node :", val2, "for element tag ", ele_xpath2[0].tag, \
-                                "and parent element", ele_xpath2[0].getparent().tag
+                                "and parent element", ele_xpath2[
+                                    0].getparent().tag
             else:
-                print "\n id miss match"
+                print "\nid miss match"
                 res = False
         if res is False:
-            print "Test Failed", err_mssg
+            print (colorama.Fore.RED +
+                   "\nFinal result of list-not-more: FAILED \n" +
+                   err_mssg)
             Operator.no_failed = Operator.no_failed + 1
+            tresult['result'] = 'Failed'
         else:
-            print "Test Passed", info_mssg
+            print (colorama.Fore.GREEN +
+                   "\nFinal result of list-not-more: PASSED \n" +
+                   info_mssg)
             Operator.no_passed = Operator.no_passed + 1
-        print "\n total tests passed: ", Operator.no_passed
-        print "\n total tests failed: ", Operator.no_failed
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
-    def delta(self, x_path, id_list, ele_list, err_mssg, info_mssg, *args):
+    def delta(self, x_path, ele_list, err_mssg,
+              info_mssg, teston, id_list, xml1, xml2):
         print (
             colorama.Fore.BLUE +
-            "\n ********* Running delta test cases *************** \n")
+            "\n***************** Performing delta Test Operation ***************** ")
         res = True
-        xml1 = args[0]
-        xml2 = args[1]
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "delta"
         data1 = {}
         data2 = {}
         node1 = xml1.xpath(x_path)
@@ -602,16 +739,24 @@ class Operator:
                 print "\n id miss match"
                 res = False
         if res is False:
-            print "Overall Result of delta Failed", err_mssg
+            print (colorama.Fore.RED +
+                   "\nFinal result of delta: FAILED \n" +
+                   err_mssg)
             Operator.no_failed = Operator.no_failed + 1
+            tresult['result'] = 'Failed'
         else:
-            print "Overall Result of delta Passed", info_mssg
+            print (colorama.Fore.GREEN +
+                   "\nFinal result of delta: PASSED \n" +
+                   info_mssg)
             Operator.no_passed = Operator.no_passed + 1
+            tresult['result'] = 'Passed'
+        Operator.test_details[teston].append(tresult)
 
+    # generate final result
     def final_result(self):
         print (
             colorama.Fore.BLUE +
-            "\n\n        ----------  Final Result!! ----------------          ")
+            "\n\n-----------------------  Final Result!!  ------------------------------ ")
         print (
             colorama.Fore.GREEN +
             "\nTotal No of tests passed: {}".format(
@@ -622,13 +767,14 @@ class Operator:
                 Operator.no_failed))
         if (Operator.no_failed):
             print (
-                colorama.Fore.BLACK +
+                colorama.Fore.RED +
                 colorama.Style.BRIGHT +
-                colorama.Back.RED +
                 "\nOverall Tests failed!!! ")
+            Operator.result = "Failed"
+
         else:
             print (
-                colorama.Fore.BLACK +
+                colorama.Fore.GREEN +
                 colorama.Style.BRIGHT +
-                colorama.Back.GREEN +
                 "\nOverall Tests passed!!! ")
+            Operator.result = "Passed"

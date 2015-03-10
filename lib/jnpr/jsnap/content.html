@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+</head>
+
+<body>
+<p><font face="calibri" size="3">Hi {{ name }},</font> </p>
+
+<div><font face="calibri" size="3">
+    <p><font color="blue" ><bi> Test Performed on Device: {{device}}</bi></font> </p>
+</div>
+
+<div><font face="calibri" size="3">
+    <p> <font color="blue" ><bi> Overall Result:</bi></font>
+   <br> ===================
+        {% if fresult == "Passed" %}
+            <br> <font color="green"><b>Final Result: TEST PASSED !!</b></font>
+        {% endif %}
+        {% if fresult == "Failed" %}
+            <br> <font color="red"><b> Final Result: TEST FAILED !! </b></font>
+        {% endif %}
+    <br>Total Tests Passed: {{tpassed}}
+    <br> Total Tests Failed: {{tfailed}}
+
+    </p>
+   </font>
+</div>
+
+<div id="content">
+    <font face="calibiri" size="3">
+  <p> <bi><font color="blue" size="3">Test details dated {{ date }} is as follows:</font></bi></p>
+  <ul>
+  {% for item in tests %}
+   <p><li><b>Test result for {{ item }}:</b>
+    <br>===========================================================
+      <ol>
+       {% for values in tests[item] %}
+            {% if values['result'] == 'Passed' %}
+            <li>
+            <p><font color="green"><b>{{values['testoperation']}}: </b> {{values['testoperation']}} Passed</font>
+            <br>Test case passed for <i>xpath:</i> {{values['xpath']}}, on <i> element value:</i> {{values['element_list']}}</p>
+            </li>
+            {% endif %}
+
+            {% if values['result'] == 'Failed' %}
+            <li>
+            <p> <font color="red"><b>{{values['testoperation']}}: </b>{{values['testoperation']}} Failed</font>
+            <br>Test case failed for <i> xpath: </i> {{values['xpath']}}, on <i> element value: </i> {{values['element_list']}}</p>
+            </li>
+            {% endif %}
+       {% endfor %}
+       </ol>
+      </li>
+      </p>
+     {% endfor %}
+
+  </ul>
+        </font>
+</div>
+
+
+
+<div>
+    <font face="calibri" size="3">
+    <p>Regards
+    <br>{{sname}}
+    </p>
+        </font>
+</div>
+</body>
+
+</html>

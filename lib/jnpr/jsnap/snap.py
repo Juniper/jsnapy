@@ -4,11 +4,12 @@ import os
 
 class Parse:
 
+    # generate snap files for devices based on given commands and rpc
     def generate_reply(self, test_file, devices):
         self.command_list = []
         self.rpc_list = []
         self.test_included = []
-        path= os.getcwd()
+        path = os.getcwd()
         for t in test_file['tests_include']:
             self.test_included.append(t)
             if (test_file[t][0].keys()[0] == 'command'):

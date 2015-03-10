@@ -6,11 +6,16 @@ import yaml
 
 class Hosts:
 
+    # extract device info from the yaml file and call connect function to establish connection for all
+    # the given devices do not call connect function when check or snapcheck option is given(not
+    # implemented, need to handle)
     def login(self, args, main_file, output_file):
         self.hostname_list = []
         devices = {}
         if args.hostname is None:
             k = main_file['hosts'][0]
+            # when group of devices are given, searching for include keyword in
+            # hosts in main.yaml file
             if k.__contains__('include'):
                 lfile = k['include']
                 login_file = open(lfile, 'r')
@@ -32,6 +37,7 @@ class Hosts:
                                 password)
                             devices[dev_obj] = snap_files
 
+        # login credentials are given in main config file
             else:
                 hostname = k['devices']
                 username = k['username']
@@ -41,7 +47,7 @@ class Hosts:
                 snap_files = hostname + '_' + output_file
                 devices[dev_obj] = snap_files
 
-# if login credentials are given from command line
+        # if login credentials are given from command line
         else:
             hostname = args.hostname
             password = args.passwd
@@ -52,7 +58,7 @@ class Hosts:
             devices[dev_obj] = snap_files
         return (devices)
 
-# function to connect to device
+    # function to connect to device
     def connect(self, hostname, username, password):
         print "connecting to device", hostname, ".............."
         dev = Device(host=hostname, user=username, passwd=password)
