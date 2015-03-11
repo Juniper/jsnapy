@@ -113,6 +113,10 @@ class Jsnap:
                               "."],
                              stdout=subprocess.PIPE)
         out, err = p.communicate()
+	p = subprocess.Popen(["cp",
+                              "/Library/Python/2.7/site-packages/jnpr/jsnap/configs/main.yml",
+                              "."],
+                             stdout=subprocess.PIPE)
 
 d = Jsnap()
 
