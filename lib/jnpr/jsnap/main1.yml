@@ -1,8 +1,0 @@
-hosts:
-    - include: /Users/jpriyal/Desktop/jsnap/jsnap-py-master_email/lib/jnpr/jsnap/configs/devices.yml
-      group: MX
-
-tests:
-   - /Users/jpriyal/Desktop/jsnap/jsnap-py-master_email/lib/jnpr/jsnap/configs/tests.yml
-
-mail: /Users/jpriyal/Desktop/jsnap/jsnap-py-master_email/lib/jnpr/jsnap/mail.yml
