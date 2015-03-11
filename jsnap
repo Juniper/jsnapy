@@ -2,11 +2,11 @@
 
 import yaml
 import argparse
-from jsnap.hosts import Hosts
-from jsnap.snap import Parse
-from jsnap.check import Comparator
-from jsnap.testop import Operator
-from jsnap.notify import Notification
+from jnpr.jsnap.hosts import Hosts
+from jnpr.jsnap.snap import Parse
+from jnpr.jsnap.check import Comparator
+from jnpr.jsnap.testop import Operator
+from jnpr.jsnap.notify import Notification
 import subprocess
 
 
