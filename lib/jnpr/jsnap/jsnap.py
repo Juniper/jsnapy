@@ -129,6 +129,6 @@ elif(d.args.file):
         d.compare_tests(mainfile)
         obj = Operator()
         obj.final_result()
-        if mainfile['mail']:
+        if mainfile.get('mail'):
             send_mail = Notification()
             send_mail.notify(mainfile['mail'], hostlists)
