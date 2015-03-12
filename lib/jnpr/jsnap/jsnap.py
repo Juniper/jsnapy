@@ -1,13 +1,15 @@
-#!/usr/bin/env python
+#!/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python
+
+import sys
+import argparse
+import subprocess
 
 import yaml
-import argparse
-from hosts import Hosts
-from snap import Parse
-from check import Comparator
-from testop import Operator
-from notify import Notification
-import subprocess
+from jnpr.jsnap.hosts import Hosts
+from jnpr.jsnap.snap import Parse
+from jnpr.jsnap.check import Comparator
+from jnpr.jsnap.testop import Operator
+from jnpr.jsnap.notify import Notification
 
 
 class Jsnap:
@@ -60,6 +62,9 @@ class Jsnap:
             help="username to login",
             type=str)
         self.args = self.parser.parse_args()
+	if len(sys.argv)==1:
+            self.parser.print_help()
+   	    sys.exit(1)
 
     # call hosts class, connect hosts and get host list
     def get_hosts(self):
@@ -118,21 +123,25 @@ class Jsnap:
                               "."],
                              stdout=subprocess.PIPE)
 
-d = Jsnap()
+def main():
+    d = Jsnap()
 
-# make init folder
-if d.args.init is True:
-    d.generate_init()
+    # make init folder
+    if d.args.init is True:
+        d.generate_init()
 
-# check for option: snap, check, snapcheck
-elif(d.args.file):
-    mainfile, hostlists = d.get_hosts()
-    if d.args.snap is True:
-        d.generate_rpc_reply(mainfile)
-    if d.args.check is True or d.args.snapcheck is True:
-        d.compare_tests(mainfile)
-        obj = Operator()
-        obj.final_result()
-        if mainfile.get('mail'):
-            send_mail = Notification()
-            send_mail.notify(mainfile['mail'], hostlists)
+    # check for option: snap, check, snapcheck
+    elif(d.args.file):
+        mainfile, hostlists = d.get_hosts()
+        if d.args.snap is True:
+            d.generate_rpc_reply(mainfile)
+        if d.args.check is True or d.args.snapcheck is True:
+            d.compare_tests(mainfile)
+            obj = Operator()
+            obj.final_result()
+            if mainfile.get('mail'):
+                send_mail = Notification()
+                send_mail.notify(mainfile['mail'], hostlists)
+
+if __name__ == '__main__':
+    main()
