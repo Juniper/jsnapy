@@ -1,5 +1,4 @@
-#from setuptools import setup, find_packages
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(name = "jsnap-py",
     version = "0.1",
@@ -10,12 +9,10 @@ setup(name = "jsnap-py",
     keywords="Junos snapshot automation",
     url="http://www.github.com/Juniper/jsnap-py",
     package_dir={'': 'lib'},
-    #packages=find_packages('lib'),
-    packages= ['jnpr.jsnap','jnpr.jsnap.configs'],
+    packages=find_packages('lib'),
     package_data={
         'jnpr.jsnap.configs': ['*.yml']
     },
-#    zip_safe= False,
     scripts = ["jsnap"],
     install_requires = ['junos-eznc'],
     classifiers=[
