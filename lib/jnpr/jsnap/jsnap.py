@@ -1,6 +1,8 @@
 #!/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python
 
 import sys
+import os
+import shutil
 import argparse
 import subprocess
 
@@ -110,18 +112,16 @@ class Jsnap:
 
     # generate init folder
     def generate_init(self):
-        p = subprocess.Popen(["mkdir", "snapshots"], stdout=subprocess.PIPE)
-        out, err = p.communicate()
-        p = subprocess.Popen(["cp",
-                              "-r",
-                              "/Library/Python/2.7/site-packages/jnpr/jsnap/configs",
-                              "."],
-                             stdout=subprocess.PIPE)
-        out, err = p.communicate()
-        p = subprocess.Popen(["cp",
-                              "/Library/Python/2.7/site-packages/jnpr/jsnap/configs/main.yml",
-                              "."],
-                             stdout=subprocess.PIPE)
+        if not os.path.isdir("snapshots"):
+            os.mkdir("snapshots")
+        dst_config_path = os.path.join(os.getcwd(), 'configs')
+        if not os.path.isdir(dst_config_path):
+            shutil.copytree(os.path.join(os.path.dirname(__file__), 'configs'),
+                            dst_config_path)
+
+        dst_main_yml = os.path.join(dst_config_path, 'main.yml')
+        if os.path.isfile(dst_main_yml):
+            shutil.copy(dst_main_yml, os.getcwd())
 
 
 def main():
