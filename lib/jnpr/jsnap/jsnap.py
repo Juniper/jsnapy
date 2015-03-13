@@ -62,9 +62,9 @@ class Jsnap:
             help="username to login",
             type=str)
         self.args = self.parser.parse_args()
-	if len(sys.argv)==1:
+        if len(sys.argv) == 1:
             self.parser.print_help()
-   	    sys.exit(1)
+            sys.exit(1)
 
     # call hosts class, connect hosts and get host list
     def get_hosts(self):
@@ -118,10 +118,11 @@ class Jsnap:
                               "."],
                              stdout=subprocess.PIPE)
         out, err = p.communicate()
-	p = subprocess.Popen(["cp",
+        p = subprocess.Popen(["cp",
                               "/Library/Python/2.7/site-packages/jnpr/jsnap/configs/main.yml",
                               "."],
                              stdout=subprocess.PIPE)
+
 
 def main():
     d = Jsnap()

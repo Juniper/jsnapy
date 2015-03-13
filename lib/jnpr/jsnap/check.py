@@ -94,7 +94,6 @@ class Comparator:
                             post_snap_file = path + '/' + 'snapshots' + '/' + \
                                 str(d) + '_' + args[1] + '_' + name + '.xml'
 
-
                             self.compare_reply(
                                 t[val],
                                 command,
