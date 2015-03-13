@@ -64,16 +64,13 @@ class Jsnap:
             help="username to login",
             type=str)
         self.args = self.parser.parse_args()
-        if len(sys.argv) == 1:
+	if len(sys.argv)==1:
             self.parser.print_help()
-            sys.exit(1)
+   	    sys.exit(1)
 
     # call hosts class, connect hosts and get host list
     def get_hosts(self):
-        # os.chdir('..')
         output_file = self.args.out_file1
-        #path = os.getcwd()
-        #conf_file = path + '/' + 'ConfigFiles' + '/' + config_file
         conf_file = self.args.file
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
@@ -95,7 +92,7 @@ class Jsnap:
     # called by check and snapcheck argument, to compare snap files
     def compare_tests(self, main_file):
         comp = Comparator()
-        chk = d.args.check
+        chk = self.args.check
         if (chk):
             comp.generate_test_files(
                 main_file,
@@ -115,14 +112,13 @@ class Jsnap:
         if not os.path.isdir("snapshots"):
             os.mkdir("snapshots")
         dst_config_path = os.path.join(os.getcwd(), 'configs')
-        if not os.path.isdir(dst_config_path):
-            shutil.copytree(os.path.join(os.path.dirname(__file__), 'configs'),
-                            dst_config_path)
+        if not os.path.isdir(dst_config_path): 
+            shutil.copytree(os.path.join(os.path.dirname(__file__),'configs'),
+				dst_config_path)
 
-        dst_main_yml = os.path.join(dst_config_path, 'main.yml')
+	dst_main_yml = os.path.join(dst_config_path, 'main.yml')
         if os.path.isfile(dst_main_yml):
-            shutil.copy(dst_main_yml, os.getcwd())
-
+            shutil.copy(dst_main_yml, os.getcwd()) 
 
 def main():
     d = Jsnap()
