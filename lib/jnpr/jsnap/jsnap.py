@@ -5,7 +5,7 @@ import os
 import shutil
 import argparse
 import subprocess
-
+from distutils.sysconfig import get_python_lib
 import yaml
 from jnpr.jsnap.hosts import Hosts
 from jnpr.jsnap.snap import Parse
@@ -113,7 +113,7 @@ class Jsnap:
             os.mkdir("snapshots")
         dst_config_path = os.path.join(os.getcwd(), 'configs')
         if not os.path.isdir(dst_config_path): 
-            shutil.copytree(os.path.join(os.path.dirname(__file__),'configs'),
+            shutil.copytree(os.path.join(get_python_lib(),'jnpr','jsnap','configs'),
 				dst_config_path)
 
 	dst_main_yml = os.path.join(dst_config_path, 'main.yml')
