@@ -13,7 +13,13 @@ setup(name = "jsnap-py",
     package_data={
         'jnpr.jsnap.configs': ['*.yml']
     },
-    scripts = ["jsnap"],
+    #scripts = ["bin/jsnap"],
+    entry_points= {
+            'console_scripts': [
+                'jsnap=jnpr.jsnap.jsnap:main',
+            ],
+        },
+    zip_safe= False,
     install_requires = ['junos-eznc'],
     classifiers=[
         'Environment :: Console',
