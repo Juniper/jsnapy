@@ -136,7 +136,8 @@ class Jsnap:
             # when group of devices are given, searching for include keyword in
             # hosts in main.yaml file
             if k.__contains__('include'):
-                lfile = k['include']
+               # lfile = k['include']
+                lfile= os.path.join(os.getcwd(),'configs',k['include'])
                 login_file = open(lfile, 'r')
                 dev_file = yaml.load(login_file)
                 gp = k['group']
