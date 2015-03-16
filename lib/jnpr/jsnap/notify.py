@@ -21,11 +21,7 @@ class Notification:
         templateLoader = jinja2.FileSystemLoader(searchpath="/")
         templateEnv = jinja2.Environment(loader=templateLoader)
 
-        TEMPLATE_FILE = os.path.join(
-            (get_python_lib(),
-             'jnpr',
-             'jsnap',
-             'content.html'))
+        TEMPLATE_FILE = os.path.join(get_python_lib(), 'jnpr', 'jsnap', 'content.html')
         template = templateEnv.get_template(TEMPLATE_FILE)
         outputText = template.render(device=hostname, name=mail_file['recipient_name'], tests=testdetails, date=mail_file['date'],
                                      tpassed=test_obj.no_passed, tfailed=test_obj.no_failed,
