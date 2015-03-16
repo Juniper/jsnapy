@@ -11,7 +11,6 @@ class Notification:
 
     # function to generate email, using jinja template in content.html
     def notify(self, m_file, hostname, test_obj):
-        print "\n inside notify "
         mfile = os.path.join(os.getcwd(),'configs',m_file)
         mail_file = open(mfile, 'r')
         mail_file = yaml.load(mail_file)
