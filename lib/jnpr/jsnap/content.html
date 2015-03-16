@@ -15,10 +15,10 @@
 <div><font face="calibri" size="3">
     <p> <font color="blue" ><bi> Overall Result:</bi></font>
    <br> ===================
-        {% if fresult == "Passed" %}
+        {% if fresult is True %}
             <br> <font color="green"><b>Final Result: TEST PASSED !!</b></font>
         {% endif %}
-        {% if fresult == "Failed" %}
+        {% if fresult is False %}
             <br> <font color="red"><b> Final Result: TEST FAILED !! </b></font>
         {% endif %}
     <br>Total Tests Passed: {{tpassed}}
