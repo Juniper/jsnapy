@@ -15,10 +15,10 @@
 <div><font face="calibri" size="3">
     <p> <font color="blue" ><bi> Overall Result:</bi></font>
    <br> ===================
-        {% if fresult is True %}
+        {% if fresult == "Passed" %}
             <br> <font color="green"><b>Final Result: TEST PASSED !!</b></font>
         {% endif %}
-        {% if fresult is False %}
+        {% if fresult == "Failed" %}
             <br> <font color="red"><b> Final Result: TEST FAILED !! </b></font>
         {% endif %}
     <br>Total Tests Passed: {{tpassed}}
@@ -37,14 +37,14 @@
     <br>===========================================================
       <ol>
        {% for values in tests[item] %}
-            {% if values['result'] == 'Passed' %}
+            {% if values['result'] == True %}
             <li>
             <p><font color="green"><b>{{values['testoperation']}}: </b> {{values['testoperation']}} Passed</font>
             <br>Test case passed for <i>xpath:</i> {{values['xpath']}}, on <i> element value:</i> {{values['element_list']}}</p>
             </li>
             {% endif %}
 
-            {% if values['result'] == 'Failed' %}
+            {% if values['result'] == False %}
             <li>
             <p> <font color="red"><b>{{values['testoperation']}}: </b>{{values['testoperation']}} Failed</font>
             <br>Test case failed for <i> xpath: </i> {{values['xpath']}}, on <i> element value: </i> {{values['element_list']}}</p>
