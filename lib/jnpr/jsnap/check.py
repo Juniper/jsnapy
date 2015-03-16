@@ -192,6 +192,5 @@ class Comparator:
                                 snapfile1)
 
             if (diff is not True):
-                print "\n printing final result :"
                 op.final_result()
                 return op
