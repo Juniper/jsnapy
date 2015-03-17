@@ -68,20 +68,23 @@ class Operator:
             print "\nError occurred while accessing test element", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
-            print "all same node value:", nodes
             if not nodes:
                 print "none nodes"
-            for node_path in nodes:
-                print "\n inside nodes-----all same"
-                node = node_path.xpath(element)
-                value = node[0].text
-
-                for n in node:
-                    if n.text != value:
-                        res = False
-                        # print err_mssg, n.text
+            else:
+                for node_path in nodes:
+                    print "\n inside nodes-----all same"
+                    node = node_path.xpath(element)
+                    if len(ele_list)>=2:
+                        value= ele_list[1]
                     else:
-                        print info_mssg
+                        value = node[0].text
+
+                    for n in node:
+                        if n.text != value:
+                            res = False
+                            # print err_mssg, n.text
+                        else:
+                            print info_mssg
         self.print_result('all-same', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -104,12 +107,17 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
-            for node_path in nodes:
-                node = node_path.xpath(element)
-                for n in node:
-                    if n.text != value:
-                        res = False
-                        print err_mssg, n.text
+            if not nodes:
+                print "Nodes not present"
+            else:
+                for node_path in nodes:
+                    node = node_path.xpath(element)
+                    if not node:
+                        print "Requested node is not in xpath"
+                    else:
+                        for n in node:
+                            if n.text != value:
+                                res = False
         self.print_result('is-equal', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -131,14 +139,20 @@ class Operator:
             print "\nError occurred while accessing test element", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
-            for node_path in nodes:
-                node = node_path.xpath(element)
-                for n in node:
-                    if n.text == value:
-                        res = False
-                        print err_mssg, n.text
+            if not nodes:
+                print "Nodes not present in requested xpath"
+            else:
+                for node_path in nodes:
+                    node = node_path.xpath(element)
+                    if not node:
+                        print "Node not present"
                     else:
-                        print info_mssg
+                        for n in node:
+                            if n.text == value:
+                                res = False
+                                print err_mssg, n.text
+                            else:
+                                print info_mssg
         self.print_result('not-equal', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -161,13 +175,19 @@ class Operator:
             print "\nError occurred while accessing test element\n", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
-            for node_path in nodes:
-                node = node_path.xpath(element)
-                for n in node:
-                    if (range1 < n.text and n.text < range2):
-                        print info_mssg
+            if not nodes:
+                print "\n Nodes not present in requested xpath"
+            else:
+                for node_path in nodes:
+                    node = node_path.xpath(element)
+                    if not node:
+                        print "Node not present"
                     else:
-                        res = False
+                        for n in node:
+                            if (range1 < n.text and n.text < range2):
+                                print info_mssg
+                            else:
+                                res = False
         self.print_result('in-range', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -189,11 +209,17 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
-            for node_path in nodes:
-                node = node_path.xpath(element)
-                for n in node:
-                    if (n.text < val1):
-                        res = False
+            if not nodes:
+                print "\n nodes not present in given xpath"
+            else:
+                for node_path in nodes:
+                    node = node_path.xpath(element)
+                    if not node:
+                        print "Node not present"
+                    else:
+                        for n in node:
+                            if (n.text < val1):
+                                res = False
 
         self.print_result('is-gt', res, err_mssg, info_mssg)
         tresult['result'] = res
@@ -216,13 +242,19 @@ class Operator:
             print "\n Error occurred while accessing test element ", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
-            for node_path in nodes:
-                node = node_path.xpath(element)
-                for n in node:
-                    if (n.text > val1):
-                        print info_mssg
+            if not nodes:
+                print "nodes not present"
+            else:
+                for node_path in nodes:
+                    node = node_path.xpath(element)
+                    if not node:
+                        print "node not present"
                     else:
-                        res = False
+                        for n in node:
+                            if (n.text > val1):
+                                print info_mssg
+                            else:
+                                res = False
         self.print_result('is-lt', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -245,11 +277,17 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
-            for node_path in nodes:
-                node = node_path.xpath(element)
-                for n in node:
-                    if n.text > range1 or n.text < range2:
-                        res = False
+            if not nodes:
+                print "node not present"
+            else:
+                for node_path in nodes:
+                    node = node_path.xpath(element)
+                    if not node:
+                        print "node not present"
+                    else:
+                        for n in node:
+                            if n.text > range1 or n.text < range2:
+                                res = False
         self.print_result('not-range', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -271,11 +309,17 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
-            for node_path in nodes:
-                node = node_path.xpath(element)
-                for n in node:
-                    if (n.text.find(value) == -1):
-                        res = False
+            if not nodes:
+                print "node not present"
+            else:
+                for node_path in nodes:
+                    node = node_path.xpath(element)
+                    if not node:
+                        print "node not present"
+                    else:
+                        for n in node:
+                            if (n.text.find(value) == -1):
+                                res = False
         self.print_result('contains', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -298,11 +342,17 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
-            for node_path in nodes:
-                node = node_path.xpath(element)
-                for n in node:
-                    if (n.text not in value_list):
-                        res = False
+            if not nodes:
+                print "nodes not present"
+            else:
+                for node_path in nodes:
+                    node = node_path.xpath(element)
+                    if not node:
+                        print "node not present"
+                    else:
+                        for n in node:
+                            if (n.text not in value_list):
+                                res = False
         self.print_result('is-in', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -325,11 +375,17 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
         else:
             nodes = xml1.xpath('//' + x_path)
-            for node_path in nodes:
-                node = node_path.xpath(element)
-                for n in nodes:
-                    if (n.text in value_list):
-                        res = False
+            if not nodes:
+                print "node not present"
+            else:
+                for node_path in nodes:
+                    node = node_path.xpath(element)
+                    if not node:
+                        print "node not present"
+                    else:
+                        for n in node:
+                            if (n.text in value_list):
+                                res = False
         self.print_result('not-in', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -352,39 +408,43 @@ class Operator:
         node1 = xml1.xpath(x_path)
         node2 = xml2.xpath(x_path)
 
-        # assuming one iterator has unique set of ids, i.e only one node matching to id
-        # making dictionary for id and its corresponding xpath
-        for path in node1:
-            xlist = [path.find(id) for id in id_list]
-            val = []
-            for values in xlist:
-                if values is not None:
-                    val.append(values.text)
-            data1[tuple(val)] = path
-        # print data1
+        if (not node1) or (not node2):
+            print "nodes not present in given xpath"
 
-        for path in node2:
-            xlist = [path.find(id) for id in id_list]
-            val = []
-            for values in xlist:
-                if values is not None:
-                    val.append(values.text)
-            data2[tuple(val)] = path
-        # print data2
+        else:
+            # assuming one iterator has unique set of ids, i.e only one node matching to id
+            # making dictionary for id and its corresponding xpath
+            for path in node1:
+                xlist = [path.find(id) for id in id_list]
+                val = []
+                for values in xlist:
+                    if values is not None:
+                        val.append(values.text)
+                data1[tuple(val)] = path
+            # print data1
 
-        # what if there are extra data added in one list
-        for k in data1:
-            if k in data2:
-                ele_xpath1 = data1.get(k).xpath(ele_list[0])
-                ele_xpath2 = data2.get(k).xpath(ele_list[0])
-                val_list1 = [element.text for element in ele_xpath1]
-                val_list2 = [element.text for element in ele_xpath2]
-                if val_list1 != val_list2:
+            for path in node2:
+                xlist = [path.find(id) for id in id_list]
+                val = []
+                for values in xlist:
+                    if values is not None:
+                        val.append(values.text)
+                data2[tuple(val)] = path
+            # print data2
+
+            # what if there are extra data added in one list
+            for k in data1:
+                if k in data2:
+                    ele_xpath1 = data1.get(k).xpath(ele_list[0])
+                    ele_xpath2 = data2.get(k).xpath(ele_list[0])
+                    val_list1 = [element.text for element in ele_xpath1]
+                    val_list2 = [element.text for element in ele_xpath2]
+                    if val_list1 != val_list2:
+                        res = False
+                        print val_list1, "doesn't match with", val_list2
+                else:
+                    print "\n id miss match"
                     res = False
-                    print val_list1, "doesn't match with", val_list2
-            else:
-                print "\n id miss match"
-                res = False
         self.print_result('no-diff', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -405,42 +465,46 @@ class Operator:
         node1 = xml1.xpath(x_path)
         node2 = xml2.xpath(x_path)
 
+        if not node1 or not node2:
+            print "nodes not present in given xpath"
+
+        else:
         # assuming one iterator has unique set of ids, i.e only one node matching to id
         # making dictionary for id and its corresponding xpath
-        for path in node1:
-            xlist = [path.find(id) for id in id_list]
-            val = []
-            for values in xlist:
-                if values is not None:
-                    val.append(values.text)
-            data1[tuple(val)] = path
-        # print data1
+            for path in node1:
+                xlist = [path.find(id) for id in id_list]
+                val = []
+                for values in xlist:
+                    if values is not None:
+                        val.append(values.text)
+                data1[tuple(val)] = path
+            # print data1
 
-        for path in node2:
-            xlist = [path.find(id) for id in id_list]
-            val = []
-            for values in xlist:
-                if values is not None:
-                    val.append(values.text)
-            data2[tuple(val)] = path
-        # print data2
+            for path in node2:
+                xlist = [path.find(id) for id in id_list]
+                val = []
+                for values in xlist:
+                    if values is not None:
+                        val.append(values.text)
+                data2[tuple(val)] = path
+            # print data2
 
-        for k in data1:
-            if k in data2:
-                if ele_list is not None:
-                    ele_xpath1 = data1.get(k).xpath(ele_list[0])
-                    ele_xpath2 = data2.get(k).xpath(ele_list[0])
-                    val_list1 = [element.text for element in ele_xpath1]
-                    val_list2 = [element.text for element in ele_xpath2]
-                    for val1 in val_list1:
-                        if val1 not in val_list2:
-                            res = False
-                            print "missing node :", val1, "for element tag ", ele_xpath1[0].tag, \
-                                "and parent element", ele_xpath1[
-                                    0].getparent().tag
-            else:
-                print "\n id miss match"
-                res = False
+            for k in data1:
+                if k in data2:
+                    if ele_list is not None:
+                        ele_xpath1 = data1.get(k).xpath(ele_list[0])
+                        ele_xpath2 = data2.get(k).xpath(ele_list[0])
+                        val_list1 = [element.text for element in ele_xpath1]
+                        val_list2 = [element.text for element in ele_xpath2]
+                        for val1 in val_list1:
+                            if val1 not in val_list2:
+                                res = False
+                                print "missing node :", val1, "for element tag ", ele_xpath1[0].tag, \
+                                    "and parent element", ele_xpath1[
+                                        0].getparent().tag
+                else:
+                    print "\n id miss match"
+                    res = False
 
         self.print_result('list-not-less', res, err_mssg, info_mssg)
         tresult['result'] = res
@@ -462,42 +526,46 @@ class Operator:
         node1 = xml1.xpath(x_path)
         node2 = xml2.xpath(x_path)
 
-        # assuming one iterator has unique set of ids, i.e only one node matching to id
-        # making dictionary for id and its corresponding xpath
-        for path in node1:
-            xlist = [path.find(id) for id in id_list]
-            val = []
-            for values in xlist:
-                if values is not None:
-                    val.append(values.text)
-            data1[tuple(val)] = path
-        # print data1
+        if not node1 or not node2:
+            print "node1 or node2 not persent"
 
-        for path in node2:
-            xlist = [path.find(id) for id in id_list]
-            val = []
-            for values in xlist:
-                if values is not None:
-                    val.append(values.text)
-            data2[tuple(val)] = path
-        # print data2
+        else:
+            # assuming one iterator has unique set of ids, i.e only one node matching to id
+            # making dictionary for id and its corresponding xpath
+            for path in node1:
+                xlist = [path.find(id) for id in id_list]
+                val = []
+                for values in xlist:
+                    if values is not None:
+                        val.append(values.text)
+                data1[tuple(val)] = path
+            # print data1
 
-        for k in data2:
-            if k in data1:
-                if ele_list is not None:
-                    ele_xpath1 = data1.get(k).xpath(ele_list[0])
-                    ele_xpath2 = data2.get(k).xpath(ele_list[0])
-                    val_list1 = [element.text for element in ele_xpath1]
-                    val_list2 = [element.text for element in ele_xpath2]
-                    for val2 in val_list2:
-                        if val2 not in val_list1:
-                            res = False
-                            print "missing node :", val2, "for element tag ", ele_xpath2[0].tag, \
-                                "and parent element", ele_xpath2[
-                                    0].getparent().tag
-            else:
-                print "\nid miss match"
-                res = False
+            for path in node2:
+                xlist = [path.find(id) for id in id_list]
+                val = []
+                for values in xlist:
+                    if values is not None:
+                        val.append(values.text)
+                data2[tuple(val)] = path
+            # print data2
+
+            for k in data2:
+                if k in data1:
+                    if ele_list is not None:
+                        ele_xpath1 = data1.get(k).xpath(ele_list[0])
+                        ele_xpath2 = data2.get(k).xpath(ele_list[0])
+                        val_list1 = [element.text for element in ele_xpath1]
+                        val_list2 = [element.text for element in ele_xpath2]
+                        for val2 in val_list2:
+                            if val2 not in val_list1:
+                                res = False
+                                print "missing node :", val2, "for element tag ", ele_xpath2[0].tag, \
+                                    "and parent element", ele_xpath2[
+                                        0].getparent().tag
+                else:
+                    print "\nid miss match"
+                    res = False
         self.print_result('list-not-more', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -518,84 +586,88 @@ class Operator:
         node1 = xml1.xpath(x_path)
         node2 = xml2.xpath(x_path)
 
-        # assuming one iterator has unique set of ids, i.e only one node matching to id
-        # making dictionary for id and its corresponding xpath
-        for path in node1:
-            xlist = [path.find(id) for id in id_list]
-            val = []
-            for values in xlist:
-                if values is not None:
-                    val.append(values.text)
-            data1[tuple(val)] = path
-        # print data1
+        if not node1 or not node2:
+            print "node1 or node2 not present"
 
-        for path in node2:
-            xlist = [path.find(id) for id in id_list]
-            val = []
-            for values in xlist:
-                if values is not None:
-                    val.append(values.text)
-            data2[tuple(val)] = path
-        # print data2
+        else:
+            # assuming one iterator has unique set of ids, i.e only one node matching to id
+            # making dictionary for id and its corresponding xpath
+            for path in node1:
+                xlist = [path.find(id) for id in id_list]
+                val = []
+                for values in xlist:
+                    if values is not None:
+                        val.append(values.text)
+                data1[tuple(val)] = path
+            # print data1
 
-        for k in data1:
-            if k in data2:
-                if ele_list is not None:
-                    # print "data values are", data1.get(k), data2.get(k)
-                    # print "ele_list[0]", ele_list[0]
-                    ele_xpath1 = data1.get(k).xpath(ele_list[0])
-                    ele_xpath2 = data2.get(k).xpath(ele_list[0])
-                    # print "ele_list is", ele_list[0]
-                    # print "ele_xpath1 is", ele_xpath1
-                    if ele_xpath1 is not None:
-                     #   print "ele_xpath1 is", ele_xpath1
-                        val1 = int(ele_xpath1[0].text)
-                    if ele_xpath2 is not None:
-                        val2 = int(ele_xpath2[0].text)
-                    del_val = ele_list[1]
+            for path in node2:
+                xlist = [path.find(id) for id in id_list]
+                val = []
+                for values in xlist:
+                    if values is not None:
+                        val.append(values.text)
+                data2[tuple(val)] = path
+            # print data2
 
-                    # an absolute percentage
-                    if re.search('%', del_val) and (re.search('-', del_val)):
-                        print "matching -%"
-                        dvalue = ((val1 - val2) * 100) / val1
-                        if (dvalue == int(ele_list[1].strip('%'))):
-                            print "percent test passed"
-                        else:
-                            res = False
-                            print "Node value in percent changed by, that is by: %d", dvalue
+            for k in data1:
+                if k in data2:
+                    if ele_list is not None:
+                        # print "data values are", data1.get(k), data2.get(k)
+                        # print "ele_list[0]", ele_list[0]
+                        ele_xpath1 = data1.get(k).xpath(ele_list[0])
+                        ele_xpath2 = data2.get(k).xpath(ele_list[0])
+                        # print "ele_list is", ele_list[0]
+                        # print "ele_xpath1 is", ele_xpath1
+                        if ele_xpath1 is not None:
+                         #   print "ele_xpath1 is", ele_xpath1
+                            val1 = int(ele_xpath1[0].text)
+                        if ele_xpath2 is not None:
+                            val2 = int(ele_xpath2[0].text)
+                        del_val = ele_list[1]
 
-                    # negative percent difference
-                    elif re.search('%', del_val):
-                        dvalue = (abs(val1 - val2) * 100) / val1
-                       # print "abs(val1-val2)", abs(val1-val2)
-                       # print "(abs(val1-val2)/val1)", (abs(val1-val2)/val1)
-                        if (dvalue == int(ele_list[1].strip('%'))):
-                            print "absolute percent test passed"
-                        else:
-                            print "Node value in absolute percent changed by, that is by: %d", dvalue
-                            res = False
-
-                    # negative difference
-                    elif re.search('-', del_val):
                         # an absolute percentage
-                        dvalue = (val1 - val2)
-                        if dvalue == int(ele_list[1]):
-                            print "absolute delta difference test passed"
-                        else:
-                            res = False
-                            print "Node value in absolute difference changed by, that is by: %d", dvalue
+                        if re.search('%', del_val) and (re.search('-', del_val)):
+                            print "matching -%"
+                            dvalue = ((val1 - val2) * 100) / val1
+                            if (dvalue == int(ele_list[1].strip('%'))):
+                                print "percent test passed"
+                            else:
+                                res = False
+                                print "Node value in percent changed by, that is by: %d", dvalue
 
-                    # positive difference
-                    else:
-                        dvalue = abs((val1) - (val2))
-                        if dvalue == int(ele_list[1]):
-                            print "delta difference test passed"
+                        # negative percent difference
+                        elif re.search('%', del_val):
+                            dvalue = (abs(val1 - val2) * 100) / val1
+                           # print "abs(val1-val2)", abs(val1-val2)
+                           # print "(abs(val1-val2)/val1)", (abs(val1-val2)/val1)
+                            if (dvalue == int(ele_list[1].strip('%'))):
+                                print "absolute percent test passed"
+                            else:
+                                print "Node value in absolute percent changed by, that is by: %d", dvalue
+                                res = False
+
+                        # negative difference
+                        elif re.search('-', del_val):
+                            # an absolute percentage
+                            dvalue = (val1 - val2)
+                            if dvalue == int(ele_list[1]):
+                                print "absolute delta difference test passed"
+                            else:
+                                res = False
+                                print "Node value in absolute difference changed by, that is by: %d", dvalue
+
+                        # positive difference
                         else:
-                            res = False
-                            print "Node value in difference changed by, that is by: %d" % dvalue
-            else:
-                print "\n id miss match"
-                res = False
+                            dvalue = abs((val1) - (val2))
+                            if dvalue == int(ele_list[1]):
+                                print "delta difference test passed"
+                            else:
+                                res = False
+                                print "Node value in difference changed by, that is by: %d" % dvalue
+                else:
+                    print "\n id miss match"
+                    res = False
 
         self.print_result('delta', res, err_mssg, info_mssg)
         tresult['result'] = res

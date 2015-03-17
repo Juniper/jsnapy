@@ -136,7 +136,8 @@ class Jsnap:
             # when group of devices are given, searching for include keyword in
             # hosts in main.yaml file
             if k.__contains__('include'):
-               # lfile = k['include']
+                #lfile = k['include']
+                #print " lfile is: ", lfile
                 lfile= os.path.join(os.getcwd(),'configs',k['include'])
                 login_file = open(lfile, 'r')
                 dev_file = yaml.load(login_file)
@@ -182,12 +183,12 @@ class Jsnap:
 
     # function to connect to device
     def connect(self, hostname, username, password, snap_files):
-        if self.args.snap is True:
+        if self.args.snap is True or self.args.snapcheck is True:
             print "connecting to device %s ................" % hostname
             dev = Device(host=hostname, user=username, passwd=password)
             # print "\n going for snapshots"
             self.generate_rpc_reply(dev, snap_files)
-        elif self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
+        if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             # print "\n &&&&& going for comparision"
             testobj = self.compare_tests(hostname)
             if self.main_file.get("mail"):
