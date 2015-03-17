@@ -14,7 +14,6 @@ setup(name="jsnap-py",
            'jnpr.jsnap.configs': ['*.yml'],
 	       'jnpr.jsnap': ['content.html']
      },
-      #scripts = ["bin/jsnap"],
       entry_points={
           'console_scripts': [
               'jsnap=jnpr.jsnap.jsnap:main',
