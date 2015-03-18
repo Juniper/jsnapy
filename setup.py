@@ -9,11 +9,11 @@ setup(name="jsnap-py",
       keywords="Junos snapshot automation",
       url="http://www.github.com/Juniper/jsnap-py",
       package_dir={'': 'lib'},
-      packages=find_packages('lib'),
+      packages=find_packages('lib'), 
       package_data={
-          'jnpr.jsnap.configs': ['*.yml']
-      },
-      #scripts = ["bin/jsnap"],
+           'jnpr.jsnap.configs': ['*.yml'],
+	       'jnpr.jsnap': ['content.html']
+     },
       entry_points={
           'console_scripts': [
               'jsnap=jnpr.jsnap.jsnap:main',
