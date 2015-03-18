@@ -1,5 +1,5 @@
 hosts:
-  - include: devices.yml
+  - include: /Users/jpriyal/PycharmProjects/jsnap-py/ConfigFiles/devices.yml
     group: MX
 tests:
-  - tests.yml
+  - /Users/jpriyal/PycharmProjects/jsnap-py/configfiles/tests.yml
