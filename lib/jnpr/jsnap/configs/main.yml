@@ -1,0 +1,18 @@
+hosts:
+  - include: devices.yml
+    group: MX
+tests:
+  - tests.yml
+
+
+
+# for one device, can be given like this:
+#hosts:
+#  - devices: 10.209.16.204
+#    username : regress
+#    passwd: MaRtInI
+#tests:
+#  - tests.yml
+#mail: mail.yml
+
+

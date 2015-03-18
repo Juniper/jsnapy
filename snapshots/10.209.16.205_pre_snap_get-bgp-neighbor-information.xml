@@ -1,0 +1,42 @@
+<bgp-information>
+<bgp-peer style="detail">
+<peer-address>10.209.16.145</peer-address>
+<peer-as>8997</peer-as>
+<local-address>unspecified</local-address>
+<local-as>8997</local-as>
+<peer-type>Internal</peer-type>
+<peer-state>Active</peer-state>
+<peer-flags/>
+<last-state>Idle</last-state>
+<last-event>Start</last-event>
+<last-error>None</last-error>
+<bgp-option-information>
+<bgp-options>Preference LogUpDown Refresh</bgp-options>
+<bgp-options2/>
+<bgp-options-extended/>
+<holdtime>90</holdtime>
+<preference>170</preference>
+</bgp-option-information>
+<flap-count>0</flap-count>
+</bgp-peer>
+<bgp-peer style="detail">
+<peer-address>10.209.16.203</peer-address>
+<peer-as>8997</peer-as>
+<local-address>unspecified</local-address>
+<local-as>8997</local-as>
+<peer-type>Internal</peer-type>
+<peer-state>Active</peer-state>
+<peer-flags/>
+<last-state>Idle</last-state>
+<last-event>Start</last-event>
+<last-error>None</last-error>
+<bgp-option-information>
+<bgp-options>Preference LogUpDown Refresh</bgp-options>
+<bgp-options2/>
+<bgp-options-extended/>
+<holdtime>90</holdtime>
+<preference>170</preference>
+</bgp-option-information>
+<flap-count>0</flap-count>
+</bgp-peer>
+</bgp-information>
