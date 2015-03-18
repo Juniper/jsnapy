@@ -12,14 +12,15 @@ class Comparator:
     # Extract xpath and other values for comparing two snapshots and
     # testop.Operator methods to perform tests
     def compare_reply(self, op, tests, teston, check, snap1, snap2=None):
-        for i in range(1, len(tests)):
-            x_path = tests[i]['iterate']['xpath']
+        tests = [i for i in tests if i.has_key('iterate')]
+        for test in tests:
+            x_path = test['iterate']['xpath']
             # print "tests[i]['iterate']:", tests[i]['iterate']
-            if 'id' in tests[i]['iterate']:
-                id = tests[i]['iterate']['id']
+            if 'id' in test['iterate']:
+                id = test['iterate']['id']
             else:
                 id = 0
-            for path in tests[i]['iterate']['tests']:
+            for path in test['iterate']['tests']:
                 values = ['err', 'info']
                 testvalues = path.keys()
                 testop = [
@@ -29,10 +30,8 @@ class Comparator:
                     ele_list = [i.strip() for i in ele.split(',')]
                 err_mssg = path['err']
                 info_mssg = path['info']
-                snap_file1 = snap1
-                # print "snap_file1", snap_file1
                 try:
-                    xml1 = etree.parse(snap_file1)
+                    xml1 = etree.parse(snap1)
                 except IOError as e:
                     print "\n Error occurred ", e.message
                 if testop in [
