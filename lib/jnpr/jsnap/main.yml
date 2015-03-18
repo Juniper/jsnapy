@@ -1,0 +1,14 @@
+
+# for one device, can be given like this:
+hosts:
+  - devices: 10.216.193.114
+    username : regress
+    passwd: MaRtInI
+tests:
+  - tests.yml
+
+sqlite:   yes
+database_name:  jsnap_db.db
+
+
+

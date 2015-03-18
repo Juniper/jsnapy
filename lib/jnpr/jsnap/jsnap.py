@@ -100,7 +100,7 @@ class Jsnap:
         self.login(output_file)
 
     # call to generate snap files
-    def generate_rpc_reply(self, dev, snap_files):
+    def generate_rpc_reply(self, dev, snap_files, username):
         test_files = []
         for tfile in self.main_file['tests']:
             filepath = os.path.join(os.getcwd(), 'configs', tfile)
@@ -108,7 +108,7 @@ class Jsnap:
             test_files.append(yaml.load(test_file))
         g = Parse()
         for tests in test_files:
-            g.generate_reply(tests, dev, snap_files)
+            g.generate_reply(tests, dev, snap_files, self.use_sqlite, username, self.db_name)
 
     # called by check and snapcheck argument, to compare snap files
     def compare_tests(self, hostname):
@@ -134,6 +134,9 @@ class Jsnap:
 
     def login(self, output_file):
         self.host_list = []
+        self.use_sqlite = self.main_file['sqlite']
+        if self.use_sqlite:
+            self.db_name = self.main_file['database_name']
         if self.args.hostname is None:
             k = self.main_file['hosts'][0]
             # when group of devices are given, searching for include keyword in
@@ -190,7 +193,7 @@ class Jsnap:
             print "connecting to device %s ................" % hostname
             dev = Device(host=hostname, user=username, passwd=password)
             # print "\n going for snapshots"
-            self.generate_rpc_reply(dev, snap_files)
+            self.generate_rpc_reply(dev, snap_files, username)
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             # print "\n &&&&& going for comparision"
             testobj = self.compare_tests(hostname)
