@@ -17,9 +17,7 @@ class Parse:
                     command = test_file[t][0]['command']
                     self.command_list.append(command)
                     name = '_'.join(command.split())
-                    dev.open()
                     rpc_reply = dev.rpc.cli(command, format='xml')
-                    print "rpc reply:", etree.tostring(rpc_reply)
                     filename = snap_files + '_' + name + '.' + 'xml'
                     output_file = os.path.join(path, 'snapshots', filename)
                     with open(output_file, 'w') as f:
@@ -27,9 +25,9 @@ class Parse:
                 elif('rpc' in test_file[t][0]):
                     rpc = test_file[t][0]['rpc']
                     self.rpc_list.append(rpc)
-                    dev.open()
-                    rpc_reply = getattr(dev.rpc, rpc.replace('-', '_'))()
-                    print "rpc reply:", etree.tostring(rpc_reply)
+                    if test_file[t][1].has_key('args'):
+                        kwargs = {k.replace('-', '_'):v for k,v in test_file[t][1]['args'].items()}
+                    rpc_reply = getattr(dev.rpc, rpc.replace('-', '_'))(**kwargs)
                     filename = snap_files + '_' + rpc + '.' + 'xml'
                     output_file = os.path.join(path, 'snapshots', filename)
                     with open(output_file, 'w') as f:

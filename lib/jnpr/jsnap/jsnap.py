@@ -124,8 +124,9 @@ class Jsnap:
     def generate_rpc_reply(self, dev, snap_files):
         test_files = []
         for tfile in self.main_file['tests']:
-            filepath = os.path.join(os.getcwd(), 'configs', tfile)
-            test_file = open(filepath, 'r')
+            if not os.path.isfile(tfile):
+                tfile = os.path.join(os.getcwd(), 'configs', tfile)
+            test_file = open(tfile, 'r')
             test_files.append(yaml.load(test_file))
         g = Parse()
         for tests in test_files:
@@ -210,6 +211,7 @@ class Jsnap:
         if self.args.snap is True or self.args.snapcheck is True:
             print "connecting to device %s ................" % hostname
             dev = Device(host=hostname, user=username, passwd=password)
+            dev.open()
             # print "\n going for snapshots"
             self.generate_rpc_reply(dev, snap_files)
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
@@ -229,7 +231,7 @@ class Jsnap:
             distutils.dir_util.copy_tree(os.path.join(get_python_lib(), 'jnpr', 'jsnap', 'configs'),
                                          dst_config_path)
         dst_main_yml = os.path.join(dst_config_path, 'main.yml')
-        if os.path.isfile(dst_main_yml) or self.args.overwrite is True:
+        if not os.path.isfile(os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
             shutil.copy(dst_main_yml, os.getcwd())
 
     def check_arguments(self):

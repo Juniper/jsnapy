@@ -48,7 +48,7 @@ class Operator:
             self.no_passed = self.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                '\nFinal result of' + testname + ': PASSED \n' +
+                '\nFinal result of ' + testname + ': PASSED \n' +
                 info_mssg)
 
     def print_testmssg(self, msg):
