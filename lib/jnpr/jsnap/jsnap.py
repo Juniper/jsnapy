@@ -18,6 +18,9 @@ class Jsnap:
 
     # taking parameters from command line
     def __init__(self):
+        # add description, epilogue in argument parser, and make a function with if loop
+        # if(self.args.check and self.args.pre_snap is None....)
+        # print self.args.help
         self.parser = argparse.ArgumentParser()
         group = self.parser.add_mutually_exclusive_group()
         # for mutually exclusive gp, can not use both options
@@ -137,8 +140,8 @@ class Jsnap:
             # hosts in main.yaml file
             if k.__contains__('include'):
                 #lfile = k['include']
-                #print " lfile is: ", lfile
-                lfile= os.path.join(os.getcwd(),'configs',k['include'])
+                # print " lfile is: ", lfile
+                lfile = os.path.join(os.getcwd(), 'configs', k['include'])
                 login_file = open(lfile, 'r')
                 dev_file = yaml.load(login_file)
                 gp = k['group']

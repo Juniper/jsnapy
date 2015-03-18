@@ -88,6 +88,9 @@ class Comparator:
                             xml1)
 
     def compare_diff(self, pre_snap_file, post_snap_file):
+        #p= subprocess.Popen(["which", "icdiff"],stdout=subprocess.PIPE)
+        #out, err = p.communicate()
+        # print "output is", out
         p = subprocess.Popen(["/usr/local/bin/icdiff",
                               pre_snap_file,
                               post_snap_file],

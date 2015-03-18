@@ -5,7 +5,7 @@ MX:                      # for multiple hostnames assuming login credentials are
   - 10.209.16.204:
       username: regress
       passwd: MaRtInI
-  - 10.209.16.205:
+  - 10.209.16.206:
       username: root
       passwd: Embe1mpls
 
