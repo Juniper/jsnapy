@@ -37,26 +37,32 @@ class Comparator:
                     print "\n Error occurred ", e.message
                 if testop in [
                         'no-diff', 'list-not-less', 'list-not-more', 'delta']:
-                    try:
-                        snap_file2 = snap2
-                        xml2 = etree.parse(snap_file2)
-                    except IndexError as e:
-                        print "\n Error Occurred ", e.message
-                        print "\n test operator ", testop, " require two snap files\n"
-                    except IOError as e:
-                        print "\n Error Occurred ", e.message
+                    if check is True:
+                        try:
+                            snap_file2 = snap2
+                            xml2 = etree.parse(snap_file2)
+                        except IndexError as e:
+                            print "\n Error Occurred ", e.message
+                            print "\n test operator ", testop, " require two snap files\n"
+                        except IOError as e:
+                            print "\n Error Occurred ", e.message
 
-                    op.define_operator(
-                        testop,
-                        x_path,
-                        ele_list,
-                        err_mssg,
-                        info_mssg,
-                        teston,
-                        id,
-                        xml1,
-                        xml2)
+                        op.define_operator(
+                            testop,
+                            x_path,
+                            ele_list,
+                            err_mssg,
+                            info_mssg,
+                            teston,
+                            id,
+                            xml1,
+                            xml2)
+                    else:
+                        print "Testoperator %s is allowed only with --check" % testop
+            # if test operators are other than above mentioned four operators
                 else:
+                    # if check is used with uni operand test operator then use
+                    # second snapshot file
                     if check is True:
                         try:
                             snap_file2 = snap2
@@ -161,7 +167,6 @@ class Comparator:
                                 snapfile1)
 
                     else:
-                        print "inside rpc"
                         rpc = t[val][0]['rpc']
                         print (40) * '*' + "\n RPC is " + \
                             rpc + "\n" + (40) * '*'

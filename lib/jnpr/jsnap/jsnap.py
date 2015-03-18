@@ -21,9 +21,6 @@ class Jsnap:
     # taking parameters from command line
     def __init__(self):
         colorama.init(autoreset=True)
-        # add description, epilogue in argument parser, and make a function with if loop
-        # if(self.args.check and self.args.pre_snap is None....)
-        # print self.args.help
         self.parser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
             description=textwrap.dedent('''\
@@ -236,10 +233,6 @@ class Jsnap:
             shutil.copy(dst_main_yml, os.getcwd())
 
     def check_arguments(self):
-        print self.args.pre_snapfile, self.args.file
-        print (
-            self.args.snap is True and (
-                self.args.pre_snapfile is None or self.args.file is None))
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.check is True and (self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None)) or
             (self.args.snapcheck is True and (self.args.pre_snapfile is None or self.args.file is None or self.args.post_snapfile is not None)) or

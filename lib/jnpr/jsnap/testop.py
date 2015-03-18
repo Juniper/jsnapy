@@ -10,6 +10,7 @@ class Operator:
         self.no_failed = 0
         self.no_passed = 0
         self.test_details = defaultdict(list)
+        colorama.init(autoreset=True)
 
     def __del__(self):
         colorama.init(autoreset=True)
