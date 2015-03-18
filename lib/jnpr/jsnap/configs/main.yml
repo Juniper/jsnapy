@@ -1,8 +1,8 @@
 hosts:
-  - include: /Users/jpriyal/PycharmProjects/jsnap-py/ConfigFiles/devices.yml
+  - include: devices.yml
     group: MX
 tests:
-  - /Users/jpriyal/PycharmProjects/jsnap-py/configfiles/tests.yml
+  - tests.yml
 
 
 
@@ -12,7 +12,7 @@ tests:
 #    username : regress
 #    passwd: MaRtInI
 #tests:
-#  - /Users/jpriyal/PycharmProjects/jsnap-py/configfiles/tests.yml
-#mail: /Users/jpriyal/Desktop/jsnap-py-master/test/configs/mail.yml
+#  - tests.yml
+#mail: mail.yml
 
 
