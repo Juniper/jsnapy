@@ -5,7 +5,7 @@ tests_include:
 test_command_version:
   - command: show bgp neighbor
   - iterate:
-      id: 1
+      id: abc
       xpath: '/bgp-information/bgp-peer'
       tests:
         - all-same: flap-count

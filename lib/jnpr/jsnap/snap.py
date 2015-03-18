@@ -27,7 +27,9 @@ class Parse:
                     self.rpc_list.append(rpc)
                     if test_file[t][1].has_key('args'):
                         kwargs = {k.replace('-', '_'):v for k,v in test_file[t][1]['args'].items()}
-                    rpc_reply = getattr(dev.rpc, rpc.replace('-', '_'))(**kwargs)
+                        rpc_reply = getattr(dev.rpc, rpc.replace('-', '_'))(**kwargs)
+                    else:
+                        rpc_reply = getattr(dev.rpc, rpc.replace('-', '_'))()
                     filename = snap_files + '_' + rpc + '.' + 'xml'
                     output_file = os.path.join(path, 'snapshots', filename)
                     with open(output_file, 'w') as f:

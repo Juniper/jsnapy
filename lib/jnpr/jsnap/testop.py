@@ -81,14 +81,12 @@ class Operator:
                 value = xml1.xpath('//' + x_path + '/' + ele_list[0])[0].text
             nodes = xml1.xpath('//' + x_path)
             if not nodes:
-                print " Xpath doesn't contain nodes"
+                print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for node_path in nodes:
                     node = node_path.xpath(element)
-                    if not node:
-                        print "Node are not present"
-                    else:
+                    if node:
                         for n in node:
                             if n.text != value:
                                 res = False
@@ -116,14 +114,12 @@ class Operator:
         else:
             nodes = xml1.xpath('//' + x_path)
             if not nodes:
-                print "Nodes not present"
+                print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for node_path in nodes:
                     node = node_path.xpath(element)
-                    if not node:
-                        print "Requested node is not in xpath"
-                    else:
+                    if node:
                         for n in node:
                             if n.text != value:
                                 res = False
@@ -150,20 +146,15 @@ class Operator:
         else:
             nodes = xml1.xpath('//' + x_path)
             if not nodes:
-                print "Nodes not present in requested xpath"
+                print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for node_path in nodes:
                     node = node_path.xpath(element)
-                    if not node:
-                        print "Node not present"
-                    else:
+                    if node:
                         for n in node:
                             if n.text == value:
                                 res = False
-                                print err_mssg, n.text
-                            else:
-                                print info_mssg
         self.print_result('not-equal', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -182,23 +173,19 @@ class Operator:
             element = ele_list[0]
             range1 = float(ele_list[1])
             range2 = float(ele_list[2])
-            print "range1, range2", range1, range2
         except IndexError as e:
             print "\nError occurred while accessing test element\n", e.message
             print "\n in-range test operator requires two parameter"
         else:
             nodes = xml1.xpath('//' + x_path)
             if not nodes:
-                print "\n Nodes not present in requested xpath"
+                print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for node_path in nodes:
                     node = node_path.xpath(element)
-                    if not node:
-                        print "Node not present"
-                    else:
+                    if node:
                         for n in node:
-                            print "text is", n.text
                             if (range1 < float(n.text)
                                     and float(n.text) < range2):
                                 print info_mssg
@@ -227,14 +214,12 @@ class Operator:
         else:
             nodes = xml1.xpath('//' + x_path)
             if not nodes:
-                print "\n nodes not present in given xpath"
+                print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for node_path in nodes:
                     node = node_path.xpath(element)
-                    if not node:
-                        print "Node not present"
-                    else:
+                    if node:
                         for n in node:
                             if (float(n.text) < val1):
                                 res = False
@@ -262,14 +247,12 @@ class Operator:
         else:
             nodes = xml1.xpath('//' + x_path)
             if not nodes:
-                print "nodes not present"
+                print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for node_path in nodes:
                     node = node_path.xpath(element)
-                    if not node:
-                        print "node not present"
-                    else:
+                    if node:
                         for n in node:
                             if (float(n.text) > val1):
                                 res = False
@@ -298,14 +281,12 @@ class Operator:
         else:
             nodes = xml1.xpath('//' + x_path)
             if not nodes:
-                print "node not present"
+                print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for node_path in nodes:
                     node = node_path.xpath(element)
-                    if not node:
-                        print "node not present"
-                    else:
+                    if node:
                         for n in node:
                             if float(n.text) > range1 and float(
                                     n.text) < range2:
@@ -333,14 +314,12 @@ class Operator:
         else:
             nodes = xml1.xpath('//' + x_path)
             if not nodes:
-                print "node not present"
+                print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for node_path in nodes:
                     node = node_path.xpath(element)
-                    if not node:
-                        print "node not present"
-                    else:
+                    if node:
                         for n in node:
                             if (n.text.find(value) == -1):
                                 res = False
@@ -367,14 +346,12 @@ class Operator:
         else:
             nodes = xml1.xpath('//' + x_path)
             if not nodes:
-                print "nodes not present"
+                print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for node_path in nodes:
                     node = node_path.xpath(element)
-                    if not node:
-                        print "node not present"
-                    else:
+                    if node:
                         for n in node:
                             if (n.text.strip() not in value_list):
                                 res = False
@@ -401,14 +378,12 @@ class Operator:
         else:
             nodes = xml1.xpath('//' + x_path)
             if not nodes:
-                print "node not present"
+                print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for node_path in nodes:
                     node = node_path.xpath(element)
-                    if not node:
-                        print "node not present"
-                    else:
+                    if node:
                         for n in node:
                             if (n.text.strip() in value_list):
                                 res = False
@@ -435,7 +410,7 @@ class Operator:
         node2 = xml2.xpath(x_path)
 
         if (not node1) or (not node2):
-            print "nodes not present in given xpath"
+            print "Nodes are not present in given Xpath!!"
             res = False
 
         else:
@@ -493,7 +468,7 @@ class Operator:
         node2 = xml2.xpath(x_path)
 
         if not node1 or not node2:
-            print "nodes not present in given xpath"
+            print "Nodes are not present in given Xpath!!"
             res = False
 
         else:
@@ -555,7 +530,7 @@ class Operator:
         node2 = xml2.xpath(x_path)
 
         if not node1 or not node2:
-            print "node1 or node2 not persent"
+            print "Nodes are not present in given Xpath!!"
             res = False
 
         else:
@@ -614,10 +589,9 @@ class Operator:
         data2 = {}
         node1 = xml1.xpath(x_path)
         node2 = xml2.xpath(x_path)
-        print "node1, node2 ", node1, node2
 
         if not node1 or not node2:
-            print "node1 or node2 not present"
+            print "Nodes are not present in given Xpath!!"
             res = False
 
         else:
@@ -630,10 +604,8 @@ class Operator:
                     if values is not None:
                         val.append(values.text)
                 data1[tuple(val)] = path
-                print "tuple (val) is", tuple(val)
-            print "data1", data1
-            # data1 is dictionary of id and its xpath
 
+            # data1 is dictionary of id and its xpath
             for path in node2:
                 xlist = [path.find(id) for id in id_list]
                 val = []
@@ -641,7 +613,6 @@ class Operator:
                     if values is not None:
                         val.append(values.text)
                 data2[tuple(val)] = path
-            print "data2", data2
 
             for k in data1:
                 # checking if id in first data set is present in second data
@@ -649,13 +620,9 @@ class Operator:
                 if k in data2:
                     if ele_list is not None:
                         # print "data values are", data1.get(k), data2.get(k)
-                        print "ele_list[0]", ele_list[0]
                         ele_xpath1 = data1.get(k).xpath(ele_list[0])
                         ele_xpath2 = data2.get(k).xpath(ele_list[0])
-                        # print "ele_list is", ele_list[0]
-                        print "ele_xpath1 is", ele_xpath1
-                        if ele_xpath1 is not None and ele_xpath2 is not None:
-                            #  print "ele_xpath1 is", ele_xpath1
+                        if len(ele_xpath1) and len(ele_xpath2) :
                             val1 = float(
                                 ele_xpath1[0].text)  # value of desired node for pre snapshot
                             val2 = float(
@@ -665,17 +632,14 @@ class Operator:
                             # for negative percentage
                             if re.search('%', del_val) and (
                                     re.search('-', del_val)):
-                                # print "matching -%"
                                 dvalue = abs(float(ele_list[1].strip('%')))
                                 mvalue = val1 - ((val1 * dvalue) / 100)
-                                print "mvalue, dvalue, val2, val1", mvalue, dvalue, val2, val1
                                 if (val2 > val1 or val2 < mvalue):
                                     res = False
                                     print "Node value in percent changed by, that is by: %d", dvalue
 
                             # for positive percent change
                             elif re.search('%', del_val) and (re.search('/+', del_val)):
-                                # print "matching +%"
                                 dvalue = float(ele_list[1].strip('%'))
                                 mvalue = val1 + ((val1 * dvalue) / 100)
                                 if (val2 < val1 or val2 > mvalue):
@@ -684,7 +648,6 @@ class Operator:
 
                             # absolute percent change
                             elif re.search('%', del_val):
-                                # print "matching %"
                                 dvalue = float(ele_list[1].strip('%'))
                                 mvalue1 = val1 - (val1 * dvalue) / 100
                                 mvalue2 = val1 + (val1 * dvalue) / 100
@@ -695,7 +658,6 @@ class Operator:
 
                             # for negative change
                             elif re.search('-', del_val):
-                                # print "matching -"
                                 dvalue = abs(float(ele_list[1].strip('%')))
                                 mvalue = val1 - dvalue
                                 if (val2 < mvalue or val2 > val1):
@@ -704,7 +666,6 @@ class Operator:
 
                              # for positive change
                             elif re.search('/+', del_val):
-                                # print "matching +"
                                 dvalue = float(ele_list[1].strip('%'))
                                 mvalue = val1 + dvalue
                                 if (val2 > mvalue or val2 < val1):
@@ -718,9 +679,6 @@ class Operator:
                                 if (val2 < mvalue1 or val2 > mvalue2):
                                     res = False
                                     print "Node value in percent changed by, that is by: %d", dvalue
-                        else:
-                            print "node not present"
-
                 else:
                     print "\n id miss match"
                     res = False

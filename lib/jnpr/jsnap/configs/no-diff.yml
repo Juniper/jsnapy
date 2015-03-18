@@ -9,7 +9,7 @@ test_command_version:
   - command: show interfaces terse ge-*
   - iterate:
       xpath: physical-interface
-      id: ['./name']
+      id: './name'
       tests:
         - no-diff: oper-status       # element in which test is performed
           err: "Test Failed!! oper-status  got changed"

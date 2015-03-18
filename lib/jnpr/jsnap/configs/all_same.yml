@@ -17,7 +17,7 @@ test_command_version:
           info: "Test succeeded!! peer-as is same %s, peer-as"
 
   - iterate:
-      id: 1
+      id: abc
       xpath: '//bgp-information/bgp-peer/bgp-option-information'
       tests:
         - is-gt: holdtime, 10       # element in which test is performed
@@ -31,7 +31,7 @@ test_command_version:
 test_rpc_version:
   - rpc: get-bgp-neighbor-information
   - iterate:
-      id: 2
+      id: xyz
       xpath: '//bgp-information/bgp-peer'
       tests:
         - not-equal: last-state,Idle       # element in which test is performed
@@ -49,7 +49,7 @@ test_rpc_version:
 test_version:
   - command: show bgp neighbor
   - iterate:
-      id: 1
+      id: pqr
       xpath: '/bgp-information/bgp-peer'
       tests:
         - is-equal: peer-address, 10.209.19.204       # element in which test is performed

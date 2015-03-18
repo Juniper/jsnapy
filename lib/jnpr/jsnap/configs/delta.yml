@@ -5,7 +5,7 @@ check_chassis_fpc:
   - command: show chassis fpc
   - iterate:
       xpath: fpc
-      id: [./slot]
+      id: ./slot
       tests:
         - delta: memory-heap-utilization, +8
           info: "Test Succeeded!! Memory heap utilisation of the FPCs has changed less than 30%"

@@ -1,10 +1,9 @@
 import yaml
 from lxml import etree
 import testop
-import os
-import sys
+import os,sys
 import subprocess
-import shlex
+
 
 
 class Comparator:
@@ -15,11 +14,11 @@ class Comparator:
         tests = [i for i in tests if i.has_key('iterate')]
         for test in tests:
             x_path = test['iterate']['xpath']
-            # print "tests[i]['iterate']:", tests[i]['iterate']
             if 'id' in test['iterate']:
                 id = test['iterate']['id']
+                id_list= [val.strip() for val in id.split(',')]
             else:
-                id = 0
+                id_list = []
             for path in test['iterate']['tests']:
                 values = ['err', 'info']
                 testvalues = path.keys()
@@ -27,25 +26,22 @@ class Comparator:
                     tvalue for tvalue in testvalues if tvalue not in values][0]
                 ele = path[testop]
                 if ele is not None:
-                    ele_list = [i.strip() for i in ele.split(',')]
+                    ele_list = [elements.strip() for elements in ele.split(',')]
                 err_mssg = path['err']
                 info_mssg = path['info']
-                try:
+                if os.path.isfile(snap1):
                     xml1 = etree.parse(snap1)
-                except IOError as e:
-                    print "\n Error occurred ", e.message
+                else:
+                    print "ERROR, Pre snapshot file %s is not present in given path!!" %snap1
+                    sys.exit(1)
                 if testop in [
                         'no-diff', 'list-not-less', 'list-not-more', 'delta']:
                     if check is True:
-                        try:
-                            snap_file2 = snap2
-                            xml2 = etree.parse(snap_file2)
-                        except IndexError as e:
-                            print "\n Error Occurred ", e.message
-                            print "\n test operator ", testop, " require two snap files\n"
-                        except IOError as e:
-                            print "\n Error Occurred ", e.message
-
+                        if os.path.isfile(snap2):
+                            xml2 = etree.parse(snap1)
+                        else:
+                            print "ERROR, Post snapshot File %s is not present in given path!!" %snap2
+                            sys.exit(1)
                         op.define_operator(
                             testop,
                             x_path,
@@ -53,44 +49,27 @@ class Comparator:
                             err_mssg,
                             info_mssg,
                             teston,
-                            id,
+                            id_list,
                             xml1,
                             xml2)
                     else:
-                        print "Testoperator %s is allowed only with --check" % testop
+                        print "Test Operator %s is allowed only with --check" % testop
+
             # if test operators are other than above mentioned four operators
                 else:
                     # if check is used with uni operand test operator then use
                     # second snapshot file
-                    if check is True:
-                        try:
-                            snap_file2 = snap2
-                            xml2 = etree.parse(snap_file2)
-                        except IndexError as e:
-                            print "\n Error Occurred ", e.message
-                            print "\n test operator ", testop, " require two snap files\n"
-                        except IOError as e:
-                            print "\n Error Occurred ", e.message
-                        else:
-                            op.define_operator(
-                                testop,
-                                x_path,
-                                ele_list,
-                                err_mssg,
-                                info_mssg,
-                                teston,
-                                id,
-                                xml2)
-                    else:
-                        op.define_operator(
-                            testop,
-                            x_path,
-                            ele_list,
-                            err_mssg,
-                            info_mssg,
-                            teston,
-                            id,
-                            xml1)
+                    xmlfile = etree.parse(snap2) if check is True else etree.parse(snap1)
+                    op.define_operator(
+                        testop,
+                        x_path,
+                        ele_list,
+                        err_mssg,
+                        info_mssg,
+                        teston,
+                        id_list,
+                        xmlfile)
+
 
     def compare_diff(self, pre_snap_file, post_snap_file):
         #p= subprocess.Popen(["which", "icdiff"],stdout=subprocess.PIPE)
@@ -120,7 +99,6 @@ class Comparator:
         else:
             for tfiles in main_file.get('tests'):
                 filename = os.path.join(os.getcwd(), 'configs', tfiles)
-                # print "testfile name is",filename
                 testfile = open(filename, 'r')
                 tfiles = yaml.load(testfile)
                 tests_files.append(tfiles)
@@ -135,69 +113,36 @@ class Comparator:
                         print (40) * '*' + "\n Command is " + \
                             command + "\n" + (40) * '*'
                         name = '_'.join(command.split())
-                        file1 = str(device) + '_' + pre + '_' + name + '.xml'
-                        snapfile1 = os.path.join(path, 'snapshots', file1)
-
-                        if post is not None:
-                            file2 = str(device) + '_' + post + \
-                                '_' + name + '.xml'
-                            snapfile2 = os.path.join(path, 'snapshots', file2)
-                        if (check is True):
-                            try:
-                                self.compare_reply(
-                                    op,
-                                    t[val],
-                                    command,
-                                    check,
-                                    snapfile1,
-                                    snapfile2)
-                            except UnboundLocalError as e:
-                                print "\n Error Occurred ", e.message
-                                print "\n --check require two snap files\n"
-                                sys.exit()
-                        elif(diff is True):
-                            self.compare_diff(snapfile1, snapfile2)
-                        else:
-                            self.compare_reply(
-                                op,
-                                t[val],
-                                command,
-                                check,
-                                snapfile1)
-
+                        teston= command
                     else:
                         rpc = t[val][0]['rpc']
                         print (40) * '*' + "\n RPC is " + \
                             rpc + "\n" + (40) * '*'
-                        file1 = str(device) + '_' + pre + '_' + rpc + '.xml'
-                        snapfile1 = os.path.join(path, 'snapshots', file1)
-                        if post is not None:
-                            file2 = str(device) + '_' + post + \
-                                '_' + rpc + '.xml'
-                            snapfile2 = os.path.join(path, 'snapshots', file2)
-                        if (check is True):
-                            try:
-                                self.compare_reply(
-                                    op,
-                                    t[val],
-                                    rpc,
-                                    check,
-                                    snapfile1,
-                                    snapfile2)
-                            except UnboundLocalError as e:
-                                print "\n Error Occurred ", e.message
-                                print "\n --check require two snap files\n"
-                                sys.exit()
-                        elif(diff is True):
-                            self.compare_diff(snapfile1, snapfile2)
-                        else:
-                            self.compare_reply(
-                                op,
-                                t[val],
-                                rpc,
-                                check,
-                                snapfile1)
-
+                        name = rpc
+                        teston= rpc
+                    file1 = str(device) + '_' + pre + '_' + name + '.xml'
+                    snapfile1 = os.path.join(path, 'snapshots', file1)
+                    if check is True:
+                        file2 = str(device) + '_' + post + '_' + name + '.xml'
+                        snapfile2 = os.path.join(path, 'snapshots', file2)
+                        self.compare_reply(
+                            op,
+                            t[val],
+                            teston,
+                            check,
+                            snapfile1,
+                            snapfile2)
+                    elif(diff is True):
+                        file2 = str(device) + '_' + post + '_' + name + '.xml'
+                        snapfile2 = os.path.join(path, 'snapshots', file2)
+                        self.compare_diff(snapfile1, snapfile2)
+                    else:
+                        self.compare_reply(
+                            op,
+                            t[val],
+                            teston,
+                            check,
+                            snapfile1)
             if (diff is not True):
                 op.final_result()
                 return op
