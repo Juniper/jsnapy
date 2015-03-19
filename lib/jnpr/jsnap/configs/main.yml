@@ -4,6 +4,10 @@ hosts:
 tests:
   - tests.yml
 
+sqlite:
+  - store_in_sqlite: yes
+    check_from_sqlite: yes
+    database_name: jbb.db
 
 
 # for one device, can be given like this:

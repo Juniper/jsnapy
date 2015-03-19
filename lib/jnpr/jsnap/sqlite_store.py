@@ -1,6 +1,6 @@
-
 import sqlite3
 import os
+
 
 class JsnapSqlite:
 
@@ -24,16 +24,16 @@ class JsnapSqlite:
             conn.execute(sqlstr)
 
     # Inserting Data
-    def insert_data(self, xml_string, user, command_name, snap_name,filename):
+    def insert_data(self,db):
         with sqlite3.connect(self.db_filename) as con:
             # print 'Inserting data'
-            con.execute("""update %s set id = id + 1 where cli_command = :cli""" % self.table_name, {'cli': command_name})
-            con.execute("""delete from %s where id>49 AND cli_command = :cli""" % self.table_name, {'cli': command_name})
-            con.execute("""delete from %s where snap_name = :snap AND cli_command = :cli""" % self.table_name,
-                        {'snap': snap_name, 'cli': command_name})
+            con.execute("""update %s set id = id + 1 where cli_command = :cli""" % self.table_name,
+                        {'cli': db['cli_command']})
+            con.execute("""delete from %s where id>49 AND cli_command = :cli""" % self.table_name,
+                        {'cli': db['cli_command']})
             con.execute("""insert into %s (id, filename, username, cli_command, snap_name, xml_data) values (0, :file,
-                        :user, :cli, :snap, :xml)""" % self.table_name, {'file': filename, 'user': user,
-                        'cli': command_name, 'snap': snap_name, 'xml': xml_string})
+                        :user, :cli, :snap, :xml)""" % self.table_name, {'file': db['filename'], 'user': db['username'],
+                        'cli': db['cli_command'], 'snap': db['snap_name'], 'xml': db['xml']})
             con.commit()
 
     # Verify database content
@@ -47,8 +47,8 @@ class JsnapSqlite:
             """ % self.table_name)
 
             for row in cursor.fetchall():
-                key, id, filename, user, cli, snap, xml = row
-                print id
+                key, idd, filename, user, cli, snap, xml = row
+                print idd
                 print user
                 print cli
                 print snap

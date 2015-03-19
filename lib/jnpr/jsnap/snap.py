@@ -6,7 +6,7 @@ from jnpr.jsnap.sqlite_store import JsnapSqlite
 class Parse:
 
     # generate snap files for devices based on given commands and rpc
-    def generate_reply(self, test_file, dev, snap_files, use_sqlite, username, db_name):
+    def generate_reply(self, test_file, dev, snap_files, db, username):
         self.command_list = []
         self.rpc_list = []
         self.test_included = []
@@ -25,11 +25,19 @@ class Parse:
                         f.write(etree.tostring(rpc_reply))
 
                     # SQLiteChanges
-                    if use_sqlite is True:
+                    if db['store_in_sqlite'] is True:
                         a = snap_files.split('_')
-                        sqlite_jsnap = JsnapSqlite(a[0], db_name)
-                        sqlite_jsnap.insert_data(etree.tostring(rpc_reply), username, name, a[1], filename)
-
+                        host = a[0]
+                        a.pop(0)
+                        a = '_'.join(a)
+                        sqlite_jsnap = JsnapSqlite(host, db['db_name'])
+                        db_dict = dict()
+                        db_dict['username'] = username
+                        db_dict['cli_command'] = name
+                        db_dict['snap_name'] = a
+                        db_dict['filename'] = filename
+                        db_dict['xml'] = etree.tostring(rpc_reply)
+                        sqlite_jsnap.insert_data(db_dict)
                     ###
 
                 elif 'rpc' in test_file[t][0]:
@@ -46,10 +54,20 @@ class Parse:
                         f.write(etree.tostring(rpc_reply))
 
                     # SQLiteChanges
-                    if use_sqlite is True:
+
+                    if db['store_in_sqlite'] is True:
                         a = snap_files.split('_')
-                        sqlite_jsnap = JsnapSqlite(a[0], db_name)
-                        sqlite_jsnap.insert_data(etree.tostring(rpc_reply), username, rpc, a[1], filename)
+                        host = a[0]
+                        a.pop(0)
+                        a = '_'.join(a)
+                        sqlite_jsnap = JsnapSqlite(host, db['db_name'])
+                        db_dict2 = dict()
+                        db_dict2['username'] = username
+                        db_dict2['cli_command'] = rpc
+                        db_dict2['snap_name'] = a
+                        db_dict2['filename'] = filename
+                        db_dict2['xml'] = etree.tostring(rpc_reply)
+                        sqlite_jsnap.insert_data(db_dict2)
                     ###
             else:
                 print "Test case:  %s  not defined !!!!" % t
