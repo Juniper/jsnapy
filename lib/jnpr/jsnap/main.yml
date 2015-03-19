@@ -1,0 +1,11 @@
+
+# for one device, can be given like this:
+hosts:
+  - include: devices.yml
+    group: MX
+tests:
+  - no-diff.yml
+sqlite:
+  - store_in_sqlite:  yes
+    check_from_sqlite: yes
+    database_name:  jsnap_db.db
