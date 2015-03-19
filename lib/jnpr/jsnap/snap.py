@@ -29,7 +29,6 @@ class Parse:
                         a = snap_files.split('_')
                         sqlite_jsnap = JsnapSqlite(a[0], db_name)
                         sqlite_jsnap.insert_data(etree.tostring(rpc_reply), username, name, a[1], filename)
-                        sqlite_jsnap.print_result()
 
                     ###
 
@@ -51,7 +50,6 @@ class Parse:
                         a = snap_files.split('_')
                         sqlite_jsnap = JsnapSqlite(a[0], db_name)
                         sqlite_jsnap.insert_data(etree.tostring(rpc_reply), username, rpc, a[1], filename)
-                        sqlite_jsnap.print_result()
                     ###
             else:
                 print "Test case:  %s  not defined !!!!" % t
