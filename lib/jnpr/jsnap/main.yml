@@ -4,11 +4,8 @@ hosts:
   - include: devices.yml
     group: MX
 tests:
-  - tests.yml
-
-store_in_sqlite:  yes
-check_from_sqlite: yes
-database_name:  jsnap_db.db
-
-
-
+  - no-diff.yml
+sqlite:
+  - store_in_sqlite:  yes
+    check_from_sqlite: yes
+    database_name:  jsnap_db.db

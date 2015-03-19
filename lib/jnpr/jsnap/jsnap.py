@@ -123,10 +123,11 @@ class Jsnap:
         self.main_file = yaml.load(config_file)
 
         # Sqlite changes
-        self.store_in_sqlite = self.main_file['store_in_sqlite']
-        self.check_from_sqlite = self.main_file['check_from_sqlite']
+        db = self.main_file['sqlite'][0]
+        self.store_in_sqlite = db['store_in_sqlite']
+        self.check_from_sqlite = db['check_from_sqlite']
         if self.store_in_sqlite or self.check_from_sqlite:
-            self.db_name = self.main_file['database_name']
+            self.db_name = db['database_name']
         ###
         self.login(output_file)
 
