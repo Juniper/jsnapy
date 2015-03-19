@@ -109,9 +109,6 @@ class Jsnap:
         if len(sys.argv) == 1:
             self.parser.print_help()
             sys.exit(1)
-        self.db_name = ""
-
-
 
     # call hosts class, connect hosts and get host list
     # use pre_snapfile because always first file is pre_snapfile regardless of
@@ -121,17 +118,10 @@ class Jsnap:
         conf_file = self.args.file
         config_file = open(conf_file, 'r')
         self.main_file = yaml.load(config_file)
-
-        # Sqlite changes
-        self.store_in_sqlite = self.main_file['store_in_sqlite']
-        self.check_from_sqlite = self.main_file['check_from_sqlite']
-        if self.store_in_sqlite or self.check_from_sqlite:
-            self.db_name = self.main_file['database_name']
-        ###
         self.login(output_file)
 
     # call to generate snap files
-    def generate_rpc_reply(self, dev, snap_files, username):
+    def generate_rpc_reply(self, dev, snap_files):
         test_files = []
         for tfile in self.main_file['tests']:
             if not os.path.isfile(tfile):
@@ -140,7 +130,7 @@ class Jsnap:
             test_files.append(yaml.load(test_file))
         g = Parse()
         for tests in test_files:
-            g.generate_reply(tests, dev, snap_files, self.store_in_sqlite, username, self.db_name)
+            g.generate_reply(tests, dev, snap_files)
 
     # called by check and snapcheck argument, to compare snap files
     def compare_tests(self, hostname):
@@ -153,8 +143,6 @@ class Jsnap:
                 hostname,
                 chk,
                 diff,
-                self.check_from_sqlite,
-                self.db_name,
                 self.args.pre_snapfile,
                 self.args.post_snapfile)
         else:
@@ -163,13 +151,10 @@ class Jsnap:
                 hostname,
                 chk,
                 diff,
-                self.check_from_sqlite,
-                self.db_name,
                 self.args.pre_snapfile)
         return test_obj
 
     def login(self, output_file):
-
         self.host_list = []
         if self.args.hostname is None:
             k = self.main_file['hosts'][0]
@@ -228,7 +213,7 @@ class Jsnap:
             dev = Device(host=hostname, user=username, passwd=password)
             dev.open()
             # print "\n going for snapshots"
-            self.generate_rpc_reply(dev, snap_files, username)
+            self.generate_rpc_reply(dev, snap_files)
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             # print "\n &&&&& going for comparision"
             testobj = self.compare_tests(hostname)
