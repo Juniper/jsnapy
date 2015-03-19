@@ -3,7 +3,7 @@ from lxml import etree
 import testop
 import os,sys
 import subprocess
-
+from jnpr.jsnap.sqlite_xml_retrieval import SqliteExtractXml
 
 
 class Comparator:
@@ -70,6 +70,60 @@ class Comparator:
                         id_list,
                         xmlfile)
 
+# SQLite changes
+    def compare_reply_sqlite(self, op, tests, teston, check, snapdata1, snapdata2=None):
+        tests = [i for i in tests if i.has_key('iterate')]
+        for test in tests:
+            x_path = test['iterate']['xpath']
+            if 'id' in test['iterate']:
+                id = test['iterate']['id']
+                id_list= [val.strip() for val in id.split(',')]
+            else:
+                id_list = []
+            for path in test['iterate']['tests']:
+                values = ['err', 'info']
+                testvalues = path.keys()
+                testop = [
+                    tvalue for tvalue in testvalues if tvalue not in values][0]
+                ele = path[testop]
+                if ele is not None:
+                    ele_list = [elements.strip() for elements in ele.split(',')]
+                err_mssg = path['err']
+                info_mssg = path['info']
+                xml1 = etree.fromstring(snapdata1)
+                if testop in [
+                        'no-diff', 'list-not-less', 'list-not-more', 'delta']:
+                    if check is True:
+                        xml2 = etree.fromstring(snapdata2)
+                        op.define_operator(
+                            testop,
+                            x_path,
+                            ele_list,
+                            err_mssg,
+                            info_mssg,
+                            teston,
+                            id_list,
+                            xml1,
+                            xml2)
+                    else:
+                        print "Test Operator %s is allowed only with --check" % testop
+
+            # if test operators are other than above mentioned four operators
+                else:
+                    # if check is used with uni operand test operator then use
+                    # second snapshot file
+                    xmlfile = etree.fromstring(snapdata2) if check is True else etree.fromstring(snapdata1)
+                    op.define_operator(
+                        testop,
+                        x_path,
+                        ele_list,
+                        err_mssg,
+                        info_mssg,
+                        teston,
+                        id_list,
+                        xmlfile)
+###
+
 
     def compare_diff(self, pre_snap_file, post_snap_file):
         #p= subprocess.Popen(["which", "icdiff"],stdout=subprocess.PIPE)
@@ -88,7 +142,7 @@ class Comparator:
 # to be performed
 
     def generate_test_files(
-            self, main_file, device, check, diff, pre=None, post=None):
+            self, main_file, device, check, diff, use_sqlite, db_name, pre=None, post=None):
         op = testop.Operator()
         # print "pre, post are:", pre, post
         tests_files = []
@@ -122,27 +176,56 @@ class Comparator:
                         teston= rpc
                     file1 = str(device) + '_' + pre + '_' + name + '.xml'
                     snapfile1 = os.path.join(path, 'snapshots', file1)
+
+                    ### SQLite Changes
+                    if use_sqlite is True:
+                        a = SqliteExtractXml(db_name)
+                        pre_snap_data = a.get_xml_using_snapname(str(device), name, pre)
+
                     if check is True:
-                        file2 = str(device) + '_' + post + '_' + name + '.xml'
-                        snapfile2 = os.path.join(path, 'snapshots', file2)
-                        self.compare_reply(
-                            op,
-                            t[val],
-                            teston,
-                            check,
-                            snapfile1,
-                            snapfile2)
+                        if use_sqlite is True:
+                            post_snap_data = a.get_xml_using_snapname(str(device), name, post)
+                            self.compare_reply_sqlite(
+                                op,
+                                t[val],
+                                teston,
+                                check,
+                                pre_snap_data,
+                                post_snap_data)
+
+                        else:
+                            file2 = str(device) + '_' + post + '_' + name + '.xml'
+                            snapfile2 = os.path.join(path, 'snapshots', file2)
+                            self.compare_reply(
+                                op,
+                                t[val],
+                                teston,
+                                check,
+                                snapfile1,
+                                snapfile2)
                     elif(diff is True):
                         file2 = str(device) + '_' + post + '_' + name + '.xml'
                         snapfile2 = os.path.join(path, 'snapshots', file2)
                         self.compare_diff(snapfile1, snapfile2)
                     else:
-                        self.compare_reply(
-                            op,
-                            t[val],
-                            teston,
-                            check,
-                            snapfile1)
+
+                        if use_sqlite is True:
+                            self.compare_reply_sqlite(
+                                op,
+                                t[val],
+                                teston,
+                                check,
+                                pre_snap_data)
+                        else:
+                            self.compare_reply(
+                                op,
+                                t[val],
+                                teston,
+                                check,
+                                snapfile1)
+                    ###
+
             if (diff is not True):
                 op.final_result()
                 return op
+
