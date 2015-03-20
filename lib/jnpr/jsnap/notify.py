@@ -4,7 +4,7 @@ from email.mime.multipart import MIMEMultipart
 import yaml
 import jinja2
 import os
-from distutils.sysconfig import get_python_lib
+#from distutils.sysconfig import get_python_lib
 
 
 class Notification:
@@ -20,11 +20,7 @@ class Notification:
         templateLoader = jinja2.FileSystemLoader(searchpath="/")
         templateEnv = jinja2.Environment(loader=templateLoader)
 
-        TEMPLATE_FILE = os.path.join(
-            get_python_lib(),
-            'jnpr',
-            'jsnap',
-            'content.html')
+        TEMPLATE_FILE = os.path.join(os.path.dirname(__file__),'content.html')
         template = templateEnv.get_template(TEMPLATE_FILE)
 
         outputText = template.render(device=hostname, name=mail_file['recipient_name'], tests=testdetails, date=mail_file['date'],

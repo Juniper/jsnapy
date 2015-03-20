@@ -14,6 +14,7 @@ from threading import Thread
 from jnpr.junos import Device
 import distutils.dir_util
 import colorama
+import jnpr
 from jnpr.junos import exception
 
 
@@ -239,10 +240,9 @@ class Jsnap:
             dev = Device(host=hostname, user=username, passwd=password)
             try:
                 dev.open()
-                # print "\n going for snapshots"
-            except:
-                print "error occurred", exception
-                sys.exit(1)
+            except Exception as ex:
+                print "error occurred", ex
+                return
             else:
                 self.generate_rpc_reply(dev, snap_files, username)
                 dev.close()
@@ -260,7 +260,7 @@ class Jsnap:
         dst_config_path = os.path.join(os.getcwd(), 'configs')
         # overwrite files if given option -o or --overwrite
         if not os.path.isdir(dst_config_path) or self.args.overwrite is True:
-            distutils.dir_util.copy_tree(os.path.join(get_python_lib(), 'jnpr', 'jsnap', 'configs'),
+            distutils.dir_util.copy_tree(os.path.join(os.path.dirname(__file__),'configs'),
                                          dst_config_path)
         dst_main_yml = os.path.join(dst_config_path, 'main.yml')
         if not os.path.isfile(
