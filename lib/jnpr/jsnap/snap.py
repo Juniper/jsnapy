@@ -43,9 +43,27 @@ class Parse:
                 elif 'rpc' in test_file[t][0]:
                     rpc = test_file[t][0]['rpc']
                     self.rpc_list.append(rpc)
-                    if test_file[t][1].has_key('args'):
-                        kwargs = {k.replace('-', '_'):v for k,v in test_file[t][1]['args'].items()}
-                        rpc_reply = getattr(dev.rpc, rpc.replace('-', '_'))(**kwargs)
+                    if 'args' in test_file[t][1]:
+                        kwargs = {
+                            k.replace(
+                                '-',
+                                '_'): v for k,
+                            v in test_file[t][1]['args'].items()}
+                        if 'filter_xml' in kwargs:
+                            from lxml.builder import E
+                            filter_data = None
+                            for tag in kwargs['filter_xml'].split('/')[::-1]:
+                                filter_data = E(tag) if filter_data is None else E(
+                                    tag,
+                                    filter_data)
+                                kwargs['filter_xml'] = filter_data
+                        rpc_reply = getattr(
+                            dev.rpc,
+                            rpc.replace(
+                                '-',
+                                '_'))(
+                            **kwargs)
+
                     else:
                         rpc_reply = getattr(dev.rpc, rpc.replace('-', '_'))()
                     filename = snap_files + '_' + rpc + '.' + 'xml'

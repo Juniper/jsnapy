@@ -13,7 +13,8 @@ class SqliteExtractXml:
         table_name = 'table_' + hostname.replace('.', '_')
         with sqlite3.connect(self.db_filename) as con:
             cursor = con.cursor()
-            cursor.execute("SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
+            cursor.execute(
+                "SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
             if not cursor.fetchall():
                 print"No previous snapshots exists for host %s" % hostname
                 sys.exit(1)
@@ -31,7 +32,8 @@ class SqliteExtractXml:
         table_name = 'table_' + hostname.replace('.', '_')
         with sqlite3.connect(self.db_filename) as con:
             cursor = con.cursor()
-            cursor.execute("SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
+            cursor.execute(
+                "SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
             if not cursor.fetchall():
                 print"No previous snapshots exists for host %s" % hostname
                 sys.exit(1)
@@ -44,4 +46,3 @@ class SqliteExtractXml:
             else:
                 idd, xml_string = row
                 return str(xml_string)
-

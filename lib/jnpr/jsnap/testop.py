@@ -18,24 +18,25 @@ class Operator:
     # call methods based on test operation specified, eg if testop is
     # is-equal, then it will call is_equal function
     def define_operator(
-            self, testop, x_path, ele_list, err_mssg, info_mssg, teston, id=0, *args):
-        try:
-            getattr(
-                self,
-                testop.replace(
-                    '-',
-                    '_'))(
-                x_path,
-                ele_list,
-                err_mssg,
-                info_mssg,
-                teston,
-                id,
-                *args)
-        except AttributeError as e:
-            print "\nTest case not defined !!!!! \n error message :", e.message
+            self, testop, x_path, ele_list, err_mssg, info_mssg, teston, iter, id=0, *args):
+        # try:
+        getattr(
+            self,
+            testop.replace(
+                '-',
+                '_'))(
+            x_path,
+            ele_list,
+            err_mssg,
+            info_mssg,
+            teston,
+            iter,
+            id,
+            *args)
+        # except AttributeError as e:
+        #    print "\nTest case not defined !!!!! \n error message :", e.message
         # except:
-         #   print "\nUndefined error occurred, please check test cases !!!"
+        #    print "\nUndefined error occurred, please check test cases !!!"
 
     def print_result(self, testname, result, err_mssg, info_mssg):
         if result is False:
@@ -60,7 +61,7 @@ class Operator:
 # given for comparision, then it will take first value
 
     def all_same(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, id, *args):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id, *args):
         msg = "Performing all-same Test Operation"
         self.print_testmssg(msg)
         xml1 = args[0]
@@ -74,28 +75,28 @@ class Operator:
         except IndexError as e:
             print "\nError occurred while accessing test element", e.message
         else:
-            if len(ele_list) >= 2:
-                vpath = '//' + x_path + ele_list[1] + '/' + ele_list[0]
-                value = xml1.xpath(vpath)[0].text
-            else:
-                value = xml1.xpath('//' + x_path + '/' + ele_list[0])[0].text
-            nodes = xml1.xpath('//' + x_path)
+            nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
             if not nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
             else:
+                if len(ele_list) >= 2:
+                    vpath = x_path + ele_list[1] + '/' + ele_list[0]
+                    value = xml1.xpath(vpath)[0].text
+                else:
+                    value = xml1.xpath(x_path + '/' + ele_list[0])[0].text
                 for node_path in nodes:
                     node = node_path.xpath(element)
                     if node:
                         for n in node:
-                            if n.text != value:
+                            if n.text.strip() != value.strip():
                                 res = False
         self.print_result('all-same', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
     def is_equal(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, id, *args):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id, *args):
         msg = "Performing is-equal Test Operation"
         xml1 = args[0]
         self.print_testmssg(msg)
@@ -112,7 +113,8 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n is-equal test operator require two parameters"
         else:
-            nodes = xml1.xpath('//' + x_path)
+            #nodes = xml1.xpath('//' + x_path)
+            nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
             if not nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
@@ -121,14 +123,15 @@ class Operator:
                     node = node_path.xpath(element)
                     if node:
                         for n in node:
-                            if n.text != value:
+                            if n.text.strip() != value.strip():
                                 res = False
+                            print res
         self.print_result('is-equal', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
     def not_equal(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, id, *args):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id, *args):
         msg = "Performing not-equal Test Operation"
         self.print_testmssg(msg)
         res = True
@@ -144,7 +147,8 @@ class Operator:
             print "\nError occurred while accessing test element", e.message
             print "\n not-equal test operator requires two parameter"
         else:
-            nodes = xml1.xpath('//' + x_path)
+            #nodes = xml1.xpath('//' + x_path)
+            nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
             if not nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
@@ -153,14 +157,14 @@ class Operator:
                     node = node_path.xpath(element)
                     if node:
                         for n in node:
-                            if n.text == value:
+                            if n.text.strip() == value.strip():
                                 res = False
         self.print_result('not-equal', res, err_mssg, info_mssg)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
     def in_range(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, id, *args):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id, *args):
         msg = "Performing in-range Test Operation"
         self.print_testmssg(msg)
         xml1 = args[0]
@@ -177,7 +181,8 @@ class Operator:
             print "\nError occurred while accessing test element\n", e.message
             print "\n in-range test operator requires two parameter"
         else:
-            nodes = xml1.xpath('//' + x_path)
+            #nodes = xml1.xpath('//' + x_path)
+            nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
             if not nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
@@ -196,7 +201,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_gt(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, id, *args):
+              info_mssg, teston, iter, id, *args):
         msg = "Performing is-gt Test Operation"
         self.print_testmssg(msg)
         res = True
@@ -212,7 +217,8 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n is-gt test operator require two parameter"
         else:
-            nodes = xml1.xpath('//' + x_path)
+            #nodes = xml1.xpath('//' + x_path)
+            nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
             if not nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
@@ -229,7 +235,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_lt(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, id, *args):
+              info_mssg, teston, iter, id, *args):
         msg = "Performing is-lt Test Operation"
         self.print_testmssg(msg)
         xml1 = args[0]
@@ -245,7 +251,8 @@ class Operator:
             print "\n Error occurred while accessing test element ", e.message
             print "\n is-lt test operator require two parameter"
         else:
-            nodes = xml1.xpath('//' + x_path)
+            #nodes = xml1.xpath('//' + x_path)
+            nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
             if not nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
@@ -262,7 +269,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def not_range(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, id, *args):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id, *args):
         msg = "Performing not-range Test Operation"
         self.print_testmssg(msg)
         res = True
@@ -279,7 +286,8 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n not-range test operator require two parameters"
         else:
-            nodes = xml1.xpath('//' + x_path)
+            #nodes = xml1.xpath('//' + x_path)
+            nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
             if not nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
@@ -296,7 +304,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def contains(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, id, *args):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id, *args):
         msg = "Performing contains Test Operation"
         self.print_testmssg(msg)
         res = True
@@ -312,7 +320,8 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n Contains require two parameters"
         else:
-            nodes = xml1.xpath('//' + x_path)
+            #nodes = xml1.xpath('//' + x_path)
+            nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
             if not nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
@@ -328,7 +337,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_in(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, id, *args):
+              info_mssg, teston, iter, id, *args):
         msg = "Performing is-in Test Operation"
         self.print_testmssg(msg)
         res = True
@@ -344,7 +353,8 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n is-in test operator require two parameters"
         else:
-            nodes = xml1.xpath('//' + x_path)
+            #nodes = xml1.xpath('//' + x_path)
+            nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
             if not nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
@@ -360,7 +370,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def not_in(self, x_path, ele_list, err_mssg,
-               info_mssg, teston, id, *args):
+               info_mssg, teston, iter, id, *args):
         msg = "Performing all-same Test Operation"
         self.print_testmssg(msg)
         res = True
@@ -376,7 +386,8 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n not-in test operator require two parameters"
         else:
-            nodes = xml1.xpath('//' + x_path)
+            #nodes = xml1.xpath('//' + x_path)
+            nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
             if not nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
@@ -394,7 +405,7 @@ class Operator:
     # operator requiring two operands
 
     def no_diff(self, x_path, ele_list, err_mssg,
-                info_mssg, teston, id_list, *args):
+                info_mssg, teston, iter, id_list, *args):
         msg = "Performing no-diff Test Operation"
         self.print_testmssg(msg)
         res = True
@@ -406,8 +417,10 @@ class Operator:
         tresult['xpath'] = x_path
         tresult['element_list'] = ele_list
         tresult['testoperation'] = "no-diff"
-        node1 = xml1.xpath(x_path)
-        node2 = xml2.xpath(x_path)
+        node1 = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
+        node2 = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
+        #node1 = xml1.xpath(x_path)
+        #node2 = xml2.xpath(x_path)
 
         if (not node1) or (not node2):
             print "Nodes are not present in given Xpath!!"
@@ -452,7 +465,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def list_not_less(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, id_list, *args):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, *args):
         msg = "Performing list-not-less Test Operation"
         self.print_testmssg(msg)
         res = True
@@ -464,8 +477,10 @@ class Operator:
         tresult['testoperation'] = "list-not-less"
         data1 = {}
         data2 = {}
-        node1 = xml1.xpath(x_path)
-        node2 = xml2.xpath(x_path)
+        node1 = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
+        node2 = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
+        #node1 = xml1.xpath(x_path)
+        #node2 = xml2.xpath(x_path)
 
         if not node1 or not node2:
             print "Nodes are not present in given Xpath!!"
@@ -514,7 +529,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def list_not_more(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, id_list, *args):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, *args):
         msg = "Performing list-not-more Test Operation"
         self.print_testmssg(msg)
         res = True
@@ -526,8 +541,10 @@ class Operator:
         tresult['testoperation'] = "list-not-more"
         data1 = {}
         data2 = {}
-        node1 = xml1.xpath(x_path)
-        node2 = xml2.xpath(x_path)
+        node1 = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
+        node2 = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
+        #node1 = xml1.xpath(x_path)
+        #node2 = xml2.xpath(x_path)
 
         if not node1 or not node2:
             print "Nodes are not present in given Xpath!!"
@@ -575,7 +592,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def delta(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, id_list, *args):
+              info_mssg, teston, iter, id_list, *args):
         msg = "Performing delta Test Operation"
         self.print_testmssg(msg)
         res = True
@@ -587,8 +604,10 @@ class Operator:
         tresult['testoperation'] = "delta"
         data1 = {}
         data2 = {}
-        node1 = xml1.xpath(x_path)
-        node2 = xml2.xpath(x_path)
+        node1 = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
+        node2 = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
+        #node1 = xml1.xpath(x_path)
+        #node2 = xml2.xpath(x_path)
 
         if not node1 or not node2:
             print "Nodes are not present in given Xpath!!"
@@ -622,7 +641,7 @@ class Operator:
                         # print "data values are", data1.get(k), data2.get(k)
                         ele_xpath1 = data1.get(k).xpath(ele_list[0])
                         ele_xpath2 = data2.get(k).xpath(ele_list[0])
-                        if len(ele_xpath1) and len(ele_xpath2) :
+                        if len(ele_xpath1) and len(ele_xpath2):
                             val1 = float(
                                 ele_xpath1[0].text)  # value of desired node for pre snapshot
                             val2 = float(
@@ -651,7 +670,6 @@ class Operator:
                                 dvalue = float(ele_list[1].strip('%'))
                                 mvalue1 = val1 - (val1 * dvalue) / 100
                                 mvalue2 = val1 + (val1 * dvalue) / 100
-                                print "mvalue1, mvalue2, dvalue, val2, val1", mvalue1, mvalue2, dvalue, val2, val1
                                 if (val2 < mvalue1 or val2 > mvalue2):
                                     res = False
                                     print "Node value in percent changed by, that is by: %d", dvalue

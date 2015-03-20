@@ -14,6 +14,7 @@ from threading import Thread
 from jnpr.junos import Device
 import distutils.dir_util
 import colorama
+from jnpr.junos import exception
 
 
 class Jsnap:
@@ -124,20 +125,22 @@ class Jsnap:
         self.main_file = yaml.load(config_file)
 
         # Sqlite changes
-        if self.main_file.__contains__('sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
-                d = self.main_file['sqlite'][0]
-                if d.__contains__('store_in_sqlite'):
-                    self.db['store_in_sqlite'] = d['store_in_sqlite']
-                if d.__contains__('check_from_sqlite'):
-                    self.db['check_from_sqlite'] = d['check_from_sqlite']
-                check = self.args.check or self.args.snapcheck
-                snap = self.args.snap or self.args.snapcheck
-                if (self.db['store_in_sqlite'] and snap) or (self.db['check_from_sqlite'] and check):
-                    if d.__contains__('database_name'):
-                        self.db['db_name'] = d['database_name']
-                    else:
-                        print "Specify name of the database."
-                        exit(1)
+        if self.main_file.__contains__(
+                'sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
+            d = self.main_file['sqlite'][0]
+            if d.__contains__('store_in_sqlite'):
+                self.db['store_in_sqlite'] = d['store_in_sqlite']
+            if d.__contains__('check_from_sqlite'):
+                self.db['check_from_sqlite'] = d['check_from_sqlite']
+            check = self.args.check or self.args.snapcheck
+            snap = self.args.snap or self.args.snapcheck
+            if (self.db['store_in_sqlite'] and snap) or (
+                    self.db['check_from_sqlite'] and check):
+                if d.__contains__('database_name'):
+                    self.db['db_name'] = d['database_name']
+                else:
+                    print "Specify name of the database."
+                    exit(1)
         ###
         self.login(output_file)
 
@@ -178,7 +181,6 @@ class Jsnap:
         return test_obj
 
     def login(self, output_file):
-
         self.host_list = []
         if self.args.hostname is None:
             k = self.main_file['hosts'][0]
@@ -235,9 +237,15 @@ class Jsnap:
         if self.args.snap is True or self.args.snapcheck is True:
             print "connecting to device %s ................" % hostname
             dev = Device(host=hostname, user=username, passwd=password)
-            dev.open()
-            # print "\n going for snapshots"
-            self.generate_rpc_reply(dev, snap_files, username)
+            try:
+                dev.open()
+                # print "\n going for snapshots"
+            except:
+                print "error occurred", exception
+                sys.exit(1)
+            else:
+                self.generate_rpc_reply(dev, snap_files, username)
+                dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             # print "\n &&&&& going for comparision"
             testobj = self.compare_tests(hostname)
@@ -255,7 +263,8 @@ class Jsnap:
             distutils.dir_util.copy_tree(os.path.join(get_python_lib(), 'jnpr', 'jsnap', 'configs'),
                                          dst_config_path)
         dst_main_yml = os.path.join(dst_config_path, 'main.yml')
-        if not os.path.isfile(os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
+        if not os.path.isfile(
+                os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
             shutil.copy(dst_main_yml, os.getcwd())
 
     def check_arguments(self):

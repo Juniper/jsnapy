@@ -24,7 +24,7 @@ class JsnapSqlite:
             conn.execute(sqlstr)
 
     # Inserting Data
-    def insert_data(self,db):
+    def insert_data(self, db):
         with sqlite3.connect(self.db_filename) as con:
             # print 'Inserting data'
             con.execute("""update %s set id = id + 1 where cli_command = :cli""" % self.table_name,
@@ -33,7 +33,7 @@ class JsnapSqlite:
                         {'cli': db['cli_command']})
             con.execute("""insert into %s (id, filename, username, cli_command, snap_name, xml_data) values (0, :file,
                         :user, :cli, :snap, :xml)""" % self.table_name, {'file': db['filename'], 'user': db['username'],
-                        'cli': db['cli_command'], 'snap': db['snap_name'], 'xml': db['xml']})
+                                                                         'cli': db['cli_command'], 'snap': db['snap_name'], 'xml': db['xml']})
             con.commit()
 
     # Verify database content

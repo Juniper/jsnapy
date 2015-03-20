@@ -1,7 +1,8 @@
 import yaml
 from lxml import etree
 import testop
-import os,sys
+import os
+import sys
 import subprocess
 from jnpr.jsnap.sqlite_get import SqliteExtractXml
 
@@ -10,38 +11,60 @@ class Comparator:
 
     # Extract xpath and other values for comparing two snapshots and
     # testop.Operator methods to perform tests
-    def compare_reply(self, op, tests, teston, check, snap1, snap2=None):
-        tests = [i for i in tests if i.has_key('iterate')]
+    def compare_reply(self, op, tests, teston, check, db, snap1, snap2=None):
+        tests = [t for t in tests if ('iterate' in t or 'item' in t)]
         for test in tests:
-            x_path = test['iterate']['xpath']
-            if 'id' in test['iterate']:
-                id = test['iterate']['id']
-                id_list= [val.strip() for val in id.split(',')]
-            else:
-                id_list = []
-            for path in test['iterate']['tests']:
+            if 'iterate' in test:
+                x_path = test['iterate'].get('xpath', "no_xpath")
+                if 'id' in test['iterate']:
+                    id = test['iterate']['id']
+                    id_list = [val.strip() for val in id.split(',')]
+                else:
+                    id_list = []
+                testcases = test['iterate']['tests']
+                iter = True
+
+            elif 'item' in test:
+                x_path = test['item'].get('xpath', "no_xpath")
+                if 'id' in test['item']:
+                    id = test['item']['id']
+                    id_list = [val.strip() for val in id.split(',')]
+                else:
+                    id_list = []
+                testcases = test['item']['tests']
+                iter = False
+
+            for path in testcases:
                 values = ['err', 'info']
                 testvalues = path.keys()
                 testop = [
                     tvalue for tvalue in testvalues if tvalue not in values][0]
                 ele = path[testop]
                 if ele is not None:
-                    ele_list = [elements.strip() for elements in ele.split(',')]
+                    ele_list = [elements.strip()
+                                for elements in ele.split(',')]
                 err_mssg = path['err']
                 info_mssg = path['info']
-                if os.path.isfile(snap1):
-                    xml1 = etree.parse(snap1)
+
+                if db.get('check_from_sqlite') is True:
+                    xml1 = etree.fromstring(snap1)
                 else:
-                    print "ERROR, Pre snapshot file %s is not present in given path!!" %snap1
-                    sys.exit(1)
+                    if os.path.isfile(snap1):
+                        xml1 = etree.parse(snap1)
+                    else:
+                        print "ERROR, Pre snapshot file: %s is not present in given path !!" % snap1
+                        sys.exit(1)
                 if testop in [
                         'no-diff', 'list-not-less', 'list-not-more', 'delta']:
                     if check is True:
-                        if os.path.isfile(snap2):
-                            xml2 = etree.parse(snap1)
+                        if db.get('check_from_sqlite') is True:
+                            xml2 = etree.fromstring(snap2)
                         else:
-                            print "ERROR, Post snapshot File %s is not present in given path!!" %snap2
-                            sys.exit(1)
+                            if os.path.isfile(snap2):
+                                xml2 = etree.parse(snap2)
+                            else:
+                                print "ERROR, Post snapshot File %s is not present in given path!!" % snap2
+                                sys.exit(1)
                         op.define_operator(
                             testop,
                             x_path,
@@ -49,6 +72,7 @@ class Comparator:
                             err_mssg,
                             info_mssg,
                             teston,
+                            iter,
                             id_list,
                             xml1,
                             xml2)
@@ -59,60 +83,11 @@ class Comparator:
                 else:
                     # if check is used with uni operand test operator then use
                     # second snapshot file
-                    xmlfile = etree.parse(snap2) if check is True else etree.parse(snap1)
-                    op.define_operator(
-                        testop,
-                        x_path,
-                        ele_list,
-                        err_mssg,
-                        info_mssg,
-                        teston,
-                        id_list,
-                        xmlfile)
-
-# SQLite changes
-    def compare_reply_sqlite(self, op, tests, teston, check, snapdata1, snapdata2=None):
-        tests = [i for i in tests if i.has_key('iterate')]
-        for test in tests:
-            x_path = test['iterate']['xpath']
-            if 'id' in test['iterate']:
-                id = test['iterate']['id']
-                id_list= [val.strip() for val in id.split(',')]
-            else:
-                id_list = []
-            for path in test['iterate']['tests']:
-                values = ['err', 'info']
-                testvalues = path.keys()
-                testop = [
-                    tvalue for tvalue in testvalues if tvalue not in values][0]
-                ele = path[testop]
-                if ele is not None:
-                    ele_list = [elements.strip() for elements in ele.split(',')]
-                err_mssg = path['err']
-                info_mssg = path['info']
-                xml1 = etree.fromstring(snapdata1)
-                if testop in [
-                        'no-diff', 'list-not-less', 'list-not-more', 'delta']:
-                    if check is True:
-                        xml2 = etree.fromstring(snapdata2)
-                        op.define_operator(
-                            testop,
-                            x_path,
-                            ele_list,
-                            err_mssg,
-                            info_mssg,
-                            teston,
-                            id_list,
-                            xml1,
-                            xml2)
+                    if db.get('check_from_sqlite') is True and check is True:
+                        xmlfile = etree.fromstring(snap2)
                     else:
-                        print "Test Operator %s is allowed only with --check" % testop
-
-            # if test operators are other than above mentioned four operators
-                else:
-                    # if check is used with uni operand test operator then use
-                    # second snapshot file
-                    xmlfile = etree.fromstring(snapdata2) if check is True else etree.fromstring(snapdata1)
+                        xmlfile = etree.parse(
+                            snap2) if check is True else etree.parse(snap1)
                     op.define_operator(
                         testop,
                         x_path,
@@ -120,11 +95,11 @@ class Comparator:
                         err_mssg,
                         info_mssg,
                         teston,
+                        iter,
                         id_list,
                         xmlfile)
-###
 
-
+# not implemented for sqlite
     def compare_diff(self, pre_snap_file, post_snap_file):
         #p= subprocess.Popen(["which", "icdiff"],stdout=subprocess.PIPE)
         #out, err = p.communicate()
@@ -136,15 +111,13 @@ class Comparator:
         out, err = p.communicate()
         print "Difference in file is:", out
 
-
 # generate names of snap files from hostname and out files given by user,
 # tests are performed on values stored in these snap filesin which test is
 # to be performed
 
     def generate_test_files(
-            self, main_file, device, check, diff, use_sqlite, db_name, pre=None, post=None):
+            self, main_file, device, check, diff, db, pre=None, post=None):
         op = testop.Operator()
-        # print "pre, post are:", pre, post
         tests_files = []
         path = os.getcwd()
         # get the test files from config.yml
@@ -167,65 +140,58 @@ class Comparator:
                         print (40) * '*' + "\n Command is " + \
                             command + "\n" + (40) * '*'
                         name = '_'.join(command.split())
-                        teston= command
+                        teston = command
                     else:
                         rpc = t[val][0]['rpc']
                         print (40) * '*' + "\n RPC is " + \
                             rpc + "\n" + (40) * '*'
                         name = rpc
-                        teston= rpc
-                    file1 = str(device) + '_' + pre + '_' + name + '.xml'
-                    snapfile1 = os.path.join(path, 'snapshots', file1)
+                        teston = rpc
 
-                    ### SQLite Changes
-                    if use_sqlite is True:
-                        a = SqliteExtractXml(db_name)
-                        pre_snap_data = a.get_xml_using_snapname(str(device), name, pre)
+                    if db.get('check_from_sqlite') is True:
+                        a = SqliteExtractXml(db.get('db_name'))
+                        snapfile1 = a.get_xml_using_snapname(
+                            str(device),
+                            name,
+                            pre)
+                    else:
+                        file1 = str(device) + '_' + pre + '_' + name + '.xml'
+                        snapfile1 = os.path.join(path, 'snapshots', file1)
 
                     if check is True:
-                        if use_sqlite is True:
-                            post_snap_data = a.get_xml_using_snapname(str(device), name, post)
-                            self.compare_reply_sqlite(
-                                op,
-                                t[val],
-                                teston,
-                                check,
-                                pre_snap_data,
-                                post_snap_data)
-
+                        if db.get('check_from_sqlite') is True:
+                            snapfile2 = a.get_xml_using_snapname(
+                                str(device),
+                                name,
+                                post)
                         else:
-                            file2 = str(device) + '_' + post + '_' + name + '.xml'
+                            file2 = str(device) + '_' + post + \
+                                '_' + name + '.xml'
                             snapfile2 = os.path.join(path, 'snapshots', file2)
-                            self.compare_reply(
-                                op,
-                                t[val],
-                                teston,
-                                check,
-                                snapfile1,
-                                snapfile2)
+                        self.compare_reply(
+                            op,
+                            t[val],
+                            teston,
+                            check,
+                            db,
+                            snapfile1,
+                            snapfile2)
+
+                    # as of now diff is not implemented for diff
                     elif(diff is True):
                         file2 = str(device) + '_' + post + '_' + name + '.xml'
                         snapfile2 = os.path.join(path, 'snapshots', file2)
                         self.compare_diff(snapfile1, snapfile2)
-                    else:
 
-                        if use_sqlite is True:
-                            self.compare_reply_sqlite(
-                                op,
-                                t[val],
-                                teston,
-                                check,
-                                pre_snap_data)
-                        else:
-                            self.compare_reply(
-                                op,
-                                t[val],
-                                teston,
-                                check,
-                                snapfile1)
-                    ###
+                    else:
+                        self.compare_reply(
+                            op,
+                            t[val],
+                            teston,
+                            check,
+                            db,
+                            snapfile1)
 
             if (diff is not True):
                 op.final_result()
                 return op
-
