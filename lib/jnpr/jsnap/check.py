@@ -148,7 +148,7 @@ class Comparator:
                         name = rpc
                         teston = rpc
 
-                    if db.get('check_from_sqlite') is True:
+                    if db.get('check_from_sqlite') is True and check is True:
                         a = SqliteExtractXml(db.get('db_name'))
                         snapfile1 = a.get_xml_using_snapname(
                             str(device),
