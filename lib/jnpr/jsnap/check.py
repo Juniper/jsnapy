@@ -46,7 +46,7 @@ class Comparator:
                 err_mssg = path['err']
                 info_mssg = path['info']
 
-                if db.get('check_from_sqlite') is True:
+                if db.get('check_from_sqlite') is True and check is True:
                     xml1 = etree.fromstring(snap1)
                 else:
                     if os.path.isfile(snap1):
