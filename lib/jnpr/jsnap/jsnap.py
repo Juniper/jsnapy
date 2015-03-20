@@ -109,9 +109,10 @@ class Jsnap:
         if len(sys.argv) == 1:
             self.parser.print_help()
             sys.exit(1)
-        self.db_name = ""
-
-
+        self.db = dict()
+        self.db['store_in_sqlite'] = False
+        self.db['check_from_sqlite'] = False
+        self.db['db_name'] = ""
 
     # call hosts class, connect hosts and get host list
     # use pre_snapfile because always first file is pre_snapfile regardless of
@@ -123,11 +124,20 @@ class Jsnap:
         self.main_file = yaml.load(config_file)
 
         # Sqlite changes
-        db = self.main_file['sqlite'][0]
-        self.store_in_sqlite = db['store_in_sqlite']
-        self.check_from_sqlite = db['check_from_sqlite']
-        if self.store_in_sqlite or self.check_from_sqlite:
-            self.db_name = db['database_name']
+        if self.main_file.__contains__('sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
+                d = self.main_file['sqlite'][0]
+                if d.__contains__('store_in_sqlite'):
+                    self.db['store_in_sqlite'] = d['store_in_sqlite']
+                if d.__contains__('check_from_sqlite'):
+                    self.db['check_from_sqlite'] = d['check_from_sqlite']
+                check = self.args.check or self.args.snapcheck
+                snap = self.args.snap or self.args.snapcheck
+                if (self.db['store_in_sqlite'] and snap) or (self.db['check_from_sqlite'] and check):
+                    if d.__contains__('database_name'):
+                        self.db['db_name'] = d['database_name']
+                    else:
+                        print "Specify name of the database."
+                        exit(1)
         ###
         self.login(output_file)
 
@@ -141,7 +151,7 @@ class Jsnap:
             test_files.append(yaml.load(test_file))
         g = Parse()
         for tests in test_files:
-            g.generate_reply(tests, dev, snap_files, self.store_in_sqlite, username, self.db_name)
+            g.generate_reply(tests, dev, snap_files, self.db, username)
 
     # called by check and snapcheck argument, to compare snap files
     def compare_tests(self, hostname):
@@ -154,8 +164,7 @@ class Jsnap:
                 hostname,
                 chk,
                 diff,
-                self.check_from_sqlite,
-                self.db_name,
+                self.db,
                 self.args.pre_snapfile,
                 self.args.post_snapfile)
         else:
@@ -164,8 +173,7 @@ class Jsnap:
                 hostname,
                 chk,
                 diff,
-                self.check_from_sqlite,
-                self.db_name,
+                self.db,
                 self.args.pre_snapfile)
         return test_obj
 
