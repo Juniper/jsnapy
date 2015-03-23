@@ -22,11 +22,15 @@ class SqliteExtractXml:
                            {'snap': snap_name, 'cli': command_name})
             row = cursor.fetchone()
             if not row:
-                print"No previous snapshots exists with name = %s for command =  " % snap_name, command_name
+                print"No previous snapshots exists with name = %s for command =" % snap_name, command_name.replace('_', ' ')
                 sys.exit(1)
             else:
                 idd, xml_string = row
-                return str(xml_string)
+                if xml_string is None:
+                    print"No previous snapshots exists with name = %s for command =" % snap_name, command_name.replace('_', ' ')
+                    sys.exit(1)
+                else:
+                    return str(xml_string)
 
     def get_xml_using_snap_id(self, hostname, command_name, snap_id):
         table_name = 'table_' + hostname.replace('.', '_')
@@ -41,7 +45,7 @@ class SqliteExtractXml:
                            {'id': snap_id, 'cli': command_name})
             row = cursor.fetchone()
             if not row:
-                print"No previous snapshots exists with id = %s for command = %s " % snap_id, command_name
+                print"No previous snapshots exists with id = %s for command = %s " % snap_id, command_name.replace('_', ' ')
                 sys.exit(1)
             else:
                 idd, xml_string = row
