@@ -12,29 +12,29 @@ test_command_version:
       id: './name'
       tests:
         - no-diff: oper-status       # element in which test is performed
-          err: "Test Failed!! oper-status  got changed"
-          info: 'oper-status is same with value %s oper-status'
+          err: "Test Failed!! oper-status  got changed, before it was {{pre_oper-status}} now it is {{post_oper-status}}"
+          info: 'oper-status is same with value oper-status, before it was {{pre_oper-status}} now it is {{post_oper-status}}'
 
         - list-not-less: name
-          err: "name list changed"
-          info: "name list is same"
+          err: "name list changed, before it was {{pre_name}} now it is {{post_name}}"
+          info: "name list is same, before it was {{pre_name}}, now it is {{post_name}}"
 
         - list-not-more: name
-          err: "address-family-name changed"
-          info: " address-family-name is same"
+          err: "address-family-name changed, before it was {{pre_name}}, now it is {{post_name}}"
+          info: " address-family-name is same, before it was {{pre_name}}, now it is {{post_name}}"
 
   - iterate:
       xpath: //physical-interface/logical-interface
       id: ./name, ./address-family/address-family-name, ./address-family/interface-address/ifa-local
       tests:
         - no-diff: oper-status       # element in which test is performed
-          err: "Test Failed!! oper-status  got changed"
-          info: 'oper-status is same with value %s oper-status'
+          err: "Test Failed!! oper-status  got changed, before it was {{pre_oper-status}}, now it is {{post_oper-status}}"
+          info: 'oper-status is same with value %s oper-status, before it was {{pre_oper-status}}, now it is {{post_oper-status}}'
 
         - list-not-less: oper-status
-          err: "name list changed"
-          info: "name list is same"
+          err: "name list changed, before it was {{pre_oper-status}}, now it is {{post_oper-status}}"
+          info: "name list is same, before it was {{pre_oper-status}}, now it is {{post_oper-status}}"
 
         - list-not-more: name
-          err: "address-family-name changed"
-          info: " address-family-name is same"
+          err: "address-family-name changed, before it was {{pre_name}}, now it is {{post_name}}"
+          info: " address-family-name is same, before it was {{pre_name}}, now it is {{post_name}}"

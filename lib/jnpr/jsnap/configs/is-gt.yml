@@ -3,10 +3,11 @@ tests_include:
 
 check_chassis_fpc:
   - command: show chassis fpc
-  - iterate: 
+  - iterate:
+      id: ./memory-dram-size
       xpath: //fpc[normalize-space(slot) = "0"]
       tests:
-        - is-gt: cpu-total, 3
-          info: "Test Succeeded!!"
-          err: "Test Failed!!!"
+        - is-gt: cpu-total, 90
+          info: "Test Succeeded!!, cpu-total now it is {{post_cpu-total}}, before it was {{pre_cpu-total}} with id {{id_0}}"
+          err: "Test Failed!!!, cpu-total is {{post_cpu-total}}, before it was {{pre_cpu-total}} with id {{id_0}}"
 

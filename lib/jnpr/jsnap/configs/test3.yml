@@ -9,5 +9,5 @@ test_command_version:
       xpath: '/bgp-information/bgp-peer'
       tests:
         - all-same: flap-count
-          err: "Test Failed!!! flap count are all same!! "
-          info: "Test Succeeded!! flap count are all different !!!"
+          err: "Test Failed!!! flap count are all same!!, now it is {{post_flap-count}}"
+          info: "Test Succeeded!! flap count are all different, now it is {{post_flap-count}} !!!"

@@ -120,6 +120,12 @@ class Jsnap:
     # use pre_snapfile because always first file is pre_snapfile regardless of
     # its name
     def get_hosts(self):
+        """
+        Reads the yaml config file given by user and pass the extracted data to login function to
+        read device details and connect them. Also checks sqlite key to check if user wants to
+        create database for snapshots
+        :return:
+        """
         output_file = self.args.pre_snapfile
         conf_file = self.args.file
         config_file = open(conf_file, 'r')
@@ -147,18 +153,35 @@ class Jsnap:
 
     # call to generate snap files
     def generate_rpc_reply(self, dev, snap_files, username):
+        """
+        Generates rpc-reply based on command/rpc given and stores them in snap_files
+
+        :param dev: device handler
+        :param snap_files: filename to store snapshots
+        :param username: username to connect to device
+        :return:
+        """
         test_files = []
         for tfile in self.main_file['tests']:
             if not os.path.isfile(tfile):
                 tfile = os.path.join(os.getcwd(), 'configs', tfile)
-            test_file = open(tfile, 'r')
-            test_files.append(yaml.load(test_file))
+            if os.path.isfile(tfile):
+                test_file = open(tfile, 'r')
+                test_files.append(yaml.load(test_file))
+            else:
+                print "file %s is not found" % tfile
         g = Parse()
         for tests in test_files:
             g.generate_reply(tests, dev, snap_files, self.db, username)
 
     # called by check and snapcheck argument, to compare snap files
     def compare_tests(self, hostname):
+        """
+        calls the function to compare snapshots based on arguments given
+        (--check, --snapcheck, --diff)
+        :param hostname: device name
+        :return:
+        """
         comp = Comparator()
         chk = self.args.check
         diff = self.args.diff
@@ -182,14 +205,20 @@ class Jsnap:
         return test_obj
 
     def login(self, output_file):
+        """
+        Extract device information from main config file. Stores device information and call connect function,
+        device can be single or multiple. Instead of connecting to all devices mentioned in yaml file, user can
+        connect to some particular group of devices also.
+
+        :param output_file: name of snapshot file
+        :return:
+        """
         self.host_list = []
         if self.args.hostname is None:
             k = self.main_file['hosts'][0]
             # when group of devices are given, searching for include keyword in
             # hosts in main.yaml file
             if k.__contains__('include'):
-                #lfile = k['include']
-                # print " lfile is: ", lfile
                 lfile = os.path.join(os.getcwd(), 'configs', k['include'])
                 login_file = open(lfile, 'r')
                 dev_file = yaml.load(login_file)
@@ -215,7 +244,8 @@ class Jsnap:
                             t.start()
                             t.join()
 
-        # login credentials are given in main config file
+        # login credentials are given in main config file, can connect to only
+        # one device
             else:
                 hostname = k['devices']
                 username = k['username']
@@ -224,7 +254,7 @@ class Jsnap:
                 snap_files = hostname + '_' + output_file
                 self.connect(hostname, username, password, snap_files)
 
-        # if login credentials are given from command line
+        # login credentials are given from command line
         else:
             hostname = self.args.hostname
             password = self.args.passwd
@@ -235,6 +265,15 @@ class Jsnap:
 
     # function to connect to device
     def connect(self, hostname, username, password, snap_files):
+        """
+        connect to device and calls the function either to generate snapshots
+        or compare them based on option given (--snap, --check, --snapcheck, --diff)
+        :param hostname: ip/ hostname of device
+        :param username: username of device
+        :param password: password to connect to device
+        :param snap_files: file name to store snapshot
+        :return:
+        """
         if self.args.snap is True or self.args.snapcheck is True:
             print "connecting to device %s ................" % hostname
             dev = Device(host=hostname, user=username, passwd=password)
@@ -255,12 +294,18 @@ class Jsnap:
 
     # generate init folder
     def generate_init(self):
+        """
+        create snapshots and configs folder along with sample main config file.
+        All snapshots generated will go in snapshots folder. configs folder will contain
+        all the yaml file apart from main, like device.yml, tests.yml
+        :return:
+        """
         if not os.path.isdir("snapshots"):
             os.mkdir("snapshots")
         dst_config_path = os.path.join(os.getcwd(), 'configs')
         # overwrite files if given option -o or --overwrite
         if not os.path.isdir(dst_config_path) or self.args.overwrite is True:
-            distutils.dir_util.copy_tree(os.path.join(os.path.dirname(__file__),'configs'),
+            distutils.dir_util.copy_tree(os.path.join(os.path.dirname(__file__), 'configs'),
                                          dst_config_path)
         dst_main_yml = os.path.join(dst_config_path, 'main.yml')
         if not os.path.isfile(
@@ -268,6 +313,11 @@ class Jsnap:
             shutil.copy(dst_main_yml, os.getcwd())
 
     def check_arguments(self):
+        """
+        checks combination of arguments given from command line and display help if correct
+        set of combination is not given.
+        :return:
+        """
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.check is True and (self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None)) or
             (self.args.snapcheck is True and (self.args.pre_snapfile is None or self.args.file is None or self.args.post_snapfile is not None)) or

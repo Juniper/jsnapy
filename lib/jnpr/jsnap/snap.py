@@ -7,6 +7,16 @@ class Parse:
 
     # generate snap files for devices based on given commands and rpc
     def generate_reply(self, test_file, dev, snap_files, db, username):
+        """
+        generate rpc reply based on given commands/ rpc
+
+        :param test_file: test file containing test cases
+        :param dev: device handler
+        :param snap_files: files to store snapshots
+        :param db: name of database
+        :param username: device's username
+        :return:
+        """
         self.command_list = []
         self.rpc_list = []
         self.test_included = []

@@ -9,8 +9,15 @@ import os
 
 class Notification:
 
-    # function to generate email, using jinja template in content.html
     def notify(self, m_file, hostname, test_obj):
+        """
+        function to generate email, using jinja template in content.html
+
+        :param m_file: main config file
+        :param hostname: device name
+        :param test_obj:
+        :return:
+        """
         mfile = os.path.join(os.getcwd(), 'configs', m_file)
         mail_file = open(mfile, 'r')
         mail_file = yaml.load(mail_file)
@@ -20,7 +27,7 @@ class Notification:
         templateLoader = jinja2.FileSystemLoader(searchpath="/")
         templateEnv = jinja2.Environment(loader=templateLoader)
 
-        TEMPLATE_FILE = os.path.join(os.path.dirname(__file__),'content.html')
+        TEMPLATE_FILE = os.path.join(os.path.dirname(__file__), 'content.html')
         template = templateEnv.get_template(TEMPLATE_FILE)
 
         outputText = template.render(device=hostname, name=mail_file['recipient_name'], tests=testdetails, date=mail_file['date'],

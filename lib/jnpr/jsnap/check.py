@@ -12,6 +12,18 @@ class Comparator:
     # Extract xpath and other values for comparing two snapshots and
     # testop.Operator methods to perform tests
     def compare_reply(self, op, tests, teston, check, db, snap1, snap2=None):
+        """
+        call testop.Operator methods to compare snapshots based on given test cases
+
+        :param op: testop.Operator object
+        :param tests: test cases
+        :param teston: command/rpc to perform test
+        :param check: variable to check if --check is given
+        :param db: database handler
+        :param snap1: pre snapshot file name
+        :param snap2: post snapshot file name
+        :return:
+        """
         tests = [t for t in tests if ('iterate' in t or 'item' in t)]
         for test in tests:
             if 'iterate' in test:
@@ -84,10 +96,22 @@ class Comparator:
                     # if check is used with uni operand test operator then use
                     # second snapshot file
                     if db.get('check_from_sqlite') is True and check is True:
-                        xmlfile = etree.fromstring(snap2)
+                        xmlfile1 = etree.fromstring(snap1)
+                        xmlfile2 = etree.fromstring(snap2)
+
+                    elif check is True:
+                        xmlfile1 = etree.parse(snap1)
+                        if os.path.isfile(snap2):
+                            xmlfile2 = etree.parse(snap2)
+                        else:
+                            print "ERROR, --check require two snapfiles, file is not present in given path "
+                            return
+
                     else:
-                        xmlfile = etree.parse(
-                            snap2) if check is True else etree.parse(snap1)
+                        xmlfile1 = None
+                        # contains only one snapshot
+                        xmlfile2 = etree.parse(snap1)
+
                     op.define_operator(
                         testop,
                         x_path,
@@ -97,7 +121,8 @@ class Comparator:
                         teston,
                         iter,
                         id_list,
-                        xmlfile)
+                        xmlfile1,
+                        xmlfile2)
 
 # not implemented for sqlite
     def compare_diff(self, pre_snap_file, post_snap_file):
@@ -117,6 +142,18 @@ class Comparator:
 
     def generate_test_files(
             self, main_file, device, check, diff, db, pre=None, post=None):
+        """
+        generate pre and post snapshot file name to store snapshots and call compare_reply function
+
+        :param main_file: main config file, to extract test files user wants to run
+        :param device: device name
+        :param check: variable to check if --check option is given or not
+        :param diff: variable to check if --diff option is given or not
+        :param db: database object
+        :param pre: file name of pre snapshot
+        :param post: file name of post snapshot
+        :return:
+        """
         op = testop.Operator()
         tests_files = []
         path = os.getcwd()
@@ -126,9 +163,12 @@ class Comparator:
         else:
             for tfiles in main_file.get('tests'):
                 filename = os.path.join(os.getcwd(), 'configs', tfiles)
-                testfile = open(filename, 'r')
-                tfiles = yaml.load(testfile)
-                tests_files.append(tfiles)
+                if os.path.isfile(filename):
+                    testfile = open(filename, 'r')
+                    tfiles = yaml.load(testfile)
+                    tests_files.append(tfiles)
+                else:
+                    print "file %s not found" % filename
             for t in tests_files:
                 tests_included = t['tests_include']
                 print (40) * '*' + "\nPerforming test on Device: " + \
