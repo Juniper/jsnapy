@@ -775,12 +775,11 @@ class Operator:
 
             # what if there are extra data added in one list
             for k in data1:
+                for length in range(len(k)):
+                    resdict['id_' + str(length)] = k[length].strip()
+
                 if k in data2:
-
                     # store ids in resdict
-                    for length in range(len(k)):
-                        resdict['id_' + str(length)] = k[length].strip()
-
                     ele_xpath1 = data1.get(k).xpath(ele_list[0])
                     ele_xpath2 = data2.get(k).xpath(ele_list[0])
                     # assuming only one node
@@ -799,6 +798,7 @@ class Operator:
                         print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
                 else:
                     print "\n Error, id miss match ocuurred!!"
+                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
                     res = False
         self.print_result('no-diff', res)
         tresult['result'] = res
@@ -847,11 +847,10 @@ class Operator:
             # print data2
 
             for k in data1:
+                for length in range(len(k)):
+                    resdict['id_' + str(length)] = k[length].strip()
+
                 if k in data2:
-
-                    for length in range(len(k)):
-                        resdict['id_' + str(length)] = k[length].strip()
-
                     if ele_list is not None:
                         ele_xpath1 = data1.get(k).xpath(ele_list[0])
                         ele_xpath2 = data2.get(k).xpath(ele_list[0])
@@ -875,6 +874,7 @@ class Operator:
                                 print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
                 else:
                     print "\n ERROR, id miss match occurred!!!"
+                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
                     res = False
 
         self.print_result('list-not-less', res)
@@ -924,11 +924,10 @@ class Operator:
             # print data2
 
             for k in data2:
+                for length in range(len(k)):
+                    resdict['id_' + str(length)] = k[length].strip()
+
                 if k in data1:
-
-                    for length in range(len(k)):
-                        resdict['id_' + str(length)] = k[length].strip()
-
                     if ele_list is not None:
                         ele_xpath1 = data1.get(k).xpath(ele_list[0])
                         ele_xpath2 = data2.get(k).xpath(ele_list[0])
@@ -949,6 +948,7 @@ class Operator:
                                 print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
                 else:
                     print "\n ERROR, id miss match occurred !!"
+                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
                     res = False
         self.print_result('list-not-more', res)
         tresult['result'] = res
@@ -998,11 +998,10 @@ class Operator:
             for k in data1:
                 # checking if id in first data set is present in second data
                 # set or not
+                for length in range(len(k)):
+                    resdict['id_' + str(length)] = k[length]
+                    
                 if k in data2:
-
-                    for length in range(len(k)):
-                        resdict['id_' + str(length)] = k[length]
-
                     if ele_list is not None:
                         # print "data values are", data1.get(k), data2.get(k)
                         ele_xpath1 = data1.get(k).xpath(ele_list[0])
@@ -1081,6 +1080,7 @@ class Operator:
                                     print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
                 else:
                     print "\n ERROR, id miss match occurred !! "
+                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
                     res = False
 
         self.print_result('delta', res)
