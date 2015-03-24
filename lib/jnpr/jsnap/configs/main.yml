@@ -1,22 +1,22 @@
-hosts:
-  - include: devices.yml
-    group: MX
-tests:
-  - tests.yml
-
-sqlite:
-  - store_in_sqlite: yes
-    check_from_sqlite: yes
-    database_name: jbb.db
-
-
 # for one device, can be given like this:
 #hosts:
-#  - devices: 10.209.16.204
-#    username : regress
-#    passwd: MaRtInI
+  - devices: 10.209.16.204
+    username : regress
+    passwd: MaRtInI
+tests:
+  - tests.yml
+mail: mail.yml
+
+
+# for multiple devices with databse
+#hosts:
+#  - include: devices.yml
+#    group: MX
 #tests:
 #  - tests.yml
+
+#sqlite:
+#  - store_in_sqlite: yes
+#    check_from_sqlite: yes
+#    database_name: jbb.db
 #mail: mail.yml
-
-
