@@ -293,7 +293,7 @@ class Jsnap:
                 mail_file = open(mfile, 'r')
                 mail_file = yaml.load(mail_file)
                 if not mail_file.has_key("passwd"):
-                    passwd=getpass.getpass("Please enter ur password ")
+                    passwd=getpass.getpass("Please enter ur email password ")
                 else:
                     passwd= mail_file['passwd']
                 testobj = self.compare_tests(hostname)
