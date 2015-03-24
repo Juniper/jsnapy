@@ -14,6 +14,7 @@ from threading import Thread
 from jnpr.junos import Device
 import distutils.dir_util
 import colorama
+import getpass
 import jnpr
 from jnpr.junos import exception
 
@@ -169,7 +170,7 @@ class Jsnap:
                 test_file = open(tfile, 'r')
                 test_files.append(yaml.load(test_file))
             else:
-                print "file %s is not found" % tfile
+                print "File %s is not found" % tfile
         g = Parse()
         for tests in test_files:
             g.generate_reply(tests, dev, snap_files, self.db, username)
@@ -275,22 +276,31 @@ class Jsnap:
         :return:
         """
         if self.args.snap is True or self.args.snapcheck is True:
-            print "connecting to device %s ................" % hostname
+            print "Connecting to device %s ................" % hostname
             dev = Device(host=hostname, user=username, passwd=password)
             try:
                 dev.open()
             except Exception as ex:
-                print "error occurred", ex
+                print "\nERROR occurred", ex
                 return
             else:
                 self.generate_rpc_reply(dev, snap_files, username)
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             # print "\n &&&&& going for comparision"
-            testobj = self.compare_tests(hostname)
             if self.main_file.get("mail"):
+                mfile = os.path.join(os.getcwd(), 'configs', self.main_file['mail'])
+                mail_file = open(mfile, 'r')
+                mail_file = yaml.load(mail_file)
+                if not mail_file.has_key("passwd"):
+                    passwd=getpass.getpass("Please enter ur password ")
+                else:
+                    passwd= mail_file['passwd']
+                testobj = self.compare_tests(hostname)
                 send_mail = Notification()
-                send_mail.notify(self.main_file['mail'], hostname, testobj)
+                send_mail.notify(mail_file, hostname, passwd, testobj)
+            else:
+                self.compare_tests(hostname)
 
     # generate init folder
     def generate_init(self):

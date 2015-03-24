@@ -8,5 +8,5 @@ check_chassis_fpc:
       id: ./slot
       tests:
         - delta: memory-heap-utilization, 89%
-          info: "Test Succeeded!! Memory heap utilisation of the FPCs has changed before it was {{pre_memory-heap-utilization}}, now it is {{post_memory-heap-utilization}} with id {{id_0}}"
-          err: "Test Failed!!! Memory heap utilisation of the FPCs has changed before it was {{pre_memory-heap-utilization}}, now it is {{post_memory-heap-utilization}} with id {{id_0}}"
+          info: "Test Succeeded!! Memory heap utilisation of the FPCs has changed before it was <{{pre_memory-heap-utilization}}>, now it is <{{post_memory-heap-utilization}}> with id {{id_0}}"
+          err: "Test Failed!!! Memory heap utilisation of the FPCs has changed before it was <{{pre_memory-heap-utilization}}>, now it is <{{post_memory-heap-utilization}}> with id {{id_0}}"

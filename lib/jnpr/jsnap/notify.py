@@ -9,7 +9,7 @@ import os
 
 class Notification:
 
-    def notify(self, m_file, hostname, test_obj):
+    def notify(self, mail_file, hostname, password, test_obj):
         """
         function to generate email, using jinja template in content.html
 
@@ -18,9 +18,11 @@ class Notification:
         :param test_obj:
         :return:
         """
+        '''
         mfile = os.path.join(os.getcwd(), 'configs', m_file)
         mail_file = open(mfile, 'r')
         mail_file = yaml.load(mail_file)
+        '''
 
         testdetails = test_obj.test_details
 
@@ -38,14 +40,22 @@ class Notification:
         part2.set_payload(outputText)
         msg.attach(part2)
 
-        password = mail_file['passwd']
         from_mail = mail_file['from']
         to = mail_file['to']
         msg['Subject'] = hostname + ' : ' + mail_file['sub']
-        server = smtplib.SMTP('smtp.gmail.com', 587)
+        if mail_file.has_key('server') and mail_file.has_key('port'):
+            servername = mail_file['server']
+            port= mail_file.has_key['port']
+            server = smtplib.SMTP(servername, port)
+        else:
+            server = smtplib.SMTP('smtp.gmail.com', 587)
         server.ehlo()
         server.starttls()
-        server.login(from_mail, password)
+        try:
+            server.login(from_mail, password)
+        except Exception as ex:
+            print "\nERROR occurred: ", ex
+            return
         ms = msg.as_string()
         server.sendmail(from_mail, to, ms)
         server.quit()
