@@ -5,6 +5,7 @@ import os
 import sys
 import subprocess
 from jnpr.jsnap.sqlite_get import SqliteExtractXml
+import icdiff
 
 
 class Comparator:
@@ -126,15 +127,7 @@ class Comparator:
 
 # not implemented for sqlite
     def compare_diff(self, pre_snap_file, post_snap_file):
-        #p= subprocess.Popen(["which", "icdiff"],stdout=subprocess.PIPE)
-        #out, err = p.communicate()
-        # print "output is", out
-        p = subprocess.Popen(["/usr/local/bin/icdiff",
-                              pre_snap_file,
-                              post_snap_file],
-                             stdout=subprocess.PIPE)
-        out, err = p.communicate()
-        print "Difference in file is:", out
+        icdiff.start(pre_snap_file, post_snap_file)
 
 # generate names of snap files from hostname and out files given by user,
 # tests are performed on values stored in these snap filesin which test is

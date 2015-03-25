@@ -1,5 +1,5 @@
 # for one device, can be given like this:
-#hosts:
+hosts:
   - devices: 10.209.16.204
     username : regress
     passwd: MaRtInI
