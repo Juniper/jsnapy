@@ -28,27 +28,31 @@ class Parse:
                     command = test_file[t][0]['command']
                     self.command_list.append(command)
                     name = '_'.join(command.split())
-                    rpc_reply = dev.rpc.cli(command, format='xml')
-                    filename = snap_files + '_' + name + '.' + 'xml'
-                    output_file = os.path.join(path, 'snapshots', filename)
-                    with open(output_file, 'w') as f:
-                        f.write(etree.tostring(rpc_reply))
+                    try:
+                        rpc_reply = dev.rpc.cli(command, format='xml')
+                    except Exception as ex:
+                        print "ERROR occurred!!!",ex
+                    else:
+                        filename = snap_files + '_' + name + '.' + 'xml'
+                        output_file = os.path.join(path, 'snapshots', filename)
+                        with open(output_file, 'w') as f:
+                            f.write(etree.tostring(rpc_reply))
 
-                    # SQLiteChanges
-                    if db['store_in_sqlite'] is True:
-                        a = snap_files.split('_')
-                        host = a[0]
-                        a.pop(0)
-                        a = '_'.join(a)
-                        sqlite_jsnap = JsnapSqlite(host, db['db_name'])
-                        db_dict = dict()
-                        db_dict['username'] = username
-                        db_dict['cli_command'] = name
-                        db_dict['snap_name'] = a
-                        db_dict['filename'] = filename
-                        db_dict['xml'] = etree.tostring(rpc_reply)
-                        sqlite_jsnap.insert_data(db_dict)
-                    ###
+                        # SQLiteChanges
+                        if db['store_in_sqlite'] is True:
+                            a = snap_files.split('_')
+                            host = a[0]
+                            a.pop(0)
+                            a = '_'.join(a)
+                            sqlite_jsnap = JsnapSqlite(host, db['db_name'])
+                            db_dict = dict()
+                            db_dict['username'] = username
+                            db_dict['cli_command'] = name
+                            db_dict['snap_name'] = a
+                            db_dict['filename'] = filename
+                            db_dict['xml'] = etree.tostring(rpc_reply)
+                            sqlite_jsnap.insert_data(db_dict)
+                        ###
 
                 elif 'rpc' in test_file[t][0]:
                     rpc = test_file[t][0]['rpc']
@@ -67,35 +71,42 @@ class Parse:
                                     tag,
                                     filter_data)
                                 kwargs['filter_xml'] = filter_data
-                        rpc_reply = getattr(
-                            dev.rpc,
-                            rpc.replace(
-                                '-',
-                                '_'))(
-                            **kwargs)
+                        try:
+                            rpc_reply = getattr(
+                                        dev.rpc,
+                                        rpc.replace(
+                                        '-',
+                                        '_'))(
+                                        **kwargs)
+                        except Exception as ex:
+                            print "ERROR occurred!!!", ex
 
                     else:
-                        rpc_reply = getattr(dev.rpc, rpc.replace('-', '_'))()
-                    filename = snap_files + '_' + rpc + '.' + 'xml'
-                    output_file = os.path.join(path, 'snapshots', filename)
-                    with open(output_file, 'w') as f:
-                        f.write(etree.tostring(rpc_reply))
+                        try:
+                            rpc_reply = getattr(dev.rpc, rpc.replace('-', '_'))()
+                        except Exception as ex:
+                            print "ERROR occurred!!!", ex
+                    if 'rpc_reply' in locals():
+                        filename = snap_files + '_' + rpc + '.' + 'xml'
+                        output_file = os.path.join(path, 'snapshots', filename)
+                        with open(output_file, 'w') as f:
+                            f.write(etree.tostring(rpc_reply))
 
-                    # SQLiteChanges
+                        # SQLiteChanges
 
-                    if db['store_in_sqlite'] is True:
-                        a = snap_files.split('_')
-                        host = a[0]
-                        a.pop(0)
-                        a = '_'.join(a)
-                        sqlite_jsnap = JsnapSqlite(host, db['db_name'])
-                        db_dict2 = dict()
-                        db_dict2['username'] = username
-                        db_dict2['cli_command'] = rpc
-                        db_dict2['snap_name'] = a
-                        db_dict2['filename'] = filename
-                        db_dict2['xml'] = etree.tostring(rpc_reply)
-                        sqlite_jsnap.insert_data(db_dict2)
+                        if db['store_in_sqlite'] is True:
+                            a = snap_files.split('_')
+                            host = a[0]
+                            a.pop(0)
+                            a = '_'.join(a)
+                            sqlite_jsnap = JsnapSqlite(host, db['db_name'])
+                            db_dict2 = dict()
+                            db_dict2['username'] = username
+                            db_dict2['cli_command'] = rpc
+                            db_dict2['snap_name'] = a
+                            db_dict2['filename'] = filename
+                            db_dict2['xml'] = etree.tostring(rpc_reply)
+                            sqlite_jsnap.insert_data(db_dict2)
                     ###
             else:
                 print "Test case:  %s  not defined !!!!" % t
