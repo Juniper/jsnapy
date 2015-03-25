@@ -288,7 +288,7 @@ class Jsnap:
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             # print "\n &&&&& going for comparision"
-            if self.main_file.get("mail"):
+            if self.main_file.get("mail") and self.args.diff is not True:
                 mfile = os.path.join(os.getcwd(), 'configs', self.main_file['mail'])
                 mail_file = open(mfile, 'r')
                 mail_file = yaml.load(mail_file)
