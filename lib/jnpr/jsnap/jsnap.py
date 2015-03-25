@@ -223,7 +223,7 @@ class Jsnap:
                 lfile = os.path.join(os.getcwd(), 'configs', k['include'])
                 login_file = open(lfile, 'r')
                 dev_file = yaml.load(login_file)
-                gp = k['group']
+                gp = k.get('group', 'all')
 
                 dgroup = [i.strip() for i in gp.split(',')]
                 for dgp in dev_file:
@@ -231,8 +231,8 @@ class Jsnap:
                         for val in dev_file[dgp]:
                             hostname = val.keys()[0]
                             self.host_list.append(hostname)
-                            username = val[hostname]['username']
-                            password = val[hostname]['passwd']
+                            username = val.get(hostname).get('username')
+                            password = val.get(hostname).get('passwd')
                             snap_files = hostname + '_' + output_file
                             t = Thread(
                                 target=self.connect,
@@ -248,9 +248,9 @@ class Jsnap:
         # login credentials are given in main config file, can connect to only
         # one device
             else:
-                hostname = k['devices']
-                username = k['username']
-                password = k['passwd']
+                hostname = k.get('devices')
+                username = k.get('username')
+                password = k.get('passwd')
                 self.host_list.append(hostname)
                 snap_files = hostname + '_' + output_file
                 self.connect(hostname, username, password, snap_files)
@@ -288,7 +288,7 @@ class Jsnap:
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             # print "\n &&&&& going for comparision"
-            if self.main_file.get("mail"):
+            if self.main_file.get("mail") and self.args.diff is not True:
                 mfile = os.path.join(os.getcwd(), 'configs', self.main_file['mail'])
                 mail_file = open(mfile, 'r')
                 mail_file = yaml.load(mail_file)
