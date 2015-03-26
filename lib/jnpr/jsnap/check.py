@@ -183,20 +183,29 @@ class Comparator:
 
                     if db.get('check_from_sqlite') is True and check is True:
                         a = SqliteExtractXml(db.get('db_name'))
-                        snapfile1 = a.get_xml_using_snapname(
-                            str(device),
-                            name,
-                            pre)
+                        if (db['first_snap_id'] is not None) and (db['second_snap_id'] is not None):
+                            snapfile1 = a.get_xml_using_snap_id(str(device),name,db['first_snap_id'])
+                        else:
+                            snapfile1 = a.get_xml_using_snapname(
+                                str(device),
+                                name,
+                                pre)
                     else:
                         file1 = str(device) + '_' + pre + '_' + name + '.xml'
                         snapfile1 = os.path.join(path, 'snapshots', file1)
 
                     if check is True:
                         if db.get('check_from_sqlite') is True:
-                            snapfile2 = a.get_xml_using_snapname(
-                                str(device),
-                                name,
-                                post)
+                            if (db['first_snap_id'] is not None) and (db['second_snap_id'] is not None):
+                                    snapfile2 = a.get_xml_using_snap_id(
+                                    str(device),
+                                    name,
+                                    db['second_snap_id'])
+                            else:
+                                snapfile2 = a.get_xml_using_snapname(
+                                    str(device),
+                                    name,
+                                    post)
                         else:
                             file2 = str(device) + '_' + post + \
                                 '_' + name + '.xml'

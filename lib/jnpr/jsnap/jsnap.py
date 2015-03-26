@@ -116,6 +116,8 @@ class Jsnap:
         self.db['store_in_sqlite'] = False
         self.db['check_from_sqlite'] = False
         self.db['db_name'] = ""
+        self.db['first_snap_id'] = None
+        self.db['second_snap_id'] = None
 
     # call hosts class, connect hosts and get host list
     # use pre_snapfile because always first file is pre_snapfile regardless of
@@ -127,12 +129,16 @@ class Jsnap:
         create database for snapshots
         :return:
         """
-        output_file = self.args.pre_snapfile
+        if self.args.pre_snapfile is not None:
+            output_file = self.args.pre_snapfile
+        else:
+            output_file = ""
         conf_file = self.args.file
         config_file = open(conf_file, 'r')
         self.main_file = yaml.load(config_file)
 
         # Sqlite changes
+        compare_from_id = False
         if self.main_file.__contains__(
                 'sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
             d = self.main_file['sqlite'][0]
@@ -140,15 +146,38 @@ class Jsnap:
                 self.db['store_in_sqlite'] = d['store_in_sqlite']
             if d.__contains__('check_from_sqlite'):
                 self.db['check_from_sqlite'] = d['check_from_sqlite']
-            check = self.args.check or self.args.snapcheck
+            check = self.args.check
             snap = self.args.snap or self.args.snapcheck
             if (self.db['store_in_sqlite'] and snap) or (
                     self.db['check_from_sqlite'] and check):
                 if d.__contains__('database_name'):
                     self.db['db_name'] = d['database_name']
                 else:
-                    print "Specify name of the database."
+                    print (colorama.Fore.RED + "Specify name of the database.")
                     exit(1)
+                if check is True:
+                    if 'compare' in d.keys() and d['compare'] is not None and len(d['compare']) is not 0:
+                        lst = d['compare']
+                        compare_from_id = True
+                        if type(lst) is list and len(lst) == 2 and type(lst[0]) is int and type(lst[1]) is int:
+                            self.db['first_snap_id'] = lst[0]
+                            self.db['second_snap_id'] = lst[1]
+                        else:
+                            print (colorama.Fore.RED + "Properly specify ids of first and second snapshot")
+                            exit(1)
+
+            if self.db['check_from_sqlite'] is False or compare_from_id is False:
+                if self.args.check is True and (self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None):
+                    print(
+                        colorama.Fore.RED +
+                        "*********Arguments not given correctly, Please refer below help message!!********")
+                    self.parser.print_help()
+                    sys.exit(1)
+
+
+
+
+
         ###
         self.login(output_file)
 
@@ -329,7 +358,7 @@ class Jsnap:
         :return:
         """
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
-            (self.args.check is True and (self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None)) or
+            (self.args.check is True and (self.args.file is None)) or
             (self.args.snapcheck is True and (self.args.pre_snapfile is None or self.args.file is None or self.args.post_snapfile is not None)) or
             (self.args.diff is True and (
                 self.args.pre_snapfile is None or self.args.post_snapfile is None))

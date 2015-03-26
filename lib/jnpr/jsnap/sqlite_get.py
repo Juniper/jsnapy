@@ -45,7 +45,7 @@ class SqliteExtractXml:
                            {'id': snap_id, 'cli': command_name})
             row = cursor.fetchone()
             if not row:
-                print"No previous snapshots exists with id = %s for command = %s " % snap_id, command_name.replace('_', ' ')
+                print"No previous snapshots exists with id = %s for command = " % snap_id, command_name.replace('_', ' ')
                 sys.exit(1)
             else:
                 idd, xml_string = row
