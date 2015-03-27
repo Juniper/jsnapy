@@ -20,7 +20,7 @@ setup(name="jsnap-py",
           ],
       },
       zip_safe=False,
-      install_requires=['junos-eznc'],
+      install_requires=['junos-eznc', 'jinja2', 'colorama'],
       classifiers=[
           'Environment :: Console',
           'Intended Audience :: Developers',
