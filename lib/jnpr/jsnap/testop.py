@@ -59,6 +59,103 @@ class Operator:
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
 
+    def exists(self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+        msg = "Performing exists Test Operation"
+        self.print_testmssg(msg)
+        colorama.init(autoreset=True)
+        res = True
+        resdict = {}
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "is-equal"
+        try:
+            element = ele_list[0]
+        except IndexError as e:
+            print "\n Error occurred while accessing test element", e.message
+            print "\n element is not specified for testing"
+        else:
+            post_nodes = xml2.xpath(
+                x_path) if iter else xml2.xpath(x_path)[0:1]
+            if xml1 is not None:
+                pre_nodes = xml1.xpath(
+                    x_path)if iter else xml1.xpath(x_path)[0:1]
+            else:
+                pre_nodes = xml2.xpath(
+                    x_path) if iter else xml2.xpath(x_path)[0:1]
+
+            if not post_nodes:
+                print "Nodes are not present in given Xpath!!"
+                res = False
+            else:
+                for i in range(len(post_nodes)):
+                    postnode = post_nodes[i].xpath(element)
+                    for j in range(len(id_list)):
+                        resdict[
+                            'id_' +
+                            str(j)] = post_nodes[i].xpath(
+                            id_list[j])[0].text.strip() if post_nodes[i].xpath(
+                            id_list[j]) else None
+
+                    if not postnode:
+                        res = False
+                        print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                    else:
+                        print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+
+        self.print_result('exists', res)
+        tresult['result'] = res
+        self.test_details[teston].append(tresult)
+
+    def not_exists(self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+        msg = "Performing not-exists Test Operation"
+        self.print_testmssg(msg)
+        colorama.init(autoreset=True)
+        res = True
+        resdict = {}
+        tresult = {}
+        tresult['xpath'] = x_path
+        tresult['element_list'] = ele_list
+        tresult['testoperation'] = "is-equal"
+        try:
+            element = ele_list[0]
+        except IndexError as e:
+            print "\n Error occurred while accessing test element", e.message
+            print "\n exists test operator require two parameters"
+        else:
+            post_nodes = xml2.xpath(
+                x_path) if iter else xml2.xpath(x_path)[0:1]
+            if xml1 is not None:
+                pre_nodes = xml1.xpath(
+                    x_path)if iter else xml1.xpath(x_path)[0:1]
+            else:
+                pre_nodes = xml2.xpath(
+                    x_path) if iter else xml2.xpath(x_path)[0:1]
+
+            if not post_nodes:
+                print "Nodes are not present in given Xpath!!"
+                res = False
+            else:
+                for i in range(len(post_nodes)):
+                    postnode = post_nodes[i].xpath(element)
+                    for j in range(len(id_list)):
+                        resdict[
+                            'id_' +
+                            str(j)] = post_nodes[i].xpath(
+                            id_list[j])[0].text.strip() if post_nodes[i].xpath(
+                            id_list[j]) else None
+
+                    if postnode:
+                        res = False
+                        print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                    else:
+                        print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+
+        self.print_result('not-exists', res)
+        tresult['result'] = res
+        self.test_details[teston].append(tresult)
+
+
     def all_same(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         msg = "Performing all-same Test Operation"
