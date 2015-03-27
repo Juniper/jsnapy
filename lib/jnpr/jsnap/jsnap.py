@@ -156,14 +156,35 @@ class Jsnap:
                     print (colorama.Fore.RED + "Specify name of the database.")
                     exit(1)
                 if check is True:
-                    if 'compare' in d.keys() and d['compare'] is not None and len(d['compare']) is not 0:
-                        lst = d['compare']
+                    if 'compare' in d.keys() and d['compare'] is not None:
+                        strr = d['compare']
+
+                        if type(strr) is not str:
+                            print (colorama.Fore.RED + "Properly specify ids of first and second snapshot in format"
+                                                       ": first_snapshot_id, second_snapshot_id")
+                            exit(1)
+
                         compare_from_id = True
-                        if type(lst) is list and len(lst) == 2 and type(lst[0]) is int and type(lst[1]) is int:
+                        lst = [val.strip() for val in strr.split(',')]
+
+                        try:
+                            lst = [int(x) for x in lst]
+                        except ValueError as e:
+                            print (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
+                                                       " in format: first_snapshot_id, second_snapshot_id")
+                            exit(1)
+
+                        if len(lst)>2:
+                            print (colorama.Fore.RED + "No. of snapshots specified is more than two."
+                                                       " Please specify only two snapshots.")
+                            exit(1)
+
+                        if len(lst) == 2 and type(lst[0]) is int and type(lst[1]) is int:
                             self.db['first_snap_id'] = lst[0]
                             self.db['second_snap_id'] = lst[1]
                         else:
-                            print (colorama.Fore.RED + "Properly specify ids of first and second snapshot")
+                            print (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
+                                                       " in format: first_snapshot_id, second_snapshot_id")
                             exit(1)
 
             if self.db['check_from_sqlite'] is False or compare_from_id is False:
