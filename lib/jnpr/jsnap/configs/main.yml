@@ -11,7 +11,7 @@ sqlite:
   - store_in_sqlite: no
     check_from_sqlite: no
     database_name: jbb.db
-    compare: [0,1]
+    compare: 0,1
 
 mail: mail.yml
 
