@@ -895,7 +895,9 @@ class Operator:
                         print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
                 else:
                     print "\n Error, id miss match ocuurred!!"
-                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                    for kval in k:
+                        print "missing node:", kval.strip()
+                    #print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
                     res = False
         self.print_result('no-diff', res)
         tresult['result'] = res
@@ -1177,7 +1179,9 @@ class Operator:
                                     print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
                 else:
                     print "\n ERROR, id miss match occurred !! "
-                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                    for kval in k:
+                        print "missing node:", kval.strip()
+                    #print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
                     res = False
 
         self.print_result('delta', res)
