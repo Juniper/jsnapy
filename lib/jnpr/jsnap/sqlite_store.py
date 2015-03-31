@@ -13,7 +13,6 @@ class JsnapSqlite:
         with sqlite3.connect(self.db_filename) as conn:
             # print 'Creating schema if not exists'
             sqlstr = """create table if not exists %s (
-                key          integer not null primary key autoincrement,
                 id           integer not null,
                 filename     text,
                 username	 text,
@@ -47,7 +46,7 @@ class JsnapSqlite:
             """ % self.table_name)
 
             for row in cursor.fetchall():
-                key, idd, filename, user, cli, snap, xml = row
+                idd, filename, user, cli, snap, xml = row
                 print idd
                 print user
                 print cli

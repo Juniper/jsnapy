@@ -5,8 +5,9 @@ test_version_check:
   - command: show version invoke-on all-routing-engines
   - iterate:
       xpath: //software-information
+      id: ./host-name
       tests:
-        - contains: package-information[1]/comment, 14.2
-          info: "Test Succeeded!! Checking Junos version for 14.2 release"
-          err: "Test Failed!!! Found different Junos version, it is "
+        - contains: //package-information/name[1], jbase
+          info: "Test Succeeded!! Checking Junos version for 14.2 release pre: {{pre['product-model']}} "
+          err: "Test Failed!!! Found different Junos version with product model: {{pre['product-model']}}  with id {{id_0}}"
 

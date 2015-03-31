@@ -15,7 +15,6 @@ class Comparator:
     def compare_reply(self, op, tests, teston, check, db, snap1, snap2=None):
         """
         call testop.Operator methods to compare snapshots based on given test cases
-
         :param op: testop.Operator object
         :param tests: test cases
         :param teston: command/rpc to perform test
@@ -56,8 +55,24 @@ class Comparator:
                 if ele is not None:
                     ele_list = [elements.strip()
                                 for elements in ele.split(',')]
-                err_mssg = path['err']
-                info_mssg = path['info']
+                err_mssg = path.get(
+                    'err',
+                    "Test passed: " +
+                    ele_list[0] +
+                    " before was < {{pre_" +
+                    ele_list[0] +
+                    "}} > now it is < {{post_" +
+                    ele_list[0] +
+                    "}} > ")
+                info_mssg = path.get(
+                    'info',
+                    "Test passed: " +
+                    ele_list[0] +
+                    " before was < {{pre_" +
+                    ele_list[0] +
+                    "}} > now it is < {{post_" +
+                    ele_list[0] +
+                    "}} > ")
 
                 if db.get('check_from_sqlite') is True and check is True:
                     xml1 = etree.fromstring(snap1)
@@ -183,8 +198,12 @@ class Comparator:
 
                     if db.get('check_from_sqlite') is True and check is True:
                         a = SqliteExtractXml(db.get('db_name'))
-                        if (db['first_snap_id'] is not None) and (db['second_snap_id'] is not None):
-                            snapfile1 = a.get_xml_using_snap_id(str(device),name,db['first_snap_id'])
+                        if (db['first_snap_id'] is not None) and (
+                                db['second_snap_id'] is not None):
+                            snapfile1 = a.get_xml_using_snap_id(
+                                str(device),
+                                name,
+                                db['first_snap_id'])
                         else:
                             snapfile1 = a.get_xml_using_snapname(
                                 str(device),
@@ -196,8 +215,9 @@ class Comparator:
 
                     if check is True:
                         if db.get('check_from_sqlite') is True:
-                            if (db['first_snap_id'] is not None) and (db['second_snap_id'] is not None):
-                                    snapfile2 = a.get_xml_using_snap_id(
+                            if (db['first_snap_id'] is not None) and (
+                                    db['second_snap_id'] is not None):
+                                snapfile2 = a.get_xml_using_snap_id(
                                     str(device),
                                     name,
                                     db['second_snap_id'])

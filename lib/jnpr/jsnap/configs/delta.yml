@@ -7,6 +7,6 @@ check_chassis_fpc:
       xpath: //fpc
       id: ./slot
       tests:
-        - delta: memory-heap-utilization, 89%
-          info: "Test Succeeded!! Memory heap utilisation of the FPCs has changed before it was <{{pre_memory-heap-utilization}}>, now it is <{{post_memory-heap-utilization}}> with id {{id_0}}"
-          err: "Test Failed!!! Memory heap utilisation of the FPCs has changed before it was <{{pre_memory-heap-utilization}}>, now it is <{{post_memory-heap-utilization}}> with id {{id_0}}"
+        - delta: memory-heap-utilization, 50%
+          info: "Test Succeeded!! Memory heap utilisation of the FPCs has changed before it was <{{pre['memory-heap-utilization']}}>, now it is <{{post['memory-heap-utilization']}}> with id {{id_0}} other values {{post['state']}}"
+          err: "Test Failed!!! Memory heap utilisation of the FPCs has changed before it was <{{pre['memory-heap-utilization']}}>, now it is <{{post['memory-heap-utilization']}}> with id {{id_0}} with other values {{post['state']}}"

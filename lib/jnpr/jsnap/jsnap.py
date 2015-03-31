@@ -137,7 +137,6 @@ class Jsnap:
         config_file = open(conf_file, 'r')
         self.main_file = yaml.load(config_file)
 
-        # Sqlite changes
         compare_from_id = False
         if self.main_file.__contains__(
                 'sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
@@ -159,7 +158,7 @@ class Jsnap:
                     if 'compare' in d.keys() and d['compare'] is not None:
                         strr = d['compare']
 
-                        if type(strr) is not str:
+                        if not isinstance(strr, str):
                             print (colorama.Fore.RED + "Properly specify ids of first and second snapshot in format"
                                                        ": first_snapshot_id, second_snapshot_id")
                             exit(1)
@@ -174,12 +173,13 @@ class Jsnap:
                                                        " in format: first_snapshot_id, second_snapshot_id")
                             exit(1)
 
-                        if len(lst)>2:
+                        if len(lst) > 2:
                             print (colorama.Fore.RED + "No. of snapshots specified is more than two."
                                                        " Please specify only two snapshots.")
                             exit(1)
 
-                        if len(lst) == 2 and type(lst[0]) is int and type(lst[1]) is int:
+                        if len(lst) == 2 and isinstance(
+                                lst[0], int) and isinstance(lst[1], int):
                             self.db['first_snap_id'] = lst[0]
                             self.db['second_snap_id'] = lst[1]
                         else:
@@ -187,19 +187,15 @@ class Jsnap:
                                                        " in format: first_snapshot_id, second_snapshot_id")
                             exit(1)
 
-            if self.db['check_from_sqlite'] is False or compare_from_id is False:
-                if self.args.check is True and (self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None):
+            if self.db[
+                    'check_from_sqlite'] is False or compare_from_id is False:
+                if self.args.check is True and (
+                        self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None):
                     print(
                         colorama.Fore.RED +
                         "*********Arguments not given correctly, Please refer below help message!!********")
                     self.parser.print_help()
                     sys.exit(1)
-
-
-
-
-
-        ###
         self.login(output_file)
 
     # call to generate snap files
@@ -260,7 +256,6 @@ class Jsnap:
         Extract device information from main config file. Stores device information and call connect function,
         device can be single or multiple. Instead of connecting to all devices mentioned in yaml file, user can
         connect to some particular group of devices also.
-
         :param output_file: name of snapshot file
         :return:
         """
@@ -339,13 +334,16 @@ class Jsnap:
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             # print "\n &&&&& going for comparision"
             if self.main_file.get("mail") and self.args.diff is not True:
-                mfile = os.path.join(os.getcwd(), 'configs', self.main_file['mail'])
+                mfile = os.path.join(
+                    os.getcwd(),
+                    'configs',
+                    self.main_file['mail'])
                 mail_file = open(mfile, 'r')
                 mail_file = yaml.load(mail_file)
-                if not mail_file.has_key("passwd"):
-                    passwd=getpass.getpass("Please enter ur email password ")
+                if "passwd" not in mail_file:
+                    passwd = getpass.getpass("Please enter ur email password ")
                 else:
-                    passwd= mail_file['passwd']
+                    passwd = mail_file['passwd']
                 testobj = self.compare_tests(hostname)
                 send_mail = Notification()
                 send_mail.notify(mail_file, hostname, passwd, testobj)
@@ -357,7 +355,7 @@ class Jsnap:
         """
         create snapshots and configs folder along with sample main config file.
         All snapshots generated will go in snapshots folder. configs folder will contain
-        all the yaml file apart from main, like device.yml, tests.yml
+        all the yaml file apart from main, like device.yml, bgp_neighbor.yml
         :return:
         """
         if not os.path.isdir("snapshots"):

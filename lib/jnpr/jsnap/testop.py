@@ -35,7 +35,7 @@ class Operator:
                 id,
                 *args)
         except AttributeError as e:
-            print "\nTest case not defined !!!!! \n error message :", e.message
+            print "\nTest Operator  not defined !!!!! \n error message :", e.message
         except:
             print "\nUndefined error occurred, please check test cases !!!"
 
@@ -51,7 +51,8 @@ class Operator:
                 colorama.Fore.GREEN +
                 '\nFinal result of ' + testname + ': PASSED \n')
 
-    def print_testmssg(self, msg):
+    def print_testmssg(self, testname):
+        msg = "Performing %s Test Operation" % testname
         testmssg = (80 - len(msg) - 2) / 2 * '*' + \
             msg + (80 - len(msg) - 2) / 2 * '*'
         print (colorama.Fore.BLUE + testmssg)
@@ -59,127 +60,160 @@ class Operator:
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
 
-    def exists(self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing exists Test Operation"
-        self.print_testmssg(msg)
-        colorama.init(autoreset=True)
+    def _find_xpath(self, iter, x_path, xml1=None, xml2=None):
+        if xml1 is not None:
+            pre_nodes = xml1.xpath(x_path)if iter else xml1.xpath(x_path)[0:1]
+        else:
+            pre_nodes = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
+        post_nodes = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
+        return pre_nodes, post_nodes
+
+    def _find_element(self, id_list, iddict, element, pre_node, post_node):
+        prenode = pre_node.xpath(element)
+        postnode = post_node.xpath(element)
+        for j in range(len(id_list)):
+            iddict[
+                'id_' +
+                str(j)] = post_node.xpath(
+                id_list[j])[0].text.strip() if post_node.xpath(
+                id_list[j]) else None
+        return iddict, prenode, postnode
+
+    def _find_value(self, predict, postdict, element, postnode, prenode):
+        post_nodevalue = postnode.text.strip()
+        pre_nodevalue = prenode.text.strip()
+        predict[element.replace('-', '_')] = pre_nodevalue
+        postdict[element.replace('-', '_')] = post_nodevalue
+        return predict, postdict, post_nodevalue, pre_nodevalue
+
+    # used by no-diff, list-not-less, not-more
+    def _get_data(self, id_list, nodes):
+        data = {}
+        for path in nodes:
+            xlist = [path.find(id) for id in id_list]
+            val = []
+            for values in xlist:
+                if values is not None:
+                    val.append(values.text)
+            data[tuple(val)] = path
+        return data
+
+    # for getting any node value
+    def _get_nodevalue(
+            self, predict, postdict, pre_nodes, post_nodes, x_path, element, mssg):
+        mssg = re.findall('{{(.*?)}}', mssg)
+        for e in mssg:
+            if (e.startswith("post") or e.startswith("Post")):
+                val = e[6:-2]
+                if val not in [x_path, element]:
+                    postdict[val.replace('-', '_')] = post_nodes.findtext(val)
+
+            if (e.startswith("pre") or e.startswith("PRE")):
+                val = e[5:-2]
+                if val not in [x_path, element]:
+                    predict[val.replace('-', '_')] = pre_nodes.findtext(val)
+        return predict, postdict
+
+    def exists(self, x_path, ele_list, err_mssg, info_mssg,
+               teston, iter, id_list, xml1, xml2):
+        self.print_testmssg("exists")
         res = True
-        resdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "is-equal"
+        predict = {}
+        postdict = {}
+        iddict = {}
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "exists"}
         try:
             element = ele_list[0]
         except IndexError as e:
             print "\n Error occurred while accessing test element", e.message
             print "\n element is not specified for testing"
         else:
-            post_nodes = xml2.xpath(
-                x_path) if iter else xml2.xpath(x_path)[0:1]
-            if xml1 is not None:
-                pre_nodes = xml1.xpath(
-                    x_path)if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path) if iter else xml2.xpath(x_path)[0:1]
-
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    postnode = post_nodes[i].xpath(element)
-                    for j in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(j)] = post_nodes[i].xpath(
-                            id_list[j])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[j]) else None
-
-                    if not postnode:
-                        res = False
-                        print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+                    if postnode:
+                        for k in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
+                            print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                     else:
-                        print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
-
+                        res = False
+                        print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
         self.print_result('exists', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
-    def not_exists(self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing not-exists Test Operation"
-        self.print_testmssg(msg)
+    def not_exists(self, x_path, ele_list, err_mssg, info_mssg,
+                   teston, iter, id_list, xml1, xml2):
+        self.print_testmssg("not-exists")
         colorama.init(autoreset=True)
         res = True
-        resdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "is-equal"
+        iddict = {}
+        predict = {}
+        postdict = {}
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "is-equal"}
         try:
             element = ele_list[0]
         except IndexError as e:
             print "\n Error occurred while accessing test element", e.message
             print "\n exists test operator require two parameters"
         else:
-            post_nodes = xml2.xpath(
-                x_path) if iter else xml2.xpath(x_path)[0:1]
-            if xml1 is not None:
-                pre_nodes = xml1.xpath(
-                    x_path)if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path) if iter else xml2.xpath(x_path)[0:1]
-
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    postnode = post_nodes[i].xpath(element)
-                    for j in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(j)] = post_nodes[i].xpath(
-                            id_list[j])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[j]) else None
-
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         res = False
-                        print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                        print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                     else:
-                        print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
-
+                        for k in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
+                            print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
         self.print_result('not-exists', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
-
     def all_same(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing all-same Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("all-same")
         res = True
-        tresult = {}
-        resdict = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "all-same"
+        iddict = {}
+        predict = {}
+        postdict = {}
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "all-same"}
         try:
             element = ele_list[0]
         except IndexError as e:
             print "\nError occurred while accessing test element", e.message
         else:
-            post_nodes = xml2.xpath(x_path)if iter else xml2.xpath(x_path)[0:1]
-            if xml1 is not None:
-                pre_nodes = xml1.xpath(
-                    x_path)if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path)if iter else xml2.xpath(x_path)[0:1]
-
-            #nodes = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
@@ -189,114 +223,35 @@ class Operator:
                     value = xml2.xpath(vpath)[0].text
                 else:
                     value = xml2.xpath(x_path + '/' + ele_list[0])[0].text
-                i = 0
-                while (i < len(post_nodes)):
-                    postnode = post_nodes[i].xpath(element)
-                    prenode = pre_nodes[i].xpath(element)
-                    # id will be same for pre and post
-                    for j in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(j)] = post_nodes[i].xpath(
-                            id_list[j])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[j]) else None
-
+                for i in range(len(post_nodes)):
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
-                        j = 0
-                        while(j < len(postnode)):
-                            pre_nodevalue = prenode[j].text.strip()
-                            post_nodevalue = postnode[j].text.strip()
-                            resdict[
-                                ('pre_' + element.replace('-', '_'))] = pre_nodevalue
-                            resdict[
-                                ('post_' + element.replace('-', '_'))] = post_nodevalue
+                        for k in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
                             if post_nodevalue != value.strip():
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
-                            j = j + 1
-                    i = i + 1
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
 
         self.print_result('all-same', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
-        '''
-
     def is_equal(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing is-equal Test Operation"
-
-        self.print_testmssg(msg)
-        colorama.init(autoreset=True)
+        self.print_testmssg("not-equal")
         res = True
-        resdict={}
         tresult = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "is-equal"
-
-
-        err_list=re.findall('{{(.*?)}}', err_mssg)
-        info_list=re.findall('{{(.*?)}}', info_mssg)
-        print err_mssg
-        err_list= [ elements for elements in err_list if elements not in [x_path,ele_list[0]]]
-        print "err_list", err_list
-
-        print "err_list, info_list", err_list, info_list
-
-        try:
-            element = ele_list[0]
-            value = ele_list[1]
-        except IndexError as e:
-            print "\n Error occurred while accessing test element", e.message
-            print "\n is-equal test operator require two parameters"
-        else:
-            #nodes = xml1.xpath('//' + x_path)
-            post_nodes = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
-            #xml1 contains post snapshot for check and the only snapshot for
-            if xml1 is not None:
-                pre_nodes = xml1.xpath(x_path)if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
-
-            if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
-                res = False
-            else:
-                for i in range(len(post_nodes)):
-                    postnode = post_nodes[i].xpath(element)
-                    prenode = pre_nodes[i].xpath(element)
-                    for j in range(len(id_list)):
-                        resdict['id_'+str(j)]= post_nodes[i].xpath(id_list[j])[0].text.strip() if post_nodes[i].xpath(id_list[j]) else None
-                    if postnode:
-                        for k in range(len(postnode)):
-                            post_nodevalue = postnode[k].text.strip()
-                            pre_nodevalue = prenode[k].text.strip()
-                            resdict[('pre_' + element.replace('-','_'))] = pre_nodevalue
-                            resdict[('post_' + element.replace('-','_'))]= post_nodevalue
-                            if  post_nodevalue != value.strip():
-                                res = False
-                                print jinja2.Template(err_mssg.replace('-','_')).render(resdict)
-                            else:
-                                print jinja2.Template(info_mssg.replace('-','_')).render(resdict)
-
-        self.print_result('is-equal', res)
-        tresult['result'] = res
-        self.test_details[teston].append(tresult)
-
-        '''
-
-    def is_equal(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing is-equal Test Operation"
-
-        self.print_testmssg(msg)
-        colorama.init(autoreset=True)
-        res = True
-        resdict = {}
-        tresult = {}
+        predict = {}
+        postdict = {}
+        iddict = {}
         tresult['xpath'] = x_path
         tresult['element_list'] = ele_list
         tresult['testoperation'] = "is-equal"
@@ -304,58 +259,43 @@ class Operator:
             element = ele_list[0]
             value = ele_list[1]
         except IndexError as e:
-            print "\n Error occurred while accessing test element", e.message
-            print "\n is-equal test operator require two parameters"
+            print "\nError occurred while accessing test element", e.message
+            print "\n is-equal test operator requires two parameter"
         else:
-            #nodes = xml1.xpath('//' + x_path)
-            post_nodes = xml2.xpath(
-                x_path) if iter else xml2.xpath(x_path)[0:1]
-            # xml1 contains post snapshot for check and the only snapshot for
-            if xml1 is not None:
-                pre_nodes = xml1.xpath(
-                    x_path)if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path) if iter else xml2.xpath(x_path)[0:1]
-
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    postnode = post_nodes[i].xpath(element)
-                    prenode = pre_nodes[i].xpath(element)
-                    for j in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(j)] = post_nodes[i].xpath(
-                            id_list[j])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[j]) else None
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+
                     if postnode:
                         for k in range(len(postnode)):
-                            post_nodevalue = postnode[k].text.strip()
-                            pre_nodevalue = prenode[k].text.strip()
-                            resdict[
-                                ('pre_' + element.replace('-', '_'))] = pre_nodevalue
-                            resdict[
-                                ('post_' + element.replace('-', '_'))] = post_nodevalue
-                            if post_nodevalue != value.strip():
-                                res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
+                            if post_nodevalue == value.strip():
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
-
+                                res = False
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
         self.print_result('is-equal', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
     def not_equal(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing not-equal Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("not-equal")
         res = True
         tresult = {}
-        resdict = {}
+        predict = {}
+        postdict = {}
+        iddict = {}
         tresult['xpath'] = x_path
         tresult['element_list'] = ele_list
         tresult['testoperation'] = "not-equal"
@@ -366,55 +306,42 @@ class Operator:
             print "\nError occurred while accessing test element", e.message
             print "\n not-equal test operator requires two parameter"
         else:
-            #nodes = xml1.xpath('//' + x_path)
-            post_nodes = xml2.xpath(
-                x_path) if iter else xml2.xpath(x_path)[0:1]
-            if xml1:
-                pre_nodes = xml1.xpath(
-                    x_path)if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path)if iter else xml2.xpath(x_path)[0:1]
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    postnode = post_nodes[i].xpath(element)
-                    prenode = pre_nodes[i].xpath(element)
-                    for j in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(j)] = post_nodes[i].xpath(
-                            id_list[j])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[j]) else None
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
-                        for j in range(len(postnode)):
-                            post_nodevalue = postnode[j].text.strip()
-                            pre_nodevalue = prenode[j].text.strip()
-                            resdict[
-                                ('pre_' + element.replace('-', '_'))] = pre_nodevalue
-                            resdict[
-                                ('post_' + element.replace('-', '_'))] = post_nodevalue
-                            if post_nodevalue == value.strip():
-                                res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                        for k in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
+                            if post_nodevalue != value.strip():
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                res = False
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
         self.print_result('not-equal', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
     def in_range(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing in-range Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("in-range")
         res = True
-        tresult = {}
-        resdict = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "in-range"
+        iddict = {}
+        predict = {}
+        postdict = {}
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "in-range"}
         try:
             element = ele_list[0]
             range1 = float(ele_list[1])
@@ -423,179 +350,44 @@ class Operator:
             print "\nError occurred while accessing test element\n", e.message
             print "\n in-range test operator requires two parameter"
         else:
-            #nodes = xml1.xpath('//' + x_path)
-            post_nodes = xml2.xpath(x_path)if iter else xml2.xpath(x_path)[0:1]
-            if xml1:
-                pre_nodes = xml1.xpath(
-                    x_path) if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path) if iter else xml2.xpath(x_path)[0:1]
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    prenode = pre_nodes[i].xpath(element)
-                    postnode = post_nodes[i].xpath(element)
-                    for k in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(k)] = post_nodes[i].xpath(
-                            id_list[k])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[k]) else None
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
 
                     if postnode:
-                        for j in range(len(postnode)):
-                            pre_nodevalue = float(prenode[j].text)
-                            post_nodevalue = float(postnode[j].text)
-                            resdict[
-                                ('pre_' + element.replace('-', '_'))] = pre_nodevalue
-                            resdict[
-                                ('post_' + element.replace('-', '_'))] = post_nodevalue
-                            print resdict
-                            if (range1 < post_nodevalue
-                                    and post_nodevalue < range2):
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                        for k in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
+                            if (float(post_nodevalue) >= range1
+                                    and float(post_nodevalue) <= range2):
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                             else:
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
-
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
         self.print_result('in-range', res)
-        tresult['result'] = res
-        self.test_details[teston].append(tresult)
-
-    def is_gt(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing is-gt Test Operation"
-        self.print_testmssg(msg)
-        res = True
-        tresult = {}
-        resdict = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "is-gt"
-        try:
-            element = ele_list[0]
-            val1 = float(ele_list[1])
-        except IndexError as e:
-            print "\n Error occurred while accessing test element", e.message
-            print "\n is-gt test operator require two parameter"
-        else:
-            #nodes = xml1.xpath('//' + x_path)
-            post_nodes = xml2.xpath(
-                x_path) if iter else xml2.xpath(x_path)[0:1]
-            if xml1:
-                pre_nodes = xml1.xpath(
-                    x_path) if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path) if iter else xml2.xpath(x_path)[0:1]
-
-            if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
-                res = False
-            else:
-                for i in range(len(post_nodes)):
-                    postnodes = post_nodes[i].xpath(element)
-                    prenodes = pre_nodes[i].xpath(element)
-
-                    for k in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(k)] = post_nodes[i].xpath(
-                            id_list[k])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[k]) else None
-
-                    if postnodes:
-                        for j in range(len(postnodes)):
-                            pre_nodevalue = float(prenodes[j].text)
-                            post_nodevalue = float(postnodes[j].text)
-                            resdict[
-                                ('pre_' + element.replace('-', '_'))] = pre_nodevalue
-                            resdict[
-                                ('post_' + element.replace('-', '_'))] = post_nodevalue
-                            print resdict
-                            if (post_nodevalue < val1):
-                                res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
-                            else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
-
-        self.print_result('is-gt', res)
-        tresult['result'] = res
-        self.test_details[teston].append(tresult)
-
-    def is_lt(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing is-lt Test Operation"
-        self.print_testmssg(msg)
-        res = True
-        tresult = {}
-        resdict = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "is-lt"
-        try:
-            element = ele_list[0]
-            val1 = float(ele_list[1])
-        except IndexError as e:
-            print "\n Error occurred while accessing test element ", e.message
-            print "\n is-lt test operator require two parameter"
-        else:
-            #nodes = xml1.xpath('//' + x_path)
-            post_nodes = xml2.xpath(
-                x_path) if iter else xml2.xpath(x_path)[0:1]
-            if xml1:
-                pre_nodes = xml1.xpath(
-                    x_path) if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path) if iter else xml2.xpath(x_path)[0:1]
-
-            if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
-                res = False
-            else:
-                for i in range(len(post_nodes)):
-                    postnode = post_nodes[i].xpath(element)
-                    prenode = pre_nodes[i].xpath(element)
-
-                    for k in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(k)] = post_nodes[i].xpath(
-                            id_list[k])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[k]) else None
-
-                    if postnode:
-                        for j in range(len(postnode)):
-                            post_nodevalue = float(postnode[j].text)
-                            pre_nodevalue = float(prenode[j].text)
-                            resdict[
-                                ('pre_' + element.replace('-', '_'))] = pre_nodevalue
-                            resdict[
-                                ('post_' + element.replace('-', '_'))] = post_nodevalue
-                            if (post_nodevalue > val1):
-                                res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
-                            else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
-
-        self.print_result('is-lt', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
     def not_range(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing not-range Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("not-range")
         res = True
-        tresult = {}
-        resdict = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "not-range"
+        iddict = {}
+        predict = {}
+        postdict = {}
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "not-range"}
         try:
             element = ele_list[0]
             range1 = float(ele_list[1])
@@ -604,59 +396,133 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n not-range test operator require two parameters"
         else:
-            #nodes = xml1.xpath('//' + x_path)
-            post_nodes = xml2.xpath(
-                x_path) if iter else xml2.xpath(x_path)[0:1]
-            if xml1:
-                pre_nodes = xml1.xpath(
-                    x_path) if iter else xml1.xpath(x_path)[0:1]
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
+            if not post_nodes:
+                print "Nodes are not present in given Xpath!!"
+                res = False
             else:
-                pre_nodes = xml2.xpath(
-                    x_path) if iter else xml2.xpath(x_path)[0:1]
+                for i in range(len(post_nodes)):
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+                    if postnode:
+                        for k in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
+
+                            if float(post_nodevalue) <= range1 and float(
+                                    post_nodevalue) >= range2:
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                            else:
+                                res = False
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+        self.print_result('not-range', res)
+        tresult['result'] = res
+        self.test_details[teston].append(tresult)
+
+    def is_gt(self, x_path, ele_list, err_mssg,
+              info_mssg, teston, iter, id_list, xml1, xml2):
+        self.print_testmssg("is-gt")
+        res = True
+        iddict = {}
+        predict = {}
+        postdict = {}
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "is-gt"}
+        try:
+            element = ele_list[0]
+            val1 = float(ele_list[1])
+        except IndexError as e:
+            print "\n Error occurred while accessing test element", e.message
+            print "\n is-gt test operator require two parameter"
+        else:
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
+            if not post_nodes:
+                print "Nodes are not present in given Xpath!!"
+                res = False
+            else:
+                for i in range(len(post_nodes)):
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+
+                    if postnode:
+                        for j in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[j], prenode[j])
+                            if (float(post_nodevalue) > val1):
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                            else:
+                                res = False
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+        self.print_result('is-gt', res)
+        tresult['result'] = res
+        self.test_details[teston].append(tresult)
+
+    def is_lt(self, x_path, ele_list, err_mssg,
+              info_mssg, teston, iter, id_list, xml1, xml2):
+        self.print_testmssg("is-lt")
+        res = True
+        iddict = {}
+        predict = {}
+        postdict = {}
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "is-lt"}
+        try:
+            element = ele_list[0]
+            val1 = float(ele_list[1])
+        except IndexError as e:
+            print "\n Error occurred while accessing test element ", e.message
+            print "\n is-lt test operator require two parameter"
+        else:
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
             if not post_nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    postnode = post_nodes[i].xpath(element)
-                    prenode = pre_nodes[i].xpath(element)
-
-                    for k in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(k)] = post_nodes[i].xpath(
-                            id_list[k])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[k]) else None
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
 
                     if postnode:
-                        for j in range(len(postnode)):
-                            post_nodevalue = float(postnode[j].text)
-                            pre_nodevalue = float(prenode[j].text)
-                            resdict[
-                                ('pre_' + element.replace('-', '_'))] = pre_nodevalue
-                            resdict[
-                                ('post_' + element.replace('-', '_'))] = post_nodevalue
-                            if post_nodevalue > range1 and post_nodevalue < range2:
-                                res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                        for k in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
+                            if (float(post_nodevalue) < val1):
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
-
-        self.print_result('not-range', res)
+                                res = False
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+        self.print_result('is-lt', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
     def contains(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing contains Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("contains")
+        predict = {}
+        postdict = {}
+        iddict = {}
         res = True
-        tresult = {}
-        resdict = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "contains"
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "contains"}
         try:
             element = ele_list[0]
             value = ele_list[1]
@@ -664,58 +530,47 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n Contains require two parameters"
         else:
-            #nodes = xml1.xpath('//' + x_path)
-            post_nodes = xml2.xpath(
-                x_path) if iter else xml2.xpath(x_path)[0:1]
-            if xml1:
-                pre_nodes = xml1.xpath(
-                    x_path) if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path) if iter else xml2.xpath(x_path)[0:1]
-
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    prenode = pre_nodes[i].xpath(element)
-                    postnode = post_nodes[i].xpath(element)
-
-                    for k in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(k)] = post_nodes[i].xpath(
-                            id_list[k])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[k]) else None
-
+                    Operator.iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
-                        for i in range(len(postnode)):
-                            post_nodevalue = postnode[i].text
-                            pre_nodevalue = prenode[i].text
-                            resdict[
-                                ('pre_' + element.replace('-', '_'))] = pre_nodevalue
-                            resdict[
-                                ('post_' + element.replace('-', '_'))] = post_nodevalue
-                            if (postnode[i].text.find(value) == -1):
+                        for k in range(len(postnode)):
+                            predict[
+                                (element.replace('-', '_'))] = prenode[k].text
+                            postdict[
+                                (element.replace('-', '_'))] = postnode[k].text
+                            if (postnode[k].text.find(value) == -1):
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                    else:
+                        print "Error!!, Node is not present in path given with test operator!!"
+                        res = False
         self.print_result('contains', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
     def is_in(self, x_path, ele_list, err_mssg,
               info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing is-in Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("is-in")
         res = True
-        tresult = {}
-        resdict = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "is-in"
+        iddict = {}
+        predict = {}
+        postdict = {}
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "is-in"}
         try:
             element = ele_list[0]
             value_list = ele_list[1:]
@@ -723,58 +578,42 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n is-in test operator require two parameters"
         else:
-            #nodes = xml1.xpath('//' + x_path)
-            post_nodes = xml2.xpath(
-                x_path) if iter else xml2.xpath(x_path)[0:1]
-            if xml1:
-                pre_nodes = xml1.xpath(
-                    x_path) if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path) if iter else xml2.xpath(x_path)[0:1]
-
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    prenode = pre_nodes[i].xpath(element)
-                    postnode = post_nodes[i].xpath(element)
-
-                    for k in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(k)] = post_nodes[i].xpath(
-                            id_list[k])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[k]) else None
-
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
-                        for j in range(len(postnode)):
-                            pre_nodevalue = prenode[j].text.strip()
-                            post_nodevalue = postnode[j].text.strip()
-                            resdict[
-                                ('pre_' + element.replace('-', '_'))] = pre_nodevalue
-                            resdict[
-                                ('post_' + element.replace('-', '_'))] = post_nodevalue
-                            if (post_nodevalue not in value_list):
-                                res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                        for k in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
+                            if (post_nodevalue in value_list):
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                res = False
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
         self.print_result('is-in', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
     def not_in(self, x_path, ele_list, err_mssg,
                info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing not-in Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("not-in")
         res = True
-        tresult = {}
-        resdict = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "not-in"
+        iddict = {}
+        predict = {}
+        postdict = {}
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "not-in"}
         try:
             element = ele_list[0]
             value_list = ele_list[1:]
@@ -782,101 +621,73 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n not-in test operator require two parameters"
         else:
-            #nodes = xml1.xpath('//' + x_path)
-            post_nodes = xml2.xpath(
-                x_path) if iter else xml2.xpath(x_path)[0:1]
-            if xml1:
-                pre_nodes = xml1.xpath(
-                    x_path)if iter else xml1.xpath(x_path)[0:1]
-            else:
-                pre_nodes = xml2.xpath(
-                    x_path) if iter else xml2.xpath(x_path)[0:1]
-
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    prenode = pre_nodes[i].xpath(element)
-                    postnode = post_nodes[i].xpath(element)
-
-                    for k in range(len(id_list)):
-                        resdict[
-                            'id_' +
-                            str(k)] = post_nodes[i].xpath(
-                            id_list[k])[0].text.strip() if post_nodes[i].xpath(
-                            id_list[k]) else None
-
+                    iddict, postnode, prenode = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
-                        for j in range(len(postnode)):
-                            pre_nodevalue = prenode[j].text.strip()
-                            post_nodevalue = postnode[j].text.strip()
-                            resdict[
-                                ('pre_' + element.replace('-', '_'))] = pre_nodevalue
-                            resdict[
-                                ('post_' + element.replace('-', '_'))] = post_nodevalue
-
-                            if (post_nodevalue in value_list):
-                                res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                        for k in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
+                            if (post_nodevalue not in value_list):
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                res = False
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
         self.print_result('not-in', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
     # operator requiring two operands
-
     def no_diff(self, x_path, ele_list, err_mssg,
                 info_mssg, teston, iter, id_list, xml1, xml2):
 
-        msg = "Performing no-diff Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("no-diff")
         res = True
-        data1 = {}
-        data2 = {}
-        tresult = {}
-        resdict = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "no-diff"
-        node1 = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
-        node2 = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
-        #node1 = xml1.xpath(x_path)
-        #node2 = xml2.xpath(x_path)
+        iddict = {}
+        predict = {}
+        postdict = {}
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "no-diff"}
+        pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
-        if (not node1) or (not node2):
+        if (not pre_nodes) or (not post_nodes):
             print "Nodes are not present in given Xpath!!"
             res = False
 
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
             # making dictionary for id and its corresponding xpath
-            for path in node1:
-                xlist = [path.find(id) for id in id_list]
-                val = []
-                for values in xlist:
-                    if values is not None:
-                        val.append(values.text)
-                data1[tuple(val)] = path
-            # print data1
+            predata = self._get_data(id_list, pre_nodes)
+            postdata = self._get_data(id_list, post_nodes)
 
-            for path in node2:
-                xlist = [path.find(id) for id in id_list]
-                val = []
-                for values in xlist:
-                    if values is not None:
-                        val.append(values.text)
-                data2[tuple(val)] = path
-            # print data2
+            if len(predata.keys()) >= len(postdata.keys()):
+                data1 = predata
+                data2 = postdata
+            else:
+                data1 = postdata
+                data2 = predata
 
-            # what if there are extra data added in one list
             for k in data1:
                 for length in range(len(k)):
-                    resdict['id_' + str(length)] = k[length].strip()
+                    iddict['id_' + str(length)] = k[length].strip()
 
                 if k in data2:
-                    # store ids in resdict
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, data1[k], data2[k], x_path, ele_list[0], err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, data1[k], data2[k], x_path, ele_list[0], info_mssg)
+
                     ele_xpath1 = data1.get(k).xpath(ele_list[0])
                     ele_xpath2 = data2.get(k).xpath(ele_list[0])
                     # assuming only one node
@@ -884,20 +695,17 @@ class Operator:
                         element.text for element in ele_xpath1][0].strip()
                     val_list2 = [
                         element.text for element in ele_xpath2][0].strip()
-                    resdict[
-                        ('pre_' + ele_list[0].replace('-', '_'))] = val_list1
-                    resdict[
-                        ('post_' + ele_list[0].replace('-', '_'))] = val_list2
+                    predict[ele_list[0].replace('-', '_')] = val_list1
+                    postdict[ele_list[0].replace('-', '_')] = val_list2
                     if val_list1 != val_list2:
                         res = False
-                        print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                        print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                     else:
-                        print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                        print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                 else:
-                    print "\n Error, id miss match ocuurred!!"
+                    print "\nError, id miss match ocuurred!!"
                     for kval in k:
                         print "missing node:", kval.strip()
-                    #print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
                     res = False
         self.print_result('no-diff', res)
         tresult['result'] = res
@@ -905,54 +713,40 @@ class Operator:
 
     def list_not_less(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing list-not-less Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("list-not-less")
         res = True
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "list-not-less"
-        resdict = {}
-        data1 = {}
-        data2 = {}
-        node1 = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
-        node2 = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
-        #node1 = xml1.xpath(x_path)
-        #node2 = xml2.xpath(x_path)
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "list-not-less"}
+        iddict = {}
+        predict = {}
+        postdict = {}
+        pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
-        if not node1 or not node2:
+        if not pre_nodes or not post_nodes:
             print "Nodes are not present in given Xpath!!"
             res = False
-
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
             # making dictionary for id and its corresponding xpath
-            for path in node1:
-                xlist = [path.find(id) for id in id_list]
-                val = []
-                for values in xlist:
-                    if values is not None:
-                        val.append(values.text)
-                data1[tuple(val)] = path
-            # print data1
 
-            for path in node2:
-                xlist = [path.find(id) for id in id_list]
-                val = []
-                for values in xlist:
-                    if values is not None:
-                        val.append(values.text)
-                data2[tuple(val)] = path
-            # print data2
+            predata = self._get_data(id_list, pre_nodes)
+            postdata = self._get_data(id_list, post_nodes)
 
-            for k in data1:
+            for k in predata:
                 for length in range(len(k)):
-                    resdict['id_' + str(length)] = k[length].strip()
+                    iddict['id_' + str(length)] = k[length].strip()
+                if k in postdata:
 
-                if k in data2:
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, predata[k], postdata[k], x_path, ele_list[0], err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, predata[k], postdata[k], x_path, ele_list[0], info_mssg)
+
                     if ele_list is not None:
-                        ele_xpath1 = data1.get(k).xpath(ele_list[0])
-                        ele_xpath2 = data2.get(k).xpath(ele_list[0])
+                        ele_xpath1 = predata.get(k).xpath(ele_list[0])
+                        ele_xpath2 = postdata.get(k).xpath(ele_list[0])
                         val_list1 = [element.text.strip()
                                      for element in ele_xpath1]
                         val_list2 = [element.text.strip()
@@ -962,20 +756,19 @@ class Operator:
                             if val1 not in val_list2:
                                 # user can only ask for values which are in pre
                                 # and not in post
-                                resdict[
-                                    ('pre_' + ele_list[0].replace('-', '_'))] = val1
+                                predict[ele_list[0].replace('-', '_')] = val1
                                 res = False
                                 print "Missing node :", val1, "for element tag ", ele_xpath1[0].tag, \
                                     "and parent element", ele_xpath1[
                                         0].getparent().tag
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                 else:
-                    print "\n ERROR, id miss match occurred!!!"
-                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                    print "\nERROR, id miss match occurred!!!"
+                    for kval in k:
+                        print "missing node:", kval.strip()
                     res = False
-
         self.print_result('list-not-less', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -985,69 +778,58 @@ class Operator:
         msg = "Performing list-not-more Test Operation"
         self.print_testmssg(msg)
         res = True
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "list-not-more"
-        data1 = {}
-        data2 = {}
-        resdict = {}
-        node1 = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
-        node2 = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
-        #node1 = xml1.xpath(x_path)
-        #node2 = xml2.xpath(x_path)
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "list-not-more"}
+        iddict = {}
+        predict = {}
+        postdict = {}
+        pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
-        if not node1 or not node2:
+        if not pre_nodes or not post_nodes:
             print "Nodes are not present in given Xpath!!"
             res = False
 
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
             # making dictionary for id and its corresponding xpath
-            for path in node1:
-                xlist = [path.find(id) for id in id_list]
-                val = []
-                for values in xlist:
-                    if values is not None:
-                        val.append(values.text)
-                data1[tuple(val)] = path
-            # print data1
+            predata = self._get_data(id_list, pre_nodes)
+            postdata = self._get_data(id_list, post_nodes)
 
-            for path in node2:
-                xlist = [path.find(id) for id in id_list]
-                val = []
-                for values in xlist:
-                    if values is not None:
-                        val.append(values.text)
-                data2[tuple(val)] = path
-            # print data2
-
-            for k in data2:
+            for k in postdata:
                 for length in range(len(k)):
-                    resdict['id_' + str(length)] = k[length].strip()
+                    iddict['id_' + str(length)] = k[length].strip()
 
-                if k in data1:
+                if k in predata:
+
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, predata[k], postdata[k], x_path, ele_list[0], err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, predata[k], postdata[k], x_path, ele_list[0], info_mssg)
+
                     if ele_list is not None:
-                        ele_xpath1 = data1.get(k).xpath(ele_list[0])
-                        ele_xpath2 = data2.get(k).xpath(ele_list[0])
+                        ele_xpath1 = predata.get(k).xpath(ele_list[0])
+                        ele_xpath2 = postdata.get(k).xpath(ele_list[0])
                         val_list1 = [element.text.strip()
                                      for element in ele_xpath1]
                         val_list2 = [element.text.strip()
                                      for element in ele_xpath2]
                         for val2 in val_list2:
                             if val2 not in val_list1:
-                                resdict[
-                                    ('post_' + ele_list[0].replace('-', '_'))] = val2
+                                postdict[ele_list[0].replace('-', '_')] = val2
                                 res = False
                                 print "Missing node :", val2, "for element tag ", ele_xpath2[0].tag, \
                                     "and parent element", ele_xpath2[
                                         0].getparent().tag
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                                print predict, postdict
+                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                 else:
-                    print "\n ERROR, id miss match occurred !!"
-                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                    print "\nERROR, id miss match occurred !!"
+                    for kval in k:
+                        print "missing node:", kval.strip()
                     res = False
         self.print_result('list-not-more', res)
         tresult['result'] = res
@@ -1055,66 +837,53 @@ class Operator:
 
     def delta(self, x_path, ele_list, err_mssg,
               info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing delta Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("delta")
         res = True
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['element_list'] = ele_list
-        tresult['testoperation'] = "delta"
-        data1 = {}
-        data2 = {}
-        resdict = {}
-        node1 = xml1.xpath(x_path) if iter else xml1.xpath(x_path)[0:1]
-        node2 = xml2.xpath(x_path) if iter else xml2.xpath(x_path)[0:1]
-        #node1 = xml1.xpath(x_path)
-        #node2 = xml2.xpath(x_path)
+        tresult = {
+            'xpath': x_path,
+            'element_list': ele_list,
+            'testoperation': "delta"}
+        iddict = {}
+        predict = {}
+        postdict = {}
+        pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
-        if not node1 or not node2:
+        if not pre_nodes or not post_nodes:
             print "Nodes are not present in given Xpath!!"
             res = False
 
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
             # making dictionary for id and its corresponding xpath
-            for path in node1:
-                xlist = [path.find(id) for id in id_list]
-                val = []
-                for values in xlist:
-                    if values is not None:
-                        val.append(values.text)
-                data1[tuple(val)] = path
 
-            # data1 is dictionary of id and its xpath
-            for path in node2:
-                xlist = [path.find(id) for id in id_list]
-                val = []
-                for values in xlist:
-                    if values is not None:
-                        val.append(values.text)
-                data2[tuple(val)] = path
+            predata = self._get_data(id_list, pre_nodes)
+            postdata = self._get_data(id_list, post_nodes)
 
-            for k in data1:
+            for k in predata:
                 # checking if id in first data set is present in second data
                 # set or not
                 for length in range(len(k)):
-                    resdict['id_' + str(length)] = k[length]
-                    
-                if k in data2:
+                    iddict['id_' + str(length)] = k[length]
+
+                if k in postdata:
+
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, predata[k], postdata[k], x_path, ele_list[0], err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, predata[k], postdata[k], x_path, ele_list[0], info_mssg)
+
                     if ele_list is not None:
                         # print "data values are", data1.get(k), data2.get(k)
-                        ele_xpath1 = data1.get(k).xpath(ele_list[0])
-                        ele_xpath2 = data2.get(k).xpath(ele_list[0])
+                        ele_xpath1 = predata.get(k).xpath(ele_list[0])
+                        ele_xpath2 = postdata.get(k).xpath(ele_list[0])
                         if len(ele_xpath1) and len(ele_xpath2):
                             val1 = float(
                                 ele_xpath1[0].text)  # value of desired node for pre snapshot
                             val2 = float(
                                 ele_xpath2[0].text)  # value of desired node for post snapshot
                             del_val = ele_list[1]
-                            resdict[
-                                ('pre_' + ele_list[0].replace('-', '_'))] = val1
-                            resdict[
-                                ('post_' + ele_list[0].replace('-', '_'))] = val2
+                            predict[ele_list[0].replace('-', '_')] = val1
+                            postdict[ele_list[0].replace('-', '_')] = val2
 
                             # for negative percentage
                             if re.search('%', del_val) and (
@@ -1123,9 +892,9 @@ class Operator:
                                 mvalue = val1 - ((val1 * dvalue) / 100)
                                 if (val2 > val1 or val2 < mvalue):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
 
                             # for positive percent change
                             elif re.search('%', del_val) and (re.search('/+', del_val)):
@@ -1133,9 +902,9 @@ class Operator:
                                 mvalue = val1 + ((val1 * dvalue) / 100)
                                 if (val2 < val1 or val2 > mvalue):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
 
                             # absolute percent change
                             elif re.search('%', del_val):
@@ -1144,9 +913,9 @@ class Operator:
                                 mvalue2 = val1 + (val1 * dvalue) / 100
                                 if (val2 < mvalue1 or val2 > mvalue2):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
 
                             # for negative change
                             elif re.search('-', del_val):
@@ -1154,9 +923,9 @@ class Operator:
                                 mvalue = val1 - dvalue
                                 if (val2 < mvalue or val2 > val1):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
 
                              # for positive change
                             elif re.search('\+', del_val):
@@ -1164,9 +933,9 @@ class Operator:
                                 mvalue = val1 + dvalue
                                 if (val2 >= mvalue or val2 <= val1):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
 
                             else:
                                 dvalue = float(ele_list[1].strip('%'))
@@ -1174,14 +943,13 @@ class Operator:
                                 mvalue2 = val1 + dvalue
                                 if (val2 < mvalue1 or val2 > mvalue2):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(resdict)
+                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                 else:
                     print "\n ERROR, id miss match occurred !! "
                     for kval in k:
                         print "missing node:", kval.strip()
-                    #print jinja2.Template(err_mssg.replace('-', '_')).render(resdict)
                     res = False
 
         self.print_result('delta', res)

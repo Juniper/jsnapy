@@ -6,7 +6,7 @@ check_chassis_fpc:
   - iterate: 
       xpath: fpc[normalize-space(slot) = "0"]
       tests:
-        - in-range: memory-heap-utilization, 6 , 5
-          info: "Test Succeeded!! memory heap utilisation of the FPCs is within the range , now it is <{{post_memory-heap-utilization}}>, before it was <{{pre_memory-heap-utilization}}>"
-          err: "Test Failed!!! memory heap utilisation of the FPCs is out of range, now it is <{{post_memory-heap-utilization}}>, before it was <{{pre_memory-heap-utilization}}>"
+        - not-range: memory-heap-utilization, 5 , 40
+          info: "Test Succeeded!! memory heap utilisation of the FPCs is within the range , now it is <{{post['memory-heap-utilization']}}>, before it was <{{pre['memory-heap-utilization']}}> with temperature: {{post['temperature']}}"
+          err: "Test Failed!!! memory heap utilisation of the FPCs is out of range, now it is <{{post['memory-heap-utilization']}}>, before it was <{{pre['memory-heap-utilization']}}> with temperature: {{post['temperature']}}"
 

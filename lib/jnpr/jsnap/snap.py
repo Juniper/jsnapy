@@ -17,6 +17,7 @@ class Parse:
         :param username: device's username
         :return:
         """
+        print "\nTaking snapshots of %s............ " % dev
         self.command_list = []
         self.rpc_list = []
         self.test_included = []
@@ -31,7 +32,7 @@ class Parse:
                     try:
                         rpc_reply = dev.rpc.cli(command, format='xml')
                     except Exception as ex:
-                        print "ERROR occurred!!!",ex
+                        print "ERROR occurred!!!", ex
                     else:
                         filename = snap_files + '_' + name + '.' + 'xml'
                         output_file = os.path.join(path, 'snapshots', filename)
@@ -73,17 +74,21 @@ class Parse:
                                 kwargs['filter_xml'] = filter_data
                         try:
                             rpc_reply = getattr(
-                                        dev.rpc,
-                                        rpc.replace(
-                                        '-',
-                                        '_'))(
-                                        **kwargs)
+                                dev.rpc,
+                                rpc.replace(
+                                    '-',
+                                    '_'))(
+                                **kwargs)
                         except Exception as ex:
                             print "ERROR occurred!!!", ex
 
                     else:
                         try:
-                            rpc_reply = getattr(dev.rpc, rpc.replace('-', '_'))()
+                            rpc_reply = getattr(
+                                dev.rpc,
+                                rpc.replace(
+                                    '-',
+                                    '_'))()
                         except Exception as ex:
                             print "ERROR occurred!!!", ex
                     if 'rpc_reply' in locals():
@@ -93,7 +98,6 @@ class Parse:
                             f.write(etree.tostring(rpc_reply))
 
                         # SQLiteChanges
-
                         if db['store_in_sqlite'] is True:
                             a = snap_files.split('_')
                             host = a[0]

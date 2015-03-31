@@ -7,7 +7,7 @@ check_chassis_fpc:
       id: ./memory-dram-size
       xpath: //fpc[normalize-space(slot) = "0"]
       tests:
-        - is-gt: cpu-total, 90
-          info: "Test Succeeded!!, cpu-total now it is <{{post_cpu-total}}>, before it was <{{pre_cpu-total}}> with id {{id_0}}"
-          err: "Test Failed!!!, cpu-total is <{{post_cpu-total}}>, before it was <{{pre_cpu-total}}> with id {{id_0}}"
+        - is-gt: cpu-total, 2
+          info: "Test Succeeded!!, cpu-total now it is <{{post['cpu-total']}}>, before it was <{{pre['cpu-total']}}> with id {{id_0}} and memory-heap-utilization: {{post['memory-heap-utilization']}}"
+          err: "Test Failed!!!, cpu-total is <{{post['cpu-total']}}>, before it was <{{pre['cpu-total']}}> with id {{id_0}} and memory-heap-utilization: {{post['memory-heap-utilization']}} "
 

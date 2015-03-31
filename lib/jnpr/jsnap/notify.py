@@ -12,26 +12,17 @@ class Notification:
     def notify(self, mail_file, hostname, password, test_obj):
         """
         function to generate email, using jinja template in content.html
-
         :param m_file: main config file
         :param hostname: device name
         :param test_obj:
         :return:
         """
-        '''
-        mfile = os.path.join(os.getcwd(), 'configs', m_file)
-        mail_file = open(mfile, 'r')
-        mail_file = yaml.load(mail_file)
-        '''
-
+        print"\nSending mail............"
         testdetails = test_obj.test_details
-
         templateLoader = jinja2.FileSystemLoader(searchpath="/")
         templateEnv = jinja2.Environment(loader=templateLoader)
-
         TEMPLATE_FILE = os.path.join(os.path.dirname(__file__), 'content.html')
         template = templateEnv.get_template(TEMPLATE_FILE)
-
         outputText = template.render(device=hostname, name=mail_file['recipient_name'], tests=testdetails, date=mail_file['date'],
                                      tpassed=test_obj.no_passed, tfailed=test_obj.no_failed,
                                      fresult=test_obj.result, sname=mail_file['sender_name'])
@@ -39,13 +30,12 @@ class Notification:
         part2 = MIMEText('outputText1', 'html')
         part2.set_payload(outputText)
         msg.attach(part2)
-
         from_mail = mail_file['from']
         to = mail_file['to']
         msg['Subject'] = hostname + ' : ' + mail_file['sub']
-        if mail_file.has_key('server') and mail_file.has_key('port'):
+        if 'server' in mail_file and 'port' in mail_file:
             servername = mail_file['server']
-            port= mail_file.has_key['port']
+            port = mail_file.has_key['port']
             server = smtplib.SMTP(servername, port)
         else:
             server = smtplib.SMTP('smtp.gmail.com', 587)

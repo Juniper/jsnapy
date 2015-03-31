@@ -6,7 +6,7 @@ check_show_interfaces_terse:
   - iterate: 
       xpath: //physical-interface[normalize-space(name) = "ge-0/0/0"]
       tests:
-        - not-in: oper-status, up, abc
-          info: "Test Succeeded!! Physical operational status is valid, it is <{{post_oper-status}}> before it was <{{pre_oper-status}}>"
-          err: "Test Failed!!! Physical operational status is not valid, it is <{{post_oper-status}}> before it was <{{pre_oper-status}}>"
+        - is-in: oper-status, downoo, up
+          info: "Test Succeeded!! Physical operational status is valid, it is <{{post['oper-status']}}> before it was <{{pre['oper-status']}}> and admin status {{pre['admin-status']}}"
+          err: "Test Failed!!! Physical operational status is not valid, it is <{{post['oper-status']}}> before it was <{{pre['oper-status']}}> and admin status {{pre['admin-status']}} "
 
