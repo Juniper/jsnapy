@@ -753,10 +753,10 @@ class Operator:
                                      for element in ele_xpath2]
 
                         for val1 in val_list1:
+                            predict[ele_list[0].replace('-', '_')] = val1
                             if val1 not in val_list2:
                                 # user can only ask for values which are in pre
                                 # and not in post
-                                predict[ele_list[0].replace('-', '_')] = val1
                                 res = False
                                 print "Missing node :", val1, "for element tag ", ele_xpath1[0].tag, \
                                     "and parent element", ele_xpath1[
@@ -816,8 +816,8 @@ class Operator:
                         val_list2 = [element.text.strip()
                                      for element in ele_xpath2]
                         for val2 in val_list2:
+                            postdict[ele_list[0].replace('-', '_')] = val2
                             if val2 not in val_list1:
-                                postdict[ele_list[0].replace('-', '_')] = val2
                                 res = False
                                 print "Missing node :", val2, "for element tag ", ele_xpath2[0].tag, \
                                     "and parent element", ele_xpath2[
