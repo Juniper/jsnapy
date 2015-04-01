@@ -215,7 +215,7 @@ class Jsnap:
                 test_file = open(tfile, 'r')
                 test_files.append(yaml.load(test_file))
             else:
-                print "File %s is not found" % tfile
+                print "ERROR!! File %s is not found" % tfile
         g = Parse()
         for tests in test_files:
             g.generate_reply(tests, dev, snap_files, self.db, username)
