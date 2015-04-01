@@ -19,7 +19,7 @@ class Operator:
     # call methods based on test operation specified, eg if testop is
     # is-equal, then it will call is_equal function
     def define_operator(
-            self, testop, x_path, ele_list, err_mssg, info_mssg, teston, iter, id=0, *args):
+            self, testop, x_path, ele_list, err_mssg, info_mssg, teston, iter, id, *args):
         try:
             getattr(
                 self,
@@ -35,7 +35,7 @@ class Operator:
                 id,
                 *args)
         except AttributeError as e:
-            print "\nTest Operator  not defined !!!!! \n error message :", e.message
+            print "\nTest Operator not defined !!!!! \nERROR Message :", e.message
         except:
             print "\nUndefined error occurred, please check test cases !!!"
 
@@ -129,7 +129,7 @@ class Operator:
             element = ele_list[0]
         except IndexError as e:
             print "\n Error occurred while accessing test element", e.message
-            print "\n element is not specified for testing"
+            print "\n Element is not specified for testing"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -171,7 +171,7 @@ class Operator:
             element = ele_list[0]
         except IndexError as e:
             print "\n Error occurred while accessing test element", e.message
-            print "\n exists test operator require two parameters"
+            print "\n 'exists' test operator require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -260,7 +260,7 @@ class Operator:
             value = ele_list[1]
         except IndexError as e:
             print "\nError occurred while accessing test element", e.message
-            print "\n is-equal test operator requires two parameter"
+            print "\n'is-equal' test operator requires two parameter"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -304,7 +304,7 @@ class Operator:
             value = ele_list[1]
         except IndexError as e:
             print "\nError occurred while accessing test element", e.message
-            print "\n not-equal test operator requires two parameter"
+            print "\n'not-equal' test operator requires two parameter"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -348,7 +348,7 @@ class Operator:
             range2 = float(ele_list[2])
         except IndexError as e:
             print "\nError occurred while accessing test element\n", e.message
-            print "\n in-range test operator requires two parameter"
+            print "\n'in-range' test operator requires two parameter"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -438,8 +438,8 @@ class Operator:
             element = ele_list[0]
             val1 = float(ele_list[1])
         except IndexError as e:
-            print "\n Error occurred while accessing test element", e.message
-            print "\n is-gt test operator require two parameter"
+            print "\nError occurred while accessing test element", e.message
+            print "\n'is-gt' test operator require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -482,8 +482,8 @@ class Operator:
             element = ele_list[0]
             val1 = float(ele_list[1])
         except IndexError as e:
-            print "\n Error occurred while accessing test element ", e.message
-            print "\n is-lt test operator require two parameter"
+            print "\nError occurred while accessing test element ", e.message
+            print "\n'is-lt' test operator require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
@@ -527,8 +527,8 @@ class Operator:
             element = ele_list[0]
             value = ele_list[1]
         except IndexError as e:
-            print "\n Error occurred while accessing test element", e.message
-            print "\n Contains require two parameters"
+            print "\nError occurred while accessing test element", e.message
+            print "\n'contains' require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -575,8 +575,8 @@ class Operator:
             element = ele_list[0]
             value_list = ele_list[1:]
         except IndexError as e:
-            print "\n Error occurred while accessing test element", e.message
-            print "\n is-in test operator require two parameters"
+            print "\nError occurred while accessing test element", e.message
+            print "\n'is-in' test operator require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -618,8 +618,8 @@ class Operator:
             element = ele_list[0]
             value_list = ele_list[1:]
         except IndexError as e:
-            print "\n Error occurred while accessing test element", e.message
-            print "\n not-in test operator require two parameters"
+            print "\nError occurred while accessing test element", e.message
+            print "\n'not-in' test operator require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -705,7 +705,7 @@ class Operator:
                 else:
                     print "\nError, id miss match ocuurred!!"
                     for kval in k:
-                        print "missing node:", kval.strip()
+                        print "Missing node:", kval.strip()
                     res = False
         self.print_result('no-diff', res)
         tresult['result'] = res
@@ -767,7 +767,7 @@ class Operator:
                 else:
                     print "\nERROR, id miss match occurred!!!"
                     for kval in k:
-                        print "missing node:", kval.strip()
+                        print "Missing node:", kval.strip()
                     res = False
         self.print_result('list-not-less', res)
         tresult['result'] = res
@@ -829,7 +829,7 @@ class Operator:
                 else:
                     print "\nERROR, id miss match occurred !!"
                     for kval in k:
-                        print "missing node:", kval.strip()
+                        print "Missing node:", kval.strip()
                     res = False
         self.print_result('list-not-more', res)
         tresult['result'] = res

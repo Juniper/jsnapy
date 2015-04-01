@@ -147,6 +147,7 @@ class Jsnap:
                 self.db['check_from_sqlite'] = d['check_from_sqlite']
             check = self.args.check
             snap = self.args.snap or self.args.snapcheck
+
             if (self.db['store_in_sqlite'] and snap) or (
                     self.db['check_from_sqlite'] and check):
                 if d.__contains__('database_name'):
@@ -186,16 +187,14 @@ class Jsnap:
                             print (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
                                                        " in format: first_snapshot_id, second_snapshot_id")
                             exit(1)
-
-            if self.db[
-                    'check_from_sqlite'] is False or compare_from_id is False:
-                if self.args.check is True and (
-                        self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None):
-                    print(
-                        colorama.Fore.RED +
-                        "*********Arguments not given correctly, Please refer below help message!!********")
-                    self.parser.print_help()
-                    sys.exit(1)
+        if self.db['check_from_sqlite'] is False or compare_from_id is False:
+            if self.args.check is True and (
+                    self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None):
+                print(
+                    colorama.Fore.RED +
+                    "*********Arguments not given correctly, Please refer below help message!!********")
+                self.parser.print_help()
+                sys.exit(1)
         self.login(output_file)
 
     # call to generate snap files
