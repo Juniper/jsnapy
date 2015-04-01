@@ -246,7 +246,7 @@ class Operator:
 
     def is_equal(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        self.print_testmssg("not-equal")
+        self.print_testmssg("is-equal")
         res = True
         tresult = {}
         predict = {}
