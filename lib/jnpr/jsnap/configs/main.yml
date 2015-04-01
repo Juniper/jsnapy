@@ -5,14 +5,11 @@ hosts:
     passwd: MaRtInI
 tests:
   - tests.yml
-
-
 sqlite:
   - store_in_sqlite: no
     check_from_sqlite: no
     database_name: jbb.db
     compare: 0,1
-
 mail: mail.yml
 
 # for multiple devices with databse
