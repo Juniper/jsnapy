@@ -18,7 +18,7 @@ class Parse:
         :param username: device's username
         :return:
         """
-        print "\nTaking snapshots of %s............ " % dev
+        print "\nTaking snapshots of............" 
         self.command_list = []
         self.rpc_list = []
         self.test_included = []
@@ -35,6 +35,7 @@ class Parse:
                         self.command_list.append(command)
                         name = '_'.join(command.split())
                         try:
+                            print "\nTaking snapshot for %s"%command
                             rpc_reply_command = dev.rpc.cli(
                                 command,
                                 format='xml')
@@ -87,6 +88,7 @@ class Parse:
                                         filter_data)
                                     kwargs['filter_xml'] = filter_data
                             try:
+                                print "\nTaking snapshot of %s" %rpc
                                 rpc_reply = getattr(
                                     dev.rpc,
                                     rpc.replace(
@@ -98,6 +100,7 @@ class Parse:
                                 print "\n**********Complete error message***********\n", sys.exc_info()
                         else:
                             try:
+                                print "\nTaking snapshot of %s" %rpc
                                 rpc_reply = getattr(
                                     dev.rpc,
                                     rpc.replace(
