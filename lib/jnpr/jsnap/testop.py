@@ -36,28 +36,27 @@ class Operator:
                 *args)
         except AttributeError as e:
             print "\nTest Operator not defined !!!!! \nERROR Message :", e.message
-            self.no_failed= self.no_failed +1
+            self.no_failed = self.no_failed + 1
         except:
             print "\nUndefined error occurred, please check test cases !!!"
-            self.no_failed= self.no_failed +1
-
+            self.no_failed = self.no_failed + 1
 
     def print_result(self, testname, result):
         if result is False:
             self.no_failed = self.no_failed + 1
             print (
                 colorama.Fore.RED +
-                '\nFinal result of ' + testname + ': FAILED\n')
+                'Final result of ' + testname + ': FAILED\n')
         elif result is True:
             self.no_passed = self.no_passed + 1
             print (
                 colorama.Fore.GREEN +
-                '\nFinal result of ' + testname + ': PASSED \n')
+                'Final result of ' + testname + ': PASSED \n')
 
     def print_testmssg(self, testname):
         msg = "Performing %s Test Operation" % testname
-        testmssg = (80 - len(msg) - 2) / 2 * '*' + \
-            msg + (80 - len(msg) - 2) / 2 * '*'
+        testmssg = (80 - len(msg) - 2) / 2 * '-' + \
+            msg + (80 - len(msg) - 2) / 2 * '-'
         print (colorama.Fore.BLUE + testmssg)
 
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
@@ -287,6 +286,9 @@ class Operator:
                             else:
                                 res = False
                                 print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                    else:
+                        print "ERROR!! Node '%s' not found" % element
+                        res = False
         self.print_result('is-equal', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -330,6 +332,9 @@ class Operator:
                             else:
                                 res = False
                                 print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                    else:
+                        print "ERROR!! Node '%s' not found" % element
+                        res = False
         self.print_result('not-equal', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -376,6 +381,9 @@ class Operator:
                             else:
                                 res = False
                                 print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                    else:
+                        print "ERROR!! Node '%s' not found" % element
+                        res = False
         self.print_result('in-range', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -422,6 +430,9 @@ class Operator:
                             else:
                                 res = False
                                 print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                    else:
+                        print "ERROR!! Node '%s' not found" % element
+                        res = False
         self.print_result('not-range', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -466,6 +477,9 @@ class Operator:
                             else:
                                 res = False
                                 print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                    else:
+                        print "ERROR!! Node '%s' not found" % element
+                        res = False
         self.print_result('is-gt', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -511,6 +525,9 @@ class Operator:
                             else:
                                 res = False
                                 print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                    else:
+                        print "ERROR!! Node '%s' not found" % element
+                        res = False
         self.print_result('is-lt', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -602,6 +619,9 @@ class Operator:
                             else:
                                 res = False
                                 print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                    else:
+                        print "ERROR!! Node '%s' not found" % element
+                        res = False
         self.print_result('is-in', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -645,6 +665,9 @@ class Operator:
                             else:
                                 res = False
                                 print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                    else:
+                        print "ERROR!! Node '%s' not found" % element
+                        res = False
         self.print_result('not-in', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -965,7 +988,7 @@ class Operator:
         finalmssg = (80 - len(msg) - 2) / 2 * '-' + \
             msg + (80 - len(msg) - 2) / 2 * '-'
 
-        print (colorama.Fore.BLUE + "\n" + finalmssg)
+        print (colorama.Fore.BLUE + finalmssg)
         print (
             colorama.Fore.GREEN +
             "\nTotal No of tests passed: {}".format(
