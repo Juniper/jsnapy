@@ -36,8 +36,11 @@ class Operator:
                 *args)
         except AttributeError as e:
             print "\nTest Operator not defined !!!!! \nERROR Message :", e.message
+            self.no_failed= self.no_failed +1
         except:
             print "\nUndefined error occurred, please check test cases !!!"
+            self.no_failed= self.no_failed +1
+
 
     def print_result(self, testname, result):
         if result is False:
