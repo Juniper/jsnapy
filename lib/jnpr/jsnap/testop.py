@@ -673,6 +673,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     # operator requiring two operands
+    # operator requiring two operands
     def no_diff(self, x_path, ele_list, err_mssg,
                 info_mssg, teston, iter, id_list, xml1, xml2):
 
@@ -694,15 +695,8 @@ class Operator:
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
             # making dictionary for id and its corresponding xpath
-            predata = self._get_data(id_list, pre_nodes)
-            postdata = self._get_data(id_list, post_nodes)
-
-            if len(predata.keys()) >= len(postdata.keys()):
-                data1 = predata
-                data2 = postdata
-            else:
-                data1 = postdata
-                data2 = predata
+            data1 = self._get_data(id_list, pre_nodes)
+            data2 = self._get_data(id_list, post_nodes)
 
             for k in data1:
                 for length in range(len(k)):
@@ -729,10 +723,9 @@ class Operator:
                     else:
                         print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
                 else:
-                    print "\nError, id miss match ocuurred!!"
+                    print "\nFollowing Node values in pre snapshots not found in postsnapshot!!"
                     for kval in k:
                         print "Missing node:", kval.strip()
-                    res = False
         self.print_result('no-diff', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
