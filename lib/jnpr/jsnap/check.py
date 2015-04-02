@@ -149,7 +149,10 @@ class Comparator:
 
 # not implemented for sqlite
     def compare_diff(self, pre_snap_file, post_snap_file):
-        icdiff.start(pre_snap_file, post_snap_file)
+        if os.path.isfile(pre_snap_file) and os.path.isfile(post_snap_file):
+            icdiff.start(pre_snap_file, post_snap_file)
+        else:
+            print "ERROR!!! Files are not present in given path"
 
 # generate names of snap files from hostname and out files given by user,
 # tests are performed on values stored in these snap filesin which test is
