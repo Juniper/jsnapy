@@ -134,8 +134,12 @@ class Jsnap:
         else:
             output_file = ""
         conf_file = self.args.file
-        config_file = open(conf_file, 'r')
-        self.main_file = yaml.load(config_file)
+        if os.path.isfile(conf_file):
+            config_file = open(conf_file, 'r')
+            self.main_file = yaml.load(config_file)
+        else:
+            print "ERROR!! file path '%s' for main config file is not correct" %conf_file
+            sys.exit(-1)
 
         compare_from_id = False
         if self.main_file.__contains__(
