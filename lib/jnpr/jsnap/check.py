@@ -1,6 +1,6 @@
 import yaml
 from lxml import etree
-import testop
+import jnpr.jsnap.testop
 import os
 import sys
 from jnpr.jsnap.sqlite_get import SqliteExtractXml
@@ -177,7 +177,7 @@ class Comparator:
         path = os.getcwd()
         # get the test files from config.yml
         if main_file.get('tests') is None:
-            print "\nNo testfile, Please mention test files !!"
+            print "\nNo test file, Please mention test files !!"
         else:
             for tfiles in main_file.get('tests'):
                 filename = os.path.join(os.getcwd(), 'configs', tfiles)
@@ -196,13 +196,15 @@ class Comparator:
                         print "\nTests Included: %s " % (val)
                         try:
                             if t[val][0].keys()[0] == 'command':
-                                command = t[val][0]['command']
+                                command = t[val][0].get('command')
+                                reply_format = t[val][0].get('format', 'xml')
                                 print (40) * '*' + "\n Command is " + \
                                     command + "\n" + (40) * '*'
                                 name = '_'.join(command.split())
                                 teston = command
                             else:
                                 rpc = t[val][0]['rpc']
+                                reply_format = t[val][0].get('format', 'xml')
                                 print (40) * '*' + "\n RPC is " + \
                                     rpc + "\n" + (40) * '*'
                                 name = rpc
@@ -213,45 +215,53 @@ class Comparator:
                             print "ERROR Occurred: ", ex
                         else:
                             if db.get(
-                                    'check_from_sqlite') is True and check is True:
+                                    'check_from_sqlite') is True and check is True and reply_format == 'xml':
                                 a = SqliteExtractXml(db.get('db_name'))
                                 if (db['first_snap_id'] is not None) and (
                                         db['second_snap_id'] is not None):
-                                    snapfile1 = a.get_xml_using_snap_id(
+                                    snapfile1, data_format = a.get_xml_using_snap_id(
                                         str(device),
                                         name,
                                         db['first_snap_id'])
                                 else:
-                                    snapfile1 = a.get_xml_using_snapname(
+                                    snapfile1, data_format = a.get_xml_using_snapname(
                                         str(device),
                                         name,
                                         pre)
+                                if data_format != 'xml':
+                                    print "ERROR!! Data stored in database is not in xml format. " \
+                                          "For checking snapshots in text format use '--diff' option "
+                                    exit(1)
                             else:
                                 file1 = str(device) + '_' + pre + \
-                                    '_' + name + '.xml'
+                                    '_' + name + '.'+reply_format
                                 snapfile1 = os.path.join(
                                     path,
                                     'snapshots',
                                     file1)
 
-                            if check is True:
+                            if check is True and reply_format == 'xml':
                                 if db.get('check_from_sqlite') is True:
                                     if (db['first_snap_id'] is not None) and (
                                             db['second_snap_id'] is not None):
-                                        snapfile2 = a.get_xml_using_snap_id(
+                                        snapfile2, data_format = a.get_xml_using_snap_id(
                                             str(device),
                                             name,
                                             db['second_snap_id'])
                                     else:
-                                        snapfile2 = a.get_xml_using_snapname(
+                                        snapfile2, data_format = a.get_xml_using_snapname(
                                             str(device),
                                             name,
                                             post)
+                                    if data_format != 'xml':
+                                        print "ERROR!! Data stored in database is not in xml format. " \
+                                            "For checking snapshots in text format use '--diff' option "
+                                        exit(1)
                                 else:
 
                                     print str(device), post, name
                                     file2 = str(device) + '_' + post + \
-                                        '_' + name + '.xml'
+                                        '_' + name + '.'+reply_format
                                     snapfile2 = os.path.join(
                                         path,
                                         'snapshots',
@@ -268,14 +278,14 @@ class Comparator:
                             # as of now diff is not implemented for diff
                             elif(diff is True):
                                 file2 = str(device) + '_' + \
-                                    post + '_' + name + '.xml'
+                                post + '_' + name + '.' + reply_format
                                 snapfile2 = os.path.join(
                                     path,
                                     'snapshots',
                                     file2)
                                 self.compare_diff(snapfile1, snapfile2)
 
-                            else:
+                            elif (reply_format == 'xml'):
                                 self.compare_reply(
                                     op,
                                     t[val],
@@ -283,6 +293,8 @@ class Comparator:
                                     check,
                                     db,
                                     snapfile1)
+                            else:
+                                print "ERROR!! for checking snapshots in text format use '--diff' option "
                 else:
                     print "ERROR!!! None of the tests cases included"
 
