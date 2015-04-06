@@ -9,24 +9,24 @@ test_command_version:
       xpath: '/bgp-information/bgp-peer'
       tests:
         - is-equal: peer-address, 10.209.19.203       # element in which test is performed
-          err: "Test Failed!! peer-address got changed, it is now {{post_peer-address}}"
-          info: 'peer-address is same with value %s peer-address, it is now {{post_peer-address}}'
+          err: "Test Failed!! peer-address got changed, it is now {{post['peer-address']}}"
+          info: "peer-address is same with value %s peer-address, it is now {{post['peer-address']}}"
 
         - in-range: peer-as, 100,900        # element in which test is performed
-          err: "Test Failed!! peer-as got changed, it is now {{post_peer-as}}"
-          info: "Test succeeded!! peer-as is same %s, peer-as, it is now {{post_peer-as}}"
+          err: "Test Failed!! peer-as got changed, it is now {{post['peer-as']}}"
+          info: "Test succeeded!! peer-as is same %s, peer-as, it is now {{post['peer-as']}}"
 
   - iterate:
       id: pqr
       xpath: '//bgp-information/bgp-peer/bgp-option-information'
       tests:
         - is-gt: holdtime, 10       # element in which test is performed
-          err: "Test Failed!! holdtime got changed, it is now {{post_holdtime}}"
-          info: "Test succeeded!! holdtime is same, it is now {{post_holdtime}}"
+          err: "Test Failed!! holdtime got changed, it is now {{post['holdtime']}}"
+          info: "Test succeeded!! holdtime is same, it is now {{post['holdtime']}}"
 
         - is-lt: preference, 200      # element in which test is performed
-          err: "Test Failed!! preference got changed, {{post_preference}}"
-          info: "Test succeeded!! preference is same, {{post_preference}}"
+          err: "Test Failed!! preference got changed, {{post['preference']}}"
+          info: "Test succeeded!! preference is same, {{post['preference']}}"
 
 test_rpc_version:
   - rpc: get-bgp-neighbor-information
@@ -35,16 +35,16 @@ test_rpc_version:
       xpath: '//bgp-information/bgp-peer'
       tests:
         - not-equal: last-state,Idle       # element in which test is performed
-          err: "Test Failed!! last state changed, it is now {{post_last-state}}"
-          info: "Test succeeded!! last state is same, it is now {{post_last-state}}"
+          err: "Test Failed!! last state changed, it is now {{post['last-state']}}"
+          info: "Test succeeded!! last state is same, it is now {{post['last-state']}}"
 
         - all-same: flap-count
-          err: "Test Failed!!! flap count are all same!!, it is now {{post_flap-count}} "
-          info: "Test Succeeded!! flap count are all different, it is now {{post_flap-count}}!!!"
+          err: "Test Failed!!! flap count are all same!!, it is now {{post['flap-count']}} "
+          info: "Test Succeeded!! flap count are all different, it is now {{post['flap-count']}}!!!"
 
         - is-equal: flap-count, 0
-          err: "Test Failed!!! flap count not in range!!, it is now {{post_flap-count}} "
-          info: "Test Succeeded!! flap count is in range, it is now {{post_flap-count}}!!!"
+          err: "Test Failed!!! flap count not in range!!, it is now {{post['flap-count']}} "
+          info: "Test Succeeded!! flap count is in range, it is now {{post['flap-count']}}!!!"
 
 test_version:
   - command: show bgp neighbor
@@ -53,5 +53,5 @@ test_version:
       xpath: '/bgp-information/bgp-peer'
       tests:
         - is-equal: peer-address, 10.209.19.204       # element in which test is performed
-          err: "Test Failed!! peer-address got changed, now it is {{post_peer-address}}"
-          info: 'peer-address is same with value %s %s peer-address peer-as, now it is {{post_peer-address}}'
+          err: "Test Failed!! peer-address got changed, now it is {{post['peer-address']}}"
+          info: "peer-address is same with value %s %s peer-address peer-as, now it is {{post['peer-address']}}"
