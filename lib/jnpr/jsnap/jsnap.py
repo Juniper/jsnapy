@@ -341,15 +341,18 @@ class Jsnap:
                     os.getcwd(),
                     'configs',
                     self.main_file['mail'])
-                mail_file = open(mfile, 'r')
-                mail_file = yaml.load(mail_file)
-                if "passwd" not in mail_file:
-                    passwd = getpass.getpass("Please enter ur email password ")
+                if os.path.isfile(mfile):
+                    mail_file = open(mfile, 'r')
+                    mail_file = yaml.load(mail_file)
+                    if "passwd" not in mail_file:
+                        passwd = getpass.getpass("Please enter ur email password ")
+                    else:
+                        passwd = mail_file['passwd']
+                    testobj = self.compare_tests(hostname)
+                    send_mail = Notification()
+                    send_mail.notify(mail_file, hostname, passwd, testobj)
                 else:
-                    passwd = mail_file['passwd']
-                testobj = self.compare_tests(hostname)
-                send_mail = Notification()
-                send_mail.notify(mail_file, hostname, passwd, testobj)
+                    print"ERROR!! Path of file containing mail content is not correct"
             else:
                 self.compare_tests(hostname)
 
