@@ -6,7 +6,7 @@ import sys
 
 class Parse:
 
-    def write_file(self, rpc_reply, format, output_file):
+    def _write_file(self, rpc_reply, format, output_file):
         if type(rpc_reply) is bool and format == "text":
             print "ERROR!! requested node is not present"
         else:
@@ -19,7 +19,7 @@ class Parse:
                 with open(output_file, 'w') as f:
                     f.write(etree.tostring(rpc_reply))
 
-    def check_reply(self, rpc_reply, format):
+    def _check_reply(self, rpc_reply, format):
         if type(rpc_reply) is bool and format == "text":
             print "ERROR!! requested node is not present"
         else:
@@ -77,10 +77,10 @@ class Parse:
                                 path,
                                 'snapshots',
                                 filename)
-                            self.write_file(rpc_reply_command, cmd_format, output_file)
+                            self._write_file(rpc_reply_command, cmd_format, output_file)
 
                             # SQLiteChanges
-                            if db['store_in_sqlite'] is True and self.check_reply(rpc_reply_command, cmd_format):
+                            if db['store_in_sqlite'] is True and self._check_reply(rpc_reply_command, cmd_format):
                                 snap_name = snap_files.split('_')
                                 host = snap_name[0]
                                 snap_name.pop(0)
@@ -92,7 +92,7 @@ class Parse:
                                 db_dict['snap_name'] = snap_name
                                 db_dict['filename'] = filename
                                 db_dict['format'] = cmd_format
-                                db_dict['data'] = self.check_reply(rpc_reply_command, cmd_format)
+                                db_dict['data'] = self._check_reply(rpc_reply_command, cmd_format)
                                 sqlite_jsnap.insert_data(db_dict)
                             ###
 
@@ -164,10 +164,10 @@ class Parse:
                                 path,
                                 'snapshots',
                                 filename)
-                            self.write_file(rpc_reply, reply_format, output_file)
+                            self._write_file(rpc_reply, reply_format, output_file)
 
                             # SQLiteChanges
-                            if db['store_in_sqlite'] is True and self.check_reply(rpc_reply, reply_format):
+                            if db['store_in_sqlite'] is True and self._check_reply(rpc_reply, reply_format):
                                 snap_name = snap_files.split('_')
                                 host = snap_name[0]
                                 snap_name.pop(0)
@@ -179,7 +179,7 @@ class Parse:
                                 db_dict2['snap_name'] = snap_name
                                 db_dict2['filename'] = filename
                                 db_dict2['format'] = reply_format
-                                db_dict2['data'] = self.check_reply(rpc_reply, reply_format)
+                                db_dict2['data'] = self._check_reply(rpc_reply, reply_format)
                                 sqlite_jsnap.insert_data(db_dict2)
                         ###
                     else:
