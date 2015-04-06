@@ -10,7 +10,7 @@ test_command_version:
       tests:
         - is-equal: peer-address, 10.209.19.203       # element in which test is performed
           err: "Test Failed!! peer-address got changed, it is now {{post['peer-address']}}"
-          info: 'peer-address is same with value %s peer-address, it is now {{post['peer-address']}}'
+          info: "peer-address is same with value %s peer-address, it is now {{post['peer-address']}}"
 
         - in-range: peer-as, 100,900        # element in which test is performed
           err: "Test Failed!! peer-as got changed, it is now {{post['peer-as']}}"
@@ -52,4 +52,4 @@ test_version:
       tests:
         - is-equal: peer-address, 10.209.19.204       # element in which test is performed
           err: "Test Failed!! peer-address got changed, now it is {{post['peer-address']}}"
-          info: 'peer-address is same with value %s %s peer-address peer-as, now it is {{post['peer-address']}}'
+          info: "peer-address is same with value %s %s peer-address peer-as, now it is {{post['peer-address']}}"
