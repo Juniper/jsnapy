@@ -15,6 +15,7 @@ test_rpc_version:
 
 test_interface:
   - rpc: get-interface-information
+    format: text
   - args:
       interface-name: em0
       media: True
