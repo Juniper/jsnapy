@@ -1,6 +1,6 @@
 import yaml
 from lxml import etree
-import jnpr.jsnap.testop
+from jnpr.jsnap.testop import Operator
 import os
 import sys
 from jnpr.jsnap.sqlite_get import SqliteExtractXml
@@ -172,7 +172,7 @@ class Comparator:
         :param post: file name of post snapshot
         :return:
         """
-        op = testop.Operator()
+        op = Operator()
         tests_files = []
         path = os.getcwd()
         # get the test files from config.yml
