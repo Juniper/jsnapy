@@ -5,9 +5,17 @@ import os
 import sys
 from jnpr.jsnap.sqlite_get import SqliteExtractXml
 import jnpr.jsnap.snap_diff
+from jnpr.jsnap.xml_comparator import XmlComparator
+import colorama
 
 
 class Comparator:
+
+    def __init__(self):
+        colorama.init(autoreset=True)
+
+    def __del__(self):
+        colorama.init(autoreset=True)
 
     # Extract xpath and other values for comparing two snapshots and
     # testop.Operator methods to perform tests
@@ -24,6 +32,13 @@ class Comparator:
         :return:
         """
         tests = [t for t in tests if ('iterate' in t or 'item' in t)]
+        if not len(tests) and check is True:
+            res = self.compare_xml(snap1, snap2)
+            if res is False:
+                op.no_failed = op.no_failed + 1
+            else:
+                op.no_passed = op.no_passed + 1
+
         for test in tests:
             if 'iterate' in test:
                 x_path = test.get('iterate').get('xpath', "no_xpath")
@@ -150,12 +165,36 @@ class Comparator:
     def compare_diff(self, pre_snap_file, post_snap_file, check_from_sqlite):
         diff_obj = jnpr.jsnap.snap_diff.Diff()
         if check_from_sqlite:
-            diff_obj.diff_strings(pre_snap_file, post_snap_file, ("Snap_1","Snap_2"))
+            diff_obj.diff_strings(
+                pre_snap_file,
+                post_snap_file,
+                ("Snap_1",
+                 "Snap_2"))
         else:
-            if os.path.isfile(pre_snap_file) and os.path.isfile(post_snap_file):
+            if os.path.isfile(pre_snap_file) and os.path.isfile(
+                    post_snap_file):
                 diff_obj.diff_files(pre_snap_file, post_snap_file)
             else:
                 print "ERROR!!! Files are not present in given path"
+
+    def compare_xml(self, pre_snap_file, post_snap_file):
+        """
+        Compare two snapshots node by node without any pre defined criteria
+        :param pre_snap_file: pre snapshots
+        :param post_snap_file: post snapshots
+        :return: True if no difference in files, false if there is difference
+        """
+        xvalue1 = etree.parse(pre_snap_file)
+        xvalue2 = etree.parse(post_snap_file)
+        pre_root = xvalue1.getroot()
+        post_root = xvalue2.getroot()
+        result = []
+        xml_comp = XmlComparator()
+        rvalue = xml_comp.xml_compare(pre_root, post_root, result.append)
+        print (colorama.Fore.BLUE + "Difference in pre and post snap file:\n")
+        for index, res in enumerate(result):
+            print (colorama.Fore.RED + str(index) + "] " + res)
+        return rvalue
 
 # generate names of snap files from hostname and out files given by user,
 # tests are performed on values stored in these snap filesin which test is
@@ -165,7 +204,6 @@ class Comparator:
             self, main_file, device, check, diff, db, pre=None, post=None):
         """
         generate pre and post snapshot file name to store snapshots and call compare_reply function
-
         :param main_file: main config file, to extract test files user wants to run
         :param device: device name
         :param check: variable to check if --check option is given or not
@@ -245,7 +283,7 @@ class Comparator:
                                     sys.exit(1)
                             else:
                                 file1 = str(device) + '_' + pre + \
-                                    '_' + name + '.'+reply_format
+                                    '_' + name + '.' + reply_format
                                 snapfile1 = os.path.join(
                                     path,
                                     'snapshots',
@@ -256,7 +294,7 @@ class Comparator:
 
                                     print str(device), post, name
                                     file2 = str(device) + '_' + post + \
-                                        '_' + name + '.'+reply_format
+                                        '_' + name + '.' + reply_format
                                     snapfile2 = os.path.join(
                                         path,
                                         'snapshots',
@@ -274,12 +312,15 @@ class Comparator:
                             elif(diff is True):
                                 if db.get('check_from_sqlite') is False:
                                     file2 = str(device) + '_' + \
-                                    post + '_' + name + '.' + reply_format
+                                        post + '_' + name + '.' + reply_format
                                     snapfile2 = os.path.join(
                                         path,
                                         'snapshots',
                                         file2)
-                                self.compare_diff(snapfile1, snapfile2, db.get('check_from_sqlite'))
+                                self.compare_diff(
+                                    snapfile1,
+                                    snapfile2,
+                                    db.get('check_from_sqlite'))
                             elif (reply_format == 'xml'):
                                 self.compare_reply(
                                     op,

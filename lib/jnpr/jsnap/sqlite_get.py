@@ -11,6 +11,7 @@ class SqliteExtractXml:
         if not os.path.isfile(self.db_filename):
             print "Database %s does not exist." % db_name
             sys.exit(1)
+
     def get_xml_using_snapname(self, hostname, command_name, snap_name):
         table_name = 'table_' + hostname.replace('.', '__')
         with sqlite3.connect(self.db_filename) as con:

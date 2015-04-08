@@ -5,7 +5,6 @@ import os
 import shutil
 import textwrap
 import argparse
-from distutils.sysconfig import get_python_lib
 import yaml
 from jnpr.jsnap.snap import Parse
 from jnpr.jsnap.check import Comparator
@@ -15,8 +14,6 @@ from jnpr.junos import Device
 import distutils.dir_util
 import colorama
 import getpass
-import jnpr
-from jnpr.junos import exception
 
 
 class Jsnap:
@@ -138,7 +135,7 @@ class Jsnap:
             config_file = open(conf_file, 'r')
             self.main_file = yaml.load(config_file)
         else:
-            print "ERROR!! file path '%s' for main config file is not correct" %conf_file
+            print "ERROR!! file path '%s' for main config file is not correct" % conf_file
             sys.exit(-1)
 
         compare_from_id = False
@@ -347,7 +344,8 @@ class Jsnap:
                     mail_file = open(mfile, 'r')
                     mail_file = yaml.load(mail_file)
                     if "passwd" not in mail_file:
-                        passwd = getpass.getpass("Please enter ur email password ")
+                        passwd = getpass.getpass(
+                            "Please enter ur email password ")
                     else:
                         passwd = mail_file['passwd']
                     testobj = self.compare_tests(hostname)

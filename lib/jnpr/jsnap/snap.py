@@ -7,10 +7,10 @@ import sys
 class Parse:
 
     def _write_file(self, rpc_reply, format, output_file):
-        if type(rpc_reply) is bool and format == "text":
+        if isinstance(rpc_reply, bool) and format == "text":
             print "ERROR!! requested node is not present"
         else:
-            err= rpc_reply.xpath("//rpc-error")
+            err = rpc_reply.xpath("//rpc-error")
             if len(err):
                 print "\nERROR:"
                 for err_node in err:
@@ -20,10 +20,10 @@ class Parse:
                     f.write(etree.tostring(rpc_reply))
 
     def _check_reply(self, rpc_reply, format):
-        if type(rpc_reply) is bool and format == "text":
+        if isinstance(rpc_reply, bool) and format == "text":
             print "ERROR!! requested node is not present"
         else:
-            err= rpc_reply.xpath("//rpc-error")
+            err = rpc_reply.xpath("//rpc-error")
             if len(err):
                 print "\nERROR:"
                 for err_node in err:
@@ -31,7 +31,6 @@ class Parse:
             else:
                 return etree.tostring(rpc_reply)
         return(False)
-
 
     # generate snap files for devices based on given commands and rpc
     def generate_reply(self, test_file, dev, snap_files, db, username):
@@ -58,29 +57,35 @@ class Parse:
                         command = test_file[t][0].get(
                             'command',
                             "unknown command")
-                        cmd_format= test_file[t][0].get('format', 'xml')
+                        cmd_format = test_file[t][0].get('format', 'xml')
 
                         self.command_list.append(command)
                         name = '_'.join(command.split())
                         try:
-                            print "\nTaking snapshot for %s ................"%command
+                            print "\nTaking snapshot for %s ................" % command
                             rpc_reply_command = dev.rpc.cli(
                                 command,
                                 format=cmd_format)
-                            #print "*********", etree.tostring(rpc_reply_command)
+                            # print "*********",
+                            # etree.tostring(rpc_reply_command)
                         except Exception:
                             print "ERROR occurred ----!!!", sys.exc_info()[0]
                             print "\n**********Complete error message***********\n", sys.exc_info()
                         else:
-                            filename = snap_files + '_' + name + '.' + cmd_format
+                            filename = snap_files + '_' + \
+                                name + '.' + cmd_format
                             output_file = os.path.join(
                                 path,
                                 'snapshots',
                                 filename)
-                            self._write_file(rpc_reply_command, cmd_format, output_file)
+                            self._write_file(
+                                rpc_reply_command,
+                                cmd_format,
+                                output_file)
 
                             # SQLiteChanges
-                            if db['store_in_sqlite'] is True and self._check_reply(rpc_reply_command, cmd_format):
+                            if db['store_in_sqlite'] is True and self._check_reply(
+                                    rpc_reply_command, cmd_format):
                                 snap_name = snap_files.split('_')
                                 host = snap_name[0]
                                 snap_name.pop(0)
@@ -92,14 +97,16 @@ class Parse:
                                 db_dict['snap_name'] = snap_name
                                 db_dict['filename'] = filename
                                 db_dict['format'] = cmd_format
-                                db_dict['data'] = self._check_reply(rpc_reply_command, cmd_format)
+                                db_dict['data'] = self._check_reply(
+                                    rpc_reply_command,
+                                    cmd_format)
                                 sqlite_jsnap.insert_data(db_dict)
                             ###
 
                     elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
                         rpc = test_file[t][0].get('rpc', "unknown rpc")
                         self.rpc_list.append(rpc)
-                        reply_format= test_file[t][0].get('format', 'xml')
+                        reply_format = test_file[t][0].get('format', 'xml')
                         if len(test_file[t]) >= 2 and 'args' in test_file[
                                 t][1]:
                             kwargs = {
@@ -117,57 +124,62 @@ class Parse:
                                         filter_data)
                                     kwargs['filter_xml'] = filter_data
                                 if rpc == 'get-config':
-                                    print "\nTaking snapshot of %s......." %rpc
+                                    print "\nTaking snapshot of %s......." % rpc
                                     rpc_reply = getattr(
-                                            dev.rpc,
-                                            rpc.replace(
-                                                '-',
-                                                '_'))(options={'format':reply_format},
-                                            **kwargs)
+                                        dev.rpc,
+                                        rpc.replace(
+                                            '-',
+                                            '_'))(options={'format': reply_format},
+                                                  **kwargs)
                                 else:
                                     print "ERROR!!, filtering rpc works only for 'get-config' rpc"
 
                             else:
                                 try:
-                                    print "\nTaking snapshot of %s......." %rpc
+                                    print "\nTaking snapshot of %s......." % rpc
                                     rpc_reply = getattr(
                                         dev.rpc,
                                         rpc.replace(
                                             '-',
-                                            '_'))({'format':reply_format},
-                                        **kwargs)
+                                            '_'))({'format': reply_format},
+                                                  **kwargs)
                                 except Exception:
                                     print "ERROR occurred ----!!!", sys.exc_info()[0]
                                     print "\n**********Complete error message***********\n", sys.exc_info()
                         else:
                             try:
-                                print "\nTaking snapshot of %s............" %rpc
+                                print "\nTaking snapshot of %s............" % rpc
                                 if rpc == 'get-config':
                                     rpc_reply = getattr(
                                         dev.rpc,
                                         rpc.replace(
                                             '-',
-                                            '_'))(options={'format':reply_format})
+                                            '_'))(options={'format': reply_format})
                                 else:
                                     rpc_reply = getattr(
                                         dev.rpc,
                                         rpc.replace(
                                             '-',
-                                            '_'))({'format':reply_format})
+                                            '_'))({'format': reply_format})
                             except Exception:
                                 print "ERROR occurred ----!!!", sys.exc_info()[0]
                                 print "\n**********Complete error message***********\n", sys.exc_info()
 
                         if 'rpc_reply' in locals():
-                            filename = snap_files + '_' + rpc + '.' + reply_format
+                            filename = snap_files + '_' + \
+                                rpc + '.' + reply_format
                             output_file = os.path.join(
                                 path,
                                 'snapshots',
                                 filename)
-                            self._write_file(rpc_reply, reply_format, output_file)
+                            self._write_file(
+                                rpc_reply,
+                                reply_format,
+                                output_file)
 
                             # SQLiteChanges
-                            if db['store_in_sqlite'] is True and self._check_reply(rpc_reply, reply_format):
+                            if db['store_in_sqlite'] is True and self._check_reply(
+                                    rpc_reply, reply_format):
                                 snap_name = snap_files.split('_')
                                 host = snap_name[0]
                                 snap_name.pop(0)
@@ -179,7 +191,9 @@ class Parse:
                                 db_dict2['snap_name'] = snap_name
                                 db_dict2['filename'] = filename
                                 db_dict2['format'] = reply_format
-                                db_dict2['data'] = self._check_reply(rpc_reply, reply_format)
+                                db_dict2['data'] = self._check_reply(
+                                    rpc_reply,
+                                    reply_format)
                                 sqlite_jsnap.insert_data(db_dict2)
                         ###
                     else:

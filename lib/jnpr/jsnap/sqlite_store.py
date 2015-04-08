@@ -33,8 +33,8 @@ class JsnapSqlite:
                         {'cli': db['cli_command']})
             con.execute("""insert into %s (id, filename, username, cli_command, snap_name, data_format, data) values (0, :file,
                         :user, :cli, :snap, :format, :xml)""" % self.table_name, {'file': db['filename'], 'user': db['username'],
-                                                                         'cli': db['cli_command'], 'snap': db['snap_name'],
-                                                                         'format': db['format'], 'xml': db['data']})
+                                                                                  'cli': db['cli_command'], 'snap': db['snap_name'],
+                                                                                  'format': db['format'], 'xml': db['data']})
             con.commit()
 
     # Verify database content

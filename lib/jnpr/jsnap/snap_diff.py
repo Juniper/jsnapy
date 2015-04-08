@@ -4,19 +4,19 @@ import sys
 import os
 
 color_code_list = {
-    "red":     '\033[0;31m',
-    "green":   '\033[0;32m',
-    "yellow":  '\033[0;33m',
-    "blue":    '\033[0;34m',
+    "red": '\033[0;31m',
+    "green": '\033[0;32m',
+    "yellow": '\033[0;33m',
+    "blue": '\033[0;34m',
     "magenta": '\033[0;35m',
-    "cyan":    '\033[0;36m',
-    "none":    '\033[m',
-    "red_bold":     '\033[1;31m',
-    "green_bold":   '\033[1;32m',
-    "yellow_bold":  '\033[1;33m',
-    "blue_bold":    '\033[1;34m',
+    "cyan": '\033[0;36m',
+    "none": '\033[m',
+    "red_bold": '\033[1;31m',
+    "green_bold": '\033[1;32m',
+    "yellow_bold": '\033[1;33m',
+    "blue_bold": '\033[1;34m',
     "magenta_bold": '\033[1;35m',
-    "cyan_bold":    '\033[1;36m',
+    "cyan_bold": '\033[1;36m',
 }
 
 
@@ -39,13 +39,14 @@ class Differ(object):
         lines_right = [self.expand_tabs(line) for line in lines_right]
 
         diff_data = difflib._mdiff(lines_left, lines_right, context_lines,
-                               linejunk=None,
-                               charjunk=difflib.IS_CHARACTER_JUNK)
+                                   linejunk=None,
+                                   charjunk=difflib.IS_CHARACTER_JUNK)
 
         diff_data = self.wrap_lines(diff_data)
         diff_data = self.collect_formatted_lines(diff_data)
 
-        for lines_left, lines_right in self.generate_lines(headers[0], headers[1], diff_data):
+        for lines_left, lines_right in self.generate_lines(
+                headers[0], headers[1], diff_data):
             yield self.colour_lines(
                 "%s %s" % (self.left_pad(lines_left, self.column_size // 2 - 1),
                            self.left_pad(lines_right, self.column_size // 2 - 1)))
@@ -57,14 +58,14 @@ class Differ(object):
         color_change = color_code_list["yellow_bold"]
         color_none = color_code_list["none"]
         color_dict = {'\0+': color_add, '\0-': color_sub,
-                     '\0^': color_change, '\1': color_none,
-                     '\t': ' '}
+                      '\0^': color_change, '\1': color_none,
+                      '\t': ' '}
 
         for key, value in color_dict.items():
             s = s.replace(key, value)
 
         return re.sub("\033\\[[01];3([123])m(\\s+)(\033\\[)",
-                          "\033[7;3\\1m\\2\\3", s)
+                      "\033[7;3\\1m\\2\\3", s)
 
     def wrap_lines(self, diff_data):
 
@@ -74,7 +75,8 @@ class Differ(object):
                 yield lines_left, lines_right, flag
                 continue
 
-            (line_num_left, text_left), (line_num_right, text_right) = lines_left, lines_right
+            (line_num_left, text_left), (line_num_right,
+                                         text_right) = lines_left, lines_right
             list_left, list_right = [], []
             self.line_split(list_left, line_num_left, text_left)
             self.line_split(list_right, line_num_right, text_right)
@@ -148,10 +150,10 @@ class Differ(object):
 
     def actual_length(self, text):
         dictn = {'\0+': "",
-                              '\0-': "",
-                              '\0^': "",
-                              '\1': "",
-                              '\t': ' '}
+                 '\0-': "",
+                 '\0^': "",
+                 '\1': "",
+                 '\t': ' '}
         for key, value in dictn.items():
             text = text.replace(key, value)
         ctr = 0
@@ -184,14 +186,17 @@ class Differ(object):
 
     def generate_lines(self, header_left, header_right, diff_lines):
         if header_left or header_right:
-            header_left = "%s%s%s" % (color_code_list["blue"], header_left, color_code_list["none"])
-            header_right = "%s%s%s" % (color_code_list["blue"], header_right, color_code_list["none"])
+            header_left = "%s%s%s" % (
+                color_code_list["blue"], header_left, color_code_list["none"])
+            header_right = "%s%s%s" % (
+                color_code_list["blue"], header_right, color_code_list["none"])
             yield (header_left, header_right)
 
         for text in diff_lines:
             if text is None:
-                separator = "%s%s%s" % (color_code_list["blue"], '---', color_code_list["none"])
-                yield (separator,separator)
+                separator = "%s%s%s" % (
+                    color_code_list["blue"], '---', color_code_list["none"])
+                yield (separator, separator)
             else:
                 yield text
 

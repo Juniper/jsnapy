@@ -1,10 +1,8 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import yaml
 import jinja2
 import os
-#from distutils.sysconfig import get_python_lib
 
 
 class Notification:
