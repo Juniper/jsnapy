@@ -48,6 +48,7 @@ class Parse:
         self.rpc_list = []
         self.test_included = []
         path = os.getcwd()
+        formats=['xml', 'text']
         if 'tests_include' in test_file:
             for t in test_file.get('tests_include'):
                 self.test_included.append(t)
@@ -58,7 +59,7 @@ class Parse:
                             'command',
                             "unknown command")
                         cmd_format = test_file[t][0].get('format', 'xml')
-
+                        cmd_format= cmd_format if cmd_format in formats else 'xml'
                         self.command_list.append(command)
                         name = '_'.join(command.split())
                         try:
@@ -107,6 +108,7 @@ class Parse:
                         rpc = test_file[t][0].get('rpc', "unknown rpc")
                         self.rpc_list.append(rpc)
                         reply_format = test_file[t][0].get('format', 'xml')
+                        reply_format= reply_format if reply_format in formats else 'xml'
                         if len(test_file[t]) >= 2 and 'args' in test_file[
                                 t][1]:
                             kwargs = {
