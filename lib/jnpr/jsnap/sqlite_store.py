@@ -5,7 +5,7 @@ import os
 class JsnapSqlite:
 
     def __init__(self, host, db_name):
-        host = host.replace('.', '_')
+        host = host.replace('.', '__')
         self.table_name = "table_" + host
         # Creating Schema
         path = os.getcwd()

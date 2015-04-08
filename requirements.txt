@@ -1,4 +1,2 @@
--e git+https://github.com/vnitinv/icdiff.git#egg=icdiff
 junos-eznc
-
--e .
+colorama

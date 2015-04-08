@@ -8,9 +8,11 @@ class SqliteExtractXml:
     def __init__(self, db_name):
         path = os.getcwd()
         self.db_filename = os.path.join(path, 'snapshots', db_name)
-
+        if not os.path.isfile(self.db_filename):
+            print "Database %s does not exist." % db_name
+            sys.exit(1)
     def get_xml_using_snapname(self, hostname, command_name, snap_name):
-        table_name = 'table_' + hostname.replace('.', '_')
+        table_name = 'table_' + hostname.replace('.', '__')
         with sqlite3.connect(self.db_filename) as con:
             cursor = con.cursor()
             cursor.execute(
@@ -33,7 +35,7 @@ class SqliteExtractXml:
                     return str(data), data_format
 
     def get_xml_using_snap_id(self, hostname, command_name, snap_id):
-        table_name = 'table_' + hostname.replace('.', '_')
+        table_name = 'table_' + hostname.replace('.', '__')
         with sqlite3.connect(self.db_filename) as con:
             cursor = con.cursor()
             cursor.execute(

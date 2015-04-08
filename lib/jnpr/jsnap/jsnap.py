@@ -149,7 +149,7 @@ class Jsnap:
                 self.db['store_in_sqlite'] = d['store_in_sqlite']
             if d.__contains__('check_from_sqlite'):
                 self.db['check_from_sqlite'] = d['check_from_sqlite']
-            check = self.args.check
+            check = self.args.check or self.args.diff
             snap = self.args.snap or self.args.snapcheck
 
             if (self.db['store_in_sqlite'] and snap) or (
@@ -192,8 +192,10 @@ class Jsnap:
                                                        " in format: first_snapshot_id, second_snapshot_id")
                             exit(1)
         if self.db['check_from_sqlite'] is False or compare_from_id is False:
-            if self.args.check is True and (
-                    self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None):
+            if (self.args.check is True and (
+                    self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None) or
+                self.args.diff is True and (
+                    self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None)):
                 print(
                     colorama.Fore.RED +
                     "*********Arguments not given correctly, Please refer below help message!!********")
@@ -385,8 +387,7 @@ class Jsnap:
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.check is True and (self.args.file is None)) or
             (self.args.snapcheck is True and (self.args.pre_snapfile is None or self.args.file is None or self.args.post_snapfile is not None)) or
-            (self.args.diff is True and (
-                self.args.pre_snapfile is None or self.args.post_snapfile is None))
+            (self.args.diff is True and self.args.file is None)
            ):
             print(
                 colorama.Fore.RED +

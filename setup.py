@@ -1,5 +1,9 @@
 from setuptools import setup, find_packages
 
+req_lines = [line.strip() for line in open(
+    'requirements.txt').readlines()]
+install_reqs = list(filter(None, req_lines))
+
 setup(name="jsnap-py",
       version="0.1",
       description="Python version of Junos Snapshot Administrator",
@@ -20,7 +24,7 @@ setup(name="jsnap-py",
           ],
       },
       zip_safe=False,
-      install_requires=['junos-eznc', 'jinja2', 'colorama'],
+      install_requires= install_reqs,
       classifiers=[
           'Environment :: Console',
           'Intended Audience :: Developers',
