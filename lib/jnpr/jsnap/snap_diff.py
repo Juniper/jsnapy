@@ -1,15 +1,7 @@
-#!/usr/bin/env python
-
 import difflib
-import unicodedata
-import filecmp
 import re
-import codecs
 import sys
-from optparse import Option, OptionParser
-import errno
 import os
-import io
 
 color_code_list = {
     "red":     '\033[0;31m',
@@ -208,7 +200,7 @@ class Diff:
 
     def readfile(self, name):
         if os.path.isfile(name) and os.path.isfile(name):
-            with io.open(name, mode="rb") as f:
+            with open(name, mode="rb") as f:
                 return f.readlines()
         else:
             print "ERROR!!! File is not present at given location"
@@ -245,13 +237,3 @@ class Diff:
             sys.stdout.buffer.write(s.encode("utf-8"))
         else:
             sys.stdout.write(s.encode("utf-8"))
-
-if __name__ == "__main__":
-
-    a = "icdiff.py"
-    b = "icdiff-backup.py"
-    c = "snap1.xml"
-    d = "snap2.xml"
-    e = "snap3.xml"
-    ob = Diff()
-    ob.diff_files(c, d)
