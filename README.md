@@ -18,6 +18,8 @@ Installation requires Python 2.7 and associated pip tool
           git clone https://github.com/Juniper/jsnap-py
     2. Untar it(if downloaded zip folder)
           tar -xvzf jsnap-py-master
-    3. Go to jsnap-py-master folder and install using pip
-          pip install -r requirements.txt
+    3. Go to jsnap-py-master folder and install by:
+          sudo python setup.py sdist
+          sudo pip install dist/jsnap--.tar.gz
+          
 
