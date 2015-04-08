@@ -78,13 +78,10 @@ class Parse:
                                 path,
                                 'snapshots',
                                 filename)
-                            if os.path.isfile(output_file):
-                                self._write_file(
-                                    rpc_reply_command,
-                                    cmd_format,
-                                    output_file)
-                            else:
-                                print "IOError: No such file or directory"
+                            self._write_file(
+                                rpc_reply_command,
+                                cmd_format,
+                                output_file)
 
                             # SQLiteChanges
                             if db['store_in_sqlite'] is True and self._check_reply(
@@ -175,13 +172,10 @@ class Parse:
                                 path,
                                 'snapshots',
                                 filename)
-                            if os.path.isfile(output_file):
-                                self._write_file(
-                                    rpc_reply,
-                                    reply_format,
-                                    output_file)
-                            else:
-                                print "IOError: No such file or directory"
+                            self._write_file(
+                                rpc_reply,
+                                reply_format,
+                                output_file)
 
                             # SQLiteChanges
                             if db['store_in_sqlite'] is True and self._check_reply(
