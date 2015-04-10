@@ -1,14 +1,18 @@
 import sqlite3
 import sys
 import os
+import logging
+import colorama
 
 
 class SqliteExtractXml:
 
     def __init__(self, db_name):
+        self.logger_sqlite = logging.getLogger(__name__)
         path = os.getcwd()
         self.db_filename = os.path.join(path, 'snapshots', db_name)
         if not os.path.isfile(self.db_filename):
+            self.logger_sqlite.error("Database %s does not exist." % db_name)
             print "Database %s does not exist." % db_name
             sys.exit(1)
 
@@ -43,11 +47,22 @@ class SqliteExtractXml:
                 "SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
             if not cursor.fetchall():
                 print"No previous snapshots exists for host %s" % hostname
+                self.logger_sqlite.error(
+                    colorama.Fore.RED +
+                    "No previous snapshots exists for host %s" %
+                    hostname)
                 sys.exit(1)
             cursor.execute("SELECT id, data_format, data FROM %s WHERE id = :id AND cli_command = :cli" % table_name,
                            {'id': snap_id, 'cli': command_name})
             row = cursor.fetchone()
             if not row:
+                self.logger_sqlite.error(
+                    colorama.Fore.RED +
+                    "No previous snapshots exists with id = %s for command = " %
+                    snap_id,
+                    command_name.replace(
+                        '_',
+                        ' '))
                 print"No previous snapshots exists with id = %s for command = " % snap_id, command_name.replace('_', ' ')
                 sys.exit(1)
             else:

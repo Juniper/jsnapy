@@ -3,9 +3,14 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import jinja2
 import os
+import logging
+import colorama
 
 
 class Notification:
+
+    def __init__(self):
+        self.logger_notify = logging.getLogger(__name__)
 
     def notify(self, mail_file, hostname, password, test_obj):
         """
@@ -15,7 +20,9 @@ class Notification:
         :param test_obj:
         :return:
         """
-        print"\nSending mail............"
+        self.logger_notify.debug(
+            colorama.Fore.BLUE +
+            "\nSending mail............")
         testdetails = test_obj.test_details
         templateLoader = jinja2.FileSystemLoader(searchpath="/")
         templateEnv = jinja2.Environment(loader=templateLoader)
@@ -43,7 +50,14 @@ class Notification:
             server.login(from_mail, password)
         except Exception as ex:
             print "\nERROR occurred: ", ex
+            self.logger_notify.error(
+                colorama.Fore.RED +
+                "\nERROR occurred: ",
+                ex)
             return
         ms = msg.as_string()
-        server.sendmail(from_mail, to, ms)
+        try:
+            server.sendmail(from_mail, to, ms)
+        except Exception as ex:
+            print "ERROR in mail", ex.message
         server.quit()

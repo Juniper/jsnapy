@@ -14,13 +14,19 @@ from jnpr.junos import Device
 import distutils.dir_util
 import colorama
 import getpass
+import logging
+import setup_logging
 
 
 class Jsnap:
 
+    # need to call this function to initialize logging
+    setup_logging.setup_logging()
+
     # taking parameters from command line
     def __init__(self):
         colorama.init(autoreset=True)
+        self.logger = logging.getLogger(__name__)
         self.parser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
             description=textwrap.dedent('''\
@@ -116,6 +122,30 @@ class Jsnap:
         self.db['first_snap_id'] = None
         self.db['second_snap_id'] = None
 
+    # generate init folder
+    def generate_init(self):
+        """
+        create snapshots and configs folder along with sample main config file.
+        All snapshots generated will go in snapshots folder. configs folder will contain
+        all the yaml file apart from main, like device.yml, bgp_neighbor.yml
+        :return:
+        """
+        #self.logger.debug(colorama.Fore.BLUE+ "Creating init folder.....")
+        if not os.path.isdir("snapshots"):
+            os.mkdir("snapshots")
+        if not os.path.isdir("logs"):
+            os.mkdir("logs")
+        dst_config_path = os.path.join(os.getcwd(), 'configs')
+        # overwrite files if given option -o or --overwrite
+        if not os.path.isdir(dst_config_path) or self.args.overwrite is True:
+            distutils.dir_util.copy_tree(os.path.join(os.path.dirname(__file__), 'configs'),
+                                         dst_config_path)
+        dst_main_yml = os.path.join(dst_config_path, 'main.yml')
+        if not os.path.isfile(
+                os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
+            shutil.copy(dst_main_yml, os.getcwd())
+        #self.logger.info(colorama.Fore.BLUE+ "--init folder created.....")
+
     # call hosts class, connect hosts and get host list
     # use pre_snapfile because always first file is pre_snapfile regardless of
     # its name
@@ -135,7 +165,12 @@ class Jsnap:
             config_file = open(conf_file, 'r')
             self.main_file = yaml.load(config_file)
         else:
-            print "ERROR!! file path '%s' for main config file is not correct" % conf_file
+            # print "ERROR!! file path '%s' for main config file is not
+            # correct" % conf_file
+            self.logger.error(
+                colorama.Fore.RED +
+                "ERROR!! file path '%s' for main config file is not correct" %
+                conf_file)
             sys.exit(-1)
 
         compare_from_id = False
@@ -154,15 +189,20 @@ class Jsnap:
                 if d.__contains__('database_name'):
                     self.db['db_name'] = d['database_name']
                 else:
-                    print (colorama.Fore.RED + "Specify name of the database.")
+                    #print (colorama.Fore.RED + "Specify name of the database.")
+                    self.logger.info(
+                        colorama.Fore.BLUE +
+                        "Specify name of the database.")
                     exit(1)
                 if check is True:
                     if 'compare' in d.keys() and d['compare'] is not None:
                         strr = d['compare']
 
                         if not isinstance(strr, str):
-                            print (colorama.Fore.RED + "Properly specify ids of first and second snapshot in format"
-                                                       ": first_snapshot_id, second_snapshot_id")
+                            # print (colorama.Fore.RED + "Properly specify ids of first and second snapshot in format"
+                            #                           ": first_snapshot_id, second_snapshot_id")
+                            self.logger.error(colorama.Fore.RED + "Properly specify ids of first and second snapshot in format"
+                                              ": first_snapshot_id, second_snapshot_id")
                             exit(1)
 
                         compare_from_id = True
@@ -171,13 +211,17 @@ class Jsnap:
                         try:
                             lst = [int(x) for x in lst]
                         except ValueError as e:
-                            print (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
-                                                       " in format: first_snapshot_id, second_snapshot_id")
+                            # print (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
+                            #                           " in format: first_snapshot_id, second_snapshot_id")
+                            self.logger.error(colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
+                                              " in format: first_snapshot_id, second_snapshot_id")
                             exit(1)
 
                         if len(lst) > 2:
-                            print (colorama.Fore.RED + "No. of snapshots specified is more than two."
-                                                       " Please specify only two snapshots.")
+                            # print (colorama.Fore.RED + "No. of snapshots specified is more than two."
+                            #                           " Please specify only two snapshots.")
+                            self.logger.error(colorama.Fore.RED + "No. of snapshots specified is more than two."
+                                              " Please specify only two snapshots.")
                             exit(1)
 
                         if len(lst) == 2 and isinstance(
@@ -185,18 +229,22 @@ class Jsnap:
                             self.db['first_snap_id'] = lst[0]
                             self.db['second_snap_id'] = lst[1]
                         else:
-                            print (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
-                                                       " in format: first_snapshot_id, second_snapshot_id")
+                            # print (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
+                            #                           " in format: first_snapshot_id, second_snapshot_id")
+
                             exit(1)
         if self.db['check_from_sqlite'] is False or compare_from_id is False:
             if (self.args.check is True and (
                     self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None) or
                 self.args.diff is True and (
                     self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None)):
-                print(
+                # print(
+                #    colorama.Fore.RED +
+                #    "*********Arguments not given correctly, Please refer below help message!!********")
+                self.logger.debug(
                     colorama.Fore.RED +
-                    "*********Arguments not given correctly, Please refer below help message!!********")
-                self.parser.print_help()
+                    "Arguments not given correctly, Please refer below help message")
+                # self.parser.print_help()
                 sys.exit(1)
         self.login(output_file)
 
@@ -218,7 +266,11 @@ class Jsnap:
                 test_file = open(tfile, 'r')
                 test_files.append(yaml.load(test_file))
             else:
-                print "ERROR!! File %s is not found" % tfile
+                # print "ERROR!! File %s is not found" % tfile
+                self.logger(
+                    colorama.Fore.RED +
+                    "ERROR!! File %s is not found" %
+                    tfile)
         g = Parse()
         for tests in test_files:
             g.generate_reply(tests, dev, snap_files, self.db, username)
@@ -323,12 +375,17 @@ class Jsnap:
         :return:
         """
         if self.args.snap is True or self.args.snapcheck is True:
-            print "Connecting to device %s ................" % hostname
+            # print "Connecting to device %s ................" % hostname
+            self.logger.info(
+                colorama.Fore.BLUE +
+                "Connecting to device %s ................" %
+                hostname)
             dev = Device(host=hostname, user=username, passwd=password)
             try:
                 dev.open()
             except Exception as ex:
-                print "\nERROR occurred", ex
+                print "\nERROR occurred", ex, str(ex)
+                self.logger.error("\nERROR occurred")
                 return
             else:
                 self.generate_rpc_reply(dev, snap_files, username)
@@ -352,7 +409,11 @@ class Jsnap:
                     send_mail = Notification()
                     send_mail.notify(mail_file, hostname, passwd, testobj)
                 else:
-                    print"ERROR!! Path of file containing mail content is not correct"
+                    # print"ERROR!! Path of file containing mail content is not
+                    # correct"
+                    self.logger.error(
+                        colorama.Fore.RED +
+                        "ERROR!! Path of file containing mail content is not correct")
             else:
                 self.compare_tests(hostname)
 
@@ -364,8 +425,11 @@ class Jsnap:
         all the yaml file apart from main, like device.yml, bgp_neighbor.yml
         :return:
         """
+        #self.logger.debug(colorama.Fore.BLUE+ "Creating init folder.....")
         if not os.path.isdir("snapshots"):
             os.mkdir("snapshots")
+        if not os.path.isdir("logs"):
+            os.mkdir("logs")
         dst_config_path = os.path.join(os.getcwd(), 'configs')
         # overwrite files if given option -o or --overwrite
         if not os.path.isdir(dst_config_path) or self.args.overwrite is True:
@@ -375,6 +439,7 @@ class Jsnap:
         if not os.path.isfile(
                 os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
             shutil.copy(dst_main_yml, os.getcwd())
+        #self.logger.info(colorama.Fore.BLUE+ "--init folder created.....")
 
     def check_arguments(self):
         """
@@ -387,9 +452,11 @@ class Jsnap:
             (self.args.snapcheck is True and (self.args.pre_snapfile is None or self.args.file is None or self.args.post_snapfile is not None)) or
             (self.args.diff is True and self.args.file is None)
            ):
-            print(
-                colorama.Fore.RED +
-                "*********Arguments not given correctly, Please refer below help message!!********")
+            # print(
+            #    colorama.Fore.RED +
+            #    "*********Arguments not given correctly, Please refer below help message!!********")
+            self.logger.error(
+                "Arguments not given correctly, Please refer below help message")
             self.parser.print_help()
             sys.exit(1)
 

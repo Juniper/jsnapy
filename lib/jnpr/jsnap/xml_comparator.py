@@ -1,4 +1,10 @@
+import logging
+
+
 class XmlComparator:
+
+    def __init__(self):
+        self.logger_xml = logging.getLogger(__name__)
 
     def text_compare(self, text1, text2):
         if not text1 and not text2:

@@ -2,6 +2,7 @@ import re
 import colorama
 from collections import defaultdict
 import jinja2
+import logging
 
 
 class Operator:
@@ -12,6 +13,7 @@ class Operator:
         self.no_passed = 0
         self.test_details = defaultdict(list)
         colorama.init(autoreset=True)
+        self.logger_testop = logging.getLogger(__name__)
 
     def __del__(self):
         colorama.init(autoreset=True)
@@ -35,21 +37,33 @@ class Operator:
                 id,
                 *args)
         except AttributeError as e:
-            print "\nTest Operator not defined !!!!! \nERROR Message :", e.message
+            # print "\nTest Operator not defined !!!!! \nERROR Message :",
+            # e.message
+            self.logger_testop.error(
+                "\nTest Operator not defined !!!!! \nERROR Message :",
+                e.message)
             self.no_failed = self.no_failed + 1
         except:
-            print "\nUndefined error occurred, please check test cases !!!"
+            # print "\nUndefined error occurred, please check test cases !!!"
+            self.logger_testop.error(
+                "\nUndefined error occurred, please check test cases !!!")
             self.no_failed = self.no_failed + 1
 
     def print_result(self, testname, result):
         if result is False:
             self.no_failed = self.no_failed + 1
-            print (
-                colorama.Fore.RED +
-                'Final result of ' + testname + ': FAILED\n')
+            # print (
+            #    colorama.Fore.RED +
+            #    'Final result of ' + testname + ': FAILED\n')
+
+            self.logger_testop.info(colorama.Fore.RED +
+                                    'Final result of ' + testname + ': FAILED\n')
         elif result is True:
             self.no_passed = self.no_passed + 1
-            print (
+            # print (
+            #    colorama.Fore.GREEN +
+            #    'Final result of ' + testname + ': PASSED \n')
+            self.logger_testop.info(
                 colorama.Fore.GREEN +
                 'Final result of ' + testname + ': PASSED \n')
 
@@ -57,7 +71,8 @@ class Operator:
         msg = "Performing %s Test Operation" % testname
         testmssg = (80 - len(msg) - 2) / 2 * '-' + \
             msg + (80 - len(msg) - 2) / 2 * '-'
-        print (colorama.Fore.BLUE + testmssg)
+        #print (colorama.Fore.BLUE + testmssg)
+        self.logger_testop.info(colorama.Fore.BLUE + testmssg)
 
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
@@ -130,12 +145,18 @@ class Operator:
         try:
             element = ele_list[0]
         except IndexError as e:
-            print "\n Error occurred while accessing test element", e.message
-            print "\n Element is not specified for testing"
+            # print "\n Error occurred while accessing test element", e.message
+            # print "\n Element is not specified for testing"
+            self.logger_testop.error(
+                "\n Error occurred while accessing test element",
+                e.message)
+            self.logger_testop.error("\n Element is not specified for testing")
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                # print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -149,10 +170,28 @@ class Operator:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
-                            print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                            self.logger_testop.info(
+                                jinja2.Template(
+                                    info_mssg.replace(
+                                        '-',
+                                        '_')).render(
+                                    iddict,
+                                    pre=predict,
+                                    post=postdict))
+                            # print jinja2.Template(info_mssg.replace('-',
+                            # '_')).render(iddict, pre=predict, post=postdict)
                     else:
                         res = False
-                        print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                        # print jinja2.Template(err_mssg.replace('-',
+                        # '_')).render(iddict, pre=predict, post=postdict)
+                        self.logger_testop.info(
+                            jinja2.Template(
+                                err_mssg.replace(
+                                    '-',
+                                    '_')).render(
+                                iddict,
+                                pre=predict,
+                                post=postdict))
         self.print_result('exists', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -174,10 +213,17 @@ class Operator:
         except IndexError as e:
             print "\n Error occurred while accessing test element", e.message
             print "\n 'exists' test operator require two parameters"
+            self.logger_testop.error(
+                "\n Error occurred while accessing test element",
+                e.message)
+            self.logger_testop.error(
+                "\n 'exists' test operator require two parameters")
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                # print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -189,12 +235,30 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         res = False
-                        print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                        # print jinja2.Template(err_mssg.replace('-',
+                        # '_')).render(iddict, pre=predict, post=postdict)
+                        self.logger_testop.info(
+                            jinja2.Template(
+                                err_mssg.replace(
+                                    '-',
+                                    '_')).render(
+                                iddict,
+                                pre=predict,
+                                post=postdict))
                     else:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
-                            print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                            # print jinja2.Template(info_mssg.replace('-',
+                            # '_')).render(iddict, pre=predict, post=postdict)
+                            self.logger_testop.info(
+                                jinja2.Template(
+                                    info_mssg.replace(
+                                        '-',
+                                        '_')).render(
+                                    iddict,
+                                    pre=predict,
+                                    post=postdict))
         self.print_result('not-exists', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -213,11 +277,16 @@ class Operator:
         try:
             element = ele_list[0]
         except IndexError as e:
-            print "\nError occurred while accessing test element", e.message
+            # print "\nError occurred while accessing test element", e.message
+            self.logger_testop.error(
+                "\nError occurred while accessing test element",
+                e.message)
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                # print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
                 res = False
             else:
                 if len(ele_list) >= 2:
@@ -238,9 +307,29 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             if post_nodevalue != value.strip():
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
 
         self.print_result('all-same', res)
         tresult['result'] = res
@@ -261,12 +350,19 @@ class Operator:
             element = ele_list[0]
             value = ele_list[1]
         except IndexError as e:
-            print "\nError occurred while accessing test element", e.message
-            print "\n'is-equal' test operator requires two parameter"
+            # print "\nError occurred while accessing test element", e.message
+            # print "\n'is-equal' test operator requires two parameter"
+            self.logger_testop.error(
+                "\nError occurred while accessing test element",
+                e.message)
+            self.logger_testop.error(
+                "\n'is-equal' test operator requires two parameter")
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
+                # print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -282,12 +378,35 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if post_nodevalue == value.strip():
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
                             else:
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
                     else:
-                        print "ERROR!! Node '%s' not found" % element
+                        # print "ERROR!! Node '%s' not found" % element
+                        self.logger_testop.error(
+                            "ERROR!! Node '%s' not found" %
+                            element)
                         res = False
         self.print_result('is-equal', res)
         tresult['result'] = res
@@ -308,12 +427,19 @@ class Operator:
             element = ele_list[0]
             value = ele_list[1]
         except IndexError as e:
-            print "\nError occurred while accessing test element", e.message
-            print "\n'not-equal' test operator requires two parameter"
+            # print "\nError occurred while accessing test element", e.message
+            # print "\n'not-equal' test operator requires two parameter"
+            self.logger_testop.error(
+                "\nError occurred while accessing test element",
+                e.message)
+            self.logger_testop.error(
+                "\n'not-equal' test operator requires two parameter")
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
+                # print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -328,12 +454,35 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if post_nodevalue != value.strip():
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                             else:
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                     else:
-                        print "ERROR!! Node '%s' not found" % element
+                        # print "ERROR!! Node '%s' not found" % element
+                        self.logger_testop.error(
+                            "ERROR!! Node '%s' not found" %
+                            element)
                         res = False
         self.print_result('not-equal', res)
         tresult['result'] = res
@@ -355,12 +504,19 @@ class Operator:
             range1 = float(ele_list[1])
             range2 = float(ele_list[2])
         except IndexError as e:
-            print "\nError occurred while accessing test element\n", e.message
-            print "\n'in-range' test operator requires two parameter"
+            self.logger_testop.error(
+                "\nError occurred while accessing test element\n",
+                e.message)
+            self.logger_testop.error(
+                "\n'in-range' test operator requires two parameter")
+            # print "\nError occurred while accessing test element\n", e.message
+            # print "\n'in-range' test operator requires two parameter"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                # print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -377,12 +533,35 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (float(post_nodevalue) >= range1
                                     and float(post_nodevalue) <= range2):
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                             else:
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                     else:
-                        print "ERROR!! Node '%s' not found" % element
+                        # print "ERROR!! Node '%s' not found" % element
+                        self.logger_testop.error(
+                            "ERROR!! Node '%s' not found" %
+                            element)
                         res = False
         self.print_result('in-range', res)
         tresult['result'] = res
@@ -404,12 +583,19 @@ class Operator:
             range1 = float(ele_list[1])
             range2 = float(ele_list[2])
         except IndexError as e:
-            print "\n Error occurred while accessing test element", e.message
-            print "\n not-range test operator require two parameters"
+            self.logger_testop.error(
+                "\n Error occurred while accessing test element",
+                e.message)
+            self.logger_testop.error(
+                "\n not-range test operator require two parameters")
+            # print "\n Error occurred while accessing test element", e.message
+            # print "\n not-range test operator require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                # print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -426,12 +612,35 @@ class Operator:
 
                             if float(post_nodevalue) <= range1 and float(
                                     post_nodevalue) >= range2:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                             else:
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                     else:
-                        print "ERROR!! Node '%s' not found" % element
+                        # print "ERROR!! Node '%s' not found" % element
+                        self.logger_testop.error(
+                            "ERROR!! Node '%s' not found" %
+                            element)
                         res = False
         self.print_result('not-range', res)
         tresult['result'] = res
@@ -452,12 +661,19 @@ class Operator:
             element = ele_list[0]
             val1 = float(ele_list[1])
         except IndexError as e:
-            print "\nError occurred while accessing test element", e.message
-            print "\n'is-gt' test operator require two parameters"
+            # print "\nError occurred while accessing test element", e.message
+            # print "\n'is-gt' test operator require two parameters"
+            self.logger_testop.error(
+                "\nError occurred while accessing test element",
+                e.message)
+            self.logger_testop.error(
+                "\n'is-gt' test operator require two parameters")
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
+                # print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -473,12 +689,35 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[j], prenode[j])
                             if (float(post_nodevalue) > val1):
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                             else:
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                     else:
-                        print "ERROR!! Node '%s' not found" % element
+                        # print "ERROR!! Node '%s' not found" % element
+                        self.logger_testop.error(
+                            "ERROR!! Node '%s' not found" %
+                            element)
                         res = False
         self.print_result('is-gt', res)
         tresult['result'] = res
@@ -499,13 +738,20 @@ class Operator:
             element = ele_list[0]
             val1 = float(ele_list[1])
         except IndexError as e:
-            print "\nError occurred while accessing test element ", e.message
-            print "\n'is-lt' test operator require two parameters"
+            self.logger_testop.error(
+                "\nError occurred while accessing test element ",
+                e.message)
+            self.logger_testop.error(
+                "\n'is-lt' test operator require two parameters")
+            # print "\nError occurred while accessing test element ", e.message
+            # print "\n'is-lt' test operator require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
+                # print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -521,12 +767,35 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (float(post_nodevalue) < val1):
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                             else:
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                     else:
-                        print "ERROR!! Node '%s' not found" % element
+                        # print "ERROR!! Node '%s' not found" % element
+                        self.logger_testop.error(
+                            "ERROR!! Node '%s' not found" %
+                            element)
                         res = False
         self.print_result('is-lt', res)
         tresult['result'] = res
@@ -547,12 +816,18 @@ class Operator:
             element = ele_list[0]
             value = ele_list[1]
         except IndexError as e:
-            print "\nError occurred while accessing test element", e.message
-            print "\n'contains' require two parameters"
+            self.logger_testop.error(
+                "\nError occurred while accessing test element",
+                e.message)
+            self.logger_testop.error("\n'contains' require two parameters")
+            # print "\nError occurred while accessing test element", e.message
+            # print "\n'contains' require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
+                # print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -570,11 +845,34 @@ class Operator:
                                 (element.replace('-', '_'))] = postnode[k].text
                             if (postnode[k].text.find(value) == -1):
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                     else:
-                        print "Error!!, Node is not present in path given with test operator!!"
+                        self.logger_testop.error(
+                            "Error!!, Node is not present in path given with test operator!!")
+                        # print "Error!!, Node is not present in path given
+                        # with test operator!!"
                         res = False
         self.print_result('contains', res)
         tresult['result'] = res
@@ -595,12 +893,19 @@ class Operator:
             element = ele_list[0]
             value_list = ele_list[1:]
         except IndexError as e:
-            print "\nError occurred while accessing test element", e.message
-            print "\n'is-in' test operator require two parameters"
+            self.logger_testop.error(
+                "\nError occurred while accessing test element",
+                e.message)
+            self.logger_testop.error(
+                "\n'is-in' test operator require two parameters")
+            # print "\nError occurred while accessing test element", e.message
+            # print "\n'is-in' test operator require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
+                # print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -615,12 +920,35 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (post_nodevalue in value_list):
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                             else:
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                     else:
-                        print "ERROR!! Node '%s' not found" % element
+                        # print "ERROR!! Node '%s' not found" % element
+                        self.logger_testop.error(
+                            "ERROR!! Node '%s' not found" %
+                            element)
                         res = False
         self.print_result('is-in', res)
         tresult['result'] = res
@@ -641,12 +969,19 @@ class Operator:
             element = ele_list[0]
             value_list = ele_list[1:]
         except IndexError as e:
-            print "\nError occurred while accessing test element", e.message
-            print "\n'not-in' test operator require two parameters"
+            self.logger_testop.error(
+                "\nError occurred while accessing test element",
+                e.message)
+            self.logger_testop.error(
+                "\n'not-in' test operator require two parameters")
+            # print "\nError occurred while accessing test element", e.message
+            # print "\n'not-in' test operator require two parameters"
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                print "Nodes are not present in given Xpath!!"
+                self.logger_testop.error(
+                    "Nodes are not present in given Xpath!!")
+                # print "Nodes are not present in given Xpath!!"
                 res = False
             else:
                 for i in range(len(post_nodes)):
@@ -661,12 +996,35 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (post_nodevalue not in value_list):
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                             else:
                                 res = False
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
                     else:
-                        print "ERROR!! Node '%s' not found" % element
+                        # print "ERROR!! Node '%s' not found" % element
+                        self.logger_testop.error(
+                            "ERROR!! Node '%s' not found" %
+                            element)
                         res = False
         self.print_result('not-in', res)
         tresult['result'] = res
@@ -689,7 +1047,8 @@ class Operator:
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         if (not pre_nodes) or (not post_nodes):
-            print "Nodes are not present in given Xpath!!"
+            # print "Nodes are not present in given Xpath!!"
+            self.logger_testop.error("Nodes are not present in given Xpath!!")
             res = False
 
         else:
@@ -719,13 +1078,35 @@ class Operator:
                     postdict[ele_list[0].replace('-', '_')] = val_list2
                     if val_list1 != val_list2:
                         res = False
-                        print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                        self.logger_testop.info(
+                            jinja2.Template(
+                                err_mssg.replace(
+                                    '-',
+                                    '_')).render(
+                                iddict,
+                                pre=predict,
+                                post=postdict))
+                        # print jinja2.Template(err_mssg.replace('-',
+                        # '_')).render(iddict, pre=predict, post=postdict)
                     else:
-                        print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                        self.logger_testop.info(
+                            jinja2.Template(
+                                info_mssg.replace(
+                                    '-',
+                                    '_')).render(
+                                iddict,
+                                pre=predict,
+                                post=postdict))
+                        # print jinja2.Template(info_mssg.replace('-',
+                        # '_')).render(iddict, pre=predict, post=postdict)
                 else:
-                    print "\nFollowing Node values in pre snapshots not found in postsnapshot!!"
+                    # print "\nFollowing Node values in pre snapshots not found
+                    # in postsnapshot!!"
+                    self.logger_testop.error(
+                        "\nFollowing Node values in pre snapshots not found in postsnapshot!!")
                     for kval in k:
-                        print "Missing node:", kval.strip()
+                        self.logger_testop.info("Missing node:", kval.strip())
+                        # print "Missing node:", kval.strip()
         self.print_result('no-diff', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -744,7 +1125,8 @@ class Operator:
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         if not pre_nodes or not post_nodes:
-            print "Nodes are not present in given Xpath!!"
+            # print "Nodes are not present in given Xpath!!"
+            self.logger_testop.error("Nodes are not present in given Xpath!!")
             res = False
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
@@ -777,16 +1159,42 @@ class Operator:
                                 # user can only ask for values which are in pre
                                 # and not in post
                                 res = False
-                                print "Missing node :", val1, "for element tag ", ele_xpath1[0].tag, \
-                                    "and parent element", ele_xpath1[
-                                        0].getparent().tag
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                # print "Missing node :", val1, "for element tag ", ele_xpath1[0].tag, \
+                                #    "and parent element", ele_xpath1[
+                                #        0].getparent().tag
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
+                                self.logger_testop.info("Missing node :", val1, "for element tag ", ele_xpath1[0].tag,
+                                                        "and parent element", ele_xpath1[
+                                    0].getparent().tag)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
                 else:
-                    print "\nERROR, id miss match occurred!!!"
+                    # print "\nERROR, id miss match occurred!!!"
+                    self.logger_testop.error(
+                        "\nERROR, id miss match occurred!!!")
                     for kval in k:
-                        print "Missing node:", kval.strip()
+                        self.logger_testop.error("Missing node:", kval.strip())
+                        # print "Missing node:", kval.strip()
                     res = False
         self.print_result('list-not-less', res)
         tresult['result'] = res
@@ -807,7 +1215,8 @@ class Operator:
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         if not pre_nodes or not post_nodes:
-            print "Nodes are not present in given Xpath!!"
+            # print "Nodes are not present in given Xpath!!"
+            self.logger_testop.error("Nodes are not present in given Xpath!!")
             res = False
 
         else:
@@ -838,17 +1247,43 @@ class Operator:
                             postdict[ele_list[0].replace('-', '_')] = val2
                             if val2 not in val_list1:
                                 res = False
-                                print "Missing node :", val2, "for element tag ", ele_xpath2[0].tag, \
-                                    "and parent element", ele_xpath2[
-                                        0].getparent().tag
-                                print predict, postdict
-                                print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                # print "Missing node :", val2, "for element tag ", ele_xpath2[0].tag, \
+                                #    "and parent element", ele_xpath2[
+                                #        0].getparent().tag
+                                self.logger_testop.error("Missing node :", val2, "for element tag ", ele_xpath2[0].tag,
+                                                         "and parent element", ele_xpath2[
+                                    0].getparent().tag)
+                                # print predict, postdict
+                                # print jinja2.Template(err_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
                             else:
-                                print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                # print jinja2.Template(info_mssg.replace('-',
+                                # '_')).render(iddict, pre=predict,
+                                # post=postdict)
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
                 else:
-                    print "\nERROR, id miss match occurred !!"
+                    # print "\nERROR, id miss match occurred !!"
+                    self.logger_testop.error(
+                        "\nERROR, id miss match occurred !!")
                     for kval in k:
-                        print "Missing node:", kval.strip()
+                        self.logger_testop.error("Missing node:", kval.strip())
+                        # print "Missing node:", kval.strip()
                     res = False
         self.print_result('list-not-more', res)
         tresult['result'] = res
@@ -868,7 +1303,8 @@ class Operator:
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         if not pre_nodes or not post_nodes:
-            print "Nodes are not present in given Xpath!!"
+            self.logger_testop.error("Nodes are not present in given Xpath!!")
+            # print "Nodes are not present in given Xpath!!"
             res = False
 
         else:
@@ -911,9 +1347,31 @@ class Operator:
                                 mvalue = val1 - ((val1 * dvalue) / 100)
                                 if (val2 > val1 or val2 < mvalue):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            err_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(err_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            info_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(info_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
 
                             # for positive percent change
                             elif re.search('%', del_val) and (re.search('/+', del_val)):
@@ -921,9 +1379,31 @@ class Operator:
                                 mvalue = val1 + ((val1 * dvalue) / 100)
                                 if (val2 < val1 or val2 > mvalue):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            err_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(err_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            info_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(info_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
 
                             # absolute percent change
                             elif re.search('%', del_val):
@@ -932,9 +1412,31 @@ class Operator:
                                 mvalue2 = val1 + (val1 * dvalue) / 100
                                 if (val2 < mvalue1 or val2 > mvalue2):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            err_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(err_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            info_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(info_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
 
                             # for negative change
                             elif re.search('-', del_val):
@@ -942,9 +1444,31 @@ class Operator:
                                 mvalue = val1 - dvalue
                                 if (val2 < mvalue or val2 > val1):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            err_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(err_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            info_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(info_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
 
                              # for positive change
                             elif re.search('\+', del_val):
@@ -952,9 +1476,31 @@ class Operator:
                                 mvalue = val1 + dvalue
                                 if (val2 >= mvalue or val2 <= val1):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            err_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(err_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            info_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(info_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
 
                             else:
                                 dvalue = float(ele_list[1].strip('%'))
@@ -962,13 +1508,38 @@ class Operator:
                                 mvalue2 = val1 + dvalue
                                 if (val2 < mvalue1 or val2 > mvalue2):
                                     res = False
-                                    print jinja2.Template(err_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            err_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(err_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
                                 else:
-                                    print jinja2.Template(info_mssg.replace('-', '_')).render(iddict, pre=predict, post=postdict)
+                                    self.logger_testop.info(
+                                        jinja2.Template(
+                                            info_mssg.replace(
+                                                '-',
+                                                '_')).render(
+                                            iddict,
+                                            pre=predict,
+                                            post=postdict))
+                                    # print
+                                    # jinja2.Template(info_mssg.replace('-',
+                                    # '_')).render(iddict, pre=predict,
+                                    # post=postdict)
                 else:
-                    print "\n ERROR, id miss match occurred !! "
+                    # print "\n ERROR, id miss match occurred !! "
+                    self.logger_testop.error(
+                        "\n ERROR, id miss match occurred !! ")
                     for kval in k:
-                        print "missing node:", kval.strip()
+                        # print "missing node:", kval.strip()
+                        self.logger_testop.error("missing node:", kval.strip())
                     res = False
 
         self.print_result('delta', res)
@@ -980,7 +1551,7 @@ class Operator:
         msg = " Final Result!! "
         finalmssg = (80 - len(msg) - 2) / 2 * '-' + \
             msg + (80 - len(msg) - 2) / 2 * '-'
-
+        '''
         print (colorama.Fore.BLUE + finalmssg)
         print (
             colorama.Fore.GREEN +
@@ -1003,6 +1574,34 @@ class Operator:
                 "\nNone of the test cases executed !!! ")
         else:
             print (
+                colorama.Fore.GREEN +
+                colorama.Style.BRIGHT +
+                "\nOverall Tests passed!!! ")
+            self.result = "Passed"
+            '''
+
+        self.logger_testop.info(colorama.Fore.BLUE + finalmssg)
+        self.logger_testop.info(
+            colorama.Fore.GREEN +
+            "\nTotal No of tests passed: {}".format(
+                self.no_passed))
+        self.logger_testop.info(
+            colorama.Fore.RED +
+            "\nTotal No of tests failed: {} ".format(
+                self.no_failed))
+        if (self.no_failed):
+            self.logger_testop.info(
+                colorama.Fore.RED +
+                colorama.Style.BRIGHT +
+                "\nOverall Tests failed!!! ")
+            self.result = "Failed"
+        elif (self.no_passed == 0 and self.no_failed == 0):
+            self.logger_testop.info(
+                colorama.Fore.RED +
+                colorama.Style.BRIGHT +
+                "\nNone of the test cases executed !!! ")
+        else:
+            self.logger_testop.info(
                 colorama.Fore.GREEN +
                 colorama.Style.BRIGHT +
                 "\nOverall Tests passed!!! ")

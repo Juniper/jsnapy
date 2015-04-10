@@ -1,10 +1,12 @@
 import sqlite3
 import os
+import logging
 
 
 class JsnapSqlite:
 
     def __init__(self, host, db_name):
+        self.logger_storesqlite = logging.getLogger(__name__)
         host = host.replace('.', '__')
         self.table_name = "table_" + host
         # Creating Schema

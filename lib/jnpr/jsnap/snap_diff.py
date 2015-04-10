@@ -2,6 +2,7 @@ import difflib
 import re
 import sys
 import os
+import logging
 
 color_code_list = {
     "red": '\033[0;31m',
@@ -23,11 +24,9 @@ color_code_list = {
 class Differ(object):
 
     def __init__(self, column_size=150, numbered_lines=True):
-
         self.tabsize = 8
         self.numbered_lines = numbered_lines
         self.column_size = column_size
-
         if not numbered_lines:
             self.wrap_size = (self.column_size // 2) - 3
         else:
@@ -203,12 +202,17 @@ class Differ(object):
 
 class Diff:
 
+    def __init__(self):
+        self.logger_diff = logging.getLogger(__name__)
+
     def readfile(self, name):
         if os.path.isfile(name) and os.path.isfile(name):
             with open(name, mode="rb") as f:
                 return f.readlines()
         else:
             print "ERROR!!! File is not present at given location"
+            self.logger_diff.error(
+                "ERROR!!! File is not present at given location")
 
     def diff_files(self, a, b):
         headers = a, b

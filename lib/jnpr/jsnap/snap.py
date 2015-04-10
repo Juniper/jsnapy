@@ -2,32 +2,59 @@ from lxml import etree
 import os
 from jnpr.jsnap.sqlite_store import JsnapSqlite
 import sys
+import logging
+import colorama
 
 
 class Parse:
 
+    def __init__(self):
+        self.logger_snap = logging.getLogger(__name__)
+        colorama.init(autoreset=True)
+
     def _write_file(self, rpc_reply, format, output_file):
         if isinstance(rpc_reply, bool) and format == "text":
-            print "ERROR!! requested node is not present"
+            self.logger_snap.error(
+                colorama.Fore.RED +
+                "ERROR!! requested node is not present")
+            # print "ERROR!! requested node is not present"
         else:
             err = rpc_reply.xpath("//rpc-error")
             if len(err):
-                print "\nERROR:"
+                self.logger_snap.error(colorama.Fore.RED + "\nERROR:")
+                # print "\nERROR:"
                 for err_node in err:
-                    print err_node.findtext('.//error-message')
+                    # print err_node.findtext('.//error-message')
+                    self.logger_snap.error(
+                        err_node.findtext(
+                            colorama.Fore.RED +
+                            './/error-message'))
             else:
                 with open(output_file, 'w') as f:
                     f.write(etree.tostring(rpc_reply))
+                    self.logger_snap.debug(
+                        colorama.Fore.BLUE +
+                        etree.tostring(rpc_reply))
 
     def _check_reply(self, rpc_reply, format):
         if isinstance(rpc_reply, bool) and format == "text":
-            print "ERROR!! requested node is not present"
+
+            self.logger_snap.error(
+                colorama.Fore.RED +
+                "ERROR!! requested node is not present")
+            # print "ERROR!! requested node is not present"
+
         else:
             err = rpc_reply.xpath("//rpc-error")
             if len(err):
-                print "\nERROR:"
+                #    print "\nERROR:"
+                self.logger_snap.error(colorama.Fore.RED + "\nERROR:")
                 for err_node in err:
-                    print err_node.findtext('.//error-message')
+                    #        print err_node.findtext('.//error-message')
+                    self.logger_snap.error(
+                        err_node.findtext(
+                            colorama.Fore.RED +
+                            './/error-message'))
             else:
                 return etree.tostring(rpc_reply)
         return(False)
@@ -48,7 +75,7 @@ class Parse:
         self.rpc_list = []
         self.test_included = []
         path = os.getcwd()
-        formats=['xml', 'text']
+        formats = ['xml', 'text']
         if 'tests_include' in test_file:
             for t in test_file.get('tests_include'):
                 self.test_included.append(t)
@@ -59,19 +86,34 @@ class Parse:
                             'command',
                             "unknown command")
                         cmd_format = test_file[t][0].get('format', 'xml')
-                        cmd_format= cmd_format if cmd_format in formats else 'xml'
+                        cmd_format = cmd_format if cmd_format in formats else 'xml'
                         self.command_list.append(command)
                         name = '_'.join(command.split())
                         try:
-                            print "\nTaking snapshot for %s ................" % command
+                            self.logger_snap.info(
+                                colorama.Fore.BLUE +
+                                "\nTaking snapshot for %s ................" %
+                                command)
+                            # print "\nTaking snapshot for %s ................"
+                            # % command
                             rpc_reply_command = dev.rpc.cli(
                                 command,
                                 format=cmd_format)
+                            self.logger_snap.info(rpc_reply_command)
                             # print "*********",
                             # etree.tostring(rpc_reply_command)
                         except Exception:
-                            print "ERROR occurred ----!!!", sys.exc_info()[0]
-                            print "\n**********Complete error message***********\n", sys.exc_info()
+                            self.logger_snap.error(
+                                colorama.Fore.RED +
+                                "ERROR occurred ----!!!",
+                                sys.exc_info()[0])
+                            self.logger_snap.error(
+                                colorama.Fore.RED +
+                                "\n**********Complete error message***********\n",
+                                sys.exc_info())
+                            # print "ERROR occurred ----!!!", sys.exc_info()[0]
+                            # print "\n**********Complete error
+                            # message***********\n", sys.exc_info()
                         else:
                             filename = snap_files + '_' + \
                                 name + '.' + cmd_format
@@ -108,7 +150,7 @@ class Parse:
                         rpc = test_file[t][0].get('rpc', "unknown rpc")
                         self.rpc_list.append(rpc)
                         reply_format = test_file[t][0].get('format', 'xml')
-                        reply_format= reply_format if reply_format in formats else 'xml'
+                        reply_format = reply_format if reply_format in formats else 'xml'
                         if len(test_file[t]) >= 2 and 'args' in test_file[
                                 t][1]:
                             kwargs = {
@@ -126,7 +168,12 @@ class Parse:
                                         filter_data)
                                     kwargs['filter_xml'] = filter_data
                                 if rpc == 'get-config':
-                                    print "\nTaking snapshot of %s......." % rpc
+                                    # print "\nTaking snapshot of %s......." %
+                                    # rpc
+                                    self.logger_snap.info(
+                                        colorama.Fore.BLUE +
+                                        "\nTaking snapshot of %s......." %
+                                        rpc)
                                     rpc_reply = getattr(
                                         dev.rpc,
                                         rpc.replace(
@@ -134,11 +181,20 @@ class Parse:
                                             '_'))(options={'format': reply_format},
                                                   **kwargs)
                                 else:
-                                    print "ERROR!!, filtering rpc works only for 'get-config' rpc"
+                                    # print "ERROR!!, filtering rpc works only
+                                    # for 'get-config' rpc"
+                                    self.logger_snap.error(
+                                        colorama.Fore.RED +
+                                        "ERROR!!, filtering rpc works only for 'get-config' rpc")
 
                             else:
                                 try:
-                                    print "\nTaking snapshot of %s......." % rpc
+                                    # print "\nTaking snapshot of %s......." %
+                                    # rpc
+                                    self.logger_snap.info(
+                                        colorama.Fore.BLUE +
+                                        "\nTaking snapshot of %s......." %
+                                        rpc)
                                     rpc_reply = getattr(
                                         dev.rpc,
                                         rpc.replace(
@@ -146,11 +202,25 @@ class Parse:
                                             '_'))({'format': reply_format},
                                                   **kwargs)
                                 except Exception:
-                                    print "ERROR occurred ----!!!", sys.exc_info()[0]
-                                    print "\n**********Complete error message***********\n", sys.exc_info()
+                                    self.logger_snap.error(
+                                        colorama.Fore.RED +
+                                        "ERROR occurred ----!!!",
+                                        sys.exc_info()[0])
+                                    self.logger_snap.error(
+                                        colorama.Fore.RED +
+                                        "\n**********Complete error message***********\n",
+                                        sys.exc_info())
+                                    # print "ERROR occurred ----!!!", sys.exc_info()[0]
+                                    # print "\n**********Complete error
+                                    # message***********\n", sys.exc_info()
                         else:
                             try:
-                                print "\nTaking snapshot of %s............" % rpc
+                                self.logger_snap.info(
+                                    colorama.Fore.BLUE +
+                                    "\nTaking snapshot of %s............" %
+                                    rpc)
+                                # print "\nTaking snapshot of %s............" %
+                                # rpc
                                 if rpc == 'get-config':
                                     rpc_reply = getattr(
                                         dev.rpc,
@@ -164,8 +234,17 @@ class Parse:
                                             '-',
                                             '_'))({'format': reply_format})
                             except Exception:
-                                print "ERROR occurred ----!!!", sys.exc_info()[0]
-                                print "\n**********Complete error message***********\n", sys.exc_info()
+                                # print "ERROR occurred ----!!!", sys.exc_info()[0]
+                                # print "\n**********Complete error
+                                # message***********\n", sys.exc_info()
+                                self.logger_snap.error(
+                                    colorama.Fore.RED +
+                                    "ERROR occurred ----!!!",
+                                    sys.exc_info()[0])
+                                self.logger_snap.error(
+                                    colorama.Fore.RED +
+                                    "\n**********Complete error message***********\n",
+                                    sys.exc_info())
 
                         if 'rpc_reply' in locals():
                             filename = snap_files + '_' + \
@@ -199,8 +278,20 @@ class Parse:
                                 sqlite_jsnap.insert_data(db_dict2)
                         ###
                     else:
-                        print "ERROR!!! Test case: '%s' not defined properly" % t
+                        # print "ERROR!!! Test case: '%s' not defined properly"
+                        # % t
+                        self.logger_snap.error(
+                            colorama.Fore.RED +
+                            "ERROR!!! Test case: '%s' not defined properly" %
+                            t)
                 else:
-                    print "ERROR!!! Test case: '%s' not defined !!!!" % t
+                    # print "ERROR!!! Test case: '%s' not defined !!!!" % t
+                    self.logger_snap.error(
+                        colorama.Fore.RED +
+                        "ERROR!!! Test case: '%s' not defined !!!!" %
+                        t)
         else:
-            print "\nERROR!! None of the test cases included"
+            # print "\nERROR!! None of the test cases included"
+            self.logger_snap.error(
+                colorama.Fore.RED +
+                "\nERROR!! None of the test cases included")
