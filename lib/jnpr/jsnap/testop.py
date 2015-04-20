@@ -40,8 +40,7 @@ class Operator:
             # print "\nTest Operator not defined !!!!! \nERROR Message :",
             # e.message
             self.logger_testop.error(
-                "\nTest Operator not defined !!!!! \nERROR Message :",
-                e.message)
+                "\nTest Operator not defined !!!!! \nERROR Message :")
             self.no_failed = self.no_failed + 1
         except:
             # print "\nUndefined error occurred, please check test cases !!!"
@@ -96,9 +95,12 @@ class Operator:
                 id_list[j]) else None
         return iddict, prenode, postnode
 
+    # for getting values of element
     def _find_value(self, predict, postdict, element, postnode, prenode):
-        post_nodevalue = postnode.text.strip()
-        pre_nodevalue = prenode.text.strip()
+        post_nodevalue = postnode.text.strip(
+        ) if postnode.text is not None else None
+        pre_nodevalue = prenode.text.strip(
+        ) if prenode.text is not None else None
         predict[element.replace('-', '_')] = pre_nodevalue
         postdict[element.replace('-', '_')] = post_nodevalue
         return predict, postdict, post_nodevalue, pre_nodevalue
@@ -164,8 +166,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -231,8 +231,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         res = False
                         # print jinja2.Template(err_mssg.replace('-',
@@ -299,8 +297,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -370,8 +366,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
 
                     if postnode:
                         for k in range(len(postnode)):
@@ -447,8 +441,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -524,8 +516,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
 
                     if postnode:
                         for k in range(len(postnode)):
@@ -603,8 +593,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -681,8 +669,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
 
                     if postnode:
                         for j in range(len(postnode)):
@@ -759,8 +745,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
 
                     if postnode:
                         for k in range(len(postnode)):
@@ -835,8 +819,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict[
@@ -913,8 +895,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -989,8 +969,6 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -1064,8 +1042,6 @@ class Operator:
                 if k in data2:
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, data1[k], data2[k], x_path, ele_list[0], err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, data1[k], data2[k], x_path, ele_list[0], info_mssg)
 
                     ele_xpath1 = data1.get(k).xpath(ele_list[0])
                     ele_xpath2 = data2.get(k).xpath(ele_list[0])
@@ -1142,8 +1118,6 @@ class Operator:
 
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, predata[k], postdata[k], x_path, ele_list[0], err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, predata[k], postdata[k], x_path, ele_list[0], info_mssg)
 
                     if ele_list is not None:
                         ele_xpath1 = predata.get(k).xpath(ele_list[0])
@@ -1233,8 +1207,6 @@ class Operator:
 
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, predata[k], postdata[k], x_path, ele_list[0], err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, predata[k], postdata[k], x_path, ele_list[0], info_mssg)
 
                     if ele_list is not None:
                         ele_xpath1 = predata.get(k).xpath(ele_list[0])
@@ -1324,8 +1296,6 @@ class Operator:
 
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, predata[k], postdata[k], x_path, ele_list[0], err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, predata[k], postdata[k], x_path, ele_list[0], info_mssg)
 
                     if ele_list is not None:
                         # print "data values are", data1.get(k), data2.get(k)
