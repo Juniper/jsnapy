@@ -610,7 +610,7 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
 
-                            if float(post_nodevalue) <= range1 and float(
+                            if float(post_nodevalue) <= range1 or float(
                                     post_nodevalue) >= range2:
                                 self.logger_testop.info(
                                     jinja2.Template(
