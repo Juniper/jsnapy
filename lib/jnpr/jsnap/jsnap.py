@@ -244,7 +244,7 @@ class Jsnap:
                 self.logger.debug(
                     colorama.Fore.RED +
                     "Arguments not given correctly, Please refer below help message")
-                # self.parser.print_help()
+                self.parser.print_help()
                 sys.exit(1)
         self.login(output_file)
 
