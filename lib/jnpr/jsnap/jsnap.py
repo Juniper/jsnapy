@@ -267,7 +267,7 @@ class Jsnap:
                 test_files.append(yaml.load(test_file))
             else:
                 # print "ERROR!! File %s is not found" % tfile
-                self.logger(
+                self.logger.error(
                     colorama.Fore.RED +
                     "ERROR!! File %s is not found" %
                     tfile)
