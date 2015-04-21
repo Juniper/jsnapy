@@ -326,7 +326,7 @@ class Jsnap:
 
                 dgroup = [i.strip() for i in gp.split(',')]
                 for dgp in dev_file:
-                    if dgroup[0] == 'all' or dgp in dgroup:
+                    if dgroup[0].lower() == 'all' or dgp in dgroup:
                         for val in dev_file[dgp]:
                             hostname = val.keys()[0]
                             self.host_list.append(hostname)
@@ -349,7 +349,7 @@ class Jsnap:
             else:
                 hostname = k.get('devices')
                 username = k.get('username') or raw_input("\n Enter user name: ")
-                password = k.get('passwd') or getpass.getpass("\n Please enter password to login to Device: ")
+                password = k.get('passwd') or getpass.getpass("\nPlease enter password to login to Device: ")
                 self.host_list.append(hostname)
                 snap_files = hostname + '_' + output_file
                 self.connect(hostname, username, password, snap_files)
@@ -358,7 +358,7 @@ class Jsnap:
         else:
             hostname = self.args.hostname
             username = self.args.login if self.args.login is not None else raw_input("\n Enter user name: ")
-            password = self.args.passwd if self.args.passwd is not None else getpass.getpass("\n Please enter password for login to Device: ")
+            password = self.args.passwd if self.args.passwd is not None else getpass.getpass("\nPlease enter password for login to Device: ")
             self.host_list.append(hostname)
             snap_files = hostname + '_' + output_file
             self.connect(hostname, username, password, snap_files)
