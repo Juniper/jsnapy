@@ -348,8 +348,8 @@ class Jsnap:
         # one device
             else:
                 hostname = k.get('devices')
-                username = k.get('username')
-                password = k.get('passwd')
+                username = k.get('username') or raw_input("\n Enter user name: ")
+                password = k.get('passwd') or getpass.getpass("\n Please enter password to login to Device: ")
                 self.host_list.append(hostname)
                 snap_files = hostname + '_' + output_file
                 self.connect(hostname, username, password, snap_files)
@@ -357,8 +357,8 @@ class Jsnap:
         # login credentials are given from command line
         else:
             hostname = self.args.hostname
-            password = self.args.passwd
-            username = self.args.login
+            username = self.args.login if self.args.login is not None else raw_input("\n Enter user name: ")
+            password = self.args.passwd if self.args.passwd is not None else getpass.getpass("\n Please enter password for login to Device: ")
             self.host_list.append(hostname)
             snap_files = hostname + '_' + output_file
             self.connect(hostname, username, password, snap_files)
