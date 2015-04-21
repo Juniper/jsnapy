@@ -20,6 +20,9 @@ import setup_logging
 
 class Jsnap:
 
+    if not os.path.isdir("logs"):
+        os.mkdir("logs")
+
     # need to call this function to initialize logging
     setup_logging.setup_logging()
 
@@ -133,8 +136,6 @@ class Jsnap:
         #self.logger.debug(colorama.Fore.BLUE+ "Creating init folder.....")
         if not os.path.isdir("snapshots"):
             os.mkdir("snapshots")
-        if not os.path.isdir("logs"):
-            os.mkdir("logs")
         dst_config_path = os.path.join(os.getcwd(), 'configs')
         # overwrite files if given option -o or --overwrite
         if not os.path.isdir(dst_config_path) or self.args.overwrite is True:
@@ -144,6 +145,11 @@ class Jsnap:
         if not os.path.isfile(
                 os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
             shutil.copy(dst_main_yml, os.getcwd())
+
+        logging_yml_file= os.path.join(os.path.dirname(__file__), 'logging.yml')
+        if not os.path.isfile(os.path.join(os.getcwd(),'logging.yml')) or self.args.overwrite is True:
+            shutil.copy(logging_yml_file, os.getcwd())
+
         #self.logger.info(colorama.Fore.BLUE+ "--init folder created.....")
 
     # call hosts class, connect hosts and get host list
@@ -425,7 +431,7 @@ class Jsnap:
         all the yaml file apart from main, like device.yml, bgp_neighbor.yml
         :return:
         """
-        #self.logger.debug(colorama.Fore.BLUE+ "Creating init folder.....")
+        self.logger.debug(colorama.Fore.BLUE+ "Creating init folder.....")
         if not os.path.isdir("snapshots"):
             os.mkdir("snapshots")
         if not os.path.isdir("logs"):
@@ -439,7 +445,12 @@ class Jsnap:
         if not os.path.isfile(
                 os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
             shutil.copy(dst_main_yml, os.getcwd())
-        #self.logger.info(colorama.Fore.BLUE+ "--init folder created.....")
+
+        logging_yml_file= os.path.join(os.path.dirname(__file__), 'logging.yml')
+        if not os.path.isfile(os.path.join(os.getcwd(),'logging.yml')) or self.args.overwrite is True:
+            shutil.copy(logging_yml_file, os.getcwd())
+            
+        self.logger.info(colorama.Fore.BLUE+ "--init folder created.....")
 
     def check_arguments(self):
         """
