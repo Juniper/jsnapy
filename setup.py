@@ -16,7 +16,7 @@ setup(name="jsnap-py",
       packages=find_packages('lib'), 
       package_data={
            'jnpr.jsnap.configs': ['*.yml'],
-	       'jnpr.jsnap': ['content.html']
+	       'jnpr.jsnap': ['logging.yml','content.html']
      },
       entry_points={
           'console_scripts': [
