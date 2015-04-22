@@ -38,22 +38,3 @@ class JsnapSqlite:
                                                                                   'cli': db['cli_command'], 'snap': db['snap_name'],
                                                                                   'format': db['format'], 'xml': db['data']})
             con.commit()
-
-    # Verify database content
-    def print_result(self):
-
-        with sqlite3.connect(self.db_filename) as conn:
-
-            cursor = conn.cursor()
-            cursor.execute("""
-            select * from %s
-            """ % self.table_name)
-
-            for row in cursor.fetchall():
-                idd, filename, user, cli, snap, data_format, xml = row
-                print idd
-                print user
-                print cli
-                print snap
-                print data_format
-                print len(xml)

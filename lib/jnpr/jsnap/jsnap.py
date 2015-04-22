@@ -133,7 +133,7 @@ class Jsnap:
         all the yaml file apart from main, like device.yml, bgp_neighbor.yml
         :return:
         """
-        #self.logger.debug(colorama.Fore.BLUE+ "Creating init folder.....")
+        self.logger.debug(colorama.Fore.BLUE+ "Creating init folder.....")
         if not os.path.isdir("snapshots"):
             os.mkdir("snapshots")
         dst_config_path = os.path.join(os.getcwd(), 'configs')
@@ -150,7 +150,7 @@ class Jsnap:
         if not os.path.isfile(os.path.join(os.getcwd(),'logging.yml')) or self.args.overwrite is True:
             shutil.copy(logging_yml_file, os.getcwd())
 
-        #self.logger.info(colorama.Fore.BLUE+ "--init folder created.....")
+        self.logger.info(colorama.Fore.BLUE+ "--init folder created.....")
 
     # call hosts class, connect hosts and get host list
     # use pre_snapfile because always first file is pre_snapfile regardless of
@@ -390,8 +390,7 @@ class Jsnap:
             try:
                 dev.open()
             except Exception as ex:
-                print "\nERROR occurred", ex, str(ex)
-                self.logger.error("\nERROR occurred")
+                self.logger.error("\nERROR occurred %s"%ex)
                 return
             else:
                 self.generate_rpc_reply(dev, snap_files, username)
@@ -449,7 +448,7 @@ class Jsnap:
         logging_yml_file= os.path.join(os.path.dirname(__file__), 'logging.yml')
         if not os.path.isfile(os.path.join(os.getcwd(),'logging.yml')) or self.args.overwrite is True:
             shutil.copy(logging_yml_file, os.getcwd())
-            
+
         self.logger.info(colorama.Fore.BLUE+ "--init folder created.....")
 
     def check_arguments(self):

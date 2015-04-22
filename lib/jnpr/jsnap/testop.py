@@ -40,7 +40,7 @@ class Operator:
             # print "\nTest Operator not defined !!!!! \nERROR Message :",
             # e.message
             self.logger_testop.error(
-                "\nTest Operator not defined !!!!! \nERROR Message :")
+                "\nTest Operator not defined !!!!! \nERROR Message : %s"%e.message)
             self.no_failed = self.no_failed + 1
         except:
             # print "\nUndefined error occurred, please check test cases !!!"
@@ -150,8 +150,7 @@ class Operator:
             # print "\n Error occurred while accessing test element", e.message
             # print "\n Element is not specified for testing"
             self.logger_testop.error(
-                "\n Error occurred while accessing test element",
-                e.message)
+                "\n Error occurred while accessing test element: %s"%e.message)
             self.logger_testop.error("\n Element is not specified for testing")
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
@@ -214,8 +213,7 @@ class Operator:
             print "\n Error occurred while accessing test element", e.message
             print "\n 'exists' test operator require two parameters"
             self.logger_testop.error(
-                "\n Error occurred while accessing test element",
-                e.message)
+                "\n Error occurred while accessing test element: %s"%e.message)
             self.logger_testop.error(
                 "\n 'exists' test operator require two parameters")
         else:
@@ -277,8 +275,7 @@ class Operator:
         except IndexError as e:
             # print "\nError occurred while accessing test element", e.message
             self.logger_testop.error(
-                "\nError occurred while accessing test element",
-                e.message)
+                "\nError occurred while accessing test element: %s"%e.message)
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -349,8 +346,7 @@ class Operator:
             # print "\nError occurred while accessing test element", e.message
             # print "\n'is-equal' test operator requires two parameter"
             self.logger_testop.error(
-                "\nError occurred while accessing test element",
-                e.message)
+                "\nError occurred while accessing test element %s"%e.message)
             self.logger_testop.error(
                 "\n'is-equal' test operator requires two parameter")
         else:
@@ -424,8 +420,7 @@ class Operator:
             # print "\nError occurred while accessing test element", e.message
             # print "\n'not-equal' test operator requires two parameter"
             self.logger_testop.error(
-                "\nError occurred while accessing test element",
-                e.message)
+                "\nError occurred while accessing test element: %s"%e.message)
             self.logger_testop.error(
                 "\n'not-equal' test operator requires two parameter")
         else:
@@ -497,8 +492,7 @@ class Operator:
             range2 = float(ele_list[2])
         except IndexError as e:
             self.logger_testop.error(
-                "\nError occurred while accessing test element\n",
-                e.message)
+                "\nError occurred while accessing test element %s\n"%e.message)
             self.logger_testop.error(
                 "\n'in-range' test operator requires two parameter")
             # print "\nError occurred while accessing test element\n", e.message
@@ -574,8 +568,7 @@ class Operator:
             range2 = float(ele_list[2])
         except IndexError as e:
             self.logger_testop.error(
-                "\n Error occurred while accessing test element",
-                e.message)
+                "\n Error occurred while accessing test element %s"%e.message)
             self.logger_testop.error(
                 "\n not-range test operator require two parameters")
             # print "\n Error occurred while accessing test element", e.message
@@ -652,8 +645,7 @@ class Operator:
             # print "\nError occurred while accessing test element", e.message
             # print "\n'is-gt' test operator require two parameters"
             self.logger_testop.error(
-                "\nError occurred while accessing test element",
-                e.message)
+                "\nError occurred while accessing test element: %s"%e.message)
             self.logger_testop.error(
                 "\n'is-gt' test operator require two parameters")
         else:
@@ -725,8 +717,7 @@ class Operator:
             val1 = float(ele_list[1])
         except IndexError as e:
             self.logger_testop.error(
-                "\nError occurred while accessing test element ",
-                e.message)
+                "\nError occurred while accessing test element %s"%e.message)
             self.logger_testop.error(
                 "\n'is-lt' test operator require two parameters")
             # print "\nError occurred while accessing test element ", e.message
@@ -801,8 +792,7 @@ class Operator:
             value = ele_list[1]
         except IndexError as e:
             self.logger_testop.error(
-                "\nError occurred while accessing test element",
-                e.message)
+                "\nError occurred while accessing test element %s"%e.message)
             self.logger_testop.error("\n'contains' require two parameters")
             # print "\nError occurred while accessing test element", e.message
             # print "\n'contains' require two parameters"
@@ -876,8 +866,7 @@ class Operator:
             value_list = ele_list[1:]
         except IndexError as e:
             self.logger_testop.error(
-                "\nError occurred while accessing test element",
-                e.message)
+                "\nError occurred while accessing test element %s"%e.message)
             self.logger_testop.error(
                 "\n'is-in' test operator require two parameters")
             # print "\nError occurred while accessing test element", e.message
@@ -950,8 +939,7 @@ class Operator:
             value_list = ele_list[1:]
         except IndexError as e:
             self.logger_testop.error(
-                "\nError occurred while accessing test element",
-                e.message)
+                "\nError occurred while accessing test element %s" %e.message)
             self.logger_testop.error(
                 "\n'not-in' test operator require two parameters")
             # print "\nError occurred while accessing test element", e.message
@@ -1079,9 +1067,9 @@ class Operator:
                     # print "\nFollowing Node values in pre snapshots not found
                     # in postsnapshot!!"
                     self.logger_testop.error(
-                        "\nFollowing Node values in pre snapshots not found in postsnapshot!!")
+                        "\nFollowing Node values in pre snapshots not found in post snapshot!!")
                     for kval in k:
-                        self.logger_testop.info("Missing node:", kval.strip())
+                        self.logger_testop.info("Missing node: %s"%kval.strip())
                         # print "Missing node:", kval.strip()
         self.print_result('no-diff', res)
         tresult['result'] = res
@@ -1139,9 +1127,8 @@ class Operator:
                                 # print jinja2.Template(err_mssg.replace('-',
                                 # '_')).render(iddict, pre=predict,
                                 # post=postdict)
-                                self.logger_testop.info("Missing node :", val1, "for element tag ", ele_xpath1[0].tag,
-                                                        "and parent element", ele_xpath1[
-                                    0].getparent().tag)
+                                self.logger_testop.info("Missing node : %s for element tag %s and parent element %s"%(val1,ele_xpath1[0].tag,
+                                    ele_xpath1[0].getparent().tag))
                                 self.logger_testop.info(
                                     jinja2.Template(
                                         err_mssg.replace(
@@ -1167,7 +1154,7 @@ class Operator:
                     self.logger_testop.error(
                         "\nERROR, id miss match occurred!!!")
                     for kval in k:
-                        self.logger_testop.error("Missing node:", kval.strip())
+                        self.logger_testop.error("Missing node: %s"%kval.strip())
                         # print "Missing node:", kval.strip()
                     res = False
         self.print_result('list-not-less', res)
@@ -1222,9 +1209,8 @@ class Operator:
                                 # print "Missing node :", val2, "for element tag ", ele_xpath2[0].tag, \
                                 #    "and parent element", ele_xpath2[
                                 #        0].getparent().tag
-                                self.logger_testop.error("Missing node :", val2, "for element tag ", ele_xpath2[0].tag,
-                                                         "and parent element", ele_xpath2[
-                                    0].getparent().tag)
+                                self.logger_testop.error("Missing node: %s for element tag: %s and parent element %s" %(val2,ele_xpath2[0].tag,
+                                    ele_xpath2[0].getparent().tag))
                                 # print predict, postdict
                                 # print jinja2.Template(err_mssg.replace('-',
                                 # '_')).render(iddict, pre=predict,
@@ -1254,7 +1240,7 @@ class Operator:
                     self.logger_testop.error(
                         "\nERROR, id miss match occurred !!")
                     for kval in k:
-                        self.logger_testop.error("Missing node:", kval.strip())
+                        self.logger_testop.error("Missing node: %s"%kval.strip())
                         # print "Missing node:", kval.strip()
                     res = False
         self.print_result('list-not-more', res)
@@ -1509,7 +1495,7 @@ class Operator:
                         "\n ERROR, id miss match occurred !! ")
                     for kval in k:
                         # print "missing node:", kval.strip()
-                        self.logger_testop.error("missing node:", kval.strip())
+                        self.logger_testop.error("missing node: %s"%kval.strip())
                     res = False
 
         self.print_result('delta', res)
