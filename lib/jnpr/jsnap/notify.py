@@ -52,7 +52,7 @@ class Notification:
             print "\nERROR occurred: ", ex
             self.logger_notify.error(
                 colorama.Fore.RED +
-                "\nERROR occurred: %s"%ex)
+                "\nERROR occurred: %s" % str(ex))
             return
         ms = msg.as_string()
         try:

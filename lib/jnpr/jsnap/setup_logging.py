@@ -2,6 +2,7 @@ import os
 import logging.config
 import yaml
 
+
 def setup_logging(
         default_path='logging.yml', default_level=logging.INFO, env_key='LOG_CFG'):
     path = os.path.join(os.getcwd(), default_path)

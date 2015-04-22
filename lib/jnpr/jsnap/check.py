@@ -259,7 +259,7 @@ class Comparator:
                     tests_files.append(tfiles)
                 else:
                     # print "File %s not found" % filename
-                    self.logger_check.error("File %s not found"%filename)
+                    self.logger_check.error("File %s not found" % filename)
             for t in tests_files:
                 tests_included = t.get('tests_include')
                 # print (40) * '*' + "\nPerforming test on Device: " + \
@@ -301,7 +301,7 @@ class Comparator:
                             # print "ERROR Occurred: ", ex
                             self.logger_check.error(
                                 colorama.Fore.RED +
-                                "ERROR Occurred: %s"%ex)
+                                "ERROR Occurred: %s" % str(ex))
                         else:
                             if db.get(
                                     'check_from_sqlite') is True and (check is True or diff is True):

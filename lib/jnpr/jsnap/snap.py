@@ -105,10 +105,10 @@ class Parse:
                         except Exception:
                             self.logger_snap.error(
                                 colorama.Fore.RED +
-                                "ERROR occurred %s"%sys.exc_info()[0])
+                                "ERROR occurred %s" % str(sys.exc_info()[0]))
                             self.logger_snap.error(
                                 colorama.Fore.RED +
-                                "\n**********Complete error message***********\n %s"%sys.exc_info())
+                                "\n**********Complete error message***********\n %s" % str(sys.exc_info()))
                             # print "ERROR occurred ----!!!", sys.exc_info()[0]
                             # print "\n**********Complete error
                             # message***********\n", sys.exc_info()
@@ -202,10 +202,10 @@ class Parse:
                                 except Exception:
                                     self.logger_snap.error(
                                         colorama.Fore.RED +
-                                        "ERROR occurred:\n %s"%sys.exc_info()[0])
+                                        "ERROR occurred:\n %s" % str(sys.exc_info()[0]))
                                     self.logger_snap.error(
                                         colorama.Fore.RED +
-                                        "\n**********Complete error message***********\n%s"%sys.exc_info())
+                                        "\n**********Complete error message***********\n%s" % str(sys.exc_info()))
                                     # print "ERROR occurred ----!!!", sys.exc_info()[0]
                                     # print "\n**********Complete error
                                     # message***********\n", sys.exc_info()
@@ -213,7 +213,7 @@ class Parse:
                             try:
                                 self.logger_snap.info(
                                     colorama.Fore.BLUE +
-                                    "\nTaking snapshot of %s............"%rpc)
+                                    "\nTaking snapshot of %s............" % rpc)
                                 # print "\nTaking snapshot of %s............" %
                                 # rpc
                                 if rpc == 'get-config':
@@ -234,10 +234,10 @@ class Parse:
                                 # message***********\n", sys.exc_info()
                                 self.logger_snap.error(
                                     colorama.Fore.RED +
-                                    "ERROR occurred: \n%s"%sys.exc_info()[0])
+                                    "ERROR occurred: \n%s" % str(sys.exc_info()[0]))
                                 self.logger_snap.error(
                                     colorama.Fore.RED +
-                                    "\n**********Complete error message***********\n%s"%sys.exc_info())
+                                    "\n**********Complete error message***********\n%s" % str(sys.exc_info()))
 
                         if 'rpc_reply' in locals():
                             filename = snap_files + '_' + \
@@ -275,12 +275,12 @@ class Parse:
                         # % t
                         self.logger_snap.error(
                             colorama.Fore.RED +
-                            "ERROR!!! Test case: '%s' not defined properly" %t)
+                            "ERROR!!! Test case: '%s' not defined properly" % t)
                 else:
                     # print "ERROR!!! Test case: '%s' not defined !!!!" % t
                     self.logger_snap.error(
                         colorama.Fore.RED +
-                        "ERROR!!! Test case: '%s' not defined !!!!" %t)
+                        "ERROR!!! Test case: '%s' not defined !!!!" % t)
         else:
             # print "\nERROR!! None of the test cases included"
             self.logger_snap.error(
