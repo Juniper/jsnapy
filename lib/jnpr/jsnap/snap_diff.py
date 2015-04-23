@@ -4,69 +4,127 @@ import sys
 import os
 import logging
 
-color_code_list = {
-    "red": '\033[0;31m',
-    "green": '\033[0;32m',
-    "yellow": '\033[0;33m',
-    "blue": '\033[0;34m',
-    "magenta": '\033[0;35m',
-    "cyan": '\033[0;36m',
-    "none": '\033[m',
-    "red_bold": '\033[1;31m',
-    "green_bold": '\033[1;32m',
-    "yellow_bold": '\033[1;33m',
-    "blue_bold": '\033[1;34m',
-    "magenta_bold": '\033[1;35m',
-    "cyan_bold": '\033[1;36m',
-}
+color_add = '\033[1;32;44m'
+color_sub = '\033[1;31;44m'
+color_change = '\033[1;33;41m'
+color_sep = '\033[1;34m'
+color_none = '\033[m'
 
 
 class Differ(object):
 
-    def __init__(self, column_size=150, numbered_lines=True):
-        self.tabsize = 8
-        self.numbered_lines = numbered_lines
-        self.column_size = column_size
-        if not numbered_lines:
-            self.wrap_size = (self.column_size // 2) - 3
-        else:
-            self.wrap_size = (self.column_size // 2) - 9
+    def __init__(self):
+        self.column_size = 150
+        self.line_width = (150 // 2) - 9
 
-    def generate_diff(self, lines_left, lines_right, headers, context_lines=5):
+    def generate_diff(self, lines_left, lines_right, headers):
 
-        lines_left = [self.expand_tabs(line) for line in lines_left]
-        lines_right = [self.expand_tabs(line) for line in lines_right]
+        lines_left = [self._tabtospace(x) for x in lines_left]
+        lines_right = [self._tabtospace(x) for x in lines_right]
 
-        diff_data = difflib._mdiff(lines_left, lines_right, context_lines,
+        diff_data = difflib._mdiff(lines_left, lines_right, 5,
                                    linejunk=None,
                                    charjunk=difflib.IS_CHARACTER_JUNK)
 
-        diff_data = self.wrap_lines(diff_data)
-        diff_data = self.collect_formatted_lines(diff_data)
+        diff_data = self._decorate_lines(diff_data)
+        diff_data = self._accumulate_formatted_lines(diff_data)
 
-        for lines_left, lines_right in self.generate_lines(
-                headers[0], headers[1], diff_data):
-            yield self.colour_lines(
-                "%s %s" % (self.left_pad(lines_left, self.column_size // 2 - 1),
-                           self.left_pad(lines_right, self.column_size // 2 - 1)))
+        for lines_left, lines_right in self._generate_lines(
+                headers, diff_data):
+            yield self._colour_lines(
+                "%s %s" % (self._adjust_text(lines_left, self.column_size // 2 - 1, "l"),
+                           self._adjust_text(lines_right, self.column_size // 2 - 1, "l")))
 
-    def colour_lines(self, s):
+    def _colour_lines(self, string):
 
-        color_add = color_code_list["green_bold"]
-        color_sub = color_code_list["red_bold"]
-        color_change = color_code_list["yellow_bold"]
-        color_none = color_code_list["none"]
-        color_dict = {'\0+': color_add, '\0-': color_sub,
-                      '\0^': color_change, '\1': color_none,
-                      '\t': ' '}
+        cdict = {'\0+': color_add, '\0-': color_sub,
+                 '\0^': color_change, '\1': color_none,
+                 '\t': ' '}
 
-        for key, value in color_dict.items():
-            s = s.replace(key, value)
+        for key, value in cdict.items():
+            string = string.replace(key, value)
 
         return re.sub("\033\\[[01];3([123])m(\\s+)(\033\\[)",
-                      "\033[7;3\\1m\\2\\3", s)
+                      "\033[7;3\\1m\\2\\3", string)
 
-    def wrap_lines(self, diff_data):
+    def _accumulate_formatted_lines(self, diffs):
+        
+        def compile_string(line_number, string):
+            string = string.rstrip()
+            try:
+                linenum = '%d' % line_number
+            except TypeError:
+                return string
+            return '%s %s' % (self._adjust_text(linenum, 6, "r"), string)
+
+        for lines_left, lines_right, flag in diffs:
+            if lines_left is not None or lines_right is not None or flag is not None:
+                yield (compile_string(*lines_left),
+                       compile_string(*lines_right))
+            else:
+                yield None
+
+    def _actual_length(self, text):
+        dictn = {'\0+': "",
+                 '\0-': "",
+                 '\0^': "",
+                 '\1': "",
+                 '\t': ' '}
+        for key, value in dictn.items():
+            text = text.replace(key, value)
+        return self._ignore_escape_char(text)
+
+    def _ignore_escape_char(self, text):
+        ctr = 0
+        inside_color_char = False
+        p_char = ' '
+        for char in text:
+            if inside_color_char:
+                if char == "m":
+                    inside_color_char = False
+            else:
+                if char == "[" and p_char == "\033":
+                    inside_color_char = True
+                    ctr -= 1
+                else:
+                    ctr += 1
+            p_char = char
+        return ctr        
+
+    def _decorate_lines(self, diff_data):
+
+        def line_divide(list_lines, index_line, text):
+            if not index_line:
+                list_lines.append((index_line, text))
+                return
+            if ((len(text) - (text.count('\0') * 3) <=
+                 self.line_width)):
+                list_lines.append((index_line, text))
+                return
+
+            idx = 0
+            ctr = 0
+            mark = ''
+            while ctr < self.line_width and idx < len(text):
+                if text[idx] == '\1':
+                    idx += 1
+                    mark = ''
+                elif text[idx] == '\0':
+                    idx += 1
+                    mark = text[idx]
+                    idx += 1
+                else:
+                    ctr += len(text[idx])
+                    idx += 1
+            line_1 = text[:idx]
+            line_2 = text[idx:]
+
+            if mark:
+                line_1 = line_1 + '\1'
+                line_2 = '\0' + mark + line_2
+
+            list_lines.append((index_line, line_1))
+            line_divide(list_lines, '>', line_2)
 
         for lines_left, lines_right, flag in diff_data:
 
@@ -77,124 +135,42 @@ class Differ(object):
             (line_num_left, text_left), (line_num_right,
                                          text_right) = lines_left, lines_right
             list_left, list_right = [], []
-            self.line_split(list_left, line_num_left, text_left)
-            self.line_split(list_right, line_num_right, text_right)
+            line_divide(list_left, line_num_left, text_left)
+            line_divide(list_right, line_num_right, text_right)
             while list_left or list_right:
-                if list_left:
-                    lines_left = list_left.pop(0)
-                else:
-                    lines_left = ('', ' ')
                 if list_right:
                     lines_right = list_right.pop(0)
                 else:
                     lines_right = ('', ' ')
-
+                if list_left:
+                    lines_left = list_left.pop(0)
+                else:
+                    lines_left = ('', ' ')
                 yield lines_left, lines_right, flag
 
-    def line_split(self, list_lines, index_line, text):
+    def _adjust_text(self, text, text_size, mode):
+        l = self._actual_length(text)
+        if mode == "l":
+            return text + (" " * (text_size - l))
+        elif mode == "r":
+            return (" " * (text_size - l)) + text
 
-        if not index_line:
-            list_lines.append((index_line, text))
-            return
-
-        if ((len(text) - (text.count('\0') * 3) <=
-             self.wrap_size)):
-            list_lines.append((index_line, text))
-            return
-
-        idx = 0
-        ctr = 0
-        mark = ''
-        while ctr < self.wrap_size and idx < len(text):
-            if text[idx] == '\0':
-                idx += 1
-                mark = text[idx]
-                idx += 1
-            elif text[idx] == '\1':
-                idx += 1
-                mark = ''
-            else:
-                ctr += len(text[idx])
-                idx += 1
-        line_1 = text[:idx]
-        line_2 = text[idx:]
-
-        if mark:
-            line_1 = line_1 + '\1'
-            line_2 = '\0' + mark + line_2
-
-        list_lines.append((index_line, line_1))
-        self.line_split(list_lines, '>', line_2)
-
-    def collect_formatted_lines(self, diffs):
-
-        for lines_left, lines_right, flag in diffs:
-            if (lines_left, lines_right, flag) == (None, None, None):
-                yield None
-            else:
-                yield (self.format_line(*lines_left),
-                       self.format_line(*lines_right))
-
-    def format_line(self, linenum, text):
-
-        text = text.rstrip()
-        if self.numbered_lines:
-            try:
-                linenum = '%d' % linenum
-            except TypeError:
-                return text
-            return '%s %s' % (self.right_pad(linenum, 6), text)
-        else:
-            return text
-
-    def actual_length(self, text):
-        dictn = {'\0+': "",
-                 '\0-': "",
-                 '\0^': "",
-                 '\1': "",
-                 '\t': ' '}
-        for key, value in dictn.items():
-            text = text.replace(key, value)
-        ctr = 0
-        inside_esc_char = False
-        prev_char = ' '
-        for char in text:
-            if inside_esc_char:
-                if char == "m":
-                    inside_esc_char = False
-            else:
-                if char == "[" and prev_char == "\033":
-                    inside_esc_char = True
-                    ctr -= 1
-                else:
-                    ctr += 1
-            prev_char = char
-        return ctr
-
-    def right_pad(self, s, field_width):
-        return (" " * (field_width - self.actual_length(s))) + s
-
-    def left_pad(self, s, field_width):
-        return s + (" " * (field_width - self.actual_length(s)))
-
-    def expand_tabs(self, string):
+    def _tabtospace(self, string):
         string = string.replace(' ', '\0')
-        string = string.expandtabs(self.tabsize)
+        string = string.expandtabs(8)
         string = string.replace(' ', '\t')
-        return string.replace('\0', ' ').rstrip('\n')
+        string = string.replace('\0', ' ').rstrip('\n')
+        return string
 
-    def generate_lines(self, header_left, header_right, diff_lines):
-        if header_left or header_right:
-            header_left = "%s%s%s" % (
-                color_code_list["blue"], header_left, color_code_list["none"])
-            header_right = "%s%s%s" % (
-                color_code_list["blue"], header_right, color_code_list["none"])
+    def _generate_lines(self, headers, diff_lines):
+
+        if headers[0] or headers[1]:
+            header_left = color_sep + headers[0] + color_none
+            header_right = color_sep + headers[1] + color_none
             yield (header_left, header_right)
-
         for text in diff_lines:
             if text is None:
-                separator = "%s%s%s" % (
-                    color_code_list["blue"], '---', color_code_list["none"])
+                separator = color_sep + '-'*3 + color_none
                 yield (separator, separator)
             else:
                 yield text
@@ -218,7 +194,8 @@ class Diff:
         headers = a, b
         for x in [a, b]:
             if os.path.isdir(x):
-                self.codec_print("File not found at specified location.")
+                self.logger_diff.error(
+                    "ERROR!!! File is not present at given location")
                 return
         lines_a = self.readfile(a)
         lines_b = self.readfile(b)
@@ -230,13 +207,10 @@ class Diff:
         self.diff(lines_a, lines_b, headers)
 
     def diff(self, a, b, headers=(None, None)):
-        # context_lines = None
-        context_lines = 5
         obj = Differ()
 
         for line in obj.generate_diff(
-                a, b, headers,
-                context_lines=context_lines):
+                a, b, headers):
             self.print_line(line)
             sys.stdout.flush()
 
