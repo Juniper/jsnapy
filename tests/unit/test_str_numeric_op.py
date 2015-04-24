@@ -24,7 +24,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -32,8 +32,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_all-same-equal-fail_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_all_same_fail(self):
         self.chk = False
@@ -42,7 +42,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -50,8 +50,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_all-same-fail_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_all_same_success(self):
         self.chk = False
@@ -60,7 +60,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -68,8 +68,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_all-same-success_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_is_equal_success(self):
         self.chk = False
@@ -78,7 +78,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -86,8 +86,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_is-equal-item_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_is_equal_fail(self):
         self.chk = False
@@ -96,7 +96,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -104,8 +104,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_is-equal_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_not_equal(self):
         self.chk = False
@@ -114,7 +114,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -122,8 +122,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_not-equal_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_not_equal_fail(self):
         self.chk = False
@@ -132,7 +132,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -140,8 +140,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_not-equal_fail_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_not_exists_pass(self):
         self.chk = False
@@ -150,7 +150,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -158,8 +158,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_not-exists_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_not_exists_fail(self):
         self.chk = False
@@ -168,7 +168,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -176,8 +176,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_not-exists_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_exists(self):
         self.chk = False
@@ -186,7 +186,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -194,8 +194,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_exists_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_exists_fail(self):
         self.chk = False
@@ -204,7 +204,7 @@ class TestStrNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -212,10 +212,10 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             "snap_exists_fail_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
-with patch('logging.Logger') as mock:
+with patch('logging.Logger') as mock_logger:
     suite = unittest.TestSuite()
     suite.addTest(TestStrNumericOperators("test_all_same_equal_fail"))
     suite.addTest(TestStrNumericOperators("test_all_same_fail"))

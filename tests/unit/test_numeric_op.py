@@ -22,7 +22,7 @@ class TestNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -30,8 +30,8 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             "snap_in-range_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_in_range_fail(self):
         self.chk = False
@@ -40,7 +40,7 @@ class TestNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -48,8 +48,8 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             "snap_in-range_fail_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_not_range_fail(self):
         self.chk = False
@@ -58,7 +58,7 @@ class TestNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -66,8 +66,8 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             "snap_not-range_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_not_range_pass(self):
         self.chk = False
@@ -76,7 +76,7 @@ class TestNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -84,8 +84,8 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             "snap_in-range_fail_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_is_lt(self):
         self.chk = False
@@ -94,7 +94,7 @@ class TestNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -102,8 +102,8 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             "snap_is-lt_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_is_lt_pass(self):
         self.chk = False
@@ -112,7 +112,7 @@ class TestNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -120,8 +120,8 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             "snap_is-lt_fail_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_is_gt(self):
         self.chk = False
@@ -130,7 +130,7 @@ class TestNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -138,8 +138,8 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             "snap_is-gt_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_is_gt_fail(self):
         self.chk = False
@@ -148,7 +148,7 @@ class TestNumericOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -156,10 +156,10 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             "snap_is-gt_fail_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
-with patch('logging.Logger') as mock:
+with patch('logging.Logger') as mock_logger:
     suite = unittest.TestSuite()
     suite.addTest(TestNumericOperators("test_in_range"))
     suite.addTest(TestNumericOperators("test_in_range_fail"))

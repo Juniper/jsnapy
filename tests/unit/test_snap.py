@@ -21,24 +21,24 @@ class TestSnap(unittest.TestCase):
 
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnap.snap.etree')
-    def test_snap(self, mock_etree, mock2):
+    def test_snap(self, mock_etree, mock_dev):
         prs = Parse()
         test_file = "configs/delta.yml"
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="snap_mock",
-            passwd="MaRtInI")
+            user="user",
+            passwd="xyz")
         dev.open()
-        m = mock_open()
-        with patch('jnpr.jsnap.snap.open', m, create=True) as mo:
+        m_op = mock_open()
+        with patch('jnpr.jsnap.snap.open', m_op, create=True) as m_open:
             prs.generate_reply(
                 test_file,
                 dev,
                 "10.216.193.114_snap_mock",
                 self.db,
-                "regress")
+                "user")
             self.assertEqual(prs.command_list, ['show chassis fpc'])
             self.assertEqual(prs.rpc_list, [])
             self.assertEqual(prs.test_included, ['check_chassis_fpc'])
@@ -46,7 +46,7 @@ class TestSnap(unittest.TestCase):
 
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnap.snap.etree')
-    def test_snap_2(self, mock_etree, mock2):
+    def test_snap_2(self, mock_etree, mock_dev):
         js = Jsnap()
 
         conf_file = "configs/main.yml"
@@ -54,18 +54,18 @@ class TestSnap(unittest.TestCase):
         js.main_file = yaml.load(config_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="snap_mock",
-            passwd="MaRtInI")
+            user="user",
+            passwd="xyz")
         dev.open()
-        m = mock_open()
-        with patch('jnpr.jsnap.snap.open', m, create=True) as mo:
-            js.generate_rpc_reply(dev, "snap_mock", "regress")
-            self.assertTrue(mo.called)
+        m_op = mock_open()
+        with patch('jnpr.jsnap.snap.open', m_op, create=True) as m_open:
+            js.generate_rpc_reply(dev, "snap_mock", "abc")
+            self.assertTrue(m_open.called)
         dev.close()
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
-    def test_snap_3(self, mock_etree, mock_3):
+    def test_snap_3(self, mock_etree, mock_parse):
         prs = Parse()
         test_file = "configs/delta.yml"
         test_file = open(test_file, 'r')
@@ -75,7 +75,6 @@ class TestSnap(unittest.TestCase):
             user="regress",
             passwd="MaRtInI")
         dev.open()
-        m = mock_open()
         with patch('jnpr.junos.rpcmeta._RpcMetaExec.cli') as mock_cli:
             prs.generate_reply(
                 test_file,
@@ -88,7 +87,7 @@ class TestSnap(unittest.TestCase):
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
-    def test_snap_4(self, mock_etree, mock_3):
+    def test_snap_4(self, mock_etree, mock_parse):
         prs = Parse()
         test_file = "configs/delta_text.yml"
         test_file = open(test_file, 'r')
@@ -98,7 +97,6 @@ class TestSnap(unittest.TestCase):
             user="regress",
             passwd="MaRtInI")
         dev.open()
-        m = mock_open()
         with patch('jnpr.junos.rpcmeta._RpcMetaExec.cli') as mock_cli:
             prs.generate_reply(
                 test_file,
@@ -111,7 +109,7 @@ class TestSnap(unittest.TestCase):
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
-    def test_snap_5(self, mock_etree, mock_3):
+    def test_snap_5(self, mock_etree, mock_parse):
         prs = Parse()
         test_file = "configs/delta_error.yml"
         test_file = open(test_file, 'r')
@@ -135,24 +133,24 @@ class TestSnap(unittest.TestCase):
 
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnap.snap.etree')
-    def test_rpc_1(self, mock_etree, mock2):
+    def test_rpc_1(self, mock_etree, mock_dev):
         prs = Parse()
         test_file = "configs/test_rpc.yml"
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="snap_mock",
-            passwd="MaRtInI")
+            user="user_mock",
+            passwd="xyz")
         dev.open()
-        m = mock_open()
-        with patch('jnpr.jsnap.snap.open', m, create=True) as mo:
+        m_op = mock_open()
+        with patch('jnpr.jsnap.snap.open', m_op, create=True) as m_open:
             prs.generate_reply(
                 test_file,
                 dev,
                 "10.216.193.114_snap_mock",
                 self.db,
-                "regress")
+                "user_mock")
             self.assertEqual(prs.command_list, [])
             self.assertEqual(
                 prs.rpc_list, [
@@ -164,7 +162,7 @@ class TestSnap(unittest.TestCase):
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
-    def test_rpc_2(self, mock_etree, mock_3):
+    def test_rpc_2(self, mock_etree, mock_parse):
         prs = Parse()
         test_file = "configs/test_rpc.yml"
         test_file = open(test_file, 'r')
@@ -185,7 +183,6 @@ class TestSnap(unittest.TestCase):
                 self.db,
                 "regress")
             mock_rpc.assert_called_once_with('get_interface_information')
-            # print mock_config.call_args_list
             mock_config.assert_called_once_with(
                 options={
                     'format': 'xml'},
@@ -195,15 +192,15 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
-    def test_rpc_3(self, mock_etree, mock_3, mock_dev):
+    def test_rpc_3(self, mock_etree, mock_parse, mock_dev):
         prs = Parse()
         test_file = "configs/test_rpc_error.yml"
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="regress",
-            passwd="MaRtInI")
+            user="user",
+            passwd="xyz")
         dev.open()
         with patch('logging.Logger.error') as mock_log:
             prs.generate_reply(
@@ -219,7 +216,7 @@ class TestSnap(unittest.TestCase):
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
-    def test_rpc_4(self, mock_etree, mock_3):
+    def test_rpc_4(self, mock_etree, mock_parse):
         prs = Parse()
         test_file = "configs/test_rpc_2.yml"
         test_file = open(test_file, 'r')
@@ -240,13 +237,12 @@ class TestSnap(unittest.TestCase):
                 self.db,
                 "regress")
             mock_rpc.assert_called_once_with('get_interface_information')
-            # print mock_config.call_args_list
             mock_config.assert_called_once_with(options={'format': 'xml'})
         dev.close()
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
-    def test_rpc_5(self, mock_etree, mock_3):
+    def test_rpc_5(self, mock_etree, mock_parse):
         prs = Parse()
         test_file = "configs/test_rpc_error_2.yml"
         test_file = open(test_file, 'r')
@@ -270,7 +266,7 @@ class TestSnap(unittest.TestCase):
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
-    def test_rpc_6(self, mock_etree, mock_3):
+    def test_rpc_6(self, mock_etree, mock_parse):
         prs = Parse()
         test_file = "configs/test_rpc_2_error.yml"
         test_file = open(test_file, 'r')
@@ -294,26 +290,26 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnap.snap.etree')
     @patch('jnpr.jsnap.snap.JsnapSqlite')
-    def test_snap_sqlite_1(self, mock_sqlite, mock_etree, mock2):
+    def test_snap_sqlite_1(self, mock_sqlite, mock_etree, mock_dev):
         prs = Parse()
         test_file = "configs/delta.yml"
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="snap_mock",
-            passwd="MaRtInI")
+            user="user",
+            passwd="xyz")
         dev.open()
-        m = mock_open()
+        m_op = mock_open()
         self.db['store_in_sqlite'] = True
         self.db['db_name'] = "abc.db"
-        with patch('jnpr.jsnap.snap.open', m, create=True) as mo:
+        with patch('jnpr.jsnap.snap.open', m_op, create=True) as m_open:
             prs.generate_reply(
                 test_file,
                 dev,
                 "10.216.193.114_snap_mock",
                 self.db,
-                "regress")
+                "user")
             mock_sqlite.assert_called_once_with('10.216.193.114', 'abc.db')
         dev.close()
 
@@ -321,27 +317,27 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnap.snap.etree')
     @patch('jnpr.jsnap.snap.JsnapSqlite.__init__')
     @patch('jnpr.jsnap.snap.JsnapSqlite.insert_data')
-    def test_snap_sqlite_2(self, mock_insert, mock, mock_etree, mock_dev):
-        mock.return_value = None
+    def test_snap_sqlite_2(self, mock_insert, mock_init, mock_etree, mock_dev):
+        mock_init.return_value = None
         prs = Parse()
         test_file = "configs/delta.yml"
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="snap_mock",
-            passwd="MaRtInI")
+            user="user",
+            passwd="xyz")
         dev.open()
-        m = mock_open()
-        with patch('jnpr.jsnap.snap.open', m, create=True) as mo:
+        m_op = mock_open()
+        with patch('jnpr.jsnap.snap.open', m_op, create=True) as m_open:
             prs.generate_reply(
                 test_file,
                 dev,
                 "10.216.193.114_snap_mock",
                 self.db,
-                "regress")
+                "user")
             self.assertFalse(mock_insert.called)
-            self.assertFalse(mock.called)
+            self.assertFalse(mock_init.called)
         dev.close()
 
     @patch('jnpr.junos.device.Device')
@@ -356,19 +352,19 @@ class TestSnap(unittest.TestCase):
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="snap_mock",
-            passwd="MaRtInI")
+            user="user",
+            passwd="xyz")
         dev.open()
-        m = mock_open()
+        m_op = mock_open()
         self.db['store_in_sqlite'] = True
         self.db['db_name'] = "abc.db"
-        with patch('jnpr.jsnap.snap.open', m, create=True) as mo:
+        with patch('jnpr.jsnap.snap.open', m_op, create=True) as m_open:
             prs.generate_reply(
                 test_file,
                 dev,
                 "10.216.193.114_snap_mock",
                 self.db,
-                "regress")
+                "user")
             db_dict = dict()
             db_dict['username'] = ANY
             db_dict['cli_command'] = 'show_chassis_fpc'
@@ -391,19 +387,19 @@ class TestSnap(unittest.TestCase):
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="snap_mock",
-            passwd="MaRtInI")
+            user="user",
+            passwd="xyz")
         dev.open()
-        m = mock_open()
+        m_op = mock_open()
         self.db['store_in_sqlite'] = True
         self.db['db_name'] = "abc.db"
-        with patch('jnpr.jsnap.snap.open', m, create=True) as mo:
+        with patch('jnpr.jsnap.snap.open', m_op, create=True) as m_open:
             prs.generate_reply(
                 test_file,
                 dev,
                 "10.216.193.114_snap_mock",
                 self.db,
-                "regress")
+                "user")
             db_dict = dict()
             db_dict['username'] = ANY
             db_dict['cli_command'] = 'get-config'
@@ -419,7 +415,7 @@ class TestSnap(unittest.TestCase):
         dev.close()
 
 
-with patch('logging.Logger.info') as mock:
+with patch('logging.Logger.info') as mock_logger:
     suite = unittest.TestSuite()
     suite.addTest(TestSnap("test_snap"))
     suite.addTest(TestSnap("test_snap_2"))

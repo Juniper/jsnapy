@@ -1,29 +1,29 @@
 MX:                      # for multiple hostnames assuming login credentials are same for all
   - 10.209.16.203:
-      username: root
-      passwd: Embe1mpls
+      username: abc
+      passwd: def
   - 10.209.16.204:
-      username: regress
-      passwd: MaRtInI
+      username: abc
+      passwd: def
   - 10.209.16.205:
-      username: root
-      passwd: Embe1mpls
+      username: abc
+      passwd: def
 
 EX:                      # for multiple hostnames assuming login credentials are same for all
   - 10.209.16.206:
-      username: regress
-      passwd: MaRtInI
+      username: abc
+      passwd: def
   - 10.209.16.212:
-      username: regress
-      passwd: MaRtInI
+      username: abc
+      passwd: def
 
 QFX:                      # for multiple hostnames assuming login credentials are same for all
   - 10.209.16.214:
-      username: regress
-      passwd: MaRtInI
+      username: abc
+      passwd: def
   - 10.209.16.221:
-      username: regress
-      passwd: MaRtInI
+      username: abc
+      passwd: def
   - 10.209.16.222:
-      username: root
-      passwd: Embe1mpls
+      username: abc
+      passwd: def

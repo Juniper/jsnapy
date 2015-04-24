@@ -18,16 +18,16 @@ class TestJsnap(unittest.TestCase):
         self.db['second_snap_id'] = None
 
     @patch('jnpr.jsnap.jsnap.Parse')
-    def test_snap(self, mock):
+    def test_snap(self, mock_parse):
         js = Jsnap()
         conf_file = "configs/main.yml"
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
-        js.generate_rpc_reply("10.216.193.114", "snap_mock", "regress")
-        self.assertTrue(mock.called)
+        js.generate_rpc_reply("10.216.193.114", "snap_mock", "username")
+        self.assertTrue(mock_parse.called)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.login')
-    def test_sqlite_parameters_1(self, mock):
+    def test_sqlite_parameters_1(self, mock_login):
         js = Jsnap()
         js.args.file = "configs/main_1.yml"
         js.args.snap = True
@@ -39,7 +39,7 @@ class TestJsnap(unittest.TestCase):
         self.assertEqual(js.db, self.db)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.login')
-    def test_sqlite_parameters_2(self, mock):
+    def test_sqlite_parameters_2(self, mock_login):
         js = Jsnap()
         js.args.file = "configs/main_2.yml"
         js.args.snap = True
@@ -53,7 +53,7 @@ class TestJsnap(unittest.TestCase):
         self.assertEqual(js.db, self.db)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.login')
-    def test_sqlite_parameters_3(self, mock):
+    def test_sqlite_parameters_3(self, mock_login):
         js = Jsnap()
         js.args.file = "configs/main_3.yml"
         js.args.snap = False
@@ -68,7 +68,7 @@ class TestJsnap(unittest.TestCase):
         self.assertEqual(js.db, self.db)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.login')
-    def test_sqlite_parameters_4(self, mock):
+    def test_sqlite_parameters_4(self, mock_login):
         js = Jsnap()
         js.args.file = "configs/main_4.yml"
         js.args.snap = False
@@ -85,7 +85,7 @@ class TestJsnap(unittest.TestCase):
         self.assertEqual(js.db, self.db)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.login')
-    def test_sqlite_parameters_5(self, mock):
+    def test_sqlite_parameters_5(self, mock_login):
         js = Jsnap()
         js.args.file = "configs/main_5.yml"
         js.args.snap = False
@@ -102,7 +102,7 @@ class TestJsnap(unittest.TestCase):
         self.assertEqual(js.db, self.db)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.login')
-    def test_sqlite_parameters_6(self, mock):
+    def test_sqlite_parameters_6(self, mock_login):
         js = Jsnap()
         js.args.file = "configs/main_2.yml"
         js.args.snap = False
@@ -116,7 +116,7 @@ class TestJsnap(unittest.TestCase):
         self.assertEqual(js.db, self.db)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.login')
-    def test_sqlite_parameters_7(self, mock):
+    def test_sqlite_parameters_7(self, mock_login):
         js = Jsnap()
         js.args.file = "configs/main_1.yml"
         js.args.snap = False
@@ -128,7 +128,7 @@ class TestJsnap(unittest.TestCase):
         self.assertEqual(js.db, self.db)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.connect')
-    def test_hostname(self, mock):
+    def test_hostname(self, mock_connect):
         js = Jsnap()
         conf_file = "configs/main_1.yml"
         config_file = open(conf_file, 'r')
@@ -136,10 +136,9 @@ class TestJsnap(unittest.TestCase):
         js.login("snap_1")
         hosts = ['10.216.193.114']
         self.assertEqual(js.host_list, hosts)
-        # print mock.assert_any_call()
 
     @patch('jnpr.jsnap.jsnap.Jsnap.connect')
-    def test_multiple_hostname(self, mock):
+    def test_multiple_hostname(self, mock_connect):
         js = Jsnap()
         conf_file = "configs/main1.yml"
         config_file = open(conf_file, 'r')
@@ -150,23 +149,23 @@ class TestJsnap(unittest.TestCase):
 
     @patch('jnpr.jsnap.jsnap.Device')
     @patch('jnpr.jsnap.jsnap.Jsnap.generate_rpc_reply')
-    def test_connect_snap(self, mock, mock_dev):
+    def test_connect_snap(self, mock_gen_reply, mock_dev):
         js = Jsnap()
         js.args.file = "configs/main_1.yml"
         js.args.snap = True
         js.args.pre_snap_file = "mock_snap"
         js.get_hosts()
-        self.assertTrue(mock.called)
+        self.assertTrue(mock_gen_reply.called)
         self.assertTrue(mock_dev.called)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.compare_tests')
-    def test_connect_check(self, mock):
+    def test_connect_check(self, mock_compare):
         js = Jsnap()
         js.args.file = "configs/main_1.yml"
         js.args.check = True
         js.args.pre_snap_file = "mock_snap"
         js.get_hosts()
-        mock.assert_called_once_with('10.216.193.114')
+        mock_compare.assert_called_once_with('10.216.193.114')
 
     @patch('jnpr.jsnap.jsnap.Device')
     @patch('jnpr.jsnap.jsnap.Jsnap.compare_tests')
@@ -182,13 +181,13 @@ class TestJsnap(unittest.TestCase):
         mock_check.assert_called_once_with('10.216.193.114')
 
     @patch('jnpr.jsnap.jsnap.Jsnap.compare_tests')
-    def test_connect_diff(self, mock):
+    def test_connect_diff(self, mock_compare):
         js = Jsnap()
         js.args.file = "configs/main_1.yml"
         js.args.diff = True
         js.args.pre_snap_file = "mock_snap"
         js.get_hosts()
-        mock.assert_called_once_with('10.216.193.114')
+        mock_compare.assert_called_once_with('10.216.193.114')
 
     @patch('sys.exit')
     def test_check_arguments_1(self, mock_sys):
@@ -292,13 +291,13 @@ class TestJsnap(unittest.TestCase):
     @patch('jnpr.jsnap.jsnap.Jsnap.compare_tests')
     @patch('getpass.getpass')
     @patch('jnpr.jsnap.jsnap.Notification.notify')
-    def test_check_mail(self, mock, mock_pass, mock_compare):
+    def test_check_mail(self, mock_notify, mock_pass, mock_compare):
         js = Jsnap()
         js.args.file = "configs/main_mail.yml"
         js.args.check = True
         js.args.pre_snap_file = "mock_snap"
         js.get_hosts()
-        self.assertTrue(mock.called)
+        self.assertTrue(mock_notify.called)
 
     @patch('jnpr.jsnap.jsnap.Device')
     @patch('jnpr.jsnap.jsnap.Jsnap.generate_rpc_reply')
@@ -306,39 +305,39 @@ class TestJsnap(unittest.TestCase):
     @patch('getpass.getpass')
     @patch('jnpr.jsnap.jsnap.Notification.notify')
     def test_snapcheck_mail(
-            self, mock, mock_pass, mock_compare, mock_a, mock_dev):
+            self, mock_notify, mock_pass, mock_compare, mock_reply, mock_dev):
         js = Jsnap()
         js.args.file = "configs/main_mail.yml"
         js.args.snapcheck = True
         js.args.pre_snap_file = "mock_snap"
         js.get_hosts()
-        self.assertTrue(mock.called)
+        self.assertTrue(mock_notify.called)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.generate_rpc_reply')
     @patch('jnpr.jsnap.jsnap.Device')
     @patch('jnpr.jsnap.jsnap.Notification.notify')
-    def test_snap_mail(self, mock, mock_pass, mock_compare):
+    def test_snap_mail(self, mock_notify, mock_pass, mock_compare):
         js = Jsnap()
         js.args.file = "configs/main_mail.yml"
         js.args.snap = True
         js.args.pre_snap_file = "mock_snap"
         js.get_hosts()
-        self.assertFalse(mock.called)
+        self.assertFalse(mock_notify.called)
 
     @patch('jnpr.jsnap.jsnap.Jsnap.compare_tests')
     @patch('getpass.getpass')
     @patch('jnpr.jsnap.jsnap.Notification.notify')
-    def test_check_mail_password(self, mock, mock_pass, mock_compare):
+    def test_check_mail_password(self, mock_notify, mock_pass, mock_compare):
         js = Jsnap()
         js.args.file = "configs/main_mail_2.yml"
         js.args.check = True
         js.args.pre_snap_file = "mock_snap"
         js.get_hosts()
-        self.assertTrue(mock.called)
+        self.assertTrue(mock_notify.called)
         self.assertTrue(mock_pass.called)
 
 
-with patch('logging.Logger') as mock:
+with patch('logging.Logger') as mock_logger:
     suite = unittest.TestSuite()
     suite.addTest(TestJsnap("test_snap"))
     suite.addTest(TestJsnap("test_sqlite_parameters_1"))

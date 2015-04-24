@@ -34,8 +34,8 @@ class TestCheck(unittest.TestCase):
                 self.db,
                 "snap_is-equal_pre")
             err = "No test file, Please mention test files"
-            c = mock_log.call_args_list[0]
-            self.assertNotEqual(c[0][0].find(err), -1)
+            c_list = mock_log.call_args_list[0]
+            self.assertNotEqual(c_list[0][0].find(err), -1)
 
     @patch('logging.Logger.info')
     def test_incorrect_test_file(self, mock_info):
@@ -54,8 +54,8 @@ class TestCheck(unittest.TestCase):
                 self.db,
                 "snap_is-equal_pre")
             err = "File %s not found" % filename
-            c = mock_log.call_args_list[0]
-            self.assertNotEqual(c[0][0].find(err), -1)
+            c_list = mock_log.call_args_list[0]
+            self.assertNotEqual(c_list[0][0].find(err), -1)
 
     @patch('logging.Logger.info')
     def test_incorrect_test_command(self, mock_info):
@@ -73,8 +73,8 @@ class TestCheck(unittest.TestCase):
                 self.db,
                 "snap_is-equal_pre")
             err = "ERROR occurred, test keys 'command' or 'rpc' not defined properly"
-            c = mock_log.call_args_list[0]
-            self.assertNotEqual(c[0][0].find(err), -1)
+            c_list = mock_log.call_args_list[0]
+            self.assertNotEqual(c_list[0][0].find(err), -1)
 
     @patch('sys.exit')
     @patch('logging.Logger.info')
@@ -101,8 +101,8 @@ class TestCheck(unittest.TestCase):
 
             except BaseException:
                 err = "ERROR!! Data stored in database is not in %s format"
-                c = mock_log.call_args_list[0]
-                self.assertNotEqual(c[0][0].find(err), -1)
+                c_list = mock_log.call_args_list[0]
+                self.assertNotEqual(c_list[0][0].find(err), -1)
 
     @patch('logging.Logger.info')
     def test_incorrect_test_format_2(self, mock_info):
@@ -122,8 +122,8 @@ class TestCheck(unittest.TestCase):
                 "snap_no-diff_post1")
 
             err = "ERROR!! for checking snapshots in text format use '--diff' option"
-            c = mock_log.call_args_list[0]
-            self.assertNotEqual(c[0][0].find(err), -1)
+            c_list = mock_log.call_args_list[0]
+            self.assertNotEqual(c_list[0][0].find(err), -1)
 
     @patch('logging.Logger.info')
     def test_compare_xml(self, mock_info):
@@ -132,7 +132,7 @@ class TestCheck(unittest.TestCase):
         conf_file = "configs/main_empty_test.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-        with patch('jnpr.jsnap.check.XmlComparator.xml_compare') as mock:
+        with patch('jnpr.jsnap.check.XmlComparator.xml_compare') as mock_compare:
             comp.generate_test_files(
                 main_file,
                 self.hostname,
@@ -141,7 +141,7 @@ class TestCheck(unittest.TestCase):
                 self.db,
                 "snap_no-diff_pre",
                 "snap_no-diff_post")
-            self.assertTrue(mock.called)
+            self.assertTrue(mock_compare.called)
 
     @patch('logging.Logger.info')
     def test_compare_diff(self, mock_info):
@@ -150,7 +150,7 @@ class TestCheck(unittest.TestCase):
         conf_file = "configs/main_empty_test.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-        with patch('jnpr.jsnap.snap_diff.Diff.diff_files') as mock:
+        with patch('jnpr.jsnap.snap_diff.Diff.diff_files') as mock_compare:
             comp.generate_test_files(
                 main_file,
                 self.hostname,
@@ -159,7 +159,7 @@ class TestCheck(unittest.TestCase):
                 self.db,
                 "snap_no-diff_pre",
                 "snap_no-diff_post")
-            self.assertTrue(mock.called)
+            self.assertTrue(mock_compare.called)
 
 suite = unittest.TestSuite()
 suite.addTest(TestCheck("test_no_test_file"))

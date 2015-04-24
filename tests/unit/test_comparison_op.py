@@ -24,7 +24,7 @@ class TestComparisonOperator(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -33,8 +33,8 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_pre",
             "snap_no-diff_post")
 
-        self.assertEqual(ab.no_passed, 2)
-        self.assertEqual(ab.no_failed, 4)
+        self.assertEqual(oper.no_passed, 2)
+        self.assertEqual(oper.no_failed, 4)
 
     def test_list_not_less_fail(self):
         self.chk = True
@@ -43,7 +43,7 @@ class TestComparisonOperator(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -52,8 +52,8 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_pre",
             "snap_no-diff_post")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_list_not_more_fail(self):
         self.chk = True
@@ -62,7 +62,7 @@ class TestComparisonOperator(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -71,8 +71,8 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_pre",
             "snap_no-diff_post")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_list_not_less_pass(self):
         self.chk = True
@@ -81,7 +81,7 @@ class TestComparisonOperator(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -90,8 +90,8 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_pre",
             "snap_3")
 
-        self.assertEqual(ab.no_passed, 2)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 2)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_list_not_more_pass(self):
         self.chk = True
@@ -100,7 +100,7 @@ class TestComparisonOperator(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -109,8 +109,8 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_pre",
             "snap_3")
 
-        self.assertEqual(ab.no_passed, 2)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 2)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_delta(self):
         self.chk = True
@@ -119,7 +119,7 @@ class TestComparisonOperator(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -128,8 +128,8 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_delta_pre",
             "snap_delta_post")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_delta_fail(self):
         self.chk = True
@@ -138,7 +138,7 @@ class TestComparisonOperator(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -147,8 +147,8 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_delta_fail_pre",
             "snap_delta_fail_post")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_no_diff_2(self):
         self.chk = True
@@ -157,7 +157,7 @@ class TestComparisonOperator(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -166,8 +166,8 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_pre",
             "snap_no-diff_post")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 5)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 5)
 
     def test_no_diff_2_pass(self):
         self.chk = True
@@ -176,7 +176,7 @@ class TestComparisonOperator(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -185,8 +185,8 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_pre",
             "snap_3")
 
-        self.assertEqual(ab.no_passed, 6)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 6)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_no_diff_pass(self):
         self.chk = True
@@ -196,7 +196,7 @@ class TestComparisonOperator(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -205,10 +205,10 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_pre",
             "snap_no-diff_post1")
 
-        self.assertEqual(ab.no_passed, 6)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 6)
+        self.assertEqual(oper.no_failed, 0)
 
-with patch('logging.Logger') as mock:
+with patch('logging.Logger') as mock_logger:
     suite = unittest.TestSuite()
     suite.addTest(TestComparisonOperator("test_no_diff"))
     suite.addTest(TestComparisonOperator("test_delta"))

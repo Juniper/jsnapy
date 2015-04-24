@@ -23,7 +23,7 @@ class TestStringOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -31,8 +31,8 @@ class TestStringOperators(unittest.TestCase):
             self.db,
             "snap_contains_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_contains_fail(self):
         self.chk = False
@@ -41,7 +41,7 @@ class TestStringOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -49,8 +49,8 @@ class TestStringOperators(unittest.TestCase):
             self.db,
             "snap_contains_fail_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_is_in(self):
         self.chk = False
@@ -59,7 +59,7 @@ class TestStringOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -67,8 +67,8 @@ class TestStringOperators(unittest.TestCase):
             self.db,
             "snap_is-in_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
     def test_is_in_fail(self):
         self.chk = False
@@ -77,7 +77,7 @@ class TestStringOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -85,8 +85,8 @@ class TestStringOperators(unittest.TestCase):
             self.db,
             "snap_is-in_fail_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_not_in(self):
         self.chk = False
@@ -95,7 +95,7 @@ class TestStringOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -103,8 +103,8 @@ class TestStringOperators(unittest.TestCase):
             self.db,
             "snap_not-in_pre")
 
-        self.assertEqual(ab.no_passed, 0)
-        self.assertEqual(ab.no_failed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
 
     def test_not_in_pass(self):
         self.chk = False
@@ -113,7 +113,7 @@ class TestStringOperators(unittest.TestCase):
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
-        ab = comp.generate_test_files(
+        oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
@@ -121,10 +121,10 @@ class TestStringOperators(unittest.TestCase):
             self.db,
             "snap_not-in_fail_pre")
 
-        self.assertEqual(ab.no_passed, 1)
-        self.assertEqual(ab.no_failed, 0)
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
 
-with patch('logging.Logger') as mock:
+with patch('logging.Logger') as mock_logger:
     suite = unittest.TestSuite()
     suite.addTest(TestStringOperators("test_contains"))
     suite.addTest(TestStringOperators("test_contains_fail"))

@@ -2,8 +2,8 @@
 # for one device, can be given like this:
 hosts:
   - devices: 10.216.193.114
-    username : regress
-    passwd: MaRtInI
+    username : abc
+    passwd: xyz
 tests:
   - no-diff.yml
 
@@ -11,15 +11,4 @@ sqlite:
   - store_in_sqlite: yes
     check_from_sqlite: yes
     database_name: jbb.db
-
-
-# for one device, can be given like this:
-#hosts:
-#  - devices: 10.209.16.204
-#    username : regress
-#    passwd: MaRtInI
-#tests:
-#  - /Users/jpriyal/PycharmProjects/jsnap-py/configfiles/tests.yml
-#mail: /Users/jpriyal/Desktop/jsnap-py-master/test/configs/mail.yml
-
 
