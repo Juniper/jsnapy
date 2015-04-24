@@ -1,0 +1,12 @@
+tests_include:
+  - test_check_interface_status
+
+test_check_interface_status:
+  - command: show interfaces terse ge-*
+  - iterate:
+      id: name
+      xpath: '//physical-interface'
+      tests:
+        - all-same: oper-status
+          err: "Test Failed!!! Interface {{id_0}} !! has mismatched opearting status {{post_oper-status}}"
+          info: "Test Succeeded!! Operating status is {{post_oper-status}} for interface {{id_0}}!!!"

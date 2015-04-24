@@ -1,0 +1,12 @@
+tests_include:
+  - check_chassis_fpc
+
+check_chassis_fpc:
+  - command: show chassis fpc
+  - iterate: 
+      xpath: //fpc[normalize-space(slot) = "0"]
+      tests:
+        - in-range: memory-heap-utilization, 0, 30
+          info: "Test Succeeded!! memory heap utilisation of the FPCs is within the range of 0-30%"
+          err: "Test Failed!!! memory heap utilisation of the FPCs is out of range"
+

@@ -1,0 +1,13 @@
+# for one device, can be given like this:
+hosts:
+  - devices: 10.216.193.114
+    username : regress
+    passwd: MaRtInI
+tests:
+  - test_incorrect_2.yml
+sqlite:
+  - store_in_sqlite: no
+    check_from_sqlite: yes
+    database_name: jbb.db
+    compare: 0,1
+

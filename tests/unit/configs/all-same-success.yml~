@@ -1,0 +1,14 @@
+tests_include:
+  - test_command_version
+
+# for simple, one test using command
+test_command_version:
+  - command: show bgp neighbor
+  - iterate:
+      
+      xpath: '/bgp-information/bgp-peer'
+      id: peer-address
+      tests:
+        - all-same: flap-count
+          err: "Test Failed!!! bgp-peer {{id_0}}!!! has mismatched flap count {{post['flap-count']}}"
+          info: "Test Succeeded!! flap count is {{post['flap-count']}} bgp-peer {{id_0}}!!!"
