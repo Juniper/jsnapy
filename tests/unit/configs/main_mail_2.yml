@@ -1,0 +1,29 @@
+# for one device, can be given like this:
+hosts:
+  - devices: 10.216.193.114
+    username : regress
+    passwd: MaRtInI
+tests:
+  - delta.yml
+sqlite:
+  - store_in_sqlite: no
+    check_from_sqlite: yes
+    database_name: jbb.db
+    compare: 0,1
+
+mail: mail2.yml
+
+
+
+# for multiple devices with databse
+#hosts:
+#  - include: devices.yml
+#    group: MX
+#tests:
+#  - exists.yml
+
+#sqlite:
+#  - store_in_sqlite: yes
+#    check_from_sqlite: yes
+#    database_name: jbb.db
+#
