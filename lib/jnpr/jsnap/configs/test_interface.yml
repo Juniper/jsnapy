@@ -1,11 +1,11 @@
 tests_include:
-  - test_command_version
+  - test_interface
 
 # use '/' in your test cases apart from xpath if u want to search all elements irrespective of hierarchy, ex: in id if u use /name instead of name
 # then it will search in all the names in given xpath irrespective of their position
 # for simple, one test using command
 
-test_command_version:
+test_interface:
   - command: show interfaces terse ge-*
   - iterate:
       xpath: '//physical-interface'

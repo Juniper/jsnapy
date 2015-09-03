@@ -11,6 +11,7 @@ from jnpr.jsnap.check import Comparator
 from jnpr.jsnap.notify import Notification
 from threading import Thread
 from jnpr.junos import Device
+from jnpr.jsnap import version
 import distutils.dir_util
 import colorama
 import getpass
@@ -75,6 +76,11 @@ class Jsnap:
             "--diff",
             action="store_true",
             help="display difference between two snapshots"
+        )
+        group.add_argument(
+            "--version",
+            action="store_true",
+            help="displays version"
         )
 
         self.parser.add_argument(
@@ -479,15 +485,21 @@ class Jsnap:
                 "Arguments not given correctly, Please refer help message")
             self.parser.print_help()
             sys.exit(1)
+        else:
+            pass 
 
 
 def main():
     d = Jsnap()
     # make init folder
+
     d.check_arguments()
-    if d.args.init is True:
+    if d.args.version is True:
+        print "version is:",version.__version__
+    elif d.args.init is True:
         d.generate_init()
     else:
+        print "\n inside else \n"
         d.get_hosts()
 
 if __name__ == '__main__':

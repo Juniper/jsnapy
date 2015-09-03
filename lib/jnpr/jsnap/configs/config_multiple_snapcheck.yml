@@ -1,0 +1,16 @@
+# for multiple devices with databse
+hosts:
+  - include: devices.yml
+    group: EX
+tests:
+  - test_is_equal.yml 
+  - test_is_in.yml
+
+# can use sqlite to store data 
+#sqlite:
+#  - store_in_sqlite: yes
+#    check_from_sqlite: yes
+#    database_name: jbb.db
+
+# specify mail file to send mail
+#mail: send_mail.yml

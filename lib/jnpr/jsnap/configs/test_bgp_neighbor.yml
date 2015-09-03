@@ -1,9 +1,8 @@
 tests_include:
-  - test_command_version
-  - test_rpc_version
+  - test_command_bgp
+  - test_rpc_bgp
 
-# for simple, one test using command
-test_command_version:
+test_command_bgp:
   - command: show bgp neighbor
   - iterate:
       xpath: '/bgp-information/bgp-peer'
@@ -28,10 +27,9 @@ test_command_version:
           err: "Test Failed!! preference got changed, {{post['preference']}}"
           info: "Test succeeded!! preference is same, {{post['preference']}}"
 
-test_rpc_version:
+test_rpc_bgp:
   - rpc: get-bgp-neighbor-information
   - iterate:
-      id: qwre
       xpath: '//bgp-information/bgp-peer'
       tests:
         - not-equal: last-state,Idle       # element in which test is performed
@@ -46,12 +44,3 @@ test_rpc_version:
           err: "Test Failed!!! flap count not in range!!, it is now {{post['flap-count']}} "
           info: "Test Succeeded!! flap count is in range, it is now {{post['flap-count']}}!!!"
 
-test_version:
-  - command: show bgp neighbor
-  - iterate:
-      id: 1
-      xpath: '/bgp-information/bgp-peer'
-      tests:
-        - is-equal: peer-address, 10.209.19.204       # element in which test is performed
-          err: "Test Failed!! peer-address got changed, now it is {{post['peer-address']}}"
-          info: "peer-address is same with value %s %s peer-address peer-as, now it is {{post['peer-address']}}"
