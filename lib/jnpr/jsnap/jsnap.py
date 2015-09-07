@@ -70,7 +70,7 @@ class Jsnap:
         group.add_argument(
             "--init",
             action="store_true",
-            help="generate init folders: snapshots, configs and main.yml",
+            help="generate init folders: snapshots, configs and config.yml",
         )
         group.add_argument(
             "--diff",
@@ -139,7 +139,8 @@ class Jsnap:
         all the yaml file apart from main, like device.yml, bgp_neighbor.yml
         :return:
         """
-        self.logger.debug(colorama.Fore.BLUE + "Creating init folder.....")
+        mssg = "Creating Jsnap directory structure at: ", os.getcwd() 
+        self.logger.debug(colorama.Fore.BLUE + mssg)
         if not os.path.isdir("snapshots"):
             os.mkdir("snapshots")
         dst_config_path = os.path.join(os.getcwd(), 'configs')
@@ -147,9 +148,9 @@ class Jsnap:
         if not os.path.isdir(dst_config_path) or self.args.overwrite is True:
             distutils.dir_util.copy_tree(os.path.join(os.path.dirname(__file__), 'configs'),
                                          dst_config_path)
-        dst_main_yml = os.path.join(dst_config_path, 'main.yml')
+        dst_main_yml = os.path.join(dst_config_path, 'config.yml')
         if not os.path.isfile(
-                os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
+                os.path.join(os.getcwd(), 'config.yml')) or self.args.overwrite is True:
             shutil.copy(dst_main_yml, os.getcwd())
 
         logging_yml_file = os.path.join(
@@ -158,8 +159,8 @@ class Jsnap:
         if not os.path.isfile(
                 os.path.join(os.getcwd(), 'logging.yml')) or self.args.overwrite is True:
             shutil.copy(logging_yml_file, os.getcwd())
-
-        self.logger.info(colorama.Fore.BLUE + "--init folder created.....")
+        mssg1= "Successfully created Jsnap directories at:",os.getcwd()
+        self.logger.info(colorama.Fore.BLUE + mssg1)
 
     # call hosts class, connect hosts and get host list
     # use pre_snapfile because always first file is pre_snapfile regardless of
@@ -443,7 +444,8 @@ class Jsnap:
         all the yaml file apart from main, like device.yml, bgp_neighbor.yml
         :return:
         """
-        self.logger.debug(colorama.Fore.BLUE + "Creating init folder.....")
+        mssg= "Creating Jsnap directory structure at:" + os.getcwd()
+        self.logger.debug(colorama.Fore.BLUE + mssg)
         if not os.path.isdir("snapshots"):
             os.mkdir("snapshots")
         if not os.path.isdir("logs"):
@@ -453,9 +455,9 @@ class Jsnap:
         if not os.path.isdir(dst_config_path) or self.args.overwrite is True:
             distutils.dir_util.copy_tree(os.path.join(os.path.dirname(__file__), 'configs'),
                                          dst_config_path)
-        dst_main_yml = os.path.join(dst_config_path, 'main.yml')
+        dst_main_yml = os.path.join(dst_config_path, 'config.yml')
         if not os.path.isfile(
-                os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
+                os.path.join(os.getcwd(), 'config.yml')) or self.args.overwrite is True:
             shutil.copy(dst_main_yml, os.getcwd())
 
         logging_yml_file = os.path.join(
@@ -464,8 +466,8 @@ class Jsnap:
         if not os.path.isfile(
                 os.path.join(os.getcwd(), 'logging.yml')) or self.args.overwrite is True:
             shutil.copy(logging_yml_file, os.getcwd())
-
-        self.logger.info(colorama.Fore.BLUE + "--init folder created.....")
+        mssg1= "Jsnap folders created at: " + os.getcwd()
+        self.logger.info(colorama.Fore.BLUE + mssg1)
 
     def check_arguments(self):
         """
