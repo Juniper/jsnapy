@@ -9,6 +9,6 @@ tests:
 
 ###################################
 can send mail by specifying:
-mail: mail_file.yml
+mail: send_mail.yml
 
 ####################################

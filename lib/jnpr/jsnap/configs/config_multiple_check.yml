@@ -11,4 +11,4 @@ sqlite:
   - store_in_sqlite: yes
     check_from_sqlite: yes
     database_name: jbb.db
-mail: mail.yml
+mail: send_mail.yml

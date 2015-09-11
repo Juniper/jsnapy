@@ -11,13 +11,13 @@ handlers:
     console:
         class: logging.StreamHandler
         level: INFO
-        formatter: simple 
+        formatter: custom_format 
         stream: ext://sys.stdout
 
     info_file_handler:
         class: logging.handlers.RotatingFileHandler
         level: INFO
-        formatter: simple
+        formatter: custom_format 
         filename: logs/info.log
         maxBytes: 10485760 # 10MB
         backupCount: 20
