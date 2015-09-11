@@ -114,12 +114,12 @@ class Operator:
             if (e.startswith("post") or e.startswith("Post")):
                 val = e[6:-2]
                 if val not in [x_path, element]:
-                    postdict[val.replace('-', '_')] = post_nodes.findtext(val)
+                    postdict[val.replace('-', '_')] = post_nodes.findtext(val).strip()if post_nodes.findtext(val) is not None else None
 
             if (e.startswith("pre") or e.startswith("PRE")):
                 val = e[5:-2]
                 if val not in [x_path, element]:
-                    predict[val.replace('-', '_')] = pre_nodes.findtext(val)
+                    predict[val.replace('-', '_')] = pre_nodes.findtext(val).strip() if pre_nodes.findtext(val) is not None else None
         return predict, postdict
 
     def exists(self, x_path, ele_list, err_mssg, info_mssg,

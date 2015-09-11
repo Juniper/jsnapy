@@ -221,7 +221,7 @@ class Comparator:
             "Difference in pre and post snap file")
         for index, res in enumerate(result):
             #    print (colorama.Fore.RED + str(index) + "] " + res)
-            self.logger_check.info(str(index) + "] " + res)
+            self.logger_check.info(colorama.Fore.RED + str(index) + "] " + res)
         return rvalue
 
 # generate names of snap files from hostname and out files given by user,
@@ -271,7 +271,7 @@ class Comparator:
                 if tests_included is not None:
                     for val in tests_included:
                         #    print "\nTests Included: %s " % (val)
-                        self.logger_check.info("\nTests Included: %s " % (val))
+                        self.logger_check.info(colorama.Fore.BLUE + "\nTests Included: %s " % (val))
                         try:
                             if t[val][0].keys()[0] == 'command':
                                 command = t[val][0].get('command')
