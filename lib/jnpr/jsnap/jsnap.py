@@ -497,7 +497,7 @@ def main():
 
     d.check_arguments()
     if d.args.version is True:
-        print "version is:",version.__version__
+        print "Jsnap version:",version.__version__
     elif d.args.init is True:
         d.generate_init()
     else:
