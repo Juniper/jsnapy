@@ -38,12 +38,9 @@ class Notification:
         from_mail = mail_file['from']
         to = mail_file['to']
         msg['Subject'] = hostname + ' : ' + mail_file['sub']
-        if 'server' in mail_file and 'port' in mail_file:
-            servername = mail_file['server']
-            port = mail_file.has_key['port']
-            server = smtplib.SMTP(servername, port)
-        else:
-            server = smtplib.SMTP('smtp.gmail.com', 587)
+        port = mail_file['port']if 'port' in mail_file else 587
+        servername = mail_file['server'] if 'server' in mail_file else 'smtp.gmail.com'
+        server = smtplib.SMTP(servername, port)
         server.ehlo()
         server.starttls()
         try:

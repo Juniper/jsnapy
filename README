@@ -191,3 +191,21 @@ For comparing two snapshots:
                                         contains: //package-information[1]/name[1], junos ### here it will check only first node and then its first name
 
             if check only for any value containing in given xpath, then will not be able to print any node value
+
+
+==============================================================================================================================
+
+Mail:
+-------
+You can send mail by specifying following parameters:
+to: abc@pqr.com 
+from: pqr@abc.com
+sub: "Sample Jsnap Results, please verify"
+date: "Sept 11, 2015"
+recipient_name: Priyal
+passwd: 123
+server(optional): smtp.gmail.com optional (by default gmail server is configured in jsnap, if u want to send from 
+				some other email account apart from gmail, then please specify that server)
+port(optional) : specify port, by default it is SMTP port 587
+sender_name: "Juniper Networks"
+
