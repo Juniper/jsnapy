@@ -501,7 +501,6 @@ def main():
     elif d.args.init is True:
         d.generate_init()
     else:
-        print "\n inside else \n"
         d.get_hosts()
 
 if __name__ == '__main__':

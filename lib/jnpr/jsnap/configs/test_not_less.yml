@@ -12,6 +12,6 @@ test_command_version:
       id: './name'
       tests:
         - list-not-less: admin-status
-          err: Test Failed, name list changed, <{{pre['admin-status']}}> not found with id {{id_0}}
-          info: Test successful name list is same, with id {{id_0}}
+          err: Test Failed!! name list changed, <{{pre['admin-status']}}> not found with name {{id_0}}
+          info: Test successful!! name list is same, with name {{id_0}}
 

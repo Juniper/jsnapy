@@ -12,5 +12,5 @@ test_command_version:
       id: './name'
       tests:
         - list-not-more: admin-status
-          err: Test Failed, address-family-name changed, <{{post['admin-status']}}> not found with id {{id_0}}
-          info: Test successful, address-family-name is same, with id {{id_0}}
+          err: Test Failed!! admin status {{post['admin-status']}} with name {{id_0}}is not present in presnapshot
+          info: Test successful!! admin-status is same, with id {{id_0}}

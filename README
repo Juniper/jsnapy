@@ -22,4 +22,43 @@ Installation requires Python 2.7 and associated pip tool
           sudo python setup.py sdist
           sudo pip install dist/jsnap--.tar.gz
           
+Commands
+=========
+1. init
+   Create Jsnap Directory structure
+   jsnap --init
+      a]config.yml:  Main file containing path of device file and tests file	
+      b]configs: Folder containing all test files
+      c]logging.yml: logging file, can change logging level (info, debug, error, critical)	
+      d]logs: log folder, containing all log files
+      e]snapshots: folder containing all snap files   
 
+2. snap
+   jsnap --snap <file_name> -f <config_file>
+   
+3. check
+
+4. snapcheck
+
+5. diff
+
+Output format:
+We have used jinja templating for output
+So if user wants to print any value from xml output, the he/she first has to specify pre or post and then node name:
+For example:
+{{pre['admin-status']}}  : This will print admin status from pre snapshot
+{{post['admin-status']}} : This will print admin status from post snapshot
+can also specify id using:
+{{id_0}} : for id 0
+{{id_1}} : for id 1
+
+
+
+Test Operator:
+1. Exists: Will print all values of existing node
+ 
+2. Contains: It will go and check in all paths, if want to check only at one particular node then specify that node:
+            if you want to check only one particular node then specify that node:
+                                        contains: //package-information[1]/name[1], junos ### here it will check only first node and then its first name
+
+            if check only for any value containing in given xpath, then will not be able to print any node value

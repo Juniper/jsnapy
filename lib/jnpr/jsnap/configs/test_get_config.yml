@@ -10,8 +10,8 @@ test_rpc_version:
       xpath: //configuration
       tests:
         - is-equal: //minimum-time, 60
-          info: "Test Succeeded!!, minimum-time now it is <{{post['//minimum-time']}}>"
-          err: "Test Failed!!!, minimum-time is <{{post['//minimum-time']}}>"
+          info: "Test Succeeded!!, minimum-time now is equal to <{{post['//minimum-time']}}>"
+          err: "Test Failed!!!, minimum-time is not equal to 60, it is <{{post['//minimum-time']}}>"
 
 test_interface:
   - rpc: get-interface-information
@@ -24,5 +24,5 @@ test_interface:
       xpath: //physical-interface
       tests:
         - is-gt: snmp-index, 2
-          info: "Test Succeeded!!, snmp-index now it is <{{post['snmp-index']}}>"
-          err: "Test Failed!!!, snmp-index is <{{post['snmp-index']}}>"
+          info: "Test Succeeded!!, snmp-index is greater than 2, it is <{{post['snmp-index']}}>"
+          err: "Test Failed!!!, snmp-index is not greater than 2, it is <{{post['snmp-index']}}>"

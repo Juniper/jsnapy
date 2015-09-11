@@ -6,7 +6,6 @@ hosts:
 tests:
   - test_exists.yml 
   - test_contains.yml
-  - test_contains.yml
   - test_is_gt.yml
 
 # use sqlite to store data 

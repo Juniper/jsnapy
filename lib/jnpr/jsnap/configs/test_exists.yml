@@ -8,6 +8,6 @@ test_version_check:
       xpath: //software-information
       tests:
         - exists: //package-information/name
-          info: "Test Succeeded!! name exists with host-name {{pre['//package-information/name']}} and id: {{id_0}}  "
-          err: "Test Failed!!! host-name does not exists pre {{pre['//package-information/name']}} and id: {{id_0}} !! "
+          info: "Test Succeeded!! node //package-information/name exists with name {{pre['//package-information/name']}} and hostname: {{id_0}}  "
+          err: "Test Failed!!! node //package-information/name does not exists in  hostname: {{id_0}} !! "
 
