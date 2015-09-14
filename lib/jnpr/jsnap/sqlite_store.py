@@ -13,7 +13,7 @@ class JsnapSqlite:
         path = os.getcwd()
         self.db_filename = os.path.join(path, 'snapshots', db_name)
         with sqlite3.connect(self.db_filename) as conn:
-            # print 'Creating schema if not exists'
+            #Creating schema if it does not exists
             sqlstr = """create table if not exists %s (
                 id           integer not null,
                 filename     text,
@@ -28,7 +28,6 @@ class JsnapSqlite:
     # Inserting Data
     def insert_data(self, db):
         with sqlite3.connect(self.db_filename) as con:
-            # print 'Inserting data'
             con.execute("""update %s set id = id + 1 where cli_command = :cli""" % self.table_name,
                         {'cli': db['cli_command']})
             con.execute("""delete from %s where id>49 AND cli_command = :cli""" % self.table_name,

@@ -8,7 +8,7 @@ tests:
 
 
 ###################################
-can send mail by specifying:
-mail: send_mail.yml
+#can send mail by specifying:
+#mail: send_mail.yml
 
 ####################################

@@ -17,14 +17,11 @@ class Parse:
             self.logger_snap.error(
                 colorama.Fore.RED +
                 "ERROR!! requested node is not present")
-            # print "ERROR!! requested node is not present"
         else:
             err = rpc_reply.xpath("//rpc-error")
             if len(err):
                 self.logger_snap.error(colorama.Fore.RED + "\nERROR:")
-                # print "\nERROR:"
                 for err_node in err:
-                    # print err_node.findtext('.//error-message')
                     self.logger_snap.error(
                         err_node.findtext(
                             colorama.Fore.RED +
@@ -42,15 +39,11 @@ class Parse:
             self.logger_snap.error(
                 colorama.Fore.RED +
                 "ERROR!! requested node is not present")
-            # print "ERROR!! requested node is not present"
-
         else:
             err = rpc_reply.xpath("//rpc-error")
             if len(err):
-                #    print "\nERROR:"
                 self.logger_snap.error(colorama.Fore.RED + "\nERROR:")
                 for err_node in err:
-                    #        print err_node.findtext('.//error-message')
                     self.logger_snap.error(
                         err_node.findtext(
                             colorama.Fore.RED +
@@ -63,7 +56,6 @@ class Parse:
     def generate_reply(self, test_file, dev, snap_files, db, username):
         """
         generate rpc reply based on given commands/ rpc
-
         :param test_file: test file containing test cases
         :param dev: device handler
         :param snap_files: files to store snapshots
@@ -94,14 +86,9 @@ class Parse:
                                 colorama.Fore.BLUE +
                                 "\nTaking snapshot for %s ................" %
                                 command)
-                            # print "\nTaking snapshot for %s ................"
-                            # % command
                             rpc_reply_command = dev.rpc.cli(
                                 command,
                                 format=cmd_format)
-                            self.logger_snap.info(rpc_reply_command)
-                            # print "*********",
-                            # etree.tostring(rpc_reply_command)
                         except Exception:
                             self.logger_snap.error(
                                 colorama.Fore.RED +
@@ -109,9 +96,6 @@ class Parse:
                             self.logger_snap.error(
                                 colorama.Fore.RED +
                                 "\n**********Complete error message***********\n %s" % str(sys.exc_info()))
-                            # print "ERROR occurred ----!!!", sys.exc_info()[0]
-                            # print "\n**********Complete error
-                            # message***********\n", sys.exc_info()
                         else:
                             filename = snap_files + '_' + \
                                 name + '.' + cmd_format
@@ -166,8 +150,6 @@ class Parse:
                                         filter_data)
                                     kwargs['filter_xml'] = filter_data
                                 if rpc == 'get-config':
-                                    # print "\nTaking snapshot of %s......." %
-                                    # rpc
                                     self.logger_snap.info(
                                         colorama.Fore.BLUE +
                                         "\nTaking snapshot of %s......." %
@@ -179,16 +161,12 @@ class Parse:
                                             '_'))(options={'format': reply_format},
                                                   **kwargs)
                                 else:
-                                    # print "ERROR!!, filtering rpc works only
-                                    # for 'get-config' rpc"
                                     self.logger_snap.error(
                                         colorama.Fore.RED +
                                         "ERROR!!, filtering rpc works only for 'get-config' rpc")
 
                             else:
                                 try:
-                                    # print "\nTaking snapshot of %s......." %
-                                    # rpc
                                     self.logger_snap.info(
                                         colorama.Fore.BLUE +
                                         "\nTaking snapshot of %s......." %
@@ -206,16 +184,11 @@ class Parse:
                                     self.logger_snap.error(
                                         colorama.Fore.RED +
                                         "\n**********Complete error message***********\n%s" % str(sys.exc_info()))
-                                    # print "ERROR occurred ----!!!", sys.exc_info()[0]
-                                    # print "\n**********Complete error
-                                    # message***********\n", sys.exc_info()
                         else:
                             try:
                                 self.logger_snap.info(
                                     colorama.Fore.BLUE +
                                     "\nTaking snapshot of %s............" % rpc)
-                                # print "\nTaking snapshot of %s............" %
-                                # rpc
                                 if rpc == 'get-config':
                                     rpc_reply = getattr(
                                         dev.rpc,
@@ -229,9 +202,6 @@ class Parse:
                                             '-',
                                             '_'))({'format': reply_format})
                             except Exception:
-                                # print "ERROR occurred ----!!!", sys.exc_info()[0]
-                                # print "\n**********Complete error
-                                # message***********\n", sys.exc_info()
                                 self.logger_snap.error(
                                     colorama.Fore.RED +
                                     "ERROR occurred: \n%s" % str(sys.exc_info()[0]))
@@ -271,18 +241,14 @@ class Parse:
                                 sqlite_jsnap.insert_data(db_dict2)
                         ###
                     else:
-                        # print "ERROR!!! Test case: '%s' not defined properly"
-                        # % t
                         self.logger_snap.error(
                             colorama.Fore.RED +
                             "ERROR!!! Test case: '%s' not defined properly" % t)
                 else:
-                    # print "ERROR!!! Test case: '%s' not defined !!!!" % t
                     self.logger_snap.error(
                         colorama.Fore.RED +
                         "ERROR!!! Test case: '%s' not defined !!!!" % t)
         else:
-            # print "\nERROR!! None of the test cases included"
             self.logger_snap.error(
                 colorama.Fore.RED +
                 "\nERROR!! None of the test cases included")

@@ -4,7 +4,6 @@ from collections import defaultdict
 import jinja2
 import logging
 
-
 class Operator:
 
     def __init__(self):
@@ -1309,34 +1308,6 @@ class Operator:
         msg = " Final Result!! "
         finalmssg = (80 - len(msg) - 2) / 2 * '-' + \
             msg + (80 - len(msg) - 2) / 2 * '-'
-        '''
-        print (colorama.Fore.BLUE + finalmssg)
-        print (
-            colorama.Fore.GREEN +
-            "\nTotal No of tests passed: {}".format(
-                self.no_passed))
-        print (
-            colorama.Fore.RED +
-            "\nTotal No of tests failed: {} ".format(
-                self.no_failed))
-        if (self.no_failed):
-            print (
-                colorama.Fore.RED +
-                colorama.Style.BRIGHT +
-                "\nOverall Tests failed!!! ")
-            self.result = "Failed"
-        elif (self.no_passed == 0 and self.no_failed == 0):
-            print (
-                colorama.Fore.RED +
-                colorama.Style.BRIGHT +
-                "\nNone of the test cases executed !!! ")
-        else:
-            print (
-                colorama.Fore.GREEN +
-                colorama.Style.BRIGHT +
-                "\nOverall Tests passed!!! ")
-            self.result = "Passed"
-            '''
 
         self.logger_testop.info(colorama.Fore.BLUE + finalmssg)
         self.logger_testop.info(

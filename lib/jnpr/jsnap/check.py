@@ -104,8 +104,6 @@ class Comparator:
                     if os.path.isfile(snap1):
                         xml1 = etree.parse(snap1)
                     else:
-                        # print "ERROR, Pre snapshot file: %s is not present in
-                        # given path !!" % snap1
                         self.logger_check.error(
                             colorama.Fore.RED +
                             "ERROR, Pre snapshot file: %s is not present in given path !!" %
@@ -120,8 +118,6 @@ class Comparator:
                             if os.path.isfile(snap2):
                                 xml2 = etree.parse(snap2)
                             else:
-                                # print "ERROR, Post snapshot File %s is not
-                                # present in given path!!" % snap2
                                 self.logger_check.error(
                                     colorama.Fore.RED +
                                     "ERROR, Post snapshot File %s is not present in given path!!" %
@@ -139,8 +135,6 @@ class Comparator:
                             xml1,
                             xml2)
                     else:
-                        # print "Test Operator %s is allowed only with --check"
-                        # % testop
                         self.logger_check.info(
                             colorama.Fore.RED +
                             "Test Operator %s is allowed only with --check" %
@@ -159,8 +153,6 @@ class Comparator:
                         if os.path.isfile(snap2):
                             xmlfile2 = etree.parse(snap2)
                         else:
-                            # print "ERROR, --check require two snapfiles, file
-                            # is not present in given path "
                             self.logger_check.info(
                                 colorama.Fore.RED +
                                 "ERROR, --check require two snapfiles, file is not present in given path ")
@@ -196,7 +188,6 @@ class Comparator:
                     post_snap_file):
                 diff_obj.diff_files(pre_snap_file, post_snap_file)
             else:
-                # print "ERROR!!! Files are not present in given path"
                 self.logger_check.info(
                     colorama.Fore.RED +
                     "ERROR!!! Files are not present in given path")
@@ -215,12 +206,10 @@ class Comparator:
         result = []
         xml_comp = XmlComparator()
         rvalue = xml_comp.xml_compare(pre_root, post_root, result.append)
-        #print (colorama.Fore.BLUE + "Difference in pre and post snap file:\n")
         self.logger_check.info(
             colorama.Fore.BLUE +
             "Difference in pre and post snap file")
         for index, res in enumerate(result):
-            #    print (colorama.Fore.RED + str(index) + "] " + res)
             self.logger_check.info(colorama.Fore.RED + str(index) + "] " + res)
         return rvalue
 
@@ -246,7 +235,6 @@ class Comparator:
         path = os.getcwd()
         # get the test files from config.yml
         if main_file.get('tests') is None:
-            # print "\nNo test file, Please mention test files !!"
             self.logger_check.info(
                 colorama.Fore.BLUE +
                 "\nNo test file, Please mention test files !!")
@@ -258,26 +246,20 @@ class Comparator:
                     tfiles = yaml.load(testfile)
                     tests_files.append(tfiles)
                 else:
-                    # print "File %s not found" % filename
                     self.logger_check.error("File %s not found" % filename)
             for t in tests_files:
                 tests_included = t.get('tests_include')
-                # print (40) * '*' + "\nPerforming test on Device: " + \
-                #    device + "\n" + (40) * '*'
 
                 self.logger_check.info(colorama.Fore.BLUE + (40) * '*' + "\nPerforming test on Device: " +
                                        device + "\n" + (40) * '*')
 
                 if tests_included is not None:
                     for val in tests_included:
-                        #    print "\nTests Included: %s " % (val)
                         self.logger_check.info(colorama.Fore.BLUE + "\nTests Included: %s " % (val))
                         try:
                             if t[val][0].keys()[0] == 'command':
                                 command = t[val][0].get('command')
                                 reply_format = t[val][0].get('format', 'xml')
-                    #            print (40) * '*' + "\n Command is " + \
-                    #                command + "\n" + (40) * '*'
                                 self.logger_check.info(colorama.Fore.BLUE + (40) * '*' + "\n Command is " +
                                                        command + "\n" + (40) * '*')
                                 name = '_'.join(command.split())
@@ -285,20 +267,15 @@ class Comparator:
                             else:
                                 rpc = t[val][0]['rpc']
                                 reply_format = t[val][0].get('format', 'xml')
-                                # print (40) * '*' + "\n RPC is " + \
-                                #    rpc + "\n" + (40) * '*'
                                 self.logger_check.info(colorama.Fore.BLUE + (40) * '*' + "\n RPC is " +
                                                        rpc + "\n" + (40) * '*')
                                 name = rpc
                                 teston = rpc
                         except KeyError:
-                            # print "ERROR occurred, test keys 'command' or
-                            # 'rpc' not defined properly"
                             self.logger_check.error(
                                 colorama.Fore.RED +
                                 "ERROR occurred, test keys 'command' or 'rpc' not defined properly")
                         except Exception as ex:
-                            # print "ERROR Occurred: ", ex
                             self.logger_check.error(
                                 colorama.Fore.RED +
                                 "ERROR Occurred: %s" % str(ex))
@@ -326,8 +303,6 @@ class Comparator:
                                         name,
                                         post)
                                 if reply_format != data_format1 or reply_format != data_format2:
-                                    #    print "ERROR!! Data stored in database is not in %s format." \
-                                    #          % reply_format
                                     self.logger_check.error(colorama.Fore.RED + "ERROR!! Data stored in database is not in %s format."
                                                             % reply_format)
                                     sys.exit(1)
@@ -342,7 +317,6 @@ class Comparator:
                             if check is True and reply_format == 'xml':
                                 if db.get('check_from_sqlite') is False:
 
-                                    #    print str(device), post, name
                                     file2 = str(device) + '_' + post + \
                                         '_' + name + '.' + reply_format
                                     snapfile2 = os.path.join(
@@ -380,13 +354,10 @@ class Comparator:
                                     db,
                                     snapfile1)
                             else:
-                                # print "ERROR!! for checking snapshots in text
-                                # format use '--diff' option "
                                 self.logger_check.error(
                                     colorama.Fore.RED +
                                     "ERROR!! for checking snapshots in text format use '--diff' option ")
                 else:
-                    # print "ERROR!!! None of the tests cases included"
                     self.logger_check.error(
                         colorama.Fore.RED +
                         "ERROR!!! None of the tests cases included")
