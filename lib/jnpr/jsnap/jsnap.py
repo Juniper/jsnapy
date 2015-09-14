@@ -72,7 +72,7 @@ class Jsnap:
         group.add_argument(
             "--init",
             action="store_true",
-            help="generate init folders: snapshots, configs and config.yml",
+            help="generate init folders: snapshots, configs and main.yml",
         )
         group.add_argument(
             "--diff",
@@ -150,9 +150,9 @@ class Jsnap:
         if not os.path.isdir(dst_config_path) or self.args.overwrite is True:
             distutils.dir_util.copy_tree(os.path.join(os.path.dirname(__file__), 'configs'),
                                          dst_config_path)
-        dst_main_yml = os.path.join(dst_config_path, 'config.yml')
+        dst_main_yml = os.path.join(dst_config_path, 'main.yml')
         if not os.path.isfile(
-                os.path.join(os.getcwd(), 'config.yml')) or self.args.overwrite is True:
+                os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
             shutil.copy(dst_main_yml, os.getcwd())
 
         logging_yml_file = os.path.join(
@@ -440,9 +440,9 @@ class Jsnap:
         if not os.path.isdir(dst_config_path) or self.args.overwrite is True:
             distutils.dir_util.copy_tree(os.path.join(os.path.dirname(__file__), 'configs'),
                                          dst_config_path)
-        dst_main_yml = os.path.join(dst_config_path, 'config.yml')
+        dst_main_yml = os.path.join(dst_config_path, 'main.yml')
         if not os.path.isfile(
-                os.path.join(os.getcwd(), 'config.yml')) or self.args.overwrite is True:
+                os.path.join(os.getcwd(), 'main.yml')) or self.args.overwrite is True:
             shutil.copy(dst_main_yml, os.getcwd())
 
         logging_yml_file = os.path.join(
