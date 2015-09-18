@@ -9,10 +9,10 @@ tests:
   - test_is_gt.yml
 
 # use sqlite to store data 
-# sqlite:
-#  - store_in_sqlite: no
-#    check_from_sqlite: no
-#    database_name: jbb.db
+sqlite:
+  - store_in_sqlite: no
+    check_from_sqlite: no
+    database_name: jbb.db
 
 # specify user and its details in yaml file to send mail
 # mail: send_mail.yml

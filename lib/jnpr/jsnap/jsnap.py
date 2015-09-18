@@ -388,7 +388,7 @@ class Jsnap:
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................" %
                 hostname)
-            dev = Device(host=hostname, user=username, passwd=password)
+            dev = Device(host=hostname, user=username, passwd=password, gather_facts=False)
             try:
                 dev.open()
             except Exception as ex:

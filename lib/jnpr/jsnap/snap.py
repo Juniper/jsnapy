@@ -176,7 +176,7 @@ class Parse:
                                         rpc.replace(
                                             '-',
                                             '_'))({'format': reply_format},
-                                                  **kwargs)
+                                                    **kwargs)
                                 except Exception:
                                     self.logger_snap.error(
                                         colorama.Fore.RED +
