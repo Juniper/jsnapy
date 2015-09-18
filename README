@@ -16,7 +16,7 @@ Installation requires Python 2.7 and associated pip tool
       
     1. Download or clone the source code from this git repository
           git clone https://github.com/Juniper/jsnap-py
-    2. Untar it(if downloaded zip folder)
+    2. or Untar it(if downloaded zip folder)
           tar -xvzf jsnap-py-master
     3. Go to jsnap-py-master folder and install by:
           sudo python setup.py sdist
@@ -167,7 +167,34 @@ For comparing two snapshots:
     2. list-not-less
     3. list-not-more
     4. delta
+==============================================================================================================================
 
+Mail:
+-------
+You can send mail by specifying following parameters:
+to: abc@pqr.com 
+from: pqr@abc.com
+sub: "Sample Jsnap Results, please verify"
+date: "Sept 11, 2015"
+recipient_name: Priyal
+passwd: 123
+server(optional): smtp.gmail.com optional (by default gmail server is configured in jsnap, if u want to send from 
+				some other email account apart from gmail, then please specify that server)
+port(optional) : specify port, by default it is SMTP port 587
+sender_name: "Juniper Networks"
+
+Squite
+---------
+Can sitore and compare snapshots from database also
+sqlite:
+ - store_in_sqlite: True  ## if want to store in sqlite
+   database_name: jbb.db    ## database name   
+   check_from_sqlite: True  ## if want to chk from database
+   compare: 1,0     ## file no to be compared, can be any two no between 0-50
+
+
+=====================================================================================================
+Note on two special test operators (functionality might change based on requirement)
 
 1. Exists: will search for all the node (irrespective of no of times they occur) and then print info/err mssg accordingly
            Eg: 
@@ -189,23 +216,3 @@ For comparing two snapshots:
 2. Contains: It will go and check in all paths, if want to check only at one particular node then specify that node:
             if you want to check only one particular node then specify that node:
                                         contains: //package-information[1]/name[1], junos ### here it will check only first node and then its first name
-
-            if check only for any value containing in given xpath, then will not be able to print any node value
-
-
-==============================================================================================================================
-
-Mail:
--------
-You can send mail by specifying following parameters:
-to: abc@pqr.com 
-from: pqr@abc.com
-sub: "Sample Jsnap Results, please verify"
-date: "Sept 11, 2015"
-recipient_name: Priyal
-passwd: 123
-server(optional): smtp.gmail.com optional (by default gmail server is configured in jsnap, if u want to send from 
-				some other email account apart from gmail, then please specify that server)
-port(optional) : specify port, by default it is SMTP port 587
-sender_name: "Juniper Networks"
-
