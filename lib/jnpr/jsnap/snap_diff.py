@@ -186,7 +186,6 @@ class Diff:
             with open(name, mode="rb") as f:
                 return f.readlines()
         else:
-            print "ERROR!!! File is not present at given location"
             self.logger_diff.error(
                 "ERROR!!! File is not present at given location")
 

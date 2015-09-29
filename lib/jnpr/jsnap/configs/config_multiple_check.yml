@@ -1,0 +1,14 @@
+# for multiple devices with databse
+hosts:
+  - include: devices.yml
+    group: EX 
+tests:
+  - test_diff.yml
+  - test_not_less.yml
+  - test_not_more.yml  
+  - test_delta.yml 
+sqlite:
+  - store_in_sqlite: yes
+    check_from_sqlite: yes
+    database_name: jbb.db
+mail: send_mail.yml

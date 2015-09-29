@@ -1,4 +1,4 @@
-# jsnap-py
+# jsnapy
 Python version of Junos Snapshot Administrator
 
 Inspired by https://github.com/Juniper/junos-snapshot-administrator
@@ -15,11 +15,11 @@ Installation
 Installation requires Python 2.7 and associated pip tool
       
     1. Download or clone the source code from this git repository
-          git clone https://github.com/Juniper/jsnap-py
-    2. Untar it(if downloaded zip folder)
-          tar -xvzf jsnap-py-master
-    3. Go to jsnap-py-master folder and install by:
+          git clone https://github.com/Juniper/jsnapy
+       Or Untar jsnapy-master.zip (if downloaded zip folder)
+          unzip jsnapy-master.zip
+    3. Go to jsnapy-master folder and install by:
           sudo python setup.py sdist
-          sudo pip install dist/jsnap--.tar.gz
+          sudo pip install dist/jsnap-py-0.1.tar.gz
           
 

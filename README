@@ -1,0 +1,218 @@
+# jsnap-py
+Python version of Junos Snapshot Administrator
+
+Inspired by https://github.com/Juniper/junos-snapshot-administrator
+
+Abstract
+========
+
+  Junos Snapshot Administrator enables you to capture and audit runtime environment snapshots of your networked devices running   the Junos operating system (Junos OS).
+  
+  You can write your test cases in yaml file and run those tests cases against pre and post snapshots.
+  
+Installation
+=============
+Installation requires Python 2.7 and associated pip tool
+      
+    1. Download or clone the source code from this git repository
+          git clone https://github.com/Juniper/jsnap-py
+    2. or Untar it(if downloaded zip folder)
+          tar -xvzf jsnap-py-master
+    3. Go to jsnap-py-master folder and install by:
+          sudo python setup.py sdist
+          sudo pip install dist/jsnap--.tar.gz
+          
+Commands:
+=========
+1. --init
+     Create Jsnap Directory structure
+     jsnap --init
+      a]config.yml:  Main file containing path of device file and tests file	
+      b]configs: Folder containing all test files
+      c]logging.yml: logging file, can change logging level (info, debug, error, critical)	
+      d]logs: log folder, containing all log files
+      e]snapshots: folder containing all snap files   
+
+2. --snap : this command lets you to take snapshot
+     jsnap --snap <file_name> -f <config_file>
+   
+3. --check: this command compares two snapshots
+     jsnap --check <pre_snap> <post_snap> -f <config_file>
+     if test cases are not specified in test files, then it will compare pre and post snap files, node by node
+
+4. --snapcheck: compares the current configuration against some pre defined criteria
+     jsnap --snapcheck <snap_fila_name> -f <config_file>
+
+5. --diff : compares two snapshots (either in xml or text format) word by word
+     jsnap --diff <pre_snap> <post_snap> -f <config_file>
+
+Output format:
+    We have used jinja templating for output
+    So if user wants to print any value from xml output, the he/she first has to specify pre or post and then node name:
+    For example:
+    {{pre['admin-status']}}  : This will print admin status from pre snapshot
+    {{post['admin-status']}} : This will print admin status from post snapshot
+    can also specify id using:
+    {{id_0}} : for id 0
+    {{id_1}} : for id 1
+
+============================================================================================================
+Difference between --diff and --check when no test case is specified:
+
+    [jpriyal-mba13:latest/jsnapy/test2] jpriyal% jsnap --check pre post -f config_diff.yml
+    ****************************************
+    Performing test on Device: 10.209.16.204
+    ****************************************
+
+    Tests Included: test_bgp_neighbor
+    ****************************************
+    Command is show bgp neighbor
+    ****************************************
+    Difference in pre and post snap file
+    0] <output> value different:
+        Pre node text: 'not running'    Post node text: 'BGP is not running'
+    ------------------------------- Final Result!! -------------------------------
+    Total No of tests passed: 0
+    Total No of tests failed: 1
+    Overall Tests failed!!!
+
+    [jpriyal-mba13:latest/jsnapy/test2] jpriyal% jsnap --diff pre post -f config_diff.yml
+    ****************************************
+    Performing test on Device: 10.209.16.204
+    ****************************************
+    Tests Included: test_bgp_neighbor
+    ****************************************
+    Command is show bgp neighbor
+    ****************************************
+    /Users/jpriyal/Desktop/git_jsnap_py/latest/jsnapy/test2/snapshots/10.209.16.204_pre_show_bgp_neighbor.xml /Users/jpriyal/Desktop/git_jsnap_py/latest/jsnapy/test2/snapshots/10.209.16.204_post_show_bgp_neighbor.xml
+     1 <output>not running</output>                                             1 <output>BGP is not running</output>
+
+
+================================================================================================================
+
+Writing Test File:
+===================
+1. command/rpc : can give either command or rpc to perform testing
+   - format: can specify output format
+        [text,xml]
+         for comapring text output, only --diff option is supported
+2. args: (used only with rpc)
+      - filter_xml: (can provide filtered output)
+      - other arguments
+
+   example:
+      1.   - rpc: get-config
+           - args:
+               filter_xml: configuration/system/login
+
+      2.   - rpc: get-interface-information
+             format: text
+           - args:
+                interface-name: em0
+                media: True
+                detail: True
+
+3. item/iterate: (can have multiple iterate/item under one command/rpc)
+       item: if you want to use only first node in xpath
+       iterate: if want to keep iterating for all nodes in xpath
+4. xpath: path from where u want to test output
+5. tests: (this section specify test-cases, can have multiple test cases inside one iterate/item)
+          test-operator <condition>
+          info <mssg>
+          err  <mssg>
+        Eg:
+           tests:
+              - is-equal: //minimum-time, 60
+                info: "Test Succeeded!!, minimum-time now is equal to <{{post['//minimum-time']}}>"
+                err: "Test Failed!!!, minimum-time is not equal to 60, it is <{{post['//minimum-time']}}>"
+
+======================================================================================
+Complete example:
+
+test_interface:
+  - rpc: get-interface-information
+    format: text
+  - args:
+      interface-name: em0
+      media: True
+      detail: True
+  - item:
+      xpath: //physical-interface
+      tests:
+        - is-gt: snmp-index, 2
+          info: "Test Succeeded!!, snmp-index is greater than 2, it is <{{post['snmp-index']}}>"
+          err: "Test Failed!!!, snmp-index is not greater than 2, it is <{{post['snmp-index']}}>"
+
+=========================================================================================
+
+Supported Test Operator:
+
+For comparing current snapshot with pre-defined criteria:
+    1. all-same
+    2. is-equal
+    3. not-equal
+    4. is-gt
+    5. is-lt
+    6. in-range
+    7. not-range
+    8. contains
+    9. is-in
+    10. not-in
+    11. exists
+    12. not-exists
+    13. contains
+
+For comparing two snapshots:
+    1. no-diff
+    2. list-not-less
+    3. list-not-more
+    4. delta
+==============================================================================================================================
+
+Mail:
+-------
+You can send mail by specifying following parameters:
+to: abc@pqr.com 
+from: pqr@abc.com
+sub: "Sample Jsnap Results, please verify"
+date: "Sept 11, 2015"
+recipient_name: Priyal
+passwd: 123
+server(optional): smtp.gmail.com optional (by default gmail server is configured in jsnap, if u want to send from 
+				some other email account apart from gmail, then please specify that server)
+port(optional) : specify port, by default it is SMTP port 587
+sender_name: "Juniper Networks"
+
+Squite
+---------
+Can sitore and compare snapshots from database also
+sqlite:
+ - store_in_sqlite: True  ## if want to store in sqlite
+   database_name: jbb.db    ## database name   
+   check_from_sqlite: True  ## if want to chk from database
+   compare: 1,0     ## file no to be compared, can be any two no between 0-50
+
+
+=====================================================================================================
+Note on two special test operators (functionality might change based on requirement)
+
+1. Exists: will search for all the node (irrespective of no of times they occur) and then print info/err mssg accordingly
+           Eg: 
+      xpath: //software-information
+      tests:
+        - exists: //package-information/name
+          info: "Test Succeeded!!"
+          err: "Test Failed!!!"
+      Here it will print all the nodes present in given xpath:
+           	-----------------------Performing exists Test Operation-----------------------
+		Test Succeeded!! node //package_information/name exists with name <junos> and hostname: <bng-ui-vm-92 > 
+		Test Succeeded!! node //package_information/name exists with name <jbase> and hostname: <bng-ui-vm-92 > 
+		Test Succeeded!! node //package_information/name exists with name <jplatform> and hostname: <bng-ui-vm-92 > 
+		Test Succeeded!! node //package_information/name exists with name <jdocs> and hostname: <bng-ui-vm-92 > 
+		Test Succeeded!! node //package_information/name exists with name <jservices-aacl> and hostname: <bng-ui-vm-92 > 
+		Test Succeeded!! node //package_information/name exists with name <jservices-alg> and hostname: <bng-ui-vm-92 > 
+ 		................
+
+2. Contains: It will go and check in all paths, if want to check only at one particular node then specify that node:
+            if you want to check only one particular node then specify that node:
+                                        contains: //package-information[1]/name[1], junos ### here it will check only first node and then its first name

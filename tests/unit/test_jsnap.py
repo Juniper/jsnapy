@@ -2,6 +2,7 @@ import unittest
 import yaml
 from jnpr.jsnap.jsnap import Jsnap
 from mock import patch
+from contextlib import nested
 
 
 class TestJsnap(unittest.TestCase):
@@ -199,8 +200,8 @@ class TestJsnap(unittest.TestCase):
         js.args.pre_snap_file = "mock_snap"
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
             js.check_arguments()
-            mock_sys.assert_called_once_with(1)
-            mock_parser.assert_called_once_with()
+            mock_sys.assert_called_with(1)
+            mock_parser.assert_called_with()
 
     @patch('sys.exit')
     @patch('jnpr.jsnap.jsnap.Jsnap.login')
@@ -217,29 +218,12 @@ class TestJsnap(unittest.TestCase):
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
             js.check_arguments()
             js.get_hosts()
-            mock_sys.assert_called_once_with(1)
-            mock_parser.assert_called_once_with()
+            mock_sys.assert_called_with(1)
+            mock_parser.assert_called_with()
 
     @patch('sys.exit')
     @patch('jnpr.jsnap.jsnap.Jsnap.login')
     def test_check_arguments_3(self, mock_login, mock_sys):
-        js = Jsnap()
-        js.args.snap = False
-        js.args.file = "configs/main_5.yml"
-        js.args.check = True
-        js.args.snapcheck = False
-        js.args.diff = False
-        js.args.post_snapfile = None
-        js.args.pre_snapfile = None
-        with patch('argparse.ArgumentParser.print_help') as mock_parser:
-            js.check_arguments()
-            js.get_hosts()
-            self.assertFalse(mock_sys.called)
-            self.assertFalse(mock_parser.called)
-
-    @patch('sys.exit')
-    @patch('jnpr.jsnap.jsnap.Jsnap.login')
-    def test_check_arguments_4(self, mock_login, mock_sys):
         js = Jsnap()
         js.args.snap = False
         js.args.file = "configs/main_3.yml"
@@ -251,12 +235,12 @@ class TestJsnap(unittest.TestCase):
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
             js.check_arguments()
             js.get_hosts()
-            mock_sys.assert_called_once_with(1)
-            mock_parser.assert_called_once_with()
+            mock_sys.assert_called_with(1)
+            mock_parser.assert_called_with()
 
     @patch('sys.exit')
     @patch('jnpr.jsnap.jsnap.Jsnap.login')
-    def test_check_arguments_5(self, mock_login, mock_sys):
+    def test_check_arguments_4(self, mock_login, mock_sys):
         js = Jsnap()
         js.args.snap = False
         js.args.file = "configs/main_3.yml"
@@ -268,25 +252,8 @@ class TestJsnap(unittest.TestCase):
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
             js.check_arguments()
             js.get_hosts()
-            mock_sys.assert_called_once_with(1)
-            mock_parser.assert_called_once_with()
-
-    @patch('sys.exit')
-    @patch('jnpr.jsnap.jsnap.Jsnap.login')
-    def test_check_arguments_6(self, mock_login, mock_sys):
-        js = Jsnap()
-        js.args.snap = False
-        js.args.file = "configs/main_5.yml"
-        js.args.check = False
-        js.args.snapcheck = False
-        js.args.diff = True
-        js.args.post_snapfile = None
-        js.args.pre_snapfile = None
-        with patch('argparse.ArgumentParser.print_help') as mock_parser:
-            js.check_arguments()
-            js.get_hosts()
-            self.assertFalse(mock_sys.called)
-            self.assertFalse(mock_parser.called)
+            mock_sys.assert_called_with(1)
+            mock_parser.assert_called_with()
 
     @patch('jnpr.jsnap.jsnap.Jsnap.compare_tests')
     @patch('getpass.getpass')
@@ -337,30 +304,11 @@ class TestJsnap(unittest.TestCase):
         self.assertTrue(mock_pass.called)
 
 
-with patch('logging.Logger') as mock_logger:
-    suite = unittest.TestSuite()
-    suite.addTest(TestJsnap("test_snap"))
-    suite.addTest(TestJsnap("test_sqlite_parameters_1"))
-    suite.addTest(TestJsnap("test_sqlite_parameters_2"))
-    suite.addTest(TestJsnap("test_sqlite_parameters_3"))
-    suite.addTest(TestJsnap("test_sqlite_parameters_4"))
-    suite.addTest(TestJsnap("test_sqlite_parameters_5"))
-    suite.addTest(TestJsnap("test_sqlite_parameters_6"))
-    suite.addTest(TestJsnap("test_sqlite_parameters_7"))
-    suite.addTest(TestJsnap("test_hostname"))
-    suite.addTest(TestJsnap("test_multiple_hostname"))
-    suite.addTest(TestJsnap("test_connect_snap"))
-    suite.addTest(TestJsnap("test_connect_check"))
-    suite.addTest(TestJsnap("test_connect_snapcheck"))
-    suite.addTest(TestJsnap("test_connect_diff"))
-    suite.addTest(TestJsnap("test_check_arguments_1"))
-    suite.addTest(TestJsnap("test_check_arguments_2"))
-    suite.addTest(TestJsnap("test_check_arguments_3"))
-    suite.addTest(TestJsnap("test_check_arguments_4"))
-    suite.addTest(TestJsnap("test_check_arguments_5"))
-    suite.addTest(TestJsnap("test_check_arguments_6"))
-    suite.addTest(TestJsnap("test_check_mail"))
-    suite.addTest(TestJsnap("test_snapcheck_mail"))
-    suite.addTest(TestJsnap("test_snap_mail"))
-    suite.addTest(TestJsnap("test_check_mail_password"))
-    unittest.TextTestRunner().run(suite)
+with nested(
+    patch('sys.exit'),
+    patch('argparse.ArgumentParser.print_help'),
+    patch('logging.Logger')
+) as (mock_sys, mock_parser, mock_logger):
+    if __name__ == "__main__":
+        suite = unittest.TestLoader().loadTestsFromTestCase(TestJsnap)
+        unittest.TextTestRunner(verbosity=2).run(suite)
