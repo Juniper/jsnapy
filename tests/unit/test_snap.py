@@ -44,11 +44,12 @@ class TestSnap(unittest.TestCase):
             self.assertEqual(prs.test_included, ['check_chassis_fpc'])
         dev.close()
 
+    @patch('sys.exit')
+    @patch('argparse.ArgumentParser.print_help')
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnap.snap.etree')
-    def test_snap_2(self, mock_etree, mock_dev):
+    def test_snap_2(self, mock_etree, mock_dev, mock_parser, mock_exit):
         js = Jsnap()
-
         conf_file = "configs/main.yml"
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
@@ -72,9 +73,8 @@ class TestSnap(unittest.TestCase):
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="regress",
-            passwd="MaRtInI")
-        dev.open()
+            user="xyz",
+            passwd="abc")
         with patch('jnpr.junos.rpcmeta._RpcMetaExec.cli') as mock_cli:
             prs.generate_reply(
                 test_file,
@@ -83,7 +83,6 @@ class TestSnap(unittest.TestCase):
                 self.db,
                 "regress")
             mock_cli.assert_called_once_with('show chassis fpc', format='xml')
-        dev.close()
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
@@ -94,9 +93,8 @@ class TestSnap(unittest.TestCase):
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="regress",
-            passwd="MaRtInI")
-        dev.open()
+            user="xyz",
+            passwd="abc")
         with patch('jnpr.junos.rpcmeta._RpcMetaExec.cli') as mock_cli:
             prs.generate_reply(
                 test_file,
@@ -105,7 +103,6 @@ class TestSnap(unittest.TestCase):
                 self.db,
                 "regress")
             mock_cli.assert_called_once_with('show chassis fpc', format='text')
-        dev.close()
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
@@ -116,9 +113,8 @@ class TestSnap(unittest.TestCase):
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="regress",
-            passwd="MaRtInI")
-        dev.open()
+            user="xyz",
+            passwd="abc")
         with patch('logging.Logger.error') as mock_log:
             prs.generate_reply(
                 test_file,
@@ -128,8 +124,6 @@ class TestSnap(unittest.TestCase):
                 "regress")
             c = mock_log.call_args_list[0]
             self.assertNotEqual(c[0][0].find("ERROR occurred"), -1)
-
-        dev.close()
 
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnap.snap.etree')
@@ -169,9 +163,8 @@ class TestSnap(unittest.TestCase):
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="regress",
-            passwd="MaRtInI")
-        dev.open()
+            user="xyz",
+            passwd="abc")
         with nested(
                 patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__'),
                 patch('jnpr.junos.rpcmeta._RpcMetaExec.get_config')
@@ -187,7 +180,6 @@ class TestSnap(unittest.TestCase):
                 options={
                     'format': 'xml'},
                 filter_xml=ANY)
-        dev.close()
 
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnap.snap.Parse._write_file')
@@ -223,9 +215,8 @@ class TestSnap(unittest.TestCase):
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="regress",
-            passwd="MaRtInI")
-        dev.open()
+            user="xyz",
+            passwd="abc")
         with nested(
                 patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__'),
                 patch('jnpr.junos.rpcmeta._RpcMetaExec.get_config')
@@ -238,7 +229,6 @@ class TestSnap(unittest.TestCase):
                 "regress")
             mock_rpc.assert_called_once_with('get_interface_information')
             mock_config.assert_called_once_with(options={'format': 'xml'})
-        dev.close()
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
@@ -249,9 +239,8 @@ class TestSnap(unittest.TestCase):
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="regress",
-            passwd="MaRtInI")
-        dev.open()
+            user="xyz",
+            passwd="abc")
         with patch('logging.Logger.error') as mock_log:
             prs.generate_reply(
                 test_file,
@@ -262,7 +251,6 @@ class TestSnap(unittest.TestCase):
             c = mock_log.call_args_list[0]
 
             self.assertNotEqual(c[0][0].find("ERROR occurred"), -1)
-        dev.close()
 
     @patch('jnpr.jsnap.snap.Parse._write_file')
     @patch('jnpr.jsnap.snap.etree')
@@ -273,9 +261,8 @@ class TestSnap(unittest.TestCase):
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
             host="10.216.193.114",
-            user="regress",
-            passwd="MaRtInI")
-        dev.open()
+            user="xyz",
+            passwd="abc")
         with patch('logging.Logger.error') as mock_log:
             prs.generate_reply(
                 test_file,
@@ -285,7 +272,6 @@ class TestSnap(unittest.TestCase):
                 "regress")
             c = mock_log.call_args_list[0]
             self.assertNotEqual(c[0][0].find("ERROR occurred"), -1)
-        dev.close()
 
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnap.snap.etree')
@@ -416,20 +402,6 @@ class TestSnap(unittest.TestCase):
 
 
 with patch('logging.Logger.info') as mock_logger:
-    suite = unittest.TestSuite()
-    suite.addTest(TestSnap("test_snap"))
-    suite.addTest(TestSnap("test_snap_2"))
-    suite.addTest(TestSnap("test_snap_3"))
-    suite.addTest(TestSnap("test_snap_4"))
-    suite.addTest(TestSnap("test_snap_5"))
-    suite.addTest(TestSnap("test_rpc_1"))
-    suite.addTest(TestSnap("test_rpc_2"))
-    suite.addTest(TestSnap("test_rpc_3"))
-    suite.addTest(TestSnap("test_rpc_4"))
-    suite.addTest(TestSnap("test_rpc_5"))
-    suite.addTest(TestSnap("test_rpc_6"))
-    suite.addTest(TestSnap("test_snap_sqlite_1"))
-    suite.addTest(TestSnap("test_snap_sqlite_2"))
-    suite.addTest(TestSnap("test_snap_sqlite_3"))
-    suite.addTest(TestSnap("test_snap_sqlite_4"))
-    unittest.TextTestRunner().run(suite)
+    if __name__ == "__main__":
+        suite = unittest.TestLoader().loadTestsFromTestCase(TestSnap)
+        unittest.TextTestRunner(verbosity=2).run(suite)
