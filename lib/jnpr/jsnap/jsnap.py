@@ -11,11 +11,14 @@ from jnpr.jsnap.check import Comparator
 from jnpr.jsnap.notify import Notification
 from threading import Thread
 from jnpr.junos import Device
+from jnpr.jsnap import version
 import distutils.dir_util
 import colorama
 import getpass
 import logging
 import setup_logging
+
+logging.getLogger("paramiko").setLevel(logging.WARNING)
 
 
 class Jsnap:
@@ -76,6 +79,11 @@ class Jsnap:
             action="store_true",
             help="display difference between two snapshots"
         )
+        group.add_argument(
+            "--version",
+            action="store_true",
+            help="displays version"
+        )
 
         self.parser.add_argument(
             "pre_snapfile",
@@ -133,7 +141,8 @@ class Jsnap:
         all the yaml file apart from main, like device.yml, bgp_neighbor.yml
         :return:
         """
-        self.logger.debug(colorama.Fore.BLUE + "Creating init folder.....")
+        mssg = "Creating Jsnap directory structure at: ", os.getcwd() 
+        self.logger.debug(colorama.Fore.BLUE + mssg)
         if not os.path.isdir("snapshots"):
             os.mkdir("snapshots")
         dst_config_path = os.path.join(os.getcwd(), 'configs')
@@ -152,8 +161,8 @@ class Jsnap:
         if not os.path.isfile(
                 os.path.join(os.getcwd(), 'logging.yml')) or self.args.overwrite is True:
             shutil.copy(logging_yml_file, os.getcwd())
-
-        self.logger.info(colorama.Fore.BLUE + "--init folder created.....")
+        mssg1= "Successfully created Jsnap directories at:",os.getcwd()
+        self.logger.info(colorama.Fore.BLUE + mssg1)
 
     # call hosts class, connect hosts and get host list
     # use pre_snapfile because always first file is pre_snapfile regardless of
@@ -174,8 +183,6 @@ class Jsnap:
             config_file = open(conf_file, 'r')
             self.main_file = yaml.load(config_file)
         else:
-            # print "ERROR!! file path '%s' for main config file is not
-            # correct" % conf_file
             self.logger.error(
                 colorama.Fore.RED +
                 "ERROR!! file path '%s' for main config file is not correct" %
@@ -198,7 +205,6 @@ class Jsnap:
                 if d.__contains__('database_name'):
                     self.db['db_name'] = d['database_name']
                 else:
-                    #print (colorama.Fore.RED + "Specify name of the database.")
                     self.logger.info(
                         colorama.Fore.BLUE +
                         "Specify name of the database.")
@@ -208,8 +214,6 @@ class Jsnap:
                         strr = d['compare']
 
                         if not isinstance(strr, str):
-                            # print (colorama.Fore.RED + "Properly specify ids of first and second snapshot in format"
-                            #                           ": first_snapshot_id, second_snapshot_id")
                             self.logger.error(colorama.Fore.RED + "Properly specify ids of first and second snapshot in format"
                                               ": first_snapshot_id, second_snapshot_id")
                             exit(1)
@@ -220,15 +224,11 @@ class Jsnap:
                         try:
                             lst = [int(x) for x in lst]
                         except ValueError as e:
-                            # print (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
-                            #                           " in format: first_snapshot_id, second_snapshot_id")
                             self.logger.error(colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
                                               " in format: first_snapshot_id, second_snapshot_id")
                             exit(1)
 
                         if len(lst) > 2:
-                            # print (colorama.Fore.RED + "No. of snapshots specified is more than two."
-                            #                           " Please specify only two snapshots.")
                             self.logger.error(colorama.Fore.RED + "No. of snapshots specified is more than two."
                                               " Please specify only two snapshots.")
                             exit(1)
@@ -238,8 +238,8 @@ class Jsnap:
                             self.db['first_snap_id'] = lst[0]
                             self.db['second_snap_id'] = lst[1]
                         else:
-                            # print (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
-                            #                           " in format: first_snapshot_id, second_snapshot_id")
+                            self.logger.error (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
+                                                " in format: first_snapshot_id, second_snapshot_id")
 
                             exit(1)
         if self.db['check_from_sqlite'] is False or compare_from_id is False:
@@ -247,9 +247,6 @@ class Jsnap:
                     self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None) or
                 self.args.diff is True and (
                     self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None)):
-                # print(
-                #    colorama.Fore.RED +
-                #    "*********Arguments not given correctly, Please refer below help message!!********")
                 self.logger.debug(
                     colorama.Fore.RED +
                     "Arguments not given correctly, Please refer below help message")
@@ -275,7 +272,6 @@ class Jsnap:
                 test_file = open(tfile, 'r')
                 test_files.append(yaml.load(test_file))
             else:
-                # print "ERROR!! File %s is not found" % tfile
                 self.logger.error(
                     colorama.Fore.RED +
                     "ERROR!! File %s is not found" %
@@ -388,12 +384,11 @@ class Jsnap:
         :return:
         """
         if self.args.snap is True or self.args.snapcheck is True:
-            # print "Connecting to device %s ................" % hostname
             self.logger.info(
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................" %
                 hostname)
-            dev = Device(host=hostname, user=username, passwd=password)
+            dev = Device(host=hostname, user=username, passwd=password, gather_facts= False)
             try:
                 dev.open()
             except Exception as ex:
@@ -403,7 +398,6 @@ class Jsnap:
                 self.generate_rpc_reply(dev, snap_files, username)
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
-            # print "\n &&&&& going for comparision"
             if self.main_file.get("mail") and self.args.diff is not True:
                 mfile = os.path.join(
                     os.getcwd(),
@@ -421,8 +415,6 @@ class Jsnap:
                     send_mail = Notification()
                     send_mail.notify(mail_file, hostname, passwd, testobj)
                 else:
-                    # print"ERROR!! Path of file containing mail content is not
-                    # correct"
                     self.logger.error(
                         colorama.Fore.RED +
                         "ERROR!! Path of file containing mail content is not correct")
@@ -437,7 +429,8 @@ class Jsnap:
         all the yaml file apart from main, like device.yml, bgp_neighbor.yml
         :return:
         """
-        self.logger.debug(colorama.Fore.BLUE + "Creating init folder.....")
+        mssg= "Creating Jsnap directory structure at:" + os.getcwd()
+        self.logger.debug(colorama.Fore.BLUE + mssg)
         if not os.path.isdir("snapshots"):
             os.mkdir("snapshots")
         if not os.path.isdir("logs"):
@@ -458,8 +451,8 @@ class Jsnap:
         if not os.path.isfile(
                 os.path.join(os.getcwd(), 'logging.yml')) or self.args.overwrite is True:
             shutil.copy(logging_yml_file, os.getcwd())
-
-        self.logger.info(colorama.Fore.BLUE + "--init folder created.....")
+        mssg1= "Jsnap folders created at: " + os.getcwd()
+        self.logger.info(colorama.Fore.BLUE + mssg1)
 
     def check_arguments(self):
         """
@@ -472,20 +465,22 @@ class Jsnap:
             (self.args.snapcheck is True and (self.args.pre_snapfile is None or self.args.file is None or self.args.post_snapfile is not None)) or
             (self.args.diff is True and self.args.file is None)
            ):
-            # print(
-            #    colorama.Fore.RED +
-            #    "*********Arguments not given correctly, Please refer below help message!!********")
             self.logger.error(
                 "Arguments not given correctly, Please refer help message")
             self.parser.print_help()
             sys.exit(1)
+        else:
+            pass 
 
 
 def main():
     d = Jsnap()
     # make init folder
+
     d.check_arguments()
-    if d.args.init is True:
+    if d.args.version is True:
+        print "Jsnap version:",version.__version__
+    elif d.args.init is True:
         d.generate_init()
     else:
         d.get_hosts()

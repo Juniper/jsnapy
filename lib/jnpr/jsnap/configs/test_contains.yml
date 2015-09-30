@@ -8,6 +8,6 @@ test_version_check:
       id: ./host-name
       tests:
         - contains: //package-information/name[1], jbase
-          info: "Test Succeeded!! Checking Junos version for 14.2 release pre: {{pre['product-model']}} "
-          err: "Test Failed!!! Found different Junos version with product model: {{pre['product-model']}}  with id {{id_0}}"
+          info: "Test Succeeded!! Junos version contains package name as jbase with hostname as <{{id_0}}>"
+          err: "Test Failed!!! Junos version does not contains package name as jbase"
 

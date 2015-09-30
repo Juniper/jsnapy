@@ -30,7 +30,6 @@ class TestStringOperators(unittest.TestCase):
             self.diff,
             self.db,
             "snap_contains_pre")
-
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 
