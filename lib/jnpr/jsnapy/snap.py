@@ -1,6 +1,6 @@
 from lxml import etree
 import os
-from jnpr.jsnap.sqlite_store import JsnapSqlite
+from jnpr.jsnapy.sqlite_store import JsnapSqlite
 import sys
 import logging
 import colorama

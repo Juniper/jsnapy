@@ -1,9 +1,13 @@
 from setuptools import setup, find_packages
+import os
+
 req_lines = [line.strip() for line in open(
     'requirements.txt').readlines()]
 install_reqs = list(filter(None, req_lines))
+example_files = [os.path.join('lib/jnpr/jsnapy/examples',i) for i in os.listdir('lib/jnpr/jsnapy/examples')]
+log_files = [os.path.join('lib/jnpr/jsnapy/logs',j) for j in os.listdir('lib/jnpr/jsnapy/logs')]
+exec(open('lib/jnpr/jsnapy/version.py').read())
 
-exec(open('lib/jnpr/jsnap/version.py').read())
 setup(name="jsnapy",
       version=__version__,
       description="Python version of Junos Snapshot Administrator",
@@ -15,16 +19,26 @@ setup(name="jsnapy",
       package_dir={'': 'lib'},
       packages=find_packages('lib'), 
       package_data={
-           'jnpr.jsnap.configs': ['*.yml'],
-	       'jnpr.jsnap': ['logging.yml','content.html']
+           'jnpr.jsnapy.examples': ['*.yml'],
+           'jnpr.jsnapy': ['hosts.yml', 'logging.yml', 'content.html'],
+           'jnpr.jsnapy.snapshots': ['README'],
+           'jnpr.jsnapy.testcases': ['README'],
+           'jnpr.jsnapy.logs': ['*.log']
      },
       entry_points={
           'console_scripts': [
-              'jsnap=jnpr.jsnap.jsnap:main',
+              'jsnapy=jnpr.jsnapy.jsnapy:main',
           ],
       },
       zip_safe=False,
       install_requires= install_reqs,
+      data_files=[('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
+                  ('/etc/jsnapy/examples', example_files),
+                  ('/etc/jsnapy', ['lib/jnpr/jsnapy/hosts.yml']),
+                  ('/etc/jsnapy/testcases', ['lib/jnpr/jsnapy/testcases/README']),
+                  ('/etc/jsnapy/snapshots', ['lib/jnpr/jsnapy/snapshots/README']),
+                  ('/etc/jsnapy/logs', log_files)
+                  ],
       classifiers=[
           'Environment :: Console',
           'Intended Audience :: Developers',

@@ -1,11 +1,11 @@
 import yaml
 from lxml import etree
-from jnpr.jsnap.testop import Operator
+from jnpr.jsnapy.testop import Operator
 import os
 import sys
-from jnpr.jsnap.sqlite_get import SqliteExtractXml
-import jnpr.jsnap.snap_diff
-from jnpr.jsnap.xml_comparator import XmlComparator
+from jnpr.jsnapy.sqlite_get import SqliteExtractXml
+import jnpr.jsnapy.snap_diff
+from jnpr.jsnapy.xml_comparator import XmlComparator
 import colorama
 import logging
 
@@ -176,7 +176,7 @@ class Comparator:
                         xmlfile2)
 
     def compare_diff(self, pre_snap_file, post_snap_file, check_from_sqlite):
-        diff_obj = jnpr.jsnap.snap_diff.Diff()
+        diff_obj = jnpr.jsnapy.snap_diff.Diff()
         if check_from_sqlite:
             diff_obj.diff_strings(
                 pre_snap_file,
