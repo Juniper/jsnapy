@@ -4,7 +4,7 @@ import yaml
 
 def setup_logging(
         default_path='logging.yml', default_level=logging.INFO, env_key='LOG_CFG'):
-    path = os.path.join(os.getcwd(), default_path)
+    path = os.path.join('/etc','jsnapy', default_path)
     value = os.getenv(env_key, None)
     if value:
         path = value

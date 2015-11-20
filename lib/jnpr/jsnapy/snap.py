@@ -5,7 +5,6 @@ import sys
 import logging
 import colorama
 
-
 class Parse:
 
     def __init__(self):
@@ -66,7 +65,6 @@ class Parse:
         self.command_list = []
         self.rpc_list = []
         self.test_included = []
-        path = os.getcwd()
         formats = ['xml', 'text']
         if 'tests_include' in test_file:
             for t in test_file.get('tests_include'):
@@ -100,7 +98,8 @@ class Parse:
                             filename = snap_files + '_' + \
                                 name + '.' + cmd_format
                             output_file = os.path.join(
-                                path,
+                                '/etc',
+                                'jsnapy',
                                 'snapshots',
                                 filename)
                             self._write_file(
@@ -213,7 +212,8 @@ class Parse:
                             filename = snap_files + '_' + \
                                 rpc + '.' + reply_format
                             output_file = os.path.join(
-                                path,
+                                '/etc',
+                                'jsnapy',
                                 'snapshots',
                                 filename)
                             self._write_file(

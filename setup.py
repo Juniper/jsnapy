@@ -22,7 +22,7 @@ setup(name="jsnapy",
            'jnpr.jsnapy.examples': ['*.yml'],
            'jnpr.jsnapy': ['hosts.yml', 'logging.yml', 'content.html'],
            'jnpr.jsnapy.snapshots': ['README'],
-           'jnpr.jsnapy.testcases': ['README'],
+           'jnpr.jsnapy.testfiles': ['README'],
            'jnpr.jsnapy.logs': ['*.log']
      },
       entry_points={
@@ -35,9 +35,9 @@ setup(name="jsnapy",
       data_files=[('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
                   ('/etc/jsnapy/examples', example_files),
                   ('/etc/jsnapy', ['lib/jnpr/jsnapy/hosts.yml']),
-                  ('/etc/jsnapy/testcases', ['lib/jnpr/jsnapy/testcases/README']),
+                  ('/etc/jsnapy/testfiles', ['lib/jnpr/jsnapy/testfiles/README']),
                   ('/etc/jsnapy/snapshots', ['lib/jnpr/jsnapy/snapshots/README']),
-                  ('/etc/jsnapy/logs', log_files)
+                  ('/etc/logs/jsnapy', log_files)
                   ],
       classifiers=[
           'Environment :: Console',

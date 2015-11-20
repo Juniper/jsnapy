@@ -240,7 +240,7 @@ class Comparator:
                 "\nNo test file, Please mention test files !!")
         else:
             for tfiles in main_file.get('tests'):
-                filename = os.path.join(os.getcwd(), 'configs', tfiles)
+                filename = os.path.join('/etc', 'jsnapy', 'testfiles', tfiles)
                 if os.path.isfile(filename):
                     testfile = open(filename, 'r')
                     tfiles = yaml.load(testfile)
@@ -310,9 +310,10 @@ class Comparator:
                                 file1 = str(device) + '_' + pre + \
                                     '_' + name + '.' + reply_format
                                 snapfile1 = os.path.join(
-                                    path,
+                                    '/etc',
+                                    'jsnapy',
                                     'snapshots',
-                                    file1)
+                                     file1)
 
                             if check is True and reply_format == 'xml':
                                 if db.get('check_from_sqlite') is False:
@@ -320,9 +321,10 @@ class Comparator:
                                     file2 = str(device) + '_' + post + \
                                         '_' + name + '.' + reply_format
                                     snapfile2 = os.path.join(
-                                        path,
+                                        '/etc',
+                                        'jsnapy',
                                         'snapshots',
-                                        file2)
+                                         file2)
                                 self.compare_reply(
                                     op,
                                     t[val],
@@ -338,9 +340,10 @@ class Comparator:
                                     file2 = str(device) + '_' + \
                                         post + '_' + name + '.' + reply_format
                                     snapfile2 = os.path.join(
-                                        path,
+                                        '/etc',
+                                        'jsnapy',
                                         'snapshots',
-                                        file2)
+                                         file2)
                                 self.compare_diff(
                                     snapfile1,
                                     snapfile2,
