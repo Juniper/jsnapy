@@ -1,9 +1,5 @@
 #!/usr/bin/python
 import os
-os.environ['PYTHONPATH']='/Users/jpriyal/Desktop/jsnapy/jsnapy/lib'
-import sys
-sys.path.append('/Users/jpriyal/Desktop/jsnapy/jsnapy/lib')
-import os
 import shutil
 import textwrap
 import argparse
