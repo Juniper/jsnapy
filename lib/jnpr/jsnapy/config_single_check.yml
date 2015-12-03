@@ -1,0 +1,9 @@
+# for one device, can be given like this:
+hosts:
+  - devices: 10.209.16.149 
+    username : root
+    passwd: Embe1mpls
+tests:
+ - test_no_diff.yml 
+ - test_delta.yml
+

@@ -1,6 +1,8 @@
-#!/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python
-
+#!/usr/bin/python
+import os
+os.environ['PYTHONPATH']='/Users/jpriyal/Desktop/jsnapy/jsnapy/lib'
 import sys
+sys.path.append('/Users/jpriyal/Desktop/jsnapy/jsnapy/lib')
 import os
 import shutil
 import textwrap
@@ -257,7 +259,7 @@ class Jsnapy:
         self.login(output_file)
 
     # call to generate snap files
-    def generate_rpc_reply(self, dev, snap_files, username):
+    def generate_rpc_reply(self, dev, output_file, hostname, username):
         """
         Generates rpc-reply based on command/rpc given and stores them in snap_files
 
@@ -280,7 +282,7 @@ class Jsnapy:
                     tfile)
         g = Parse()
         for tests in test_files:
-            g.generate_reply(tests, dev, snap_files, self.db, username)
+            g.generate_reply(tests, dev, output_file, hostname, self.db, username)
 
     # called by check and snapcheck argument, to compare snap files
     def compare_tests(self, hostname):
@@ -339,14 +341,13 @@ class Jsnapy:
                             self.host_list.append(hostname)
                             username = val.get(hostname).get('username')
                             password = val.get(hostname).get('passwd')
-                            snap_files = hostname + '_' + output_file
                             t = Thread(
                                 target=self.connect,
                                 args=(
                                     hostname,
                                     username,
                                     password,
-                                    snap_files,
+                                    output_file,
                                 ))
                             t.start()
                             t.join()
@@ -360,8 +361,7 @@ class Jsnapy:
                 password = k.get('passwd') or getpass.getpass(
                     "\nPlease enter password to login to Device: ")
                 self.host_list.append(hostname)
-                snap_files = hostname + '_' + output_file
-                self.connect(hostname, username, password, snap_files)
+                self.connect(hostname, username, password, output_file)
 
         # login credentials are given from command line
         else:
@@ -371,11 +371,10 @@ class Jsnapy:
             password = self.args.passwd if self.args.passwd is not None else getpass.getpass(
                 "\nPlease enter password for login to Device: ")
             self.host_list.append(hostname)
-            snap_files = hostname + '_' + output_file
-            self.connect(hostname, username, password, snap_files)
+            self.connect(hostname, username, password, output_file)
 
     # function to connect to device
-    def connect(self, hostname, username, password, snap_files):
+    def connect(self, hostname, username, password, output_file):
         """
         connect to device and calls the function either to generate snapshots
         or compare them based on option given (--snap, --check, --snapcheck, --diff)
@@ -397,7 +396,7 @@ class Jsnapy:
                 self.logger.error("\nERROR occurred %s" % str(ex))
                 return
             else:
-                self.generate_rpc_reply(dev, snap_files, username)
+                self.generate_rpc_reply(dev, output_file, hostname, username)
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             if self.main_file.get("mail") and self.args.diff is not True:
