@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import sys
 import os
 import shutil
 import textwrap
@@ -324,7 +325,7 @@ class Jsnapy:
             # when group of devices are given, searching for include keyword in
             # hosts in main.yaml file
             if k.__contains__('include'):
-                lfile = os.path.join(os.getcwd(), 'configs', k['include'])
+                lfile = os.path.join('/etc','jsnapy','testfiles',k['include'])
                 login_file = open(lfile, 'r')
                 dev_file = yaml.load(login_file)
                 gp = k.get('group', 'all')
@@ -422,12 +423,12 @@ class Jsnapy:
     #######  generate init folder ######
     '''
     def generate_init(self):
-        """
+        
         create snapshots and configs folder along with sample main config file.
         All snapshots generated will go in snapshots folder. configs folder will contain
         all the yaml file apart from main, like device.yml, bgp_neighbor.yml
         :return:
-        """
+       
         mssg= "Creating Jsnapy directory structure at:" + os.getcwd()
         self.logger.debug(colorama.Fore.BLUE + mssg)
         if not os.path.isdir("snapshots"):

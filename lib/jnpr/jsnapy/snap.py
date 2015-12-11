@@ -132,9 +132,6 @@ class Parse:
         if db['store_in_sqlite'] is True and self._check_reply(rpc_reply, reply_format):
             self.store_in_sqlite(self, db, hostname, username, rpc, reply_format, rpc_reply, output_file)
 
-
-
-
     # generate snap files for devices based on given commands and rpc
     def generate_reply(self, test_file, dev, output_file, hostname, db, username):
         """
