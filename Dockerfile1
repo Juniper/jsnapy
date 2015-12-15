@@ -10,12 +10,7 @@ RUN pip install junos-eznc
 
 ########### install jsnapy #########
 RUN mkdir -p /usr/local/tmp/jsnapy
-ADD lib /usr/local/tmp/jsnapy/lib
-ADD setup.py /usr/local/tmp/jsnapy/setup.py
-ADD tests /usr/local/tmp/jsnapy/tests
-ADD MANIFEST.in /usr/local/tmp/jsnapy/MANIFEST.in
-ADD requirements.txt /usr/local/tmp/jsnapy/requirements.txt
-ADD snapshots /usr/local/tmp/jsnapy/snapshots
+ADD jsnapy /usr/local/tmp/jsnapy
 WORKDIR /usr/local/tmp/jsnapy
 RUN python setup.py sdist
 RUN pip install dist/jsnapy-0.1.tar.gz
