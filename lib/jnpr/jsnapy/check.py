@@ -19,6 +19,29 @@ class Comparator:
     def __del__(self):
         colorama.init(autoreset=True)
 
+    def generate_snap_file(self, device, prefix, cmd_rpc_name, reply_format):
+        if os.path.isfile(prefix):
+            return prefix
+        else:
+            file = str(device) + '_' + prefix + '_' + cmd_rpc_name + '.' + reply_format
+            snapfile = os.path.join('/etc', 'jsnapy', 'snapshots',file)
+            return snapfile
+
+    def get_err_mssg(self, path, ele_list):
+        err_mssg = path.get('err', "Test FAILED: " +
+                            ele_list[0] + " before was < {{pre['" +ele_list[0] +"']}} >"
+                                                                                " now it is < {{post['" +ele_list[0] +"']}} > ")
+        return err_mssg
+
+    def get_info_mssg(self, path, ele_list):
+        info_mssg = path.get('info', "Test PASSED: " + ele_list[0] +
+                    " before was < {{pre['" +
+                    ele_list[0] +
+                    "']}} > now it is < {{post['" +
+                    ele_list[0] +
+                    "']}} > ")
+        return info_mssg
+
     # Extract xpath and other values for comparing two snapshots and
     # testop.Operator methods to perform tests
     def compare_reply(self, op, tests, teston, check, db, snap1, snap2=None):
@@ -80,24 +103,9 @@ class Comparator:
                     ele_list = ['no node']
 
                 # set the default error and info message
-                err_mssg = path.get(
-                    'err',
-                    "Test FAILED: " +
-                    ele_list[0] +
-                    " before was < {{pre['" +
-                    ele_list[0] +
-                    "']}} > now it is < {{post['" +
-                    ele_list[0] +
-                    "']}} > ")
-                info_mssg = path.get(
-                    'info',
-                    "Test PASSED: " +
-                    ele_list[0] +
-                    " before was < {{pre['" +
-                    ele_list[0] +
-                    "']}} > now it is < {{post['" +
-                    ele_list[0] +
-                    "']}} > ")
+                err_mssg = self. get_err_mssg(path, ele_list)
+                info_mssg = self. get_err_mssg(path, ele_list)
+
                 if db.get('check_from_sqlite') is True and check is True:
                     xml1 = etree.fromstring(snap1)
                 else:
@@ -307,24 +315,11 @@ class Comparator:
                                                             % reply_format)
                                     sys.exit(1)
                             else:
-                                file1 = str(device) + '_' + pre + \
-                                    '_' + name + '.' + reply_format
-                                snapfile1 = os.path.join(
-                                    '/etc',
-                                    'jsnapy',
-                                    'snapshots',
-                                     file1)
+                                snapfile1= self.generate_snap_file(device, pre, name, reply_format)
 
                             if check is True and reply_format == 'xml':
                                 if db.get('check_from_sqlite') is False:
-
-                                    file2 = str(device) + '_' + post + \
-                                        '_' + name + '.' + reply_format
-                                    snapfile2 = os.path.join(
-                                        '/etc',
-                                        'jsnapy',
-                                        'snapshots',
-                                         file2)
+                                    snapfile2 = self.generate_snap_file(device, post, name, reply_format)
                                 self.compare_reply(
                                     op,
                                     t[val],
@@ -337,13 +332,7 @@ class Comparator:
                             # as of now diff is not implemented for diff
                             elif(diff is True):
                                 if db.get('check_from_sqlite') is False:
-                                    file2 = str(device) + '_' + \
-                                        post + '_' + name + '.' + reply_format
-                                    snapfile2 = os.path.join(
-                                        '/etc',
-                                        'jsnapy',
-                                        'snapshots',
-                                         file2)
+                                    snapfile2 = self.generate_snap_file(device, post, name, reply_format)
                                 self.compare_diff(
                                     snapfile1,
                                     snapfile2,

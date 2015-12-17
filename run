@@ -1,0 +1,1 @@
+docker run -i -t juniper/jsnapy /bin/bash

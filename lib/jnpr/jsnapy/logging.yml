@@ -7,9 +7,9 @@ disable_existing_loggers: False
 ##
 
 formatters:
-    simple:
+    custom_format
         format: "%(asctime)s - %(name)s - %(levelname)s - \n %(message)s"
-    custom_format:
+    simple:
         format: "%(message)s"
 handlers:
     console:

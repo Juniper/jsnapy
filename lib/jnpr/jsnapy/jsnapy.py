@@ -1,5 +1,4 @@
-#!/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python
-
+#!/usr/bin/python
 import sys
 import os
 import shutil
@@ -257,7 +256,7 @@ class Jsnapy:
         self.login(output_file)
 
     # call to generate snap files
-    def generate_rpc_reply(self, dev, snap_files, username):
+    def generate_rpc_reply(self, dev, output_file, hostname, username):
         """
         Generates rpc-reply based on command/rpc given and stores them in snap_files
 
@@ -280,7 +279,7 @@ class Jsnapy:
                     tfile)
         g = Parse()
         for tests in test_files:
-            g.generate_reply(tests, dev, snap_files, self.db, username)
+            g.generate_reply(tests, dev, output_file, hostname, self.db, username)
 
     # called by check and snapcheck argument, to compare snap files
     def compare_tests(self, hostname):
@@ -326,7 +325,7 @@ class Jsnapy:
             # when group of devices are given, searching for include keyword in
             # hosts in main.yaml file
             if k.__contains__('include'):
-                lfile = os.path.join(os.getcwd(), 'configs', k['include'])
+                lfile = os.path.join('/etc','jsnapy','testfiles',k['include'])
                 login_file = open(lfile, 'r')
                 dev_file = yaml.load(login_file)
                 gp = k.get('group', 'all')
@@ -339,14 +338,13 @@ class Jsnapy:
                             self.host_list.append(hostname)
                             username = val.get(hostname).get('username')
                             password = val.get(hostname).get('passwd')
-                            snap_files = hostname + '_' + output_file
                             t = Thread(
                                 target=self.connect,
                                 args=(
                                     hostname,
                                     username,
                                     password,
-                                    snap_files,
+                                    output_file,
                                 ))
                             t.start()
                             t.join()
@@ -360,8 +358,7 @@ class Jsnapy:
                 password = k.get('passwd') or getpass.getpass(
                     "\nPlease enter password to login to Device: ")
                 self.host_list.append(hostname)
-                snap_files = hostname + '_' + output_file
-                self.connect(hostname, username, password, snap_files)
+                self.connect(hostname, username, password, output_file)
 
         # login credentials are given from command line
         else:
@@ -371,11 +368,10 @@ class Jsnapy:
             password = self.args.passwd if self.args.passwd is not None else getpass.getpass(
                 "\nPlease enter password for login to Device: ")
             self.host_list.append(hostname)
-            snap_files = hostname + '_' + output_file
-            self.connect(hostname, username, password, snap_files)
+            self.connect(hostname, username, password, output_file)
 
     # function to connect to device
-    def connect(self, hostname, username, password, snap_files):
+    def connect(self, hostname, username, password, output_file):
         """
         connect to device and calls the function either to generate snapshots
         or compare them based on option given (--snap, --check, --snapcheck, --diff)
@@ -397,7 +393,7 @@ class Jsnapy:
                 self.logger.error("\nERROR occurred %s" % str(ex))
                 return
             else:
-                self.generate_rpc_reply(dev, snap_files, username)
+                self.generate_rpc_reply(dev, output_file, hostname, username)
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             if self.main_file.get("mail") and self.args.diff is not True:
@@ -427,12 +423,12 @@ class Jsnapy:
     #######  generate init folder ######
     '''
     def generate_init(self):
-        """
+        
         create snapshots and configs folder along with sample main config file.
         All snapshots generated will go in snapshots folder. configs folder will contain
         all the yaml file apart from main, like device.yml, bgp_neighbor.yml
         :return:
-        """
+       
         mssg= "Creating Jsnapy directory structure at:" + os.getcwd()
         self.logger.debug(colorama.Fore.BLUE + mssg)
         if not os.path.isdir("snapshots"):
