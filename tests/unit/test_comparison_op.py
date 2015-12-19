@@ -1,6 +1,6 @@
 import unittest
 import yaml
-from jnpr.jsnap.check import Comparator
+from jnpr.jsnapy.check import Comparator
 from mock import patch
 
 
@@ -209,15 +209,7 @@ class TestComparisonOperator(unittest.TestCase):
         self.assertEqual(oper.no_failed, 0)
 
 with patch('logging.Logger') as mock_logger:
-    suite = unittest.TestSuite()
-    suite.addTest(TestComparisonOperator("test_no_diff"))
-    suite.addTest(TestComparisonOperator("test_delta"))
-    suite.addTest(TestComparisonOperator("test_delta_fail"))
-    suite.addTest(TestComparisonOperator("test_no_diff_2"))
-    suite.addTest(TestComparisonOperator("test_no_diff_pass"))
-    suite.addTest(TestComparisonOperator("test_no_diff_2_pass"))
-    suite.addTest(TestComparisonOperator("test_list_not_less_fail"))
-    suite.addTest(TestComparisonOperator("test_list_not_more_fail"))
-    suite.addTest(TestComparisonOperator("test_list_not_less_pass"))
-    suite.addTest(TestComparisonOperator("test_list_not_more_pass"))
-    unittest.TextTestRunner().run(suite)
+    if __name__ == "__main__":
+        suite = unittest.TestLoader().loadTestsFromTestCase(TestComparisonOperator)
+        unittest.TextTestRunner(verbosity=2).run(suite)
+

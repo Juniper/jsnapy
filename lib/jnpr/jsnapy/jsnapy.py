@@ -400,7 +400,7 @@ class Jsnapy:
                 mfile = os.path.join(
                     '/etc',
                     'jsnapy',
-                    'testcases',
+                    'testfiles',
                     self.main_file['mail'])
                 if os.path.isfile(mfile):
                     mail_file = open(mfile, 'r')

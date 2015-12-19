@@ -158,7 +158,6 @@ class Parse:
                         self.command_list.append(command)
                         cmd_name = '_'.join(command.split())
                         self.run_cmd(test_file, t, formats, dev, output_file, hostname, username, db)
-                        test_file, t, formats, dev, output_file, hostname, username, db
                     elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
                         self.run_rpc(test_file, t, formats, dev, output_file, hostname, username, db)
                     else:

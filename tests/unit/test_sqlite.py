@@ -1,7 +1,7 @@
 import unittest
 import os
-from jnpr.jsnap.sqlite_store import JsnapSqlite
-from jnpr.jsnap.sqlite_get import SqliteExtractXml
+from jnpr.jsnapy.sqlite_store import JsnapSqlite
+from jnpr.jsnapy.sqlite_get import SqliteExtractXml
 from mock import patch
 
 
@@ -100,9 +100,7 @@ class TestSqlite(unittest.TestCase):
                 self.assertNotEqual(c_list[0][0].find(err), -1)
 
 
-suite = unittest.TestSuite()
-suite.addTest(TestSqlite("test_sqlite_1"))
-suite.addTest(TestSqlite("test_sqlite_2"))
-suite.addTest(TestSqlite("test_sqlite_3"))
-suite.addTest(TestSqlite("test_sqlite_4"))
-unittest.TextTestRunner().run(suite)
+if __name__ == "__main__":
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestSqlite)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+

@@ -1,14 +1,12 @@
 import unittest
 import sys
 import yaml
-from jnpr.jsnap.check import Comparator
+from jnpr.jsnapy.check import Comparator
 from mock import patch
-
 
 class TestStringOperators(unittest.TestCase):
 
     def setUp(self):
-
         self.diff = False
         self.hostname = "10.216.193.114"
         self.db = dict()
@@ -22,7 +20,6 @@ class TestStringOperators(unittest.TestCase):
         conf_file = "configs/main_contains.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -39,7 +36,6 @@ class TestStringOperators(unittest.TestCase):
         conf_file = "configs/main_contains.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -47,7 +43,6 @@ class TestStringOperators(unittest.TestCase):
             self.diff,
             self.db,
             "snap_contains_fail_pre")
-
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
@@ -57,7 +52,6 @@ class TestStringOperators(unittest.TestCase):
         conf_file = "configs/main_is-in.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -65,7 +59,6 @@ class TestStringOperators(unittest.TestCase):
             self.diff,
             self.db,
             "snap_is-in_pre")
-
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 
@@ -75,7 +68,6 @@ class TestStringOperators(unittest.TestCase):
         conf_file = "configs/main_is-in.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -83,7 +75,6 @@ class TestStringOperators(unittest.TestCase):
             self.diff,
             self.db,
             "snap_is-in_fail_pre")
-
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
@@ -93,7 +84,6 @@ class TestStringOperators(unittest.TestCase):
         conf_file = "configs/main_not-in.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -101,7 +91,6 @@ class TestStringOperators(unittest.TestCase):
             self.diff,
             self.db,
             "snap_not-in_pre")
-
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
@@ -124,11 +113,7 @@ class TestStringOperators(unittest.TestCase):
         self.assertEqual(oper.no_failed, 0)
 
 with patch('logging.Logger') as mock_logger:
-    suite = unittest.TestSuite()
-    suite.addTest(TestStringOperators("test_contains"))
-    suite.addTest(TestStringOperators("test_contains_fail"))
-    suite.addTest(TestStringOperators("test_is_in"))
-    suite.addTest(TestStringOperators("test_is_in_fail"))
-    suite.addTest(TestStringOperators("test_not_in"))
-    suite.addTest(TestStringOperators("test_not_in_pass"))
-    unittest.TextTestRunner().run(suite)
+    if __name__ == "__main__":
+        suite = unittest.TestLoader().loadTestsFromTestCase(TestStringOperators)
+        unittest.TextTestRunner(verbosity=2).run(suite)
+

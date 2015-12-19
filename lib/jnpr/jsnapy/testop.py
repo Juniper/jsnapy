@@ -681,15 +681,13 @@ class Operator:
         self.print_result('is-lt', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
-
-    def contains(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+   
+    def contains(self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("contains")
         predict = {}
         postdict = {}
         iddict = {}
         res = True
-        flag = False
         tresult = {
             'xpath': x_path,
             'element_list': ele_list,
@@ -719,8 +717,17 @@ class Operator:
                                 (element.replace('-', '_'))] = prenode[k].text
                             postdict[
                                 (element.replace('-', '_'))] = postnode[k].text
-                            if (postnode[k].text == value):
-                                flag=True
+                            if (postnode[k].text.find(value) == -1):
+                                res = False
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict))
+                            else:
                                 self.logger_testop.info(
                                     jinja2.Template(
                                         info_mssg.replace(
@@ -729,22 +736,11 @@ class Operator:
                                         iddict,
                                         pre=predict,
                                         post=postdict))
-                                break
-                            
                     else:
                         self.logger_testop.error(
                             "Error!!, Node is not present in path given with test operator!!")
                         res = False
-        if not flag:
-           self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict))
-        self.print_result('contains', (res and flag))
+        self.print_result('contains', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 

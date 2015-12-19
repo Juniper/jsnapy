@@ -1,9 +1,9 @@
 
 # for one device, can be given like this:
 hosts:
-  - devices: 10.216.193.114
-    username : abc
-    passwd: xyz
+  - devices: 10.216.193.114 
+    username : root 
+    passwd: Embe1mpls
 tests:
   - contains.yml
 
