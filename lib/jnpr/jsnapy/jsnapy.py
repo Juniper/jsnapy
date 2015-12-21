@@ -120,11 +120,8 @@ class Jsnapy:
         #)
 
         self.args = self.parser.parse_args()
-
-        if len(sys.argv) == 1:
-            self.parser.print_help()
-            sys.exit(1)
-        self.db = dict()
+        
+	self.db = dict()
         self.db['store_in_sqlite'] = False
         self.db['check_from_sqlite'] = False
         self.db['db_name'] = ""
@@ -475,16 +472,16 @@ class Jsnapy:
 
 
 def main():
-    d = Jsnapy()
-    # make init folder
-
-    d.check_arguments()
-    if d.args.version is True:
-        print "Jsnapy version:",version.__version__
-    #elif d.args.init is True:
-    #    d.generate_init()
+    js = Jsnapy()
+    if len(sys.argv) == 1:
+        js.parser.print_help()
+        sys.exit(1)
     else:
-        d.get_hosts()
+        js.check_arguments()
+        if js.args.version is True:
+             print "Jsnapy version:",version.__version__
+        else:
+             js.get_hosts()
 
 if __name__ == '__main__':
     main()
