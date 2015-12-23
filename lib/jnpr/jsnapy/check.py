@@ -8,13 +8,16 @@ import jnpr.jsnapy.snap_diff
 from jnpr.jsnapy.xml_comparator import XmlComparator
 import colorama
 import logging
-
+import configparser
 
 class Comparator:
 
     def __init__(self):
         colorama.init(autoreset=True)
         self.logger_check = logging.getLogger(__name__)
+        self.config = configparser.ConfigParser()
+        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
+
 
     def __del__(self):
         colorama.init(autoreset=True)
@@ -24,7 +27,7 @@ class Comparator:
             return prefix
         else:
             file = str(device) + '_' + prefix + '_' + cmd_rpc_name + '.' + reply_format
-            snapfile = os.path.join('/etc', 'jsnapy', 'snapshots',file)
+            snapfile = os.path.join(self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots'), file)
             return snapfile
 
     def get_err_mssg(self, path, ele_list):
@@ -248,7 +251,7 @@ class Comparator:
                 "\nNo test file, Please mention test files !!")
         else:
             for tfiles in main_file.get('tests'):
-                filename = os.path.join('/etc', 'jsnapy', 'testfiles', tfiles)
+                filename = os.path.join(self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots'), tfiles)
                 if os.path.isfile(filename):
                     testfile = open(filename, 'r')
                     tfiles = yaml.load(testfile)

@@ -7,6 +7,7 @@ import logging
 import colorama
 
 
+
 class Notification:
 
     def __init__(self):

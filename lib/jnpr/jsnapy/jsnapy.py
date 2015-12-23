@@ -5,7 +5,7 @@ import shutil
 import textwrap
 import argparse
 import yaml
-from jnpr.jsnapy.snap import Parse
+from jnpr.jsnapy.snap import Parser
 from jnpr.jsnapy.check import Comparator
 from jnpr.jsnapy.notify import Notification
 from threading import Thread
@@ -16,10 +16,10 @@ import colorama
 import getpass
 import logging
 import setup_logging
-
+import configparser
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
-class Jsnapy:
+class SnapAdmin:
 
     # need to call this function to initialize logging
     setup_logging.setup_logging()
@@ -27,6 +27,8 @@ class Jsnapy:
     # taking parameters from command line
     def __init__(self):
         colorama.init(autoreset=True)
+        self.config = configparser.ConfigParser()
+        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
         self.logger = logging.getLogger(__name__)
         self.parser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -265,7 +267,7 @@ class Jsnapy:
         test_files = []
         for tfile in self.main_file['tests']:
             if not os.path.isfile(tfile):
-                tfile = os.path.join('/etc', 'jsnapy', 'testfiles', tfile)
+                tfile = os.path.join(self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles'), tfile)
             if os.path.isfile(tfile):
                 test_file = open(tfile, 'r')
                 test_files.append(yaml.load(test_file))
@@ -274,7 +276,7 @@ class Jsnapy:
                     colorama.Fore.RED +
                     "ERROR!! File %s is not found" %
                     tfile)
-        g = Parse()
+        g = Parser()
         for tests in test_files:
             g.generate_reply(tests, dev, output_file, hostname, self.db, username)
 
@@ -322,7 +324,11 @@ class Jsnapy:
             # when group of devices are given, searching for include keyword in
             # hosts in main.yaml file
             if k.__contains__('include'):
-                lfile = os.path.join('/etc','jsnapy','testfiles',k['include'])
+                file_tag = k['include']
+                if os.path.isfile(file_tag):
+                    lfile = file_tag
+                else: 
+                    lfile = os.path.join(self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles'), file_tag)
                 login_file = open(lfile, 'r')
                 dev_file = yaml.load(login_file)
                 gp = k.get('group', 'all')
@@ -394,11 +400,8 @@ class Jsnapy:
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
             if self.main_file.get("mail") and self.args.diff is not True:
-                mfile = os.path.join(
-                    '/etc',
-                    'jsnapy',
-                    'testfiles',
-                    self.main_file['mail'])
+                mfile = os.path.join( self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles'), self.main_file['mail']) \
+                    if os.path.isfile(self.main_file['mail']) is False else self.main_file['mail']
                 if os.path.isfile(mfile):
                     mail_file = open(mfile, 'r')
                     mail_file = yaml.load(mail_file)
@@ -472,7 +475,7 @@ class Jsnapy:
 
 
 def main():
-    js = Jsnapy()
+    js = SnapAdmin()
     if len(sys.argv) == 1:
         js.parser.print_help()
         sys.exit(1)
