@@ -11,7 +11,6 @@ from jnpr.jsnapy.notify import Notification
 from threading import Thread
 from jnpr.junos import Device
 from jnpr.jsnapy import version
-import distutils.dir_util
 import colorama
 import getpass
 import logging
@@ -259,7 +258,7 @@ class SnapAdmin:
         self.login(output_file)
 
     # call to generate snap files
-    def generate_rpc_reply(self, dev, output_file, hostname, username):
+    def generate_rpc_reply(self, dev, output_file, hostname, username, config_data):
         """
         Generates rpc-reply based on command/rpc given and stores them in snap_files
 
@@ -269,7 +268,8 @@ class SnapAdmin:
         :return:
         """
         test_files = []
-        for tfile in self.main_file['tests']:
+        print "\n config_data in generate_rpc_reply is: ", config_data, config_data['tests']
+        for tfile in config_data['tests']:
             if not os.path.isfile(tfile):
                 tfile = os.path.join((self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles')).encode('utf-8'), tfile)
             if os.path.isfile(tfile):
@@ -285,7 +285,7 @@ class SnapAdmin:
             g.generate_reply(tests, dev, output_file, hostname, self.db, username)
 
     # called by check and snapcheck argument, to compare snap files
-    def compare_tests(self, hostname):
+    def compare_tests(self, hostname, config_data, pre_snap=None, post_snap=None, action=None):
         """
         calls the function to compare snapshots based on arguments given
         (--check, --snapcheck, --diff)
@@ -295,23 +295,27 @@ class SnapAdmin:
         comp = Comparator()
         chk = self.args.check
         diff = self.args.diff
-        if (chk or diff):
+        pre_snap_file = self.args.pre_snapfile if pre_snap is None else pre_snap
+        if (chk or diff or action in ["check", "diff"]):
+            post_snap_file = self.args.post_snapfile if post_snap is None else post_snap
             test_obj = comp.generate_test_files(
-                self.main_file,
+                config_data,
                 hostname,
                 chk,
                 diff,
                 self.db,
-                self.args.pre_snapfile,
-                self.args.post_snapfile)
+                pre_snap_file,
+                post_snap_file,
+                action)
         else:
             test_obj = comp.generate_test_files(
-                self.main_file,
+                config_data,
                 hostname,
                 chk,
                 diff,
                 self.db,
-                self.args.pre_snapfile)
+                pre_snap_file,
+                action)
         return test_obj
 
     def login(self, output_file):
@@ -378,7 +382,7 @@ class SnapAdmin:
             self.connect(hostname, username, password, output_file)
 
     # function to connect to device
-    def connect(self, hostname, username, password, output_file):
+    def connect(self, hostname, username, password, snap_file, config_data= None, action= None, post_snap= None):
         """
         connect to device and calls the function either to generate snapshots
         or compare them based on option given (--snap, --check, --snapcheck, --diff)
@@ -388,7 +392,11 @@ class SnapAdmin:
         :param snap_files: file name to store snapshot
         :return:
         """
-        if self.args.snap is True or self.args.snapcheck is True:
+
+        if config_data is None:
+            config_data = self.main_file
+
+        if self.args.snap is True or self.args.snapcheck is True or action in ["snap", "snapcheck"]:
             self.logger.info(
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................" %
@@ -400,12 +408,13 @@ class SnapAdmin:
                 self.logger.error("\nERROR occurred %s" % str(ex))
                 return
             else:
-                self.generate_rpc_reply(dev, output_file, hostname, username)
-                dev.close()
-        if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
-            if self.main_file.get("mail") and self.args.diff is not True:
-                mfile = os.path.join((self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles')).encode('utf-8'), self.main_file['mail']) \
-                    if os.path.isfile(self.main_file['mail']) is False else self.main_file['mail']
+                self.generate_rpc_reply(dev, snap_file, hostname, username, config_data)
+                res = dev.close()
+
+        if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in ["check", "snapcheck"]:
+            if config_data.get("mail") and self.args.diff is not True:
+                mfile = os.path.join((self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles')).encode('utf-8'), config_data.get('mail')) \
+                    if os.path.isfile(config_data('mail')) is False else config_data('mail')
                 if os.path.isfile(mfile):
                     mail_file = open(mfile, 'r')
                     mail_file = yaml.load(mail_file)
@@ -414,7 +423,7 @@ class SnapAdmin:
                             "Please enter ur email password ")
                     else:
                         passwd = mail_file['passwd']
-                    testobj = self.compare_tests(hostname)
+                    res = self.compare_tests(hostname, config_data,snap_file, post_snap, action)
                     send_mail = Notification()
                     send_mail.notify(mail_file, hostname, passwd, testobj)
                 else:
@@ -422,7 +431,50 @@ class SnapAdmin:
                         colorama.Fore.RED +
                         "ERROR!! Path of file containing mail content is not correct")
             else:
-                self.compare_tests(hostname)
+                res = self.compare_tests(hostname, config_data, snap_file, post_snap, action)
+        return res
+
+    ############################### functions to support module #######################################################
+
+    def extract_data(self, file_name, config_data):
+        if os.path.isfile(config_data):
+            data = open(config_data, 'r')
+            config_data = yaml.load(data)
+            print config_data
+        elif type(config_data) is str:
+            print "insid elif"
+            config_data = yaml.load(config_data)
+            print config_data
+        else:
+            print "incorrect config file or data, please chk !!!!"
+            exit(-1)
+        k = config_data.get('hosts')[0]
+        hostname = k.get('devices')
+        username = k.get('username') or raw_input("\n Enter user name: ")
+        password = k.get('passwd') or getpass.getpass("\nPlease enter password to login to Device: ")
+        snap_files = hostname + '_' + file_name if not os.path.isfile(file_name) else file_name
+        return hostname,username,password, snap_files,config_data
+
+    def snap(self, file_name, data, dev= None):
+        hostname, username, password, snap_file, config_data = self.extract_data(file_name, data)
+        self.connect(hostname, username, password, snap_file, config_data, "snap")
+
+    def snapcheck(self, file_name, data, dev= None):
+        print "\n inside snapcheck \n"
+        hostname, username, password, snap_file, config_data = self.extract_data(file_name, data)
+        res= self.connect(hostname, username, password, snap_file, config_data, "snapcheck")
+        print "result for test case is res.result, res.no_failed, res.no_passed, res.test_details :", res.result, res.no_failed, res.no_passed, res.test_details
+        return res.result
+
+    def check(self, pre_file, post_file, data, dev= None):
+        hostname, username, password, pre_snap, config_data = self.extract_data(pre_file, data)
+        print "\n config_data: ", config_data
+        post_snap = hostname + '_' + post_file
+        print "connecting -----------"
+        res = self.connect(hostname, username, password, pre_snap, config_data, "check", post_snap)
+        print "result for test case is res.result, res.no_failed, res.no_passed, res.test_details :", res.result, res.no_failed, res.no_passed, res.test_details
+        return res.result
+
 
     #######  generate init folder ######
     '''

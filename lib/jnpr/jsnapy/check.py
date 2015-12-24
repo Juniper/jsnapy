@@ -23,6 +23,7 @@ class Comparator:
         colorama.init(autoreset=True)
 
     def generate_snap_file(self, device, prefix, cmd_rpc_name, reply_format):
+        print "device, prefix, cmd_rpc_name, reply_format", device, prefix, cmd_rpc_name, reply_format
         if os.path.isfile(prefix):
             return prefix
         else:
@@ -47,7 +48,7 @@ class Comparator:
 
     # Extract xpath and other values for comparing two snapshots and
     # testop.Operator methods to perform tests
-    def compare_reply(self, op, tests, teston, check, db, snap1, snap2=None):
+    def compare_reply(self, op, tests, teston, check, db, snap1, snap2=None, action= None):
         """
         call testop.Operator methods to compare snapshots based on given test cases
         :param op: testop.Operator object
@@ -60,7 +61,7 @@ class Comparator:
         :return:
         """
         tests = [t for t in tests if ('iterate' in t or 'item' in t)]
-        if not len(tests) and check is True:
+        if not len(tests) and (check is True or action is "check"):
             res = self.compare_xml(snap1, snap2)
             if res is False:
                 op.no_failed = op.no_failed + 1
@@ -122,7 +123,7 @@ class Comparator:
                         sys.exit(1)
                 if testop in [
                         'no-diff', 'list-not-less', 'list-not-more', 'delta']:
-                    if check is True:
+                    if check is True or action is "check":
                         if db.get('check_from_sqlite') is True:
                             xml2 = etree.fromstring(snap2)
                         else:
@@ -155,7 +156,7 @@ class Comparator:
                 else:
                     # if check is used with uni operand test operator then use
                     # second snapshot file
-                    if db.get('check_from_sqlite') is True and check is True:
+                    if db.get('check_from_sqlite') is True and (check is True or action is "check"):
                         xmlfile1 = etree.fromstring(snap1)
                         xmlfile2 = etree.fromstring(snap2)
 
@@ -229,7 +230,7 @@ class Comparator:
 # to be performed
 
     def generate_test_files(
-            self, main_file, device, check, diff, db, pre=None, post=None):
+            self, main_file, device, check, diff, db, pre=None, post=None, action= None):
         """
         generate pre and post snapshot file name to store snapshots and call compare_reply function
         :param main_file: main config file, to extract test files user wants to run
@@ -243,7 +244,6 @@ class Comparator:
         """
         op = Operator()
         tests_files = []
-        path = os.getcwd()
         # get the test files from config.yml
         if main_file.get('tests') is None:
             self.logger_check.info(
@@ -292,7 +292,7 @@ class Comparator:
                                 "ERROR Occurred: %s" % str(ex))
                         else:
                             if db.get(
-                                    'check_from_sqlite') is True and (check is True or diff is True):
+                                    'check_from_sqlite') is True and (check is True or diff is True or action in ["check", "diff"]):
                                 a = SqliteExtractXml(db.get('db_name'))
                                 if (db['first_snap_id'] is not None) and (
                                         db['second_snap_id'] is not None):
@@ -318,9 +318,10 @@ class Comparator:
                                                             % reply_format)
                                     sys.exit(1)
                             else:
+                                print "device, pre, name, reply_format", device, pre, name, reply_format
                                 snapfile1= self.generate_snap_file(device, pre, name, reply_format)
 
-                            if check is True and reply_format == 'xml':
+                            if (check is True or action is "check") and reply_format == 'xml':
                                 if db.get('check_from_sqlite') is False:
                                     snapfile2 = self.generate_snap_file(device, post, name, reply_format)
                                 self.compare_reply(
@@ -330,7 +331,8 @@ class Comparator:
                                     check,
                                     db,
                                     snapfile1,
-                                    snapfile2)
+                                    snapfile2,
+                                    action)
 
                             # as of now diff is not implemented for diff
                             elif(diff is True):
@@ -347,7 +349,8 @@ class Comparator:
                                     teston,
                                     check,
                                     db,
-                                    snapfile1)
+                                    snapfile1,
+                                    action)
                             else:
                                 self.logger_check.error(
                                     colorama.Fore.RED +
@@ -357,6 +360,8 @@ class Comparator:
                         colorama.Fore.RED +
                         "ERROR!!! None of the tests cases included")
 
+
             if (diff is not True):
                 op.final_result()
-                return op
+
+        return op
