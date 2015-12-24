@@ -27,7 +27,7 @@ class Comparator:
             return prefix
         else:
             file = str(device) + '_' + prefix + '_' + cmd_rpc_name + '.' + reply_format
-            snapfile = os.path.join(self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots'), file)
+            snapfile = os.path.join((self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots')).encode('utf-8'), file)
             return snapfile
 
     def get_err_mssg(self, path, ele_list):
@@ -251,7 +251,7 @@ class Comparator:
                 "\nNo test file, Please mention test files !!")
         else:
             for tfiles in main_file.get('tests'):
-                filename = os.path.join(self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots'), tfiles)
+                filename = os.path.join((self.config['DEFAULT'].get('test_file_path', '/etc/jsnapy/testfiles')).encode('utf-8'), tfiles)
                 if os.path.isfile(filename):
                     testfile = open(filename, 'r')
                     tfiles = yaml.load(testfile)

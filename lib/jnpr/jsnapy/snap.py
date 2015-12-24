@@ -59,7 +59,7 @@ class Parser:
             return output_file
         else:
             filename = hostname + '_' + output_file + '_' + name + '.' + cmd_format
-            output_file = os.path.join( self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots'), filename)
+            output_file = os.path.join( (self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots')).encode('utf-8'), filename)
             return output_file
 
     def store_in_sqlite(self, db, hostname, username, cmd_rpc_name, reply_format, rpc_reply, snap_name):
