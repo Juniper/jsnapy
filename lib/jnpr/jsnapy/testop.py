@@ -10,6 +10,7 @@ class Operator:
         self.result = True
         self.no_failed = 0
         self.no_passed = 0
+        self.device = None
         self.test_details = defaultdict(list)
         colorama.init(autoreset=True)
         self.logger_testop = logging.getLogger(__name__)

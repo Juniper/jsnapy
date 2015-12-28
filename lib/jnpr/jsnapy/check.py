@@ -230,7 +230,7 @@ class Comparator:
 # to be performed
 
     def generate_test_files(
-            self, main_file, device, check, diff, db, pre=None, post=None, action= None):
+            self, main_file, device, check, diff, db, pre=None, post=None, action=None):
         """
         generate pre and post snapshot file name to store snapshots and call compare_reply function
         :param main_file: main config file, to extract test files user wants to run
@@ -243,6 +243,7 @@ class Comparator:
         :return:
         """
         op = Operator()
+        op.device = device
         tests_files = []
         # get the test files from config.yml
         if main_file.get('tests') is None:

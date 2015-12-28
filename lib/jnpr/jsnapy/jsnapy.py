@@ -425,13 +425,15 @@ class SnapAdmin:
                         passwd = mail_file['passwd']
                     res = self.compare_tests(hostname, config_data,snap_file, post_snap, action)
                     send_mail = Notification()
-                    send_mail.notify(mail_file, hostname, passwd, testobj)
+                    send_mail.notify(mail_file, hostname, passwd, res)
                 else:
                     self.logger.error(
                         colorama.Fore.RED +
                         "ERROR!! Path of file containing mail content is not correct")
             else:
                 res = self.compare_tests(hostname, config_data, snap_file, post_snap, action)
+        print "res is: ", res
+
         return res
 
     ############################### functions to support module #######################################################
@@ -464,7 +466,7 @@ class SnapAdmin:
         hostname, username, password, snap_file, config_data = self.extract_data(file_name, data)
         res= self.connect(hostname, username, password, snap_file, config_data, "snapcheck")
         print "result for test case is res.result, res.no_failed, res.no_passed, res.test_details :", res.result, res.no_failed, res.no_passed, res.test_details
-        return res.result
+        return res
 
     def check(self, pre_file, post_file, data, dev= None):
         hostname, username, password, pre_snap, config_data = self.extract_data(pre_file, data)
@@ -473,7 +475,7 @@ class SnapAdmin:
         print "connecting -----------"
         res = self.connect(hostname, username, password, pre_snap, config_data, "check", post_snap)
         print "result for test case is res.result, res.no_failed, res.no_passed, res.test_details :", res.result, res.no_failed, res.no_passed, res.test_details
-        return res.result
+        return res
 
 
     #######  generate init folder ######
