@@ -23,7 +23,6 @@ class Comparator:
         colorama.init(autoreset=True)
 
     def generate_snap_file(self, device, prefix, cmd_rpc_name, reply_format):
-        print "device, prefix, cmd_rpc_name, reply_format", device, prefix, cmd_rpc_name, reply_format
         if os.path.isfile(prefix):
             return prefix
         else:
@@ -46,6 +45,20 @@ class Comparator:
                     "']}} > ")
         return info_mssg
 
+    """
+    function is used to extract values from either
+    xml file or from database
+    """
+    def get_xml_reply(self, db, snap):
+        if db.get('check_from_sqlite') is True:
+            xml_value = etree.fromstring(snap)
+        elif os.path.isfile(snap):
+            xml_value = etree.parse(snap)
+        else:
+            self.logger_check.error(colorama.Fore.RED + "ERROR, Pre snapshot file: %s is not present in given path !!" %snap)
+            sys.exit(1)
+        return xml_value
+
     # Extract xpath and other values for comparing two snapshots and
     # testop.Operator methods to perform tests
     def compare_reply(self, op, tests, teston, check, db, snap1, snap2=None, action= None):
@@ -62,7 +75,7 @@ class Comparator:
         """
         tests = [t for t in tests if ('iterate' in t or 'item' in t)]
         if not len(tests) and (check is True or action is "check"):
-            res = self.compare_xml(snap1, snap2)
+            res = self.compare_xml(op, db, teston, snap1, snap2)
             if res is False:
                 op.no_failed = op.no_failed + 1
             else:
@@ -93,8 +106,6 @@ class Comparator:
             for path in testcases:
                 values = ['err', 'info']
                 testvalues = path.keys()
-                # testop = [
-                # tvalue for tvalue in testvalues if tvalue not in values][0]
                 testop1 = [
                     tvalue for tvalue in testvalues if tvalue not in values]
                 testop = testop1[0] if testop1 else "Define test operator"
@@ -110,70 +121,28 @@ class Comparator:
                 err_mssg = self. get_err_mssg(path, ele_list)
                 info_mssg = self. get_err_mssg(path, ele_list)
 
-                if db.get('check_from_sqlite') is True and check is True:
-                    xml1 = etree.fromstring(snap1)
-                else:
-                    if os.path.isfile(snap1):
-                        xml1 = etree.parse(snap1)
-                    else:
-                        self.logger_check.error(
-                            colorama.Fore.RED +
-                            "ERROR, Pre snapshot file: %s is not present in given path !!" %
-                            snap1)
-                        sys.exit(1)
+
                 if testop in [
                         'no-diff', 'list-not-less', 'list-not-more', 'delta']:
                     if check is True or action is "check":
-                        if db.get('check_from_sqlite') is True:
-                            xml2 = etree.fromstring(snap2)
-                        else:
-                            if os.path.isfile(snap2):
-                                xml2 = etree.parse(snap2)
-                            else:
-                                self.logger_check.error(
-                                    colorama.Fore.RED +
-                                    "ERROR, Post snapshot File %s is not present in given path!!" %
-                                    snap2)
-                                sys.exit(1)
-                        op.define_operator(
-                            testop,
-                            x_path,
-                            ele_list,
-                            err_mssg,
-                            info_mssg,
-                            teston,
-                            iter,
-                            id_list,
-                            xml1,
-                            xml2)
+                        xml1 = self.get_xml_reply(db, snap1)
+                        xml2= self.get_xml_reply(db, snap2)
+                        op.define_operator(testop, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2)
                     else:
-                        self.logger_check.info(
+                        self.logger_check.error(
                             colorama.Fore.RED +
-                            "Test Operator %s is allowed only with --check" %
-                            testop)
+                            "Test Operator %s is allowed only with --check" %testop)
 
             # if test operators are other than above mentioned four operators
                 else:
                     # if check is used with uni operand test operator then use
                     # second snapshot file
-                    if db.get('check_from_sqlite') is True and (check is True or action is "check"):
-                        xmlfile1 = etree.fromstring(snap1)
-                        xmlfile2 = etree.fromstring(snap2)
-
-                    elif check is True:
-                        xmlfile1 = etree.parse(snap1)
-                        if os.path.isfile(snap2):
-                            xmlfile2 = etree.parse(snap2)
-                        else:
-                            self.logger_check.info(
-                                colorama.Fore.RED +
-                                "ERROR, --check require two snapfiles, file is not present in given path ")
-                            return
-
+                    if check is True or action is "check":
+                        pre_snap = self.get_xml_reply(db, snap1)
+                        post_snap = self.get_xml_reply(db, snap2)
                     else:
-                        xmlfile1 = None
-                        # contains only one snapshot
-                        xmlfile2 = etree.parse(snap1)
+                        pre_snap = None
+                        post_snap = self.get_xml_reply(db, snap1)
 
                     op.define_operator(
                         testop,
@@ -184,8 +153,8 @@ class Comparator:
                         teston,
                         iter,
                         id_list,
-                        xmlfile1,
-                        xmlfile2)
+                        pre_snap,
+                        post_snap)
 
     def compare_diff(self, pre_snap_file, post_snap_file, check_from_sqlite):
         diff_obj = jnpr.jsnapy.snap_diff.Diff()
@@ -204,26 +173,35 @@ class Comparator:
                     colorama.Fore.RED +
                     "ERROR!!! Files are not present in given path")
 
-    def compare_xml(self, pre_snap_file, post_snap_file):
+    """
+    this function is called when no testoperator is given and --check is used
+    """
+
+    def compare_xml(self, op, db, teston, pre_snap_value, post_snap_value):
         """
         Compare two snapshots node by node without any pre defined criteria
         :param pre_snap_file: pre snapshots
         :param post_snap_file: post snapshots
         :return: True if no difference in files, false if there is difference
         """
-        xvalue1 = etree.parse(pre_snap_file)
-        xvalue2 = etree.parse(post_snap_file)
-        pre_root = xvalue1.getroot()
-        post_root = xvalue2.getroot()
+        pre_snap = self.get_xml_reply(db, pre_snap_value)
+        post_snap = self.get_xml_reply(db, post_snap_value)
+        if db.get('check_from_sqlite') is True:
+            pre_root = pre_snap
+            post_root = post_snap
+        else:
+            pre_root = pre_snap.getroot()
+            post_root = post_snap.getroot()
         result = []
         xml_comp = XmlComparator()
-        rvalue = xml_comp.xml_compare(pre_root, post_root, result.append)
+        tres= xml_comp.xml_compare(pre_root, post_root, result.append)
         self.logger_check.info(
             colorama.Fore.BLUE +
             "Difference in pre and post snap file")
         for index, res in enumerate(result):
             self.logger_check.info(colorama.Fore.RED + str(index) + "] " + res)
-        return rvalue
+        op.test_details[teston].append(tres)
+        return tres['result']
 
 # generate names of snap files from hostname and out files given by user,
 # tests are performed on values stored in these snap filesin which test is
@@ -319,7 +297,6 @@ class Comparator:
                                                             % reply_format)
                                     sys.exit(1)
                             else:
-                                print "device, pre, name, reply_format", device, pre, name, reply_format
                                 snapfile1= self.generate_snap_file(device, pre, name, reply_format)
 
                             if (check is True or action is "check") and reply_format == 'xml':

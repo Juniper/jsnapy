@@ -68,7 +68,8 @@ class Parser:
         db_dict['username'] = username
         db_dict['cli_command'] = cmd_rpc_name
         db_dict['snap_name'] = snap_name
-        db_dict['filename'] = snap_name + '_' + cmd_rpc_name + '.' + reply_format
+        ####### storing snap file like pre_command.xml
+        db_dict['filename'] = hostname + '_' + snap_name + '_' + cmd_rpc_name + '.' + reply_format
         db_dict['format'] = reply_format
         db_dict['data'] = self._check_reply(rpc_reply, reply_format)
         sqlite_jsnap.insert_data(db_dict)
@@ -133,7 +134,7 @@ class Parser:
             self._write_file(rpc_reply, reply_format, snap_file)
 
         if db['store_in_sqlite'] is True and self._check_reply(rpc_reply, reply_format):
-            self.store_in_sqlite(self, db, hostname, username, rpc, reply_format, rpc_reply, output_file)
+            self.store_in_sqlite(db, hostname, username, rpc, reply_format, rpc_reply, output_file)
 
     # generate snap files for devices based on given commands and rpc
     def generate_reply(self, test_file, dev, output_file, hostname, db, username):

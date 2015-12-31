@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import sys
 import os
-import shutil
 import textwrap
 import argparse
 import yaml
@@ -13,6 +12,7 @@ from jnpr.junos import Device
 from jnpr.jsnapy import version
 import colorama
 import getpass
+import Queue
 import logging
 import setup_logging
 import configparser
@@ -26,6 +26,7 @@ class SnapAdmin:
     # taking parameters from command line
     def __init__(self):
         colorama.init(autoreset=True)
+        self.q = Queue.Queue()
         self.config = configparser.ConfigParser()
         self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
         self.logger = logging.getLogger(__name__)
@@ -163,6 +164,54 @@ class SnapAdmin:
         self.logger.info(colorama.Fore.BLUE + mssg1)
     '''
 
+    def chk_database(self, config_file, pre_snapfile, post_snapfile, check=None, snap=None, action=None):
+        d = config_file['sqlite'][0]
+        compare_from_id = False
+        if d.__contains__('store_in_sqlite'):
+            self.db['store_in_sqlite'] = d['store_in_sqlite']
+        if d.__contains__('check_from_sqlite'):
+            self.db['check_from_sqlite'] = d['check_from_sqlite']
+
+        if (self.db['store_in_sqlite'] and (snap is True or action is "snap" )) or (self.db['check_from_sqlite'] and (check is True or action is "check")):
+            if d.__contains__('database_name'):
+                self.db['db_name'] = d['database_name']
+            else:
+                self.logger.error(colorama.Fore.RED +"Specify name of the database.")
+                exit(1)
+            if check is True or action is "check":
+                if 'compare' in d.keys() and d['compare'] is not None:
+                    strr = d['compare']
+                    if not isinstance(strr, str):
+                        self.logger.error(colorama.Fore.RED + "Properly specify ids of first and second snapshot in format: first_snapshot_id, second_snapshot_id")
+                        exit(1)
+                    compare_from_id = True
+                    lst = [val.strip() for val in strr.split(',')]
+                    try:
+                        lst = [int(x) for x in lst]
+                    except ValueError as e:
+                        self.logger.error(colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
+                                              " in format: first_snapshot_id, second_snapshot_id")
+                        exit(1)
+                    if len(lst) > 2:
+                        self.logger.error(colorama.Fore.RED + "No. of snapshots specified is more than two."
+                                              " Please specify only two snapshots.")
+                        exit(1)
+                    if len(lst) == 2 and isinstance(lst[0], int) and isinstance(lst[1], int):
+                        self.db['first_snap_id'] = lst[0]
+                        self.db['second_snap_id'] = lst[1]
+                    else:
+                        self.logger.error (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
+                                                " in format: first_snapshot_id, second_snapshot_id")
+                        exit(1)
+        if self.db['check_from_sqlite'] is False or compare_from_id is False:
+            if (check is True and ( pre_snapfile is None or post_snapfile is None) or
+                self.args.diff is True and (pre_snapfile is None or post_snapfile is None)):
+                self.logger.debug(
+                    colorama.Fore.RED +
+                    "Arguments not given correctly, Please refer below help message")
+                self.parser.print_help()
+                sys.exit(1)
+
     # call hosts class, connect hosts and get host list
     # use pre_snapfile because always first file is pre_snapfile regardless of
     # its name
@@ -178,6 +227,8 @@ class SnapAdmin:
         else:
             output_file = ""
         conf_file = self.args.file
+        check = self.args.check
+        snap = self.args.snap
         if os.path.isfile(conf_file):
             config_file = open(conf_file, 'r')
             self.main_file = yaml.load(config_file)
@@ -192,83 +243,22 @@ class SnapAdmin:
                 conf_file)
             sys.exit(-1)
 
-        compare_from_id = False
         if self.main_file.__contains__(
                 'sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
-            d = self.main_file['sqlite'][0]
-            if d.__contains__('store_in_sqlite'):
-                self.db['store_in_sqlite'] = d['store_in_sqlite']
-            if d.__contains__('check_from_sqlite'):
-                self.db['check_from_sqlite'] = d['check_from_sqlite']
-            check = self.args.check or self.args.diff
-            snap = self.args.snap or self.args.snapcheck
+            self.chk_database(self.main_file, self.args.pre_snapfile, self.args.post_snapfile, check, snap )
 
-            if (self.db['store_in_sqlite'] and snap) or (
-                    self.db['check_from_sqlite'] and check):
-                if d.__contains__('database_name'):
-                    self.db['db_name'] = d['database_name']
-                else:
-                    self.logger.info(
-                        colorama.Fore.BLUE +
-                        "Specify name of the database.")
-                    exit(1)
-                if check is True:
-                    if 'compare' in d.keys() and d['compare'] is not None:
-                        strr = d['compare']
-
-                        if not isinstance(strr, str):
-                            self.logger.error(colorama.Fore.RED + "Properly specify ids of first and second snapshot in format"
-                                              ": first_snapshot_id, second_snapshot_id")
-                            exit(1)
-
-                        compare_from_id = True
-                        lst = [val.strip() for val in strr.split(',')]
-
-                        try:
-                            lst = [int(x) for x in lst]
-                        except ValueError as e:
-                            self.logger.error(colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
-                                              " in format: first_snapshot_id, second_snapshot_id")
-                            exit(1)
-
-                        if len(lst) > 2:
-                            self.logger.error(colorama.Fore.RED + "No. of snapshots specified is more than two."
-                                              " Please specify only two snapshots.")
-                            exit(1)
-
-                        if len(lst) == 2 and isinstance(
-                                lst[0], int) and isinstance(lst[1], int):
-                            self.db['first_snap_id'] = lst[0]
-                            self.db['second_snap_id'] = lst[1]
-                        else:
-                            self.logger.error (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
-                                                " in format: first_snapshot_id, second_snapshot_id")
-
-                            exit(1)
-        if self.db['check_from_sqlite'] is False or compare_from_id is False:
-            if (self.args.check is True and (
-                    self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None) or
-                self.args.diff is True and (
-                    self.args.pre_snapfile is None or self.args.post_snapfile is None or self.args.file is None)):
-                self.logger.debug(
-                    colorama.Fore.RED +
-                    "Arguments not given correctly, Please refer below help message")
-                self.parser.print_help()
-                sys.exit(1)
         self.login(output_file)
 
     # call to generate snap files
     def generate_rpc_reply(self, dev, output_file, hostname, username, config_data):
         """
         Generates rpc-reply based on command/rpc given and stores them in snap_files
-
         :param dev: device handler
         :param snap_files: filename to store snapshots
         :param username: username to connect to device
         :return:
         """
         test_files = []
-        print "\n config_data in generate_rpc_reply is: ", config_data, config_data['tests']
         for tfile in config_data['tests']:
             if not os.path.isfile(tfile):
                 tfile = os.path.join((self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles')).encode('utf-8'), tfile)
@@ -392,7 +382,6 @@ class SnapAdmin:
         :param snap_files: file name to store snapshot
         :return:
         """
-
         if config_data is None:
             config_data = self.main_file
 
@@ -406,15 +395,17 @@ class SnapAdmin:
                 dev.open()
             except Exception as ex:
                 self.logger.error("\nERROR occurred %s" % str(ex))
-                return
+                res = False
+                return res
             else:
                 self.generate_rpc_reply(dev, snap_file, hostname, username, config_data)
-                res = dev.close()
+                dev.close()
+                res = True
 
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in ["check", "snapcheck"]:
             if config_data.get("mail") and self.args.diff is not True:
                 mfile = os.path.join((self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles')).encode('utf-8'), config_data.get('mail')) \
-                    if os.path.isfile(config_data('mail')) is False else config_data('mail')
+                    if os.path.isfile(config_data.get('mail')) is False else config_data.get('mail')
                 if os.path.isfile(mfile):
                     mail_file = open(mfile, 'r')
                     mail_file = yaml.load(mail_file)
@@ -432,49 +423,71 @@ class SnapAdmin:
                         "ERROR!! Path of file containing mail content is not correct")
             else:
                 res = self.compare_tests(hostname, config_data, snap_file, post_snap, action)
-        print "res is: ", res
 
+        self.q.put(res)
         return res
 
     ############################### functions to support module #######################################################
 
-    def extract_data(self, file_name, config_data):
+    def multiple_device_details(self, host, config_data, pre_name, action, post_name):
+        res_obj = []
+        self.host_list = []
+        login_file = host['include']
+        login_file = login_file if os.path.isfile(host.get('include')) else os.path.join((self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles')).encode('utf-8'), login_file)
+        login_file = open(login_file, 'r')
+        dev_file = yaml.load(login_file)
+        gp = host.get('group', 'all')
+        dgroup = [i.strip() for i in gp.split(',')]
+        for dgp in dev_file:
+            if dgroup[0].lower() == 'all' or dgp in dgroup:
+                for val in dev_file[dgp]:
+                    hostname = val.keys()[0]
+                    self.host_list.append(hostname)
+                    username = val.get(hostname).get('username')
+                    password = val.get(hostname).get('passwd')
+                    t = Thread(target=self.connect,args=(hostname, username, password, pre_name, config_data, action, post_name))
+                    t.start()
+                    res_obj.append(self.q.get())
+                    t.join()
+        return res_obj
+
+    def extract_data(self, config_data, pre_name, action= None, post_name = None):
+        res_obj = []
         if os.path.isfile(config_data):
             data = open(config_data, 'r')
             config_data = yaml.load(data)
-            print config_data
         elif type(config_data) is str:
-            print "insid elif"
             config_data = yaml.load(config_data)
-            print config_data
         else:
-            print "incorrect config file or data, please chk !!!!"
+            self.logger.info(
+                colorama.Fore.RED +
+                "incorrect config file or data, please chk !!!!")
             exit(-1)
-        k = config_data.get('hosts')[0]
-        hostname = k.get('devices')
-        username = k.get('username') or raw_input("\n Enter user name: ")
-        password = k.get('passwd') or getpass.getpass("\nPlease enter password to login to Device: ")
-        snap_files = hostname + '_' + file_name if not os.path.isfile(file_name) else file_name
-        return hostname,username,password, snap_files,config_data
+        host = config_data.get('hosts')[0]
+        if config_data.__contains__('sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
+                self.chk_database(config_data, pre_name, post_name, None, None, action)
+        if host.__contains__('include'):
+            res_obj = self.multiple_device_details(host, config_data, pre_name, action, post_name)
+        else:
+            hostname = host.get('devices')
+            username = host.get('username') or raw_input("\n Enter user name: ")
+            password = host.get('passwd') or getpass.getpass("\nPlease enter password to login to Device: ")
+            #pre_name = hostname + '_' + pre_name if not os.path.isfile(pre_name) else pre_name
+            #if action is "check":
+            #    post_name= hostname + '_' + post_name if not os.path.isfile(post_name) else post_name
+            res_obj.append(self.connect(hostname, username, password, pre_name, config_data, action, post_name))
+        return res_obj
 
     def snap(self, file_name, data, dev= None):
-        hostname, username, password, snap_file, config_data = self.extract_data(file_name, data)
-        self.connect(hostname, username, password, snap_file, config_data, "snap")
+        res = self.extract_data(data, file_name, "snap")
+        return res
 
     def snapcheck(self, file_name, data, dev= None):
-        print "\n inside snapcheck \n"
-        hostname, username, password, snap_file, config_data = self.extract_data(file_name, data)
-        res= self.connect(hostname, username, password, snap_file, config_data, "snapcheck")
-        print "result for test case is res.result, res.no_failed, res.no_passed, res.test_details :", res.result, res.no_failed, res.no_passed, res.test_details
+        res = self.extract_data(data, file_name, "snapcheck")
         return res
 
     def check(self, pre_file, post_file, data, dev= None):
-        hostname, username, password, pre_snap, config_data = self.extract_data(pre_file, data)
-        print "\n config_data: ", config_data
-        post_snap = hostname + '_' + post_file
-        print "connecting -----------"
-        res = self.connect(hostname, username, password, pre_snap, config_data, "check", post_snap)
-        print "result for test case is res.result, res.no_failed, res.no_passed, res.test_details :", res.result, res.no_failed, res.no_passed, res.test_details
+        res = self.extract_data(data, pre_file, "check", post_file)
         return res
 
 

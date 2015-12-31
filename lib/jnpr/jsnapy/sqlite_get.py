@@ -3,14 +3,16 @@ import sys
 import os
 import logging
 import colorama
+import configparser
 
 
 class SqliteExtractXml:
 
     def __init__(self, db_name):
         self.logger_sqlite = logging.getLogger(__name__)
-        path = os.getcwd()
-        self.db_filename = os.path.join(path, 'snapshots', db_name)
+        self.config = configparser.ConfigParser()
+        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
+        self.db_filename = os.path.join( (self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots')).encode('utf-8') ,db_name)
         if not os.path.isfile(self.db_filename):
             self.logger_sqlite.error(
                 colorama.Fore.RED +

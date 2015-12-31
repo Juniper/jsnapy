@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import logging
+import configparser
 
 
 class JsnapSqlite:
@@ -10,8 +11,9 @@ class JsnapSqlite:
         host = host.replace('.', '__')
         self.table_name = "table_" + host
         # Creating Schema
-        path = os.getcwd()
-        self.db_filename = os.path.join(path, 'snapshots', db_name)
+        self.config = configparser.ConfigParser()
+        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
+        self.db_filename = os.path.join( (self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots')).encode('utf-8') ,db_name)
         with sqlite3.connect(self.db_filename) as conn:
             #Creating schema if it does not exists
             sqlstr = """create table if not exists %s (
