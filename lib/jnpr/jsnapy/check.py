@@ -107,7 +107,7 @@ class Comparator:
 
                 # set the default error and info message
                 err_mssg = self. get_err_mssg(path, ele_list)
-                info_mssg = self. get_err_mssg(path, ele_list)
+                info_mssg = self. get_info_mssg(path, ele_list)
 
                 if db.get('check_from_sqlite') is True and check is True:
                     xml1 = etree.fromstring(snap1)
