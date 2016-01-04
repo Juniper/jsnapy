@@ -1,7 +1,7 @@
 import unittest
 import sys
 import yaml
-from jnpr.jsnap.check import Comparator
+from jnpr.jsnapy.check import Comparator
 from cStringIO import StringIO
 from mock import patch
 
@@ -215,17 +215,7 @@ class TestStrNumericOperators(unittest.TestCase):
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
-with patch('logging.Logger') as mock_logger:
-    suite = unittest.TestSuite()
-    suite.addTest(TestStrNumericOperators("test_all_same_equal_fail"))
-    suite.addTest(TestStrNumericOperators("test_all_same_fail"))
-    suite.addTest(TestStrNumericOperators("test_all_same_success"))
-    suite.addTest(TestStrNumericOperators("test_is_equal_success"))
-    suite.addTest(TestStrNumericOperators("test_is_equal_fail"))
-    suite.addTest(TestStrNumericOperators("test_not_equal"))
-    suite.addTest(TestStrNumericOperators("test_not_equal_fail"))
-    suite.addTest(TestStrNumericOperators("test_not_exists_pass"))
-    suite.addTest(TestStrNumericOperators("test_not_exists_fail"))
-    suite.addTest(TestStrNumericOperators("test_exists"))
-    suite.addTest(TestStrNumericOperators("test_exists_fail"))
-    unittest.TextTestRunner().run(suite)
+if __name__ == "__main__":
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestStrNumericOperators)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+

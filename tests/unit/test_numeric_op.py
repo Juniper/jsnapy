@@ -1,6 +1,6 @@
 import unittest
 import yaml
-from jnpr.jsnap.check import Comparator
+from jnpr.jsnapy.check import Comparator
 from mock import patch
 
 
@@ -160,13 +160,8 @@ class TestNumericOperators(unittest.TestCase):
         self.assertEqual(oper.no_failed, 1)
 
 with patch('logging.Logger') as mock_logger:
-    suite = unittest.TestSuite()
-    suite.addTest(TestNumericOperators("test_in_range"))
-    suite.addTest(TestNumericOperators("test_in_range_fail"))
-    suite.addTest(TestNumericOperators("test_not_range_pass"))
-    suite.addTest(TestNumericOperators("test_not_range_fail"))
-    suite.addTest(TestNumericOperators("test_is_lt"))
-    suite.addTest(TestNumericOperators("test_is_lt_pass"))
-    suite.addTest(TestNumericOperators("test_is_gt"))
-    suite.addTest(TestNumericOperators("test_is_gt_fail"))
-    unittest.TextTestRunner().run(suite)
+    if __name__ == "__main__":
+        suite = unittest.TestLoader().loadTestsFromTestCase(TestNumericOperators)
+        unittest.TextTestRunner(verbosity=2).run(suite)
+
+    

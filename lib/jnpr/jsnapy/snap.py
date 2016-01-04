@@ -4,12 +4,15 @@ from jnpr.jsnapy.sqlite_store import JsnapSqlite
 import sys
 import logging
 import colorama
+import configparser
 
-class Parse:
+class Parser:
 
     def __init__(self):
         self.logger_snap = logging.getLogger(__name__)
         colorama.init(autoreset=True)
+        self.config = configparser.ConfigParser()
+        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
 
     def _write_file(self, rpc_reply, format, output_file):
         if isinstance(rpc_reply, bool) and format == "text":
@@ -56,7 +59,7 @@ class Parse:
             return output_file
         else:
             filename = hostname + '_' + output_file + '_' + name + '.' + cmd_format
-            output_file = os.path.join('/etc','jsnapy', 'snapshots', filename)
+            output_file = os.path.join( (self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots')).encode('utf-8'), filename)
             return output_file
 
     def store_in_sqlite(self, db, hostname, username, cmd_rpc_name, reply_format, rpc_reply, snap_name):
@@ -158,7 +161,6 @@ class Parse:
                         self.command_list.append(command)
                         cmd_name = '_'.join(command.split())
                         self.run_cmd(test_file, t, formats, dev, output_file, hostname, username, db)
-                        test_file, t, formats, dev, output_file, hostname, username, db
                     elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
                         self.run_rpc(test_file, t, formats, dev, output_file, hostname, username, db)
                     else:
