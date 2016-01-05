@@ -17,7 +17,7 @@ import logging
 import setup_logging
 import configparser
 logging.getLogger("paramiko").setLevel(logging.WARNING)
-
+from jnpr.junos.exception import ConnectTimeoutError
 class SnapAdmin:
 
     # need to call this function to initialize logging
@@ -172,7 +172,7 @@ class SnapAdmin:
         if d.__contains__('check_from_sqlite'):
             self.db['check_from_sqlite'] = d['check_from_sqlite']
 
-        if (self.db['store_in_sqlite'] and (snap is True or action is "snap" )) or (self.db['check_from_sqlite'] and (check is True or action is "check")):
+        if (self.db['store_in_sqlite']) or (self.db['check_from_sqlite'] and (check is True or action is "check")):
             if d.__contains__('database_name'):
                 self.db['db_name'] = d['database_name']
             else:
@@ -241,7 +241,7 @@ class SnapAdmin:
                 colorama.Fore.RED +
                 "ERROR!! file path '%s' for main config file is not correct" %
                 conf_file)
-            sys.exit(-1)
+            sys.exit(1)
 
         if self.main_file.__contains__(
                 'sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
@@ -270,6 +270,7 @@ class SnapAdmin:
                     colorama.Fore.RED +
                     "ERROR!! File %s is not found" %
                     tfile)
+
         g = Parser()
         for tests in test_files:
             g.generate_reply(tests, dev, output_file, hostname, self.db, username)
@@ -331,9 +332,9 @@ class SnapAdmin:
                 dev_file = yaml.load(login_file)
                 gp = k.get('group', 'all')
 
-                dgroup = [i.strip() for i in gp.split(',')]
+                dgroup = [i.strip().lower() for i in gp.split(',')]
                 for dgp in dev_file:
-                    if dgroup[0].lower() == 'all' or dgp in dgroup:
+                    if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                         for val in dev_file[dgp]:
                             hostname = val.keys()[0]
                             self.host_list.append(hostname)
@@ -367,7 +368,7 @@ class SnapAdmin:
             username = self.args.login if self.args.login is not None else raw_input(
                 "\n Enter user name: ")
             password = self.args.passwd if self.args.passwd is not None else getpass.getpass(
-                "\nPlease enter password for login to Device: ")
+                "\nPlease enter password for login  to Device: ")
             self.host_list.append(hostname)
             self.connect(hostname, username, password, output_file)
 
@@ -382,6 +383,7 @@ class SnapAdmin:
         :param snap_files: file name to store snapshot
         :return:
         """
+        snapchk = self.args.snapcheck if self.args.snapcheck is True else None
         if config_data is None:
             config_data = self.main_file
 
@@ -395,8 +397,7 @@ class SnapAdmin:
                 dev.open()
             except Exception as ex:
                 self.logger.error("\nERROR occurred %s" % str(ex))
-                res = False
-                return res
+                raise ConnectTimeoutError("Not able to connect to device")
             else:
                 self.generate_rpc_reply(dev, snap_file, hostname, username, config_data)
                 dev.close()

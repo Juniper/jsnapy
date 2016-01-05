@@ -139,6 +139,7 @@ class Operator:
             self.logger_testop.error(
                 "\n Error occurred while accessing test element: %s" % e.message)
             self.logger_testop.error("\n Element is not specified for testing")
+            raise
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -196,6 +197,7 @@ class Operator:
                 "\n Error occurred while accessing test element: %s" % e.message)
             self.logger_testop.error(
                 "\n 'exists' test operator require two parameters")
+            raise
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -250,6 +252,7 @@ class Operator:
         except IndexError as e:
             self.logger_testop.error(
                 "\nError occurred while accessing test element: %s" % e.message)
+            raise
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -314,6 +317,7 @@ class Operator:
                 "\nError occurred while accessing test element %s" % e.message)
             self.logger_testop.error(
                 "\n'is-equal' test operator requires two parameter")
+            raise
         else:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
@@ -875,7 +879,6 @@ class Operator:
     # operator requiring two operands
     def no_diff(self, x_path, ele_list, err_mssg,
                 info_mssg, teston, iter, id_list, xml1, xml2):
-
         self.print_testmssg("no-diff")
         res = True
         iddict = {}
@@ -914,6 +917,7 @@ class Operator:
                         element.text for element in ele_xpath2][0].strip()
                     predict[ele_list[0].replace('-', '_')] = val_list1
                     postdict[ele_list[0].replace('-', '_')] = val_list2
+
                     if val_list1 != val_list2:
                         res = False
                         self.logger_testop.info(

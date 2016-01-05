@@ -56,7 +56,7 @@ class Comparator:
             xml_value = etree.parse(snap)
         else:
             self.logger_check.error(colorama.Fore.RED + "ERROR, Pre snapshot file: %s is not present in given path !!" %snap)
-            sys.exit(1)
+            return
         return xml_value
 
     # Extract xpath and other values for comparing two snapshots and
@@ -73,6 +73,7 @@ class Comparator:
         :param snap2: post snapshot file name
         :return:
         """
+
         tests = [t for t in tests if ('iterate' in t or 'item' in t)]
         if not len(tests) and (check is True or action is "check"):
             res = self.compare_xml(op, db, teston, snap1, snap2)
@@ -118,9 +119,8 @@ class Comparator:
                     ele_list = ['no node']
 
                 # set the default error and info message
-                err_mssg = self. get_err_mssg(path, ele_list)
-                info_mssg = self. get_err_mssg(path, ele_list)
-
+                err_mssg = self.get_err_mssg(path, ele_list)
+                info_mssg = self.get_info_mssg(path, ele_list)
 
                 if testop in [
                         'no-diff', 'list-not-less', 'list-not-more', 'delta']:
@@ -273,29 +273,25 @@ class Comparator:
                             if db.get(
                                     'check_from_sqlite') is True and (check is True or diff is True or action in ["check", "diff"]):
                                 a = SqliteExtractXml(db.get('db_name'))
+
                                 if (db['first_snap_id'] is not None) and (
                                         db['second_snap_id'] is not None):
-                                    snapfile1, data_format1 = a.get_xml_using_snap_id(
-                                        str(device),
-                                        name,
-                                        db['first_snap_id'])
-                                    snapfile2, data_format2 = a.get_xml_using_snap_id(
-                                        str(device),
-                                        name,
-                                        db['second_snap_id'])
+                                    snapfile1, data_format1 = a.get_xml_using_snap_id(str(device), name, db['first_snap_id'])
+                                    snapfile2, data_format2 = a.get_xml_using_snap_id(str(device), name, db['second_snap_id'])
                                 else:
-                                    snapfile1, data_format1 = a.get_xml_using_snapname(
-                                        str(device),
-                                        name,
-                                        pre)
-                                    snapfile2, data_format2 = a.get_xml_using_snapname(
-                                        str(device),
-                                        name,
-                                        post)
+                                    snapfile1, data_format1 = a.get_xml_using_snapname(str(device),name,pre)
+                                    snapfile2, data_format2 = a.get_xml_using_snapname(str(device),name,post)
                                 if reply_format != data_format1 or reply_format != data_format2:
                                     self.logger_check.error(colorama.Fore.RED + "ERROR!! Data stored in database is not in %s format."
                                                             % reply_format)
                                     sys.exit(1)
+                            elif db.get('check_from_sqlite') is True:
+                                a = SqliteExtractXml(db.get('db_name'))
+                                snapfile1, data_format1 = a.get_xml_using_snapname(str(device), name, pre)
+                                if reply_format != data_format1:
+                                    self.logger_check.error(colorama.Fore.RED + "ERROR!! Data stored in database is not in %s format." % reply_format)
+                                    sys.exit(1)
+
                             else:
                                 snapfile1= self.generate_snap_file(device, pre, name, reply_format)
 
@@ -338,8 +334,6 @@ class Comparator:
                         colorama.Fore.RED +
                         "ERROR!!! None of the tests cases included")
 
-
             if (diff is not True):
                 op.final_result()
-
         return op

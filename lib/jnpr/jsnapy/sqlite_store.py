@@ -3,7 +3,6 @@ import os
 import logging
 import configparser
 
-
 class JsnapSqlite:
 
     def __init__(self, host, db_name):
@@ -14,18 +13,21 @@ class JsnapSqlite:
         self.config = configparser.ConfigParser()
         self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
         self.db_filename = os.path.join( (self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots')).encode('utf-8') ,db_name)
-        with sqlite3.connect(self.db_filename) as conn:
-            #Creating schema if it does not exists
-            sqlstr = """create table if not exists %s (
-                id           integer not null,
-                filename     text,
-                username	 text,
-                cli_command  text,
-                snap_name    text,
-                data_format  text,
-                data     text
-            );""" % self.table_name
-            conn.execute(sqlstr)
+        try:
+            with sqlite3.connect(self.db_filename) as conn:
+                #Creating schema if it does not exists
+                sqlstr = """create table if not exists %s (
+                    id           integer not null,
+                    filename     text,
+                    username	 text,
+                    cli_command  text,
+                    snap_name    text,
+                    data_format  text,
+                    data     text
+                );""" % self.table_name
+                conn.execute(sqlstr)
+        except Exception as ex:
+            self.logger_storesqlite.error("\nERROR occurred in database:    %s" % str(ex))
 
     # Inserting Data
     def insert_data(self, db):

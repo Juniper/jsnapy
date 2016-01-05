@@ -86,6 +86,7 @@ class Parser:
         except Exception:
             self.logger_snap.error(colorama.Fore.RED + "ERROR occurred %s" % str(sys.exc_info()[0]))
             self.logger_snap.error(colorama.Fore.RED +"\n**********Complete error message***********\n %s" % str(sys.exc_info()))
+            pass
         else:
             snap_file = self.generate_snap_file(output_file, hostname, cmd_name, cmd_format)
             self._write_file(rpc_reply_command, cmd_format, snap_file)
@@ -118,6 +119,7 @@ class Parser:
                 except Exception:
                     self.logger_snap.error(colorama.Fore.RED +"ERROR occurred:\n %s" % str(sys.exc_info()[0]))
                     self.logger_snap.error(colorama.Fore.RED +"\n**********Complete error message***********\n%s" % str(sys.exc_info()))
+                    pass
         else:
             try:
                 self.logger_snap.info(colorama.Fore.BLUE +"\nTaking snapshot of %s............" % rpc)
@@ -128,6 +130,7 @@ class Parser:
             except Exception:
                 self.logger_snap.error(colorama.Fore.RED + "ERROR occurred: \n%s" % str(sys.exc_info()[0]))
                 self.logger_snap.error(colorama.Fore.RED +"\n**********Complete error message***********\n%s" % str(sys.exc_info()))
+                pass
 
         if 'rpc_reply' in locals():
             snap_file = self.generate_snap_file(output_file, hostname, rpc, reply_format)
@@ -157,10 +160,7 @@ class Parser:
                 if t in test_file:
                     if test_file.get(t) is not None and ('command' in test_file[t][0]):
                         command = test_file[t][0].get('command',"unknown command")
-                        cmd_format = test_file[t][0].get('format', 'xml')
-                        cmd_format = cmd_format if cmd_format in formats else 'xml'
                         self.command_list.append(command)
-                        cmd_name = '_'.join(command.split())
                         self.run_cmd(test_file, t, formats, dev, output_file, hostname, username, db)
                     elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
                         self.run_rpc(test_file, t, formats, dev, output_file, hostname, username, db)
