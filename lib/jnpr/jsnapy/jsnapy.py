@@ -18,6 +18,7 @@ import setup_logging
 import configparser
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 from jnpr.junos.exception import ConnectTimeoutError
+
 class SnapAdmin:
 
     # need to call this function to initialize logging
@@ -27,6 +28,7 @@ class SnapAdmin:
     def __init__(self):
         colorama.init(autoreset=True)
         self.q = Queue.Queue()
+        self.snap_del = False
         self.config = configparser.ConfigParser()
         self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
         self.logger = logging.getLogger(__name__)
@@ -172,9 +174,11 @@ class SnapAdmin:
         if d.__contains__('check_from_sqlite'):
             self.db['check_from_sqlite'] = d['check_from_sqlite']
 
-        if (self.db['store_in_sqlite']) or (self.db['check_from_sqlite'] and (check is True or action is "check")):
+        if (self.db['store_in_sqlite']) or (self.db['check_from_sqlite'] ) :
+                                            # and (check is True or action is "check")):
             if d.__contains__('database_name'):
                 self.db['db_name'] = d['database_name']
+
             else:
                 self.logger.error(colorama.Fore.RED +"Specify name of the database.")
                 exit(1)
@@ -224,6 +228,9 @@ class SnapAdmin:
         """
         if self.args.pre_snapfile is not None:
             output_file = self.args.pre_snapfile
+        elif self.args.snapcheck is True and self.args.pre_snapfile is None:
+            output_file = "snap_temp"
+            self.snap_del = True
         else:
             output_file = ""
         conf_file = self.args.file
@@ -295,9 +302,10 @@ class SnapAdmin:
                 chk,
                 diff,
                 self.db,
+                self.snap_del,
                 pre_snap_file,
-                post_snap_file,
-                action)
+                action,
+                post_snap_file)
         else:
             test_obj = comp.generate_test_files(
                 config_data,
@@ -305,8 +313,10 @@ class SnapAdmin:
                 chk,
                 diff,
                 self.db,
+                self.snap_del,
                 pre_snap_file,
                 action)
+
         return test_obj
 
     def login(self, output_file):
@@ -383,7 +393,6 @@ class SnapAdmin:
         :param snap_files: file name to store snapshot
         :return:
         """
-        snapchk = self.args.snapcheck if self.args.snapcheck is True else None
         if config_data is None:
             config_data = self.main_file
 
@@ -415,7 +424,7 @@ class SnapAdmin:
                             "Please enter ur email password ")
                     else:
                         passwd = mail_file['passwd']
-                    res = self.compare_tests(hostname, config_data,snap_file, post_snap, action)
+                    res = self.compare_tests(hostname, config_data, snap_file, post_snap, action)
                     send_mail = Notification()
                     send_mail.notify(mail_file, hostname, passwd, res)
                 else:
@@ -452,7 +461,7 @@ class SnapAdmin:
                     t.join()
         return res_obj
 
-    def extract_data(self, config_data, pre_name, action= None, post_name = None):
+    def extract_data(self, config_data, pre_name= None, action= None, post_name = None):
         res_obj = []
         if os.path.isfile(config_data):
             data = open(config_data, 'r')
@@ -463,7 +472,7 @@ class SnapAdmin:
             self.logger.info(
                 colorama.Fore.RED +
                 "incorrect config file or data, please chk !!!!")
-            exit(-1)
+            exit(1)
         host = config_data.get('hosts')[0]
         if config_data.__contains__('sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
                 self.chk_database(config_data, pre_name, post_name, None, None, action)
@@ -479,15 +488,18 @@ class SnapAdmin:
             res_obj.append(self.connect(hostname, username, password, pre_name, config_data, action, post_name))
         return res_obj
 
-    def snap(self, file_name, data, dev= None):
+    def snap(self, data, file_name, dev= None):
         res = self.extract_data(data, file_name, "snap")
         return res
 
-    def snapcheck(self, file_name, data, dev= None):
+    def snapcheck(self, data, file_name= None, dev= None):
+        if file_name is None:
+            file_name = "snap_temp"
+            self.snap_del = True
         res = self.extract_data(data, file_name, "snapcheck")
         return res
 
-    def check(self, pre_file, post_file, data, dev= None):
+    def check(self, data, pre_file, post_file, dev= None):
         res = self.extract_data(data, pre_file, "check", post_file)
         return res
 
@@ -535,7 +547,7 @@ class SnapAdmin:
         """
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.check is True and (self.args.file is None)) or
-            (self.args.snapcheck is True and (self.args.pre_snapfile is None or self.args.file is None or self.args.post_snapfile is not None)) or
+            (self.args.snapcheck is True and self.args.file is None ) or
             (self.args.diff is True and self.args.file is None)
            ):
             self.logger.error(

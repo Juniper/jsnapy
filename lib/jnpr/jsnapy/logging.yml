@@ -55,6 +55,6 @@ handlers:
         encoding: utf8
 
 root:
-    level: DEBUG
+    level: INFO
     handlers: [console, debug_file_handler, error_file_handler, info_file_handler, critical_file_handler]
 

@@ -73,7 +73,6 @@ class Comparator:
         :param snap2: post snapshot file name
         :return:
         """
-
         tests = [t for t in tests if ('iterate' in t or 'item' in t)]
         if not len(tests) and (check is True or action is "check"):
             res = self.compare_xml(op, db, teston, snap1, snap2)
@@ -208,7 +207,7 @@ class Comparator:
 # to be performed
 
     def generate_test_files(
-            self, main_file, device, check, diff, db, pre=None, post=None, action=None):
+            self, main_file, device, check, diff, db, snap_del, pre=None, action= None, post=None):
         """
         generate pre and post snapshot file name to store snapshots and call compare_reply function
         :param main_file: main config file, to extract test files user wants to run
@@ -325,6 +324,9 @@ class Comparator:
                                     db,
                                     snapfile1,
                                     action)
+                                if snap_del is True:
+                                    snapfile1 = snapfile1 if os.path.isfile(snapfile1) else self.generate_snap_file(device, pre, name, reply_format)
+                                    os.remove(snapfile1)
                             else:
                                 self.logger_check.error(
                                     colorama.Fore.RED +

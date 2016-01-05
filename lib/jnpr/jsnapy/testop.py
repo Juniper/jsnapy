@@ -1,8 +1,10 @@
 import re
+import os
 import colorama
 from collections import defaultdict
 import jinja2
 import logging
+import configparser
 
 class Operator:
 
@@ -10,6 +12,8 @@ class Operator:
         self.result = True
         self.no_failed = 0
         self.no_passed = 0
+        self.config = configparser.ConfigParser()
+        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
         self.device = None
         self.test_details = defaultdict(list)
         colorama.init(autoreset=True)
@@ -156,7 +160,7 @@ class Operator:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
-                            self.logger_testop.info(
+                            self.logger_testop.debug(
                                 jinja2.Template(
                                     info_mssg.replace(
                                         '-',
@@ -224,7 +228,7 @@ class Operator:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
-                            self.logger_testop.info(
+                            self.logger_testop.debug(
                                 jinja2.Template(
                                     info_mssg.replace(
                                         '-',
@@ -285,7 +289,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict))
                             else:
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -336,7 +340,7 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if post_nodevalue == value.strip():
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -399,7 +403,7 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if post_nodevalue != value.strip():
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -465,7 +469,7 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (float(post_nodevalue) >= range1
                                     and float(post_nodevalue) <= range2):
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -531,7 +535,7 @@ class Operator:
 
                             if float(post_nodevalue) <= range1 or float(
                                     post_nodevalue) >= range2:
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -595,7 +599,7 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[j], prenode[j])
                             if (float(post_nodevalue) > val1):
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -660,7 +664,7 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (float(post_nodevalue) < val1):
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -733,7 +737,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict))
                             else:
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -785,7 +789,7 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (post_nodevalue in value_list):
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -848,7 +852,7 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (post_nodevalue not in value_list):
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -929,7 +933,7 @@ class Operator:
                                 pre=predict,
                                 post=postdict))
                     else:
-                        self.logger_testop.info(
+                        self.logger_testop.debug(
                             jinja2.Template(
                                 info_mssg.replace(
                                     '-',
@@ -1004,7 +1008,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict))
                             else:
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -1079,7 +1083,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict))
                             else:
-                                self.logger_testop.info(
+                                self.logger_testop.debug(
                                     jinja2.Template(
                                         info_mssg.replace(
                                             '-',
@@ -1162,7 +1166,7 @@ class Operator:
                                             pre=predict,
                                             post=postdict))
                                 else:
-                                    self.logger_testop.info(
+                                    self.logger_testop.debug(
                                         jinja2.Template(
                                             info_mssg.replace(
                                                 '-',
@@ -1186,7 +1190,7 @@ class Operator:
                                             pre=predict,
                                             post=postdict))
                                 else:
-                                    self.logger_testop.info(
+                                    self.logger_testop.debug(
                                         jinja2.Template(
                                             info_mssg.replace(
                                                 '-',
@@ -1211,7 +1215,7 @@ class Operator:
                                             pre=predict,
                                             post=postdict))
                                 else:
-                                    self.logger_testop.info(
+                                    self.logger_testop.debug(
                                         jinja2.Template(
                                             info_mssg.replace(
                                                 '-',
@@ -1235,7 +1239,7 @@ class Operator:
                                             pre=predict,
                                             post=postdict))
                                 else:
-                                    self.logger_testop.info(
+                                    self.logger_testop.debug(
                                         jinja2.Template(
                                             info_mssg.replace(
                                                 '-',
@@ -1259,7 +1263,7 @@ class Operator:
                                             pre=predict,
                                             post=postdict))
                                 else:
-                                    self.logger_testop.info(
+                                    self.logger_testop.debug(
                                         jinja2.Template(
                                             info_mssg.replace(
                                                 '-',
@@ -1283,7 +1287,7 @@ class Operator:
                                             pre=predict,
                                             post=postdict))
                                 else:
-                                    self.logger_testop.info(
+                                    self.logger_testop.debug(
                                         jinja2.Template(
                                             info_mssg.replace(
                                                 '-',
