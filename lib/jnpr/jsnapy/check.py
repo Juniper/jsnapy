@@ -26,8 +26,8 @@ class Comparator:
         if os.path.isfile(prefix):
             return prefix
         else:
-            file = str(device) + '_' + prefix + '_' + cmd_rpc_name + '.' + reply_format
-            snapfile = os.path.join((self.config.get('DEFAULT', 'snapshot_path', vars={'snapshot_path': '/etc/jsnapy/snapshots'})).encode('utf-8'), file)
+            sfile = str(device) + '_' + prefix + '_' + cmd_rpc_name + '.' + reply_format
+            snapfile = os.path.join((self.config.get('DEFAULT', 'snapshot_path', vars={'snapshot_path': '/etc/jsnapy/snapshots'})).encode('utf-8'), sfile)
             return snapfile
 
     def get_err_mssg(self, path, ele_list):
