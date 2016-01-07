@@ -15,9 +15,10 @@ import getpass
 import Queue
 import logging
 import setup_logging
-import configparser
-logging.getLogger("paramiko").setLevel(logging.WARNING)
 from jnpr.junos.exception import ConnectTimeoutError
+from jnpr.jsnapy import get_path
+
+logging.getLogger("paramiko").setLevel(logging.WARNING)
 
 class SnapAdmin:
 
@@ -29,8 +30,6 @@ class SnapAdmin:
         colorama.init(autoreset=True)
         self.q = Queue.Queue()
         self.snap_del = False
-        self.config = configparser.ConfigParser()
-        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
         self.logger = logging.getLogger(__name__)
         self.parser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -239,8 +238,8 @@ class SnapAdmin:
         if os.path.isfile(conf_file):
             config_file = open(conf_file, 'r')
             self.main_file = yaml.load(config_file)
-        elif os.path.isfile(os.path.join((self.config['DEFAULT'].get('config_file_path','/etc/jsnapy')).encode('utf-8') , conf_file)):
-            fpath= (self.config['DEFAULT'].get('config_file_path','/etc/jsnapy')).encode('utf-8')
+        elif os.path.isfile(os.path.join(get_path('DEFAULT', 'config_file_path'), conf_file)):
+            fpath= get_path('DEFAULT', 'config_file_path')
             config_file = open(os.path.join(fpath , conf_file), 'r')
             self.main_file = yaml.load(config_file)
         else:
@@ -266,9 +265,9 @@ class SnapAdmin:
         :return:
         """
         test_files = []
-        for tfile in config_data['tests']:
+        for tfile in config_data.get('tests'):
             if not os.path.isfile(tfile):
-                tfile = os.path.join((self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles')).encode('utf-8'), tfile)
+                tfile = os.path.join(get_path('DEFAULT', 'test_file_path'), tfile)
             if os.path.isfile(tfile):
                 test_file = open(tfile, 'r')
                 test_files.append(yaml.load(test_file))
@@ -336,8 +335,8 @@ class SnapAdmin:
                 file_tag = k['include']
                 if os.path.isfile(file_tag):
                     lfile = file_tag
-                else: 
-                    lfile = os.path.join((self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles')).encode('utf-8'), file_tag)
+                else:
+                    lfile = os.path.join(get_path('DEFAULT', 'test_file_path'), file_tag)
                 login_file = open(lfile, 'r')
                 dev_file = yaml.load(login_file)
                 gp = k.get('group', 'all')
@@ -414,7 +413,7 @@ class SnapAdmin:
 
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in ["check", "snapcheck"]:
             if config_data.get("mail") and self.args.diff is not True:
-                mfile = os.path.join((self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles')).encode('utf-8'), config_data.get('mail')) \
+                mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), self.main_file['mail'])\
                     if os.path.isfile(config_data.get('mail')) is False else config_data.get('mail')
                 if os.path.isfile(mfile):
                     mail_file = open(mfile, 'r')
@@ -443,7 +442,7 @@ class SnapAdmin:
         res_obj = []
         self.host_list = []
         login_file = host['include']
-        login_file = login_file if os.path.isfile(host.get('include')) else os.path.join((self.config['DEFAULT'].get('test_file_path','/etc/jsnapy/testfiles')).encode('utf-8'), login_file)
+        login_file = login_file if os.path.isfile(host.get('include')) else os.path.join(get_path('DEFAULT', 'test_file_path'), login_file)
         login_file = open(login_file, 'r')
         dev_file = yaml.load(login_file)
         gp = host.get('group', 'all')

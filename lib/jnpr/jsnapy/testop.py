@@ -4,7 +4,6 @@ import colorama
 from collections import defaultdict
 import jinja2
 import logging
-import configparser
 
 class Operator:
 
@@ -12,8 +11,6 @@ class Operator:
         self.result = True
         self.no_failed = 0
         self.no_passed = 0
-        self.config = configparser.ConfigParser()
-        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
         self.device = None
         self.test_details = defaultdict(list)
         colorama.init(autoreset=True)

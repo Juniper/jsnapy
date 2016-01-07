@@ -8,15 +8,14 @@ import jnpr.jsnapy.snap_diff
 from jnpr.jsnapy.xml_comparator import XmlComparator
 import colorama
 import logging
-import configparser
+from jnpr.jsnapy import get_path
+
 
 class Comparator:
 
     def __init__(self):
         colorama.init(autoreset=True)
         self.logger_check = logging.getLogger(__name__)
-        self.config = configparser.ConfigParser()
-        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
 
 
     def __del__(self):
@@ -26,8 +25,8 @@ class Comparator:
         if os.path.isfile(prefix):
             return prefix
         else:
-            file = str(device) + '_' + prefix + '_' + cmd_rpc_name + '.' + reply_format
-            snapfile = os.path.join((self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots')).encode('utf-8'), file)
+            sfile = str(device) + '_' + prefix + '_' + cmd_rpc_name + '.' + reply_format
+            snapfile = os.path.join(get_path('DEFAULT', 'snapshot_path'), sfile)
             return snapfile
 
     def get_err_mssg(self, path, ele_list):
@@ -222,6 +221,7 @@ class Comparator:
         op = Operator()
         op.device = device
         tests_files = []
+        tests_included = []
         # get the test files from config.yml
         if main_file.get('tests') is None:
             self.logger_check.info(
@@ -229,112 +229,112 @@ class Comparator:
                 "\nNo test file, Please mention test files !!")
         else:
             for tfiles in main_file.get('tests'):
-                filename = os.path.join((self.config['DEFAULT'].get('test_file_path', '/etc/jsnapy/testfiles')).encode('utf-8'), tfiles)
+                filename = os.path.join(get_path('DEFAULT', 'test_file_path'), tfiles)
                 if os.path.isfile(filename):
                     testfile = open(filename, 'r')
                     tfiles = yaml.load(testfile)
                     tests_files.append(tfiles)
                 else:
                     self.logger_check.error("File %s not found" % filename)
-            for t in tests_files:
-                tests_included = t.get('tests_include')
+
+            for tests in tests_files:
+                if 'tests_include' in tests:
+                    tests_included = tests.get('tests_include')
+                else:
+                    for t in tests:
+                        tests_included.append(t)
 
                 self.logger_check.info(colorama.Fore.BLUE + (40) * '*' + "\nPerforming test on Device: " +
                                        device + "\n" + (40) * '*')
 
-                if tests_included is not None:
-                    for val in tests_included:
-                        self.logger_check.info(colorama.Fore.BLUE + "\nTests Included: %s " % (val))
-                        try:
-                            if t[val][0].keys()[0] == 'command':
-                                command = t[val][0].get('command')
-                                reply_format = t[val][0].get('format', 'xml')
-                                self.logger_check.info(colorama.Fore.BLUE + (40) * '*' + "\n Command is " +
-                                                       command + "\n" + (40) * '*')
-                                name = '_'.join(command.split())
-                                teston = command
-                            else:
-                                rpc = t[val][0]['rpc']
-                                reply_format = t[val][0].get('format', 'xml')
-                                self.logger_check.info(colorama.Fore.BLUE + (40) * '*' + "\n RPC is " +
-                                                       rpc + "\n" + (40) * '*')
-                                name = rpc
-                                teston = rpc
-                        except KeyError:
-                            self.logger_check.error(
-                                colorama.Fore.RED +
-                                "ERROR occurred, test keys 'command' or 'rpc' not defined properly")
-                        except Exception as ex:
-                            self.logger_check.error(
-                                colorama.Fore.RED +
-                                "ERROR Occurred: %s" % str(ex))
+                for val in tests_included:
+                    self.logger_check.info(colorama.Fore.BLUE + "\nTests Included: %s " % (val))
+                    try:
+                        if tests[val][0].keys()[0] == 'command':
+                            command = tests[val][0].get('command')
+                            reply_format = tests[val][0].get('format', 'xml')
+                            self.logger_check.info(colorama.Fore.BLUE + (40) * '*' + "\n Command is " +
+                                                   command + "\n" + (40) * '*')
+                            name = '_'.join(command.split())
+                            teston = command
                         else:
-                            if db.get(
-                                    'check_from_sqlite') is True and (check is True or diff is True or action in ["check", "diff"]):
-                                a = SqliteExtractXml(db.get('db_name'))
+                            rpc = tests[val][0]['rpc']
+                            reply_format = tests[val][0].get('format', 'xml')
+                            self.logger_check.info(colorama.Fore.BLUE + (40) * '*' + "\n RPC is " +
+                                                   rpc + "\n" + (40) * '*')
+                            name = rpc
+                            teston = rpc
+                    except KeyError:
+                        self.logger_check.error(
+                            colorama.Fore.RED +
+                            "ERROR occurred, test keys 'command' or 'rpc' not defined properly")
+                    except Exception as ex:
+                        self.logger_check.error(
+                            colorama.Fore.RED +
+                            "ERROR Occurred: %s" % str(ex))
+                    else:
+                        if db.get(
+                                'check_from_sqlite') is True and (check is True or diff is True or action in ["check", "diff"]):
+                            a = SqliteExtractXml(db.get('db_name'))
 
-                                if (db['first_snap_id'] is not None) and (
-                                        db['second_snap_id'] is not None):
-                                    snapfile1, data_format1 = a.get_xml_using_snap_id(str(device), name, db['first_snap_id'])
-                                    snapfile2, data_format2 = a.get_xml_using_snap_id(str(device), name, db['second_snap_id'])
-                                else:
-                                    snapfile1, data_format1 = a.get_xml_using_snapname(str(device),name,pre)
-                                    snapfile2, data_format2 = a.get_xml_using_snapname(str(device),name,post)
-                                if reply_format != data_format1 or reply_format != data_format2:
-                                    self.logger_check.error(colorama.Fore.RED + "ERROR!! Data stored in database is not in %s format."
-                                                            % reply_format)
-                                    sys.exit(1)
-                            elif db.get('check_from_sqlite') is True:
-                                a = SqliteExtractXml(db.get('db_name'))
-                                snapfile1, data_format1 = a.get_xml_using_snapname(str(device), name, pre)
-                                if reply_format != data_format1:
-                                    self.logger_check.error(colorama.Fore.RED + "ERROR!! Data stored in database is not in %s format." % reply_format)
-                                    sys.exit(1)
-
+                            if (db['first_snap_id'] is not None) and (
+                                    db['second_snap_id'] is not None):
+                                snapfile1, data_format1 = a.get_xml_using_snap_id(str(device), name, db['first_snap_id'])
+                                snapfile2, data_format2 = a.get_xml_using_snap_id(str(device), name, db['second_snap_id'])
                             else:
-                                snapfile1= self.generate_snap_file(device, pre, name, reply_format)
+                                snapfile1, data_format1 = a.get_xml_using_snapname(str(device),name,pre)
+                                snapfile2, data_format2 = a.get_xml_using_snapname(str(device),name,post)
+                            if reply_format != data_format1 or reply_format != data_format2:
+                                self.logger_check.error(colorama.Fore.RED + "ERROR!! Data stored in database is not in %s format."
+                                                        % reply_format)
+                                sys.exit(1)
+                        elif db.get('check_from_sqlite') is True:
+                            a = SqliteExtractXml(db.get('db_name'))
+                            snapfile1, data_format1 = a.get_xml_using_snapname(str(device), name, pre)
+                            if reply_format != data_format1:
+                                self.logger_check.error(colorama.Fore.RED + "ERROR!! Data stored in database is not in %s format." % reply_format)
+                                sys.exit(1)
 
-                            if (check is True or action is "check") and reply_format == 'xml':
-                                if db.get('check_from_sqlite') is False:
-                                    snapfile2 = self.generate_snap_file(device, post, name, reply_format)
-                                self.compare_reply(
-                                    op,
-                                    t[val],
-                                    teston,
-                                    check,
-                                    db,
-                                    snapfile1,
-                                    snapfile2,
-                                    action)
+                        else:
+                            snapfile1= self.generate_snap_file(device, pre, name, reply_format)
 
-                            # as of now diff is not implemented for diff
-                            elif(diff is True):
-                                if db.get('check_from_sqlite') is False:
-                                    snapfile2 = self.generate_snap_file(device, post, name, reply_format)
-                                self.compare_diff(
-                                    snapfile1,
-                                    snapfile2,
-                                    db.get('check_from_sqlite'))
-                            elif (reply_format == 'xml'):
-                                self.compare_reply(
-                                    op,
-                                    t[val],
-                                    teston,
-                                    check,
-                                    db,
-                                    snapfile1,
-                                    action)
-                                if snap_del is True:
-                                    snapfile1 = snapfile1 if os.path.isfile(snapfile1) else self.generate_snap_file(device, pre, name, reply_format)
-                                    os.remove(snapfile1)
-                            else:
-                                self.logger_check.error(
-                                    colorama.Fore.RED +
-                                    "ERROR!! for checking snapshots in text format use '--diff' option ")
-                else:
-                    self.logger_check.error(
-                        colorama.Fore.RED +
-                        "ERROR!!! None of the tests cases included")
+                        if (check is True or action is "check") and reply_format == 'xml':
+                            if db.get('check_from_sqlite') is False:
+                                snapfile2 = self.generate_snap_file(device, post, name, reply_format)
+                            self.compare_reply(
+                                op,
+                                tests[val],
+                                teston,
+                                check,
+                                db,
+                                snapfile1,
+                                snapfile2,
+                                action)
+
+                        # as of now diff is not implemented for diff
+                        elif(diff is True):
+                            if db.get('check_from_sqlite') is False:
+                                snapfile2 = self.generate_snap_file(device, post, name, reply_format)
+                            self.compare_diff(
+                                snapfile1,
+                                snapfile2,
+                                db.get('check_from_sqlite'))
+                        elif (reply_format == 'xml'):
+                            self.compare_reply(
+                                op,
+                                tests[val],
+                                teston,
+                                check,
+                                db,
+                                snapfile1,
+                                action)
+                            if snap_del is True:
+                                snapfile1 = snapfile1 if os.path.isfile(snapfile1) else self.generate_snap_file(device, pre, name, reply_format)
+                                os.remove(snapfile1)
+                        else:
+                            self.logger_check.error(
+                                colorama.Fore.RED +
+                                "ERROR!! for checking snapshots in text format use '--diff' option ")
 
             if (diff is not True):
                 op.final_result()

@@ -1,7 +1,7 @@
 import sqlite3
 import os
 import logging
-import configparser
+from jnpr.jsnapy import get_path
 
 class JsnapSqlite:
 
@@ -10,9 +10,7 @@ class JsnapSqlite:
         host = host.replace('.', '__')
         self.table_name = "table_" + host
         # Creating Schema
-        self.config = configparser.ConfigParser()
-        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
-        self.db_filename = os.path.join( (self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots')).encode('utf-8') ,db_name)
+        self.db_filename = os.path.join(get_path('DEFAULT', 'snapshot_path'), db_name)
         try:
             with sqlite3.connect(self.db_filename) as conn:
                 #Creating schema if it does not exists

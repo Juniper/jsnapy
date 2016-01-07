@@ -4,15 +4,14 @@ from jnpr.jsnapy.sqlite_store import JsnapSqlite
 import sys
 import logging
 import colorama
-import configparser
+from jnpr.jsnapy import get_path
+
 
 class Parser:
 
     def __init__(self):
         self.logger_snap = logging.getLogger(__name__)
         colorama.init(autoreset=True)
-        self.config = configparser.ConfigParser()
-        self.config.read(os.path.join('/etc','jsnapy','jsnapy.cfg'))
 
     def _write_file(self, rpc_reply, format, output_file):
         if isinstance(rpc_reply, bool) and format == "text":
@@ -59,7 +58,7 @@ class Parser:
             return output_file
         else:
             filename = hostname + '_' + output_file + '_' + name + '.' + cmd_format
-            output_file = os.path.join( (self.config['DEFAULT'].get('snapshot_path', '/etc/jsnapy/snapshots')).encode('utf-8'), filename)
+            output_file = os.path.join(get_path('DEFAULT', 'snapshot_path'), filename)
             return output_file
 
     def store_in_sqlite(self, db, hostname, username, cmd_rpc_name, reply_format, rpc_reply, snap_name):
@@ -155,24 +154,24 @@ class Parser:
         self.test_included = []
         formats = ['xml', 'text']
         if 'tests_include' in test_file:
-            for t in test_file.get('tests_include'):
+            self.test_included = test_file.get('tests_include')
+        else:
+            for t in test_file:
                 self.test_included.append(t)
-                if t in test_file:
-                    if test_file.get(t) is not None and ('command' in test_file[t][0]):
-                        command = test_file[t][0].get('command',"unknown command")
-                        self.command_list.append(command)
-                        self.run_cmd(test_file, t, formats, dev, output_file, hostname, username, db)
-                    elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
-                        self.run_rpc(test_file, t, formats, dev, output_file, hostname, username, db)
-                    else:
-                        self.logger_snap.error(
-                            colorama.Fore.RED +
-                            "ERROR!!! Test case: '%s' not defined properly" % t)
+
+        for t in self.test_included:
+            if t in test_file:
+                if test_file.get(t) is not None and ('command' in test_file[t][0]):
+                    command = test_file[t][0].get('command',"unknown command")
+                    self.command_list.append(command)
+                    self.run_cmd(test_file, t, formats, dev, output_file, hostname, username, db)
+                elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
+                    self.run_rpc(test_file, t, formats, dev, output_file, hostname, username, db)
                 else:
                     self.logger_snap.error(
                         colorama.Fore.RED +
-                        "ERROR!!! Test case: '%s' not defined !!!!" % t)
-        else:
-            self.logger_snap.error(
-                colorama.Fore.RED +
-                "\nERROR!! None of the test cases included")
+                        "ERROR!!! Test case: '%s' not defined properly" % t)
+            else:
+                self.logger_snap.error(
+                    colorama.Fore.RED +
+                    "ERROR!!! Test case: '%s' not defined !!!!" % t)
