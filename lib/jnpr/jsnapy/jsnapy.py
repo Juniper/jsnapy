@@ -17,6 +17,7 @@ import logging
 import setup_logging
 from jnpr.junos.exception import ConnectTimeoutError
 from jnpr.jsnapy import get_path
+import threading
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
@@ -29,6 +30,7 @@ class SnapAdmin:
     def __init__(self):
         colorama.init(autoreset=True)
         self.q = Queue.Queue()
+        self.log_detail = {'hostname': None}
         self.snap_del = False
         self.logger = logging.getLogger(__name__)
         self.parser = argparse.ArgumentParser(
@@ -179,13 +181,14 @@ class SnapAdmin:
                 self.db['db_name'] = d['database_name']
 
             else:
-                self.logger.error(colorama.Fore.RED +"Specify name of the database.")
+                self.logger.error(colorama.Fore.RED +"Specify name of the database.", extra= self.log_detail)
                 exit(1)
             if check is True or action is "check":
                 if 'compare' in d.keys() and d['compare'] is not None:
                     strr = d['compare']
                     if not isinstance(strr, str):
-                        self.logger.error(colorama.Fore.RED + "Properly specify ids of first and second snapshot in format: first_snapshot_id, second_snapshot_id")
+                        self.logger.error(colorama.Fore.RED + "Properly specify ids of first and "
+                                                              "second snapshot in format: first_snapshot_id, second_snapshot_id", extra= self.log_detail)
                         exit(1)
                     compare_from_id = True
                     lst = [val.strip() for val in strr.split(',')]
@@ -193,25 +196,25 @@ class SnapAdmin:
                         lst = [int(x) for x in lst]
                     except ValueError as e:
                         self.logger.error(colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
-                                              " in format: first_snapshot_id, second_snapshot_id")
+                                              " in format: first_snapshot_id, second_snapshot_id", extra= self.log_detail)
                         exit(1)
                     if len(lst) > 2:
                         self.logger.error(colorama.Fore.RED + "No. of snapshots specified is more than two."
-                                              " Please specify only two snapshots.")
+                                              " Please specify only two snapshots.", extra= self.log_detail)
                         exit(1)
                     if len(lst) == 2 and isinstance(lst[0], int) and isinstance(lst[1], int):
                         self.db['first_snap_id'] = lst[0]
                         self.db['second_snap_id'] = lst[1]
                     else:
                         self.logger.error (colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
-                                                " in format: first_snapshot_id, second_snapshot_id")
+                                                " in format: first_snapshot_id, second_snapshot_id", extra= self.log_detail)
                         exit(1)
         if self.db['check_from_sqlite'] is False or compare_from_id is False:
             if (check is True and ( pre_snapfile is None or post_snapfile is None) or
                 self.args.diff is True and (pre_snapfile is None or post_snapfile is None)):
                 self.logger.debug(
                     colorama.Fore.RED +
-                    "Arguments not given correctly, Please refer below help message")
+                    "Arguments not given correctly, Please refer below help message", extra= self.log_detail)
                 self.parser.print_help()
                 sys.exit(1)
 
@@ -246,7 +249,7 @@ class SnapAdmin:
             self.logger.error(
                 colorama.Fore.RED +
                 "ERROR!! file path '%s' for main config file is not correct" %
-                conf_file)
+                conf_file, extra= self.log_detail)
             sys.exit(1)
 
         if self.main_file.__contains__(
@@ -256,12 +259,11 @@ class SnapAdmin:
         self.login(output_file)
 
     # call to generate snap files
-    def generate_rpc_reply(self, dev, output_file, hostname, username, config_data):
+    def generate_rpc_reply(self, dev, output_file, hostname, config_data):
         """
         Generates rpc-reply based on command/rpc given and stores them in snap_files
         :param dev: device handler
         :param snap_files: filename to store snapshots
-        :param username: username to connect to device
         :return:
         """
         test_files = []
@@ -275,11 +277,11 @@ class SnapAdmin:
                 self.logger.error(
                     colorama.Fore.RED +
                     "ERROR!! File %s is not found" %
-                    tfile)
+                    tfile, extra= self.log_detail)
 
         g = Parser()
         for tests in test_files:
-            g.generate_reply(tests, dev, output_file, hostname, self.db, username)
+            g.generate_reply(tests, dev, output_file, hostname, self.db)
 
     # called by check and snapcheck argument, to compare snap files
     def compare_tests(self, hostname, config_data, pre_snap=None, post_snap=None, action=None):
@@ -326,6 +328,7 @@ class SnapAdmin:
         :param output_file: name of snapshot file
         :return:
         """
+        t = []
         self.host_list = []
         if self.args.hostname is None:
             k = self.main_file['hosts'][0]
@@ -346,6 +349,7 @@ class SnapAdmin:
                     if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                         for val in dev_file[dgp]:
                             hostname = val.keys()[0]
+                            self.log_detail = {'hostname': hostname }
                             self.host_list.append(hostname)
                             username = val.get(hostname).get('username')
                             password = val.get(hostname).get('passwd')
@@ -364,6 +368,7 @@ class SnapAdmin:
         # one device
             else:
                 hostname = k.get('devices')
+                self.log_detail = {'hostname': hostname}
                 username = k.get('username') or raw_input(
                     "\n Enter user name: ")
                 password = k.get('passwd') or getpass.getpass(
@@ -374,12 +379,39 @@ class SnapAdmin:
         # login credentials are given from command line
         else:
             hostname = self.args.hostname
+            self.log_detail = {'hostname': hostname }
             username = self.args.login if self.args.login is not None else raw_input(
                 "\n Enter user name: ")
             password = self.args.passwd if self.args.passwd is not None else getpass.getpass(
                 "\nPlease enter password for login  to Device: ")
             self.host_list.append(hostname)
             self.connect(hostname, username, password, output_file)
+
+    def get_test(self, config_data, hostname, snap_file, post_snap, action):
+        if config_data.get("mail") and self.args.diff is not True:
+            mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), self.main_file['mail'])\
+                if os.path.isfile(config_data.get('mail')) is False else config_data.get('mail')
+            if os.path.isfile(mfile):
+                mail_file = open(mfile, 'r')
+                mail_file = yaml.load(mail_file)
+                if "passwd" not in mail_file:
+                    passwd = getpass.getpass(
+                        "Please enter ur email password ")
+                else:
+                    passwd = mail_file['passwd']
+                res = self.compare_tests(hostname, config_data, snap_file, post_snap, action)
+                send_mail = Notification()
+                send_mail.notify(mail_file, hostname, passwd, res)
+            else:
+                self.logger.error(
+                    colorama.Fore.RED +
+                    "ERROR!! Path of file containing mail content is not correct", extra= self.log_detail)
+        else:
+            res = self.compare_tests(hostname, config_data, snap_file, post_snap, action)
+
+        self.q.put(res)
+        return res
+
 
     # function to connect to device
     def connect(self, hostname, username, password, snap_file, config_data= None, action= None, post_snap= None):
@@ -392,49 +424,29 @@ class SnapAdmin:
         :param snap_files: file name to store snapshot
         :return:
         """
+        flag = False
+        res = None
         if config_data is None:
             config_data = self.main_file
 
         if self.args.snap is True or self.args.snapcheck is True or action in ["snap", "snapcheck"]:
             self.logger.info(
                 colorama.Fore.BLUE +
-                "Connecting to device %s ................" %
-                hostname)
+                "Connecting to device %s ................",hostname, extra= self.log_detail)
             dev = Device(host=hostname, user=username, passwd=password, gather_facts= False)
             try:
                 dev.open()
             except Exception as ex:
-                self.logger.error("\nERROR occurred %s" % str(ex))
+                self.logger.error("\nERROR occurred %s" % str(ex), extra= self.log_detail)
                 raise ConnectTimeoutError("Not able to connect to device")
             else:
-                self.generate_rpc_reply(dev, snap_file, hostname, username, config_data)
+                self.generate_rpc_reply(dev, snap_file, hostname, config_data)
                 dev.close()
-                res = True
+                flag = True
 
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in ["check", "snapcheck"]:
-            if config_data.get("mail") and self.args.diff is not True:
-                mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), self.main_file['mail'])\
-                    if os.path.isfile(config_data.get('mail')) is False else config_data.get('mail')
-                if os.path.isfile(mfile):
-                    mail_file = open(mfile, 'r')
-                    mail_file = yaml.load(mail_file)
-                    if "passwd" not in mail_file:
-                        passwd = getpass.getpass(
-                            "Please enter ur email password ")
-                    else:
-                        passwd = mail_file['passwd']
-                    res = self.compare_tests(hostname, config_data, snap_file, post_snap, action)
-                    send_mail = Notification()
-                    send_mail.notify(mail_file, hostname, passwd, res)
-                else:
-                    self.logger.error(
-                        colorama.Fore.RED +
-                        "ERROR!! Path of file containing mail content is not correct")
-            else:
-                res = self.compare_tests(hostname, config_data, snap_file, post_snap, action)
-
-        self.q.put(res)
-        return res
+            res = self.get_test(config_data, hostname, snap_file, post_snap, action)
+        return flag, res
 
     ############################### functions to support module #######################################################
 
@@ -470,7 +482,7 @@ class SnapAdmin:
         else:
             self.logger.info(
                 colorama.Fore.RED +
-                "incorrect config file or data, please chk !!!!")
+                "incorrect config file or data, please chk !!!!", extra= self.log_detail)
             exit(1)
         host = config_data.get('hosts')[0]
         if config_data.__contains__('sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
@@ -479,27 +491,67 @@ class SnapAdmin:
             res_obj = self.multiple_device_details(host, config_data, pre_name, action, post_name)
         else:
             hostname = host.get('devices')
+            self.log_detail = {'hostname':hostname}
             username = host.get('username') or raw_input("\n Enter user name: ")
             password = host.get('passwd') or getpass.getpass("\nPlease enter password to login to Device: ")
             #pre_name = hostname + '_' + pre_name if not os.path.isfile(pre_name) else pre_name
             #if action is "check":
             #    post_name= hostname + '_' + post_name if not os.path.isfile(post_name) else post_name
-            res_obj.append(self.connect(hostname, username, password, pre_name, config_data, action, post_name))
-        return res_obj
+            flag, val = self.connect(hostname, username, password, pre_name, config_data, action, post_name)
+            print flag, val
+            res_obj.append(val)
+        return flag, res_obj
+
+    def extract_dev_data(self, dev, config_data, pre_name= None, action=None, post_snap=None):
+        res = []
+        flag = False
+        if os.path.isfile(config_data):
+            data = open(config_data, 'r')
+            config_data = yaml.load(data)
+        elif type(config_data) is str:
+            config_data = yaml.load(config_data)
+        else:
+            self.logger.info(
+                colorama.Fore.RED +
+                "incorrect config file or data, please chk !!!!", extra= self.log_detail)
+            exit(1)
+        hostname = dev.hostname
+        self.log_detail = {'hostname':hostname}
+        if action in ["snap", "snapcheck"]:
+            try:
+                self.generate_rpc_reply(dev, pre_name, hostname, config_data)
+            except Exception as ex:
+                self.logger.error("\nERROR occurred %s" % str(ex), extra= self.log_detail)
+            else:
+                flag = True
+        if action in ["snapcheck", "check"]:
+            res.append(self.get_test(config_data, hostname, pre_name, post_snap, action))
+        return flag, res
 
     def snap(self, data, file_name, dev= None):
-        res = self.extract_data(data, file_name, "snap")
-        return res
+        if dev is None:
+            flag, res = self.extract_data(data, file_name, "snap")
+        else:
+            flag, res = self.extract_dev_data(dev, data, file_name, "snap")
+        return flag
+
 
     def snapcheck(self, data, file_name= None, dev= None):
         if file_name is None:
             file_name = "snap_temp"
             self.snap_del = True
-        res = self.extract_data(data, file_name, "snapcheck")
+            print "file_name--------",file_name
+        if dev is None:
+            flag, res = self.extract_data(data, file_name, "snapcheck")
+        else:
+            flag, res = self.extract_dev_data(dev, data, file_name, "snapcheck")
         return res
 
     def check(self, data, pre_file, post_file, dev= None):
-        res = self.extract_data(data, pre_file, "check", post_file)
+        if dev is None:
+            flag, res = self.extract_data(data, pre_file, "check", post_file)
+        else:
+            flag, res = self.extract_dev_data(dev, data, pre_file, "check", post_file)
         return res
 
 
@@ -550,7 +602,7 @@ class SnapAdmin:
             (self.args.diff is True and self.args.file is None)
            ):
             self.logger.error(
-                "Arguments not given correctly, Please refer help message")
+                "Arguments not given correctly, Please refer help message", extra= self.log_detail)
             self.parser.print_help()
             sys.exit(1)
         else:

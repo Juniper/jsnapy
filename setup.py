@@ -4,7 +4,7 @@ import os
 req_lines = [line.strip() for line in open(
     'requirements.txt').readlines()]
 install_reqs = list(filter(None, req_lines))
-example_files = [os.path.join('lib/jnpr/jsnapy/examples',i) for i in os.listdir('lib/jnpr/jsnapy/examples')]
+example_files = [os.path.join('lib/jnpr/jsnapy/samples',i) for i in os.listdir('lib/jnpr/jsnapy/samples')]
 log_files = [os.path.join('lib/jnpr/jsnapy/logs',j) for j in os.listdir('lib/jnpr/jsnapy/logs')]
 exec(open('lib/jnpr/jsnapy/version.py').read())
 
@@ -19,7 +19,7 @@ setup(name="jsnapy",
       package_dir={'': 'lib'},
       packages=find_packages('lib'), 
       package_data={
-           'jnpr.jsnapy.examples': ['*.yml'],
+           'jnpr.jsnapy.samples': ['*.yml'],
            'jnpr.jsnapy': ['jsnapy.cfg','hosts.yml', 'logging.yml', 'content.html'],
            'jnpr.jsnapy.snapshots': ['README'],
            'jnpr.jsnapy.testfiles': ['README'],
@@ -33,7 +33,7 @@ setup(name="jsnapy",
       zip_safe=False,
       install_requires= install_reqs,
       data_files=[('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
-                  ('/etc/jsnapy/examples', example_files),
+                  ('/etc/jsnapy/samples', example_files),
                   ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
                   ('/etc/jsnapy', ['lib/jnpr/jsnapy/hosts.yml']),
                   ('/etc/jsnapy/testfiles', ['lib/jnpr/jsnapy/testfiles/README']),

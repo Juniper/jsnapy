@@ -8,13 +8,15 @@ disable_existing_loggers: False
 
 formatters:
     custom_format:
-        format: "%(asctime)s - %(name)s - %(levelname)s - \n %(message)s"
+        format: "%(asctime)s - %(name)s - %(levelname)s - %(hostname)s ............. \n %(message)s"
     simple:
+        format: "%(hostname)s......... %(message)s"
+    default:
         format: "%(message)s"
 handlers:
     console:
         class: logging.StreamHandler
-        level: INFO
+        level: DEBUG 
         formatter: simple
         stream: ext://sys.stdout
 
@@ -55,6 +57,6 @@ handlers:
         encoding: utf8
 
 root:
-    level: INFO
+    level: DEBUG 
     handlers: [console, debug_file_handler, error_file_handler, info_file_handler, critical_file_handler]
 
