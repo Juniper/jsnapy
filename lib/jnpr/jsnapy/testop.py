@@ -1,11 +1,8 @@
 import re
-import os
 import colorama
 from collections import defaultdict
 import jinja2
 import logging
-import sys
-import re
 
 class Operator:
 
@@ -102,27 +99,41 @@ class Operator:
     # used by no-diff, list-not-less, not-more
     def _get_data(self, id_list, nodes):
         data = {}
+        i = 0
         for path in nodes:
-            xlist = [path.find(id) for id in id_list]
+            i = i+1
+            xlist = [path.findall(id) for id in id_list]
+            #print "\n xlist------", xlist
             val = []
             for values in xlist:
                 if values is not None:
-                    val.append(values.text)
+                    if type(values) is list:
+                        val1 = [v.text for v in values]
+                        val.append(tuple(val1))
+                    else:
+                        val.append(values.text)
+
+            val.append(i)
+            #print "\n ******* val: ", val
             data[tuple(val)] = path
+            #print "\n ****** data:", data
         return data
 
     # for getting any node value
     def _get_nodevalue(
             self, predict, postdict, pre_nodes, post_nodes, x_path, element, mssg):
         mssg = re.findall('{{(.*?)}}', mssg)
+        #print "\n ***** mssg:", mssg
         for e in mssg:
             if (e.startswith("post") or e.startswith("Post")):
                 val = e[6:-2]
+                #print "\n val in post:", val
                 if val not in [x_path, element]:
                     postdict[val.replace('-', '_')] = post_nodes.findtext(val).strip()if post_nodes.findtext(val) is not None else None
 
             if (e.startswith("pre") or e.startswith("PRE")):
                 val = e[5:-2]
+                #print "\n val in pre:", val
                 if val not in [x_path, element]:
                     predict[val.replace('-', '_')] = pre_nodes.findtext(val).strip() if pre_nodes.findtext(val) is not None else None
         return predict, postdict
@@ -157,6 +168,8 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -215,6 +228,8 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         res = False
                         self.logger_testop.info(
@@ -277,6 +292,8 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -341,7 +358,8 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -409,6 +427,8 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -478,7 +498,8 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -548,6 +569,8 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -617,6 +640,8 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for j in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -685,7 +710,8 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -752,6 +778,9 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+
                     if postnode:
                         for k in range(len(postnode)):
                             predict[
@@ -821,6 +850,9 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -889,6 +921,9 @@ class Operator:
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -929,6 +964,8 @@ class Operator:
         self.print_testmssg("no-diff")
         res = True
         iddict = {}
+  #      err_predict = {}
+  #      err_postdict = {}
         predict = {}
         postdict = {}
         tresult = {}
@@ -948,15 +985,20 @@ class Operator:
             else:
                 # assuming one iterator has unique set of ids, i.e only one node matching to id
                 # making dictionary for id and its corresponding xpath
+                # one xpath has only one set of id
                 data1 = self._get_data(id_list, pre_nodes)
                 data2 = self._get_data(id_list, post_nodes)
+                #print "\n ***** data1, data2:", data1, data2
                 for k in data1:
-                    for length in range(len(k)):
-                        iddict['id_' + str(length)] = k[length].strip()
-                    #print "\n iddict:", iddict
+                    for length in range(len(k)-1):
+                        iddict['id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
+                        #iddict['id_' + str(length)] = k[length].strip()
                     if k in data2:
                         predict, postdict = self._get_nodevalue(
                             predict, postdict, data1[k], data2[k], x_path, ele_list[0], err_mssg)
+                        predict, postdict = self._get_nodevalue(
+                            predict, postdict, data1[k], data2[k], x_path, ele_list[0], info_mssg)
+                        #print "\n ******predict, postdict:", predict, postdict
 
                         ele_xpath1 = data1.get(k).xpath(ele_list[0])
                         ele_xpath2 = data2.get(k).xpath(ele_list[0])
@@ -965,9 +1007,10 @@ class Operator:
 
                         predict[ele_list[0].replace('-', '_')] = val_list1
                         postdict[ele_list[0].replace('-', '_')] = val_list2
+
                         tresult['pre_node_value']= val_list1
                         tresult['post_node_value']= val_list2
-                        print "\n ****** val_list1, val_list2:", val_list1, val_list2
+                        #print "\n ****** val_list1, val_list2:", val_list1, val_list2
                         if val_list1 != val_list2:
                             res = False
                             self.logger_testop.info(
@@ -1026,12 +1069,17 @@ class Operator:
             postdata = self._get_data(id_list, post_nodes)
 
             for k in predata:
-                for length in range(len(k)):
-                    iddict['id_' + str(length)] = k[length].strip()
+                for length in range(len(k)-1):
+                    #print "\n ********* k, k[length]", k, k[length]
+                    iddict['id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
+                    #print "\n ******* iddict:", iddict
 
                 if k in postdata:
                     if not re.match (ele_list[0], "no node"):
-                        predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k], x_path, ele_list[0], err_mssg)
+                        predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
+                                                                x_path, ele_list[0], err_mssg)
+                        predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
+                                                                x_path, ele_list[0], info_mssg)
                         ele_xpath1 = predata.get(k).xpath(ele_list[0])
                         ele_xpath2 = postdata.get(k).xpath(ele_list[0])
                         val_list1 = [element.text.strip()
@@ -1070,10 +1118,11 @@ class Operator:
                 else:
                     self.logger_testop.error("ERROR, id miss match occurred!!! id list in post snapshots is: %s" %iddict, extra= self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
-                    for kval in k:
-                        self.logger_testop.error(
-                            "Missing Ids in post snapshot: %s" %
-                            kval.strip(), extra= self.log_detail)
+                    #for kval in range(len(k)-1):
+                    #    print "kval, k", kval,k
+                        #self.logger_testop.error(
+                        #    "Missing Ids in post snapshot: %s" %
+                        #    k[kval].strip(), extra= self.log_detail)
                     res = False
         self.print_result('list-not-less', res)
         tresult['result'] = res
@@ -1105,11 +1154,16 @@ class Operator:
             postdata = self._get_data(id_list, post_nodes)
 
             for k in postdata:
-                for length in range(len(k)):
-                    iddict['id_' + str(length)] = k[length].strip()
+                for length in range(len(k)-1):
+                    #iddict['id_' + str(length)] = k[length].strip()
+                    iddict['id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
+
                 if k in predata:
                     if not re.match (ele_list[0], "no node"):
-                        predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k], x_path, ele_list[0], err_mssg)
+                        predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
+                                                                x_path, ele_list[0], err_mssg)
+                        predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
+                                                                x_path, ele_list[0], info_mssg)
                         ele_xpath1 = predata.get(k).xpath(ele_list[0])
                         ele_xpath2 = postdata.get(k).xpath(ele_list[0])
                         val_list1 = [element.text.strip()
@@ -1149,10 +1203,10 @@ class Operator:
                     self.logger_testop.error(
                         "ERROR, id miss match occurred !! id list in post snapshots is: %s" %iddict, extra= self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
-                    for kval in k:
-                        self.logger_testop.error(
-                            "Missing Ids in pre snapshots: %s" %
-                            kval.strip(), extra= self.log_detail)
+                    #for kval in range(len(k)-1):
+                    #    self.logger_testop.error(
+                    #        "Missing Ids in pre snapshots: %s" %
+                    #        k[kval].strip(), extra= self.log_detail)
                     res = False
         self.print_result('list-not-more', res)
         tresult['result'] = res
@@ -1196,17 +1250,20 @@ class Operator:
                 for k in predata:
                     # checking if id in first data set is present in second data
                     # set or not
-                    for length in range(len(k)):
-                        iddict['id_' + str(length)] = k[length]
+                    for length in range(len(k)-1):
+                        #iddict['id_' + str(length)] = k[length]
+                        iddict['id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
 
                     if k in postdata:
-
                         predict, postdict = self._get_nodevalue(
                             predict, postdict, predata[k], postdata[k], x_path, node_name, err_mssg)
-
+                        predict, postdict = self._get_nodevalue(
+                            predict, postdict, predata[k], postdata[k], x_path, node_name, info_mssg)
+                        #print "\n =====k :", k
                         if ele_list is not None:
                             ele_xpath1 = predata.get(k).xpath(node_name)
                             ele_xpath2 = postdata.get(k).xpath(node_name)
+                            #print "\n ****** ele_xpath1, ele_xpath2", ele_xpath1, ele_xpath2
                             if len(ele_xpath1) and len(ele_xpath2):
                                 val1 = float(
                                     ele_xpath1[0].text)  # value of desired node for pre snapshot
@@ -1367,14 +1424,13 @@ class Operator:
                                 self.logger_testop.error("ERROR!! Node '%s' not found" %node_name, extra= self.log_detail)
                                 res = False
 
-
                     else:
-                        self.logger_testop.error(
-                            "\n ERROR, id miss match occurred !! ", extra= self.log_detail)
-                        for kval in k:
-                            self.logger_testop.error(
-                                "missing node: %s" %
-                                kval.strip(), extra= self.log_detail)
+                        self.logger_testop.error("\n ERROR!! id miss match occurred !! mismatched id from pre snapshot"
+                                                 "is: %s"%iddict, extra= self.log_detail)
+                        #for kval in k:
+                        #    self.logger_testop.error(
+                        #        "missing node: %s" %
+                        #        kval.strip(), extra= self.log_detail)
                         res = False
 
         self.print_result('delta', res)

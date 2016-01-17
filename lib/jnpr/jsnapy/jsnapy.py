@@ -17,7 +17,6 @@ import logging
 import setup_logging
 from jnpr.junos.exception import ConnectTimeoutError
 from jnpr.jsnapy import get_path
-import threading
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
@@ -331,59 +330,71 @@ class SnapAdmin:
         t = []
         self.host_list = []
         if self.args.hostname is None:
-            k = self.main_file['hosts'][0]
+            try:
+                k = self.main_file['hosts'][0]
+            except KeyError as ex:
+                self.logger.error("\nERROR occurred !! Hostname not given properly %s" % str(ex), extra= self.log_detail)
+            except Exception as ex:
+                self.logger.error("\nERROR occurred !! %s" % str(ex), extra= self.log_detail)
+            else:
             # when group of devices are given, searching for include keyword in
             # hosts in main.yaml file
-            if k.__contains__('include'):
-                file_tag = k['include']
-                if os.path.isfile(file_tag):
-                    lfile = file_tag
+                if k.__contains__('include'):
+                    file_tag = k['include']
+                    if os.path.isfile(file_tag):
+                        lfile = file_tag
+                    else:
+                        lfile = os.path.join(get_path('DEFAULT', 'test_file_path'), file_tag)
+                    login_file = open(lfile, 'r')
+                    dev_file = yaml.load(login_file)
+                    gp = k.get('group', 'all')
+
+                    dgroup = [i.strip().lower() for i in gp.split(',')]
+                    for dgp in dev_file:
+                        if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
+                            for val in dev_file[dgp]:
+                                hostname = val.keys()[0]
+                                self.log_detail = {'hostname': hostname }
+                                self.host_list.append(hostname)
+                                if val.get(hostname) is not None and 'username' in val.get(hostname).keys():
+                                    username = val.get(hostname).get('username')
+                                else:
+                                    username = self.args.login if self.args.login is not None else raw_input("\nEnter User name: ")
+                                if val.get(hostname) is not None and 'passwd' in val.get(hostname).keys():
+                                    password = val.get(hostname).get('passwd')
+                                else:
+                                    password = self.args.passwd if self.args.passwd is not None else getpass.getpass("\nEnter Password for username: %s "%username)
+                                t = Thread(
+                                    target=self.connect,
+                                    args=(
+                                        hostname,
+                                        username,
+                                        password,
+                                        output_file,
+                                    ))
+                                t.start()
+                                t.join()
+
+            # login credentials are given in main config file, can connect to only
+            # one device
                 else:
-                    lfile = os.path.join(get_path('DEFAULT', 'test_file_path'), file_tag)
-                login_file = open(lfile, 'r')
-                dev_file = yaml.load(login_file)
-                gp = k.get('group', 'all')
-
-                dgroup = [i.strip().lower() for i in gp.split(',')]
-                for dgp in dev_file:
-                    if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
-                        for val in dev_file[dgp]:
-                            hostname = val.keys()[0]
-                            self.log_detail = {'hostname': hostname }
-                            self.host_list.append(hostname)
-                            username = val.get(hostname).get('username')
-                            password = val.get(hostname).get('passwd')
-                            t = Thread(
-                                target=self.connect,
-                                args=(
-                                    hostname,
-                                    username,
-                                    password,
-                                    output_file,
-                                ))
-                            t.start()
-                            t.join()
-
-        # login credentials are given in main config file, can connect to only
-        # one device
-            else:
-                hostname = k.get('devices')
-                self.log_detail = {'hostname': hostname}
-                username = k.get('username') or raw_input(
-                    "\n Enter user name: ")
-                password = k.get('passwd') or getpass.getpass(
-                    "\nPlease enter password to login to Device: ")
-                self.host_list.append(hostname)
-                self.connect(hostname, username, password, output_file)
+                    hostname = k.get('devices')
+                    self.log_detail = {'hostname': hostname}
+                    username = k.get('username') or raw_input(
+                        "\nEnter User name: ")
+                    password = k.get('passwd') or getpass.getpass(
+                        "\nEnter Password: ")
+                    self.host_list.append(hostname)
+                    self.connect(hostname, username, password, output_file)
 
         # login credentials are given from command line
         else:
             hostname = self.args.hostname
             self.log_detail = {'hostname': hostname }
             username = self.args.login if self.args.login is not None else raw_input(
-                "\n Enter user name: ")
+                "\nEnter User name: ")
             password = self.args.passwd if self.args.passwd is not None else getpass.getpass(
-                "\nPlease enter password for login  to Device: ")
+                "\nEnter Password: ")
             self.host_list.append(hostname)
             self.connect(hostname, username, password, output_file)
 
@@ -498,7 +509,6 @@ class SnapAdmin:
             #if action is "check":
             #    post_name= hostname + '_' + post_name if not os.path.isfile(post_name) else post_name
             flag, val = self.connect(hostname, username, password, pre_name, config_data, action, post_name)
-            print flag, val
             res_obj.append(val)
         return flag, res_obj
 
@@ -540,7 +550,6 @@ class SnapAdmin:
         if file_name is None:
             file_name = "snap_temp"
             self.snap_del = True
-            print "file_name--------",file_name
         if dev is None:
             flag, res = self.extract_data(data, file_name, "snapcheck")
         else:
@@ -597,9 +606,9 @@ class SnapAdmin:
         :return:
         """
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
-            (self.args.check is True and (self.args.file is None)) or
+            (self.args.check is True and (self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None)) or
             (self.args.snapcheck is True and self.args.file is None ) or
-            (self.args.diff is True and self.args.file is None)
+            (self.args.diff is True and (self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None))
            ):
             self.logger.error(
                 "Arguments not given correctly, Please refer help message", extra= self.log_detail)
