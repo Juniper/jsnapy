@@ -327,7 +327,6 @@ class SnapAdmin:
         :param output_file: name of snapshot file
         :return:
         """
-        t = []
         self.host_list = []
         if self.args.hostname is None:
             try:
@@ -378,14 +377,20 @@ class SnapAdmin:
             # login credentials are given in main config file, can connect to only
             # one device
                 else:
-                    hostname = k.get('devices')
-                    self.log_detail = {'hostname': hostname}
-                    username = k.get('username') or raw_input(
-                        "\nEnter User name: ")
-                    password = k.get('passwd') or getpass.getpass(
-                        "\nEnter Password: ")
-                    self.host_list.append(hostname)
-                    self.connect(hostname, username, password, output_file)
+                    try:
+                        hostname = k['devices']
+                        self.log_detail = {'hostname': hostname}
+                    except KeyError:
+                        print "ERROR!! KeyError 'devices' key not found"
+                    except Exception as ex:
+                        print "ERROR!! %s"%ex
+                    else:
+                        username = k.get('username') or self.args.login or raw_input(
+                            "\nEnter User name: ")
+                        password = k.get('passwd') or self.args.passwd or getpass.getpass(
+                            "\nEnter Password: ")
+                        self.host_list.append(hostname)
+                        self.connect(hostname, username, password, output_file)
 
         # login credentials are given from command line
         else:

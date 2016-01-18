@@ -21,26 +21,24 @@ hosts:
 config_data = """
 tests:
   #- test_delta.yml
-  - test_not_more.yml
+ # - test_not_more.yml
   #- test_not_less.yml
   #- test_contains.yml
   #- test_no_diff.yml
   #- test_all_same.yml
  # - test_exists.yml
- # - test_is_equal.yml
+  - test_is_equal.yml
  # - test_not_range.yml
   #- test_get_config.yml
 """
 
 
 print "config_data", config_data
-"""
+
 snapvalue = js.snap(config_data, "pre", dev)
 print "snap value is:" , snapvalue
 snapvalue2 = js.snap(config_data, "post", dev)
 print "dev is:", dev
-"""
-"""
 snapchk = js.snapcheck(config_data, "pre", dev)
 
 for snapcheck in snapchk:
@@ -59,3 +57,4 @@ for check in chk:
     print "Total failed:", check.no_failed
     print check.test_details
     pprint (dict(check.test_details))
+"""
