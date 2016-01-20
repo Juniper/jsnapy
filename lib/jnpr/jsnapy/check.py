@@ -18,7 +18,6 @@ class Comparator:
         self.logger_check = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
 
-
     def __del__(self):
         colorama.init(autoreset=True)
 
@@ -157,7 +156,7 @@ class Comparator:
                         post_snap)
 
     def compare_diff(self, pre_snap_file, post_snap_file, check_from_sqlite):
-        diff_obj = jnpr.jsnapy.snap_diff.Diff()
+        diff_obj = jnpr.jsnapy.snap_diff.Diff(self.log_detail)
         if check_from_sqlite:
             diff_obj.diff_strings(
                 pre_snap_file,
@@ -284,6 +283,7 @@ class Comparator:
                                 'check_from_sqlite') is True and (check is True or diff is True or action in ["check", "diff"]):
                             a = SqliteExtractXml(db.get('db_name'))
 
+                            #while checking from database, preference is given to id and then snap name
                             if (db['first_snap_id'] is not None) and (
                                     db['second_snap_id'] is not None):
                                 snapfile1, data_format1 = a.get_xml_using_snap_id(str(device), name, db['first_snap_id'])
@@ -335,9 +335,14 @@ class Comparator:
                                 db,
                                 snapfile1,
                                 action)
+                            ######## bug here ############
+                            ##### multiple testcases for single command and same device, its deleting that file
+                            ####################
+                            """
                             if snap_del is True:
                                 snapfile1 = snapfile1 if os.path.isfile(snapfile1) else self.generate_snap_file(device, pre, name, reply_format)
                                 os.remove(snapfile1)
+                                """
                         else:
                             self.logger_check.error(
                                 colorama.Fore.RED +

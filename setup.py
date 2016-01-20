@@ -20,7 +20,7 @@ setup(name="jsnapy",
       packages=find_packages('lib'), 
       package_data={
            'jnpr.jsnapy.samples': ['*.yml'],
-           'jnpr.jsnapy': ['jsnapy.cfg','hosts.yml', 'logging.yml', 'content.html'],
+           'jnpr.jsnapy': ['jsnapy.cfg','logging.yml', 'content.html'],
            'jnpr.jsnapy.snapshots': ['README'],
            'jnpr.jsnapy.testfiles': ['README'],
            'jnpr.jsnapy.logs': ['*.log']
@@ -35,7 +35,6 @@ setup(name="jsnapy",
       data_files=[('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
                   ('/etc/jsnapy/samples', example_files),
                   ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
-                  ('/etc/jsnapy', ['lib/jnpr/jsnapy/hosts.yml']),
                   ('/etc/jsnapy/testfiles', ['lib/jnpr/jsnapy/testfiles/README']),
                   ('/etc/jsnapy/snapshots', ['lib/jnpr/jsnapy/snapshots/README']),
                   ('/etc/logs/jsnapy', log_files)

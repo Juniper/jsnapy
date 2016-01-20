@@ -7,11 +7,11 @@ import logging
 import colorama
 
 
-
 class Notification:
 
     def __init__(self):
         self.logger_notify = logging.getLogger(__name__)
+        self.log_details= {'hostame': None}
 
     def notify(self, mail_file, hostname, password, test_obj):
         """
@@ -21,9 +21,10 @@ class Notification:
         :param test_obj:
         :return:
         """
+        self.log_details['hostname']= hostname
         self.logger_notify.debug(
             colorama.Fore.BLUE +
-            "\nSending mail............")
+            "Sending mail............",extra= self.log_details)
         testdetails = test_obj.test_details
         templateLoader = jinja2.FileSystemLoader(searchpath="/")
         templateEnv = jinja2.Environment(loader=templateLoader)
@@ -47,14 +48,13 @@ class Notification:
         try:
             server.login(from_mail, password)
         except Exception as ex:
-            print "\nERROR occurred: ", ex
             self.logger_notify.error(
                 colorama.Fore.RED +
-                "\nERROR occurred: %s" % str(ex))
+                "ERROR occurred: %s" %str(ex), extra= self.log_details)
             return
         ms = msg.as_string()
         try:
             server.sendmail(from_mail, to, ms)
         except Exception as ex:
-            print "ERROR in mail", ex.message
+            self.logger_notify.error(colorama.Fore.RED + "ERROR!!  in sending mail: %s" %ex.message, extra= self.log_details)
         server.quit()

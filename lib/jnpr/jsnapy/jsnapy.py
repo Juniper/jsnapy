@@ -132,6 +132,12 @@ class SnapAdmin:
         self.db['first_snap_id'] = None
         self.db['second_snap_id'] = None
 
+    def get_version(self):
+        """
+        :return: return JSNAPy version
+        """
+        return version.__version__
+
     # generate init folder, will support it later
     '''
     def generate_init(self):
@@ -254,6 +260,11 @@ class SnapAdmin:
         if self.main_file.__contains__(
                 'sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
             self.chk_database(self.main_file, self.args.pre_snapfile, self.args.post_snapfile, check, snap )
+        else:
+            if (self.args.check is True and (self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None)):
+                self.logger.error("Arguments not given correctly, Please refer help message", extra= self.log_detail)
+                self.parser.print_help()
+                sys.exit(1)
 
         self.login(output_file)
 
@@ -381,9 +392,9 @@ class SnapAdmin:
                         hostname = k['devices']
                         self.log_detail = {'hostname': hostname}
                     except KeyError:
-                        print "ERROR!! KeyError 'devices' key not found"
+                        self.logger.error(colorama.Fore.RED +"ERROR!! KeyError 'devices' key not found", extra= self.log_detail)
                     except Exception as ex:
-                        print "ERROR!! %s"%ex
+                        self.logger.error(colorama.Fore.RED + "ERROR!! %s"%ex, extra = self.log_detail)
                     else:
                         username = k.get('username') or self.args.login or raw_input(
                             "\nEnter User name: ")
@@ -405,7 +416,7 @@ class SnapAdmin:
 
     def get_test(self, config_data, hostname, snap_file, post_snap, action):
         if config_data.get("mail") and self.args.diff is not True:
-            mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), self.main_file['mail'])\
+            mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), config_data.get('mail'))\
                 if os.path.isfile(config_data.get('mail')) is False else config_data.get('mail')
             if os.path.isfile(mfile):
                 mail_file = open(mfile, 'r')
@@ -440,8 +451,7 @@ class SnapAdmin:
         :param snap_files: file name to store snapshot
         :return:
         """
-        flag = False
-        res = None
+        res = False
         if config_data is None:
             config_data = self.main_file
 
@@ -458,11 +468,11 @@ class SnapAdmin:
             else:
                 self.generate_rpc_reply(dev, snap_file, hostname, config_data)
                 dev.close()
-                flag = True
+                res = True
 
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in ["check", "snapcheck"]:
             res = self.get_test(config_data, hostname, snap_file, post_snap, action)
-        return flag, res
+        return res
 
     ############################### functions to support module #######################################################
 
@@ -474,22 +484,27 @@ class SnapAdmin:
         login_file = open(login_file, 'r')
         dev_file = yaml.load(login_file)
         gp = host.get('group', 'all')
-        dgroup = [i.strip() for i in gp.split(',')]
+        dgroup = [i.strip().lower() for i in gp.split(',')]
         for dgp in dev_file:
-            if dgroup[0].lower() == 'all' or dgp in dgroup:
+            if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                 for val in dev_file[dgp]:
                     hostname = val.keys()[0]
                     self.host_list.append(hostname)
+                    self.log_detail['hostname']= hostname
                     username = val.get(hostname).get('username')
                     password = val.get(hostname).get('passwd')
                     t = Thread(target=self.connect,args=(hostname, username, password, pre_name, config_data, action, post_name))
                     t.start()
-                    res_obj.append(self.q.get())
+                    if action in ["snapcheck", "check"]:
+                        res_obj.append(self.q.get())
+                    else:
+                        res_obj.append(True)
                     t.join()
         return res_obj
 
     def extract_data(self, config_data, pre_name= None, action= None, post_name = None):
         res_obj = []
+
         if os.path.isfile(config_data):
             data = open(config_data, 'r')
             config_data = yaml.load(data)
@@ -513,13 +528,12 @@ class SnapAdmin:
             #pre_name = hostname + '_' + pre_name if not os.path.isfile(pre_name) else pre_name
             #if action is "check":
             #    post_name= hostname + '_' + post_name if not os.path.isfile(post_name) else post_name
-            flag, val = self.connect(hostname, username, password, pre_name, config_data, action, post_name)
+            val = self.connect(hostname, username, password, pre_name, config_data, action, post_name)
             res_obj.append(val)
-        return flag, res_obj
+        return res_obj
 
     def extract_dev_data(self, dev, config_data, pre_name= None, action=None, post_snap=None):
         res = []
-        flag = False
         if os.path.isfile(config_data):
             data = open(config_data, 'r')
             config_data = yaml.load(data)
@@ -532,42 +546,44 @@ class SnapAdmin:
             exit(1)
         hostname = dev.hostname
         self.log_detail = {'hostname':hostname}
+        if config_data.__contains__('sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
+            self.chk_database(config_data, pre_name, post_snap, None, None, action)
+
         if action in ["snap", "snapcheck"]:
             try:
                 self.generate_rpc_reply(dev, pre_name, hostname, config_data)
             except Exception as ex:
                 self.logger.error("\nERROR occurred %s" % str(ex), extra= self.log_detail)
             else:
-                flag = True
+                res = True
         if action in ["snapcheck", "check"]:
+            res =[]
             res.append(self.get_test(config_data, hostname, pre_name, post_snap, action))
-        return flag, res
+        return res
 
     def snap(self, data, file_name, dev= None):
         if dev is None:
-            flag, res = self.extract_data(data, file_name, "snap")
+            res = self.extract_data(data, file_name, "snap")
         else:
-            flag, res = self.extract_dev_data(dev, data, file_name, "snap")
-        return flag
-
+            res = self.extract_dev_data(dev, data, file_name, "snap")
+        return res
 
     def snapcheck(self, data, file_name= None, dev= None):
         if file_name is None:
             file_name = "snap_temp"
             self.snap_del = True
         if dev is None:
-            flag, res = self.extract_data(data, file_name, "snapcheck")
+            res = self.extract_data(data, file_name, "snapcheck")
         else:
-            flag, res = self.extract_dev_data(dev, data, file_name, "snapcheck")
+            res = self.extract_dev_data(dev, data, file_name, "snapcheck")
         return res
 
-    def check(self, data, pre_file, post_file, dev= None):
+    def check(self, data, pre_file=None, post_file=None, dev= None):
         if dev is None:
-            flag, res = self.extract_data(data, pre_file, "check", post_file)
+            res = self.extract_data(data, pre_file, "check", post_file)
         else:
-            flag, res = self.extract_dev_data(dev, data, pre_file, "check", post_file)
+            res = self.extract_dev_data(dev, data, pre_file, "check", post_file)
         return res
-
 
     #######  generate init folder ######
     '''
@@ -610,8 +626,8 @@ class SnapAdmin:
         set of combination is not given.
         :return:
         """
+        # (self.args.check is True and (self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None))
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
-            (self.args.check is True and (self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None)) or
             (self.args.snapcheck is True and self.args.file is None ) or
             (self.args.diff is True and (self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None))
            ):
@@ -621,7 +637,6 @@ class SnapAdmin:
             sys.exit(1)
         else:
             pass 
-
 
 def main():
     js = SnapAdmin()

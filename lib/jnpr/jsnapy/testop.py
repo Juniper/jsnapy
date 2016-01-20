@@ -148,6 +148,7 @@ class Operator:
         tresult = {}
         tresult['xpath'] = x_path
         tresult['testoperation'] = "exists"
+        tresult['actual_node_value'] = []
         try:
             element = ele_list[0]
         except IndexError as e:
@@ -174,6 +175,7 @@ class Operator:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
+                            tresult['actual_node_value'].append(post_nodevalue)
                             self.logger_testop.debug(
                                 jinja2.Template(
                                     info_mssg.replace(
@@ -284,9 +286,11 @@ class Operator:
             else:
                 if len(ele_list) >= 2:
                     vpath = x_path + ele_list[1] + '/' + ele_list[0]
-                    value = xml2.xpath(vpath)[0].text
+                    value1 = xml2.xpath(vpath)
+                    value = value1[0].text.strip() if len(value1) != 0 else None
+                    tresult['expected_node_value'] = value
                 else:
-                    value = xml2.xpath(x_path + '/' + ele_list[0])[0].text
+                    value = xml2.xpath(x_path + '/' + ele_list[0])[0].text.strip()
                 for i in range(len(post_nodes)):
                     iddict, postnode, prenode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
@@ -299,7 +303,7 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
-                            if post_nodevalue != value.strip():
+                            if post_nodevalue != value:
                                 res = False
                                 self.logger_testop.info(
                                     jinja2.Template(
@@ -318,7 +322,6 @@ class Operator:
                                     iddict,
                                     pre=predict,
                                     post=postdict), extra= self.log_detail)
-
         self.print_result('all-same', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
@@ -348,7 +351,7 @@ class Operator:
             tresult ['expected_node_value']= value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                tresult['actual_node_value'].append(None)
+                #tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra= self.log_detail)
                 res = False
@@ -417,7 +420,7 @@ class Operator:
             tresult['expected_node_value']= value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                tresult['actual_node_value'].append(None)
+                #tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra= self.log_detail)
                 res = False
@@ -454,7 +457,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra= self.log_detail)
                     else:
-                        tresult['actual_node_value'].append(None)
+                        #tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra= self.log_detail)
@@ -485,10 +488,10 @@ class Operator:
                 "\n'in-range' test operator requires two parameter", extra= self.log_detail)
         else:
             tresult['node_name']= element
-            tresult['node_value_range']= [range1, range2]
+            tresult['expected_node_value']= [range1, range2]
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                tresult['actual_node_value'].append(None)
+                #tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra= self.log_detail)
                 res = False
@@ -526,7 +529,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra= self.log_detail)
                     else:
-                        tresult['actual_node_value'].append(None)
+                        #tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra= self.log_detail)
@@ -557,7 +560,7 @@ class Operator:
                 "\n not-range test operator require two parameters", extra= self.log_detail)
         else:
             tresult['node_name'] = element
-            tresult['node_value_range']= [range1, range2]
+            tresult['expected_node_value']= [range1, range2]
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(
@@ -597,7 +600,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra= self.log_detail)
                     else:
-                        tresult['actual_node_value'].append(None)
+                        #tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra= self.log_detail)
@@ -630,7 +633,7 @@ class Operator:
             tresult['expected_node_value']= val1
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                tresult['actual_node_value'].append(None)
+                #tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra= self.log_detail)
                 res = False
@@ -667,7 +670,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra= self.log_detail)
                     else:
-                        tresult['actual_node_value'].append(None)
+                        #tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra= self.log_detail)
@@ -700,7 +703,7 @@ class Operator:
             tresult['expected_node_value'] = val1
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                tresult['actual_node_value'].append(None)
+                #tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra= self.log_detail)
                 res = False
@@ -737,7 +740,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra= self.log_detail)
                     else:
-                        tresult['actual_node_value'].append(None)
+                        #tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra= self.log_detail)
@@ -768,7 +771,7 @@ class Operator:
             tresult['expected_node_value']= value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                tresult['actual_node_value']= None
+                #tresult['actual_node_value']= None
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra= self.log_detail)
                 res = False
@@ -808,7 +811,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra= self.log_detail)
                     else:
-                        tresult['actual_node_value'].append(None)
+                        #tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "Error!!, Node is not present in path given with test operator!!", extra= self.log_detail)
                         res = False
@@ -837,10 +840,10 @@ class Operator:
                 "\n'is-in' test operator require two parameters", extra= self.log_detail)
         else:
             tresult['node_name']= element
-            tresult['node_value_range']= value_list
+            tresult['expected_node_value']= value_list
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                tresult['actual_node_value'].append(None)
+                #tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra= self.log_detail)
                 res = False
@@ -878,7 +881,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra= self.log_detail)
                     else:
-                        tresult['actual_node_value'].append(None)
+                        #tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra= self.log_detail)
@@ -908,10 +911,10 @@ class Operator:
                 "'not-in' test operator require two parameters", extra= self.log_detail)
         else:
             tresult['node_name']= element
-            tresult['node_value_range']=value_list
+            tresult['expected_node_value']=value_list
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                tresult['actual_node_value'].append(None)
+                #tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra= self.log_detail)
                 res = False
@@ -949,7 +952,7 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra= self.log_detail)
                     else:
-                        tresult['actual_node_value'].append(None)
+                        #tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra= self.log_detail)
@@ -974,6 +977,7 @@ class Operator:
         tresult['node_name'] = ele_list[0]
         tresult['pre_node_value']=[]
         tresult['post_node_value']= []
+        tresult['id_miss_match'] = []
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
         if re.match (ele_list[0], "no node"):
             self.logger_testop.error(
@@ -1033,10 +1037,13 @@ class Operator:
                     else:
                         self.logger_testop.error(
                             "ERROR, id miss match occurred!!! id list in pre snapshots is: %s"%iddict, extra= self.log_detail)
+                        tresult['id_miss_match'].append(iddict.copy())
+                        """
                         for kval in k:
                             self.logger_testop.error(
                                 "Missing node: %s" %
                                 kval.strip(), extra= self.log_detail)
+                                """
                         res = False
         self.print_result('no-diff', res)
         tresult['result'] = res
@@ -1224,6 +1231,7 @@ class Operator:
         postdict = {}
         tresult['pre_node_value']= []
         tresult['post_node_value'] =[]
+        tresult['id_miss_match'] = []
         tresult['node_name']= ele_list[0]
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
@@ -1427,6 +1435,8 @@ class Operator:
                     else:
                         self.logger_testop.error("\n ERROR!! id miss match occurred !! mismatched id from pre snapshot"
                                                  "is: %s"%iddict, extra= self.log_detail)
+                        tresult['id_miss_match'].append(iddict.copy())
+
                         #for kval in k:
                         #    self.logger_testop.error(
                         #        "missing node: %s" %

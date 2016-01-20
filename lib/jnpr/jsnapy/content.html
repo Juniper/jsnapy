@@ -8,7 +8,7 @@
 <body>
 <p><font face="calibri" size="3">Hi {{ name }},</font> </p>
 
-<div><font face="calibri" size="3">
+<div><font face="calibri" size="3"></font>
     <p><font color="blue" ><bi> Test Performed on Device: {{device}}</bi></font> </p>
 </div>
 
@@ -39,15 +39,37 @@
        {% for values in tests[item] %}
             {% if values['result'] == True %}
             <li>
-            <p><font color="green"><b>{{values['testoperation']}}: </b> {{values['testoperation']}} Passed</font>
-            <br>Test case passed for <i>xpath:</i> {{values['xpath']}}, on <i> element value:</i> {{values['element_list']}}</p>
+            <p><font color="green"><b> Test Operation: </b> {{values['testoperation']}}: PASSED</font>
+            <br>Test case passed for
+            <br> <i>xpath: </i> {{values['xpath']}}
+            <br> <i> Node Name: </i> {{values['node_name']}}
+            {% if values['testoperation'] in ["no-diff", "list-not-less", "list-not-more", "delta"] %}
+                <br> <i> Pre Node Value: </i> {{values['pre_node_value']}}
+                <br> <i> Post Node Value: </i> {{values['post_node_value']}}
+                <br> <i> Id miss match: </i> {{values['id_miss_match']}}
+            {% else %}
+                <br> <i> Expected Node Value: </i> {{values['expected_node_value']}}
+                <br> <i> Actual Node Value: </i> {{values['actual_node_value']}}
+            {% endif %}
+            </p>
             </li>
             {% endif %}
 
             {% if values['result'] == False %}
             <li>
-            <p> <font color="red"><b>{{values['testoperation']}}: </b>{{values['testoperation']}} Failed</font>
-            <br>Test case failed for <i> xpath: </i> {{values['xpath']}}, on <i> element value: </i> {{values['element_list']}}</p>
+            <p> <font color="red"><b> Test Operation: </b>{{values['testoperation']}}: FAILED </font>
+            <br>Test case failed for
+            <br> <i> xpath: </i> {{values['xpath']}}
+            <br> <i> Node Name: </i> {{values['node_name']}}
+            {% if values['testoperation'] in ["no-diff", "list-not-less", "list-not-more", "delta"] %}
+                 <br> <i> Pre Node Value: </i> {{values['pre_node_value']}}
+                 <br> <i> Post Node Value: </i> {{values['post_node_value']}}
+                 <br> <i> Id miss match: </i> {{values['id_miss_match']}}
+            {% else %}
+                 <br> <i> Expected Node Value: </i> {{values['expected_node_value']}}
+                 <br> <i> Actual Node Value: </i> {{values['actual_node_value']}}
+            {% endif %}
+            </p>
             </li>
             {% endif %}
        {% endfor %}
@@ -59,7 +81,6 @@
   </ul>
         </font>
 </div>
-
 
 
 <div>

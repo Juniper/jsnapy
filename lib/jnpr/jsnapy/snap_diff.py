@@ -3,6 +3,7 @@ import re
 import sys
 import os
 import logging
+import colorama
 
 color_add = '\033[1;32;44m'
 color_sub = '\033[1;31;44m'
@@ -178,23 +179,25 @@ class Differ(object):
 
 class Diff:
 
-    def __init__(self):
+    def __init__(self, log_detail):
         self.logger_diff = logging.getLogger(__name__)
+        self.log_detail = log_detail
+        colorama.init(autoreset=True)
 
     def readfile(self, name):
         if os.path.isfile(name) and os.path.isfile(name):
             with open(name, mode="rb") as f:
                 return f.readlines()
         else:
-            self.logger_diff.error(
-                "ERROR!!! File is not present at given location")
+            self.logger_diff.error(colorama.Fore.RED+
+                "ERROR!!! File is not present at given location", extra = self.log_detail)
 
     def diff_files(self, a, b):
         headers = a, b
         for x in [a, b]:
             if os.path.isdir(x):
-                self.logger_diff.error(
-                    "ERROR!!! File is not present at given location")
+                self.logger_diff.error(colorama.Fore.RED +
+                    "ERROR!!! File is not present at given location", extra= self.log_detail)
                 return
         lines_a = self.readfile(a)
         lines_b = self.readfile(b)

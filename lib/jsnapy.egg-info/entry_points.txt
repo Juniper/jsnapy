@@ -1,0 +1,3 @@
+[console_scripts]
+jsnapy = jnpr.jsnapy.jsnapy:main
+
