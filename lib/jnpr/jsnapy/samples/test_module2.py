@@ -5,12 +5,13 @@ from jnpr.jsnapy import SnapAdmin
 js = SnapAdmin()
 config_file = "/etc/jsnapy/config_single_snapcheck.yml"
 
-"""
+
 dev = Device(host='10.209.61.156', user='regress', password='MaRtInI' )
 dev.open()
 
 config_data = "/etc/jsnapy/config_single_snapcheck.yml"
 config_data1 = "/etc/jsnapy/config_single_check.yml"
+"""
 hosts:
   - devices: 10.209.16.204
     username : regress

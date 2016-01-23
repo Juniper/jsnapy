@@ -1012,11 +1012,12 @@ class Operator:
                         predict[ele_list[0].replace('-', '_')] = val_list1
                         postdict[ele_list[0].replace('-', '_')] = val_list2
 
-                        tresult['pre_node_value']= val_list1
-                        tresult['post_node_value']= val_list2
                         #print "\n ****** val_list1, val_list2:", val_list1, val_list2
                         if val_list1 != val_list2:
                             res = False
+                            tresult['pre_node_value'].append(val_list1)
+                            tresult['post_node_value'].append(val_list2)
+
                             self.logger_testop.info(
                                 jinja2.Template(
                                     err_mssg.replace(

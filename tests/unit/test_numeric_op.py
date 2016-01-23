@@ -14,6 +14,8 @@ class TestNumericOperators(unittest.TestCase):
         self.db['store_in_sqlite'] = False
         self.db['check_from_sqlite'] = False
         self.db['db_name'] = ""
+        self.snap_del = False
+        self.action = None
 
     def test_in_range(self):
         self.chk = False
@@ -28,8 +30,8 @@ class TestNumericOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_in-range_pre")
-
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 
@@ -46,6 +48,7 @@ class TestNumericOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_in-range_fail_pre")
 
         self.assertEqual(oper.no_passed, 0)
@@ -64,6 +67,7 @@ class TestNumericOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_not-range_pre")
 
         self.assertEqual(oper.no_passed, 0)
@@ -82,6 +86,7 @@ class TestNumericOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_in-range_fail_pre")
 
         self.assertEqual(oper.no_passed, 1)
@@ -100,6 +105,7 @@ class TestNumericOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_is-lt_pre")
 
         self.assertEqual(oper.no_passed, 0)
@@ -118,6 +124,7 @@ class TestNumericOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_is-lt_fail_pre")
 
         self.assertEqual(oper.no_passed, 1)
@@ -136,6 +143,7 @@ class TestNumericOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_is-gt_pre")
 
         self.assertEqual(oper.no_passed, 1)
@@ -154,6 +162,7 @@ class TestNumericOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_is-gt_fail_pre")
 
         self.assertEqual(oper.no_passed, 0)

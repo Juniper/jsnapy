@@ -1,5 +1,4 @@
 import unittest
-import sys
 import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch
@@ -13,6 +12,7 @@ class TestStringOperators(unittest.TestCase):
         self.db['store_in_sqlite'] = False
         self.db['check_from_sqlite'] = False
         self.db['db_name'] = ""
+        self.snap_del = False
 
     def test_contains(self):
         self.chk = False
@@ -26,6 +26,7 @@ class TestStringOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_contains_pre")
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
@@ -42,6 +43,7 @@ class TestStringOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_contains_fail_pre")
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
@@ -58,6 +60,7 @@ class TestStringOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_is-in_pre")
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
@@ -74,6 +77,7 @@ class TestStringOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_is-in_fail_pre")
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
@@ -90,6 +94,7 @@ class TestStringOperators(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_not-in_pre")
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
@@ -100,15 +105,14 @@ class TestStringOperators(unittest.TestCase):
         conf_file = "configs/main_not-in.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_not-in_fail_pre")
-
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 

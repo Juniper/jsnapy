@@ -185,27 +185,33 @@ class Comparator:
         """
         pre_snap = self.get_xml_reply(db, pre_snap_value)
         post_snap = self.get_xml_reply(db, post_snap_value)
-        if db.get('check_from_sqlite') is True:
-            pre_root = pre_snap
-            post_root = post_snap
+        flag = False
+        try:
+            if db.get('check_from_sqlite') is True:
+                pre_root = pre_snap
+                post_root = post_snap
+            else:
+                pre_root = pre_snap.getroot()
+                post_root = post_snap.getroot()
+        except Exception as ex:
+            self.logger_check.error(colorama.Fore.RED + "Error!! from pre or post snap file: %s" %ex, extra = self.log_detail)
         else:
-            pre_root = pre_snap.getroot()
-            post_root = post_snap.getroot()
-        result = []
-        xml_comp = XmlComparator()
-        tres= xml_comp.xml_compare(pre_root, post_root, result.append)
-        self.logger_check.info(colorama.Fore.BLUE + (20) * '-' + "Performing --diff without test Operation " +  (20) * '-', extra = self.log_detail)
-        self.logger_check.info(
-            colorama.Fore.BLUE +
-            "Difference in pre and post snap file", extra = self.log_detail)
-        if len(result) == 0:
-            self.logger_check.info(colorama.Fore.BLUE + "    No difference   ", extra = self.log_detail)
-            self.logger_check.info(colorama.Fore.GREEN + "Final result of --diff without test operator: PASSED", extra = self.log_detail)
-        else:
-            for index, res in enumerate(result):
-                self.logger_check.info(colorama.Fore.RED + str(index) + "] " + res, extra = self.log_detail)
-        op.test_details[teston].append(tres)
-        return tres['result']
+            result = []
+            xml_comp = XmlComparator()
+            tres= xml_comp.xml_compare(pre_root, post_root, result.append)
+            self.logger_check.info(colorama.Fore.BLUE + (20) * '-' + "Performing --diff without test Operation " +  (20) * '-', extra = self.log_detail)
+            self.logger_check.info(
+                colorama.Fore.BLUE +
+                "Difference in pre and post snap file", extra = self.log_detail)
+            if len(result) == 0:
+                self.logger_check.info(colorama.Fore.BLUE + "    No difference   ", extra = self.log_detail)
+                self.logger_check.info(colorama.Fore.GREEN + "Final result of --diff without test operator: PASSED", extra = self.log_detail)
+            else:
+                for index, res in enumerate(result):
+                    self.logger_check.info(colorama.Fore.RED + str(index) + "] " + res, extra = self.log_detail)
+            op.test_details[teston].append(tres)
+            flag = tres['result']
+        return flag
 
 # generate names of snap files from hostname and out files given by user,
 # tests are performed on values stored in these snap filesin which test is
@@ -231,9 +237,9 @@ class Comparator:
         self.log_detail['hostname']= device
         # get the test files from config.yml
         if main_file.get('tests') is None:
-            self.logger_check.info(
-                colorama.Fore.BLUE +
-                "\nNo test file, Please mention test files !!", extra = self.log_detail)
+            self.logger_check.error(
+                colorama.Fore.RED +
+                "\nERROR!! No test file found, Please mention test files !!", extra = self.log_detail)
         else:
             for tfiles in main_file.get('tests'):
                 filename = os.path.join(get_path('DEFAULT', 'test_file_path'), tfiles)
@@ -242,7 +248,7 @@ class Comparator:
                     tfiles = yaml.load(testfile)
                     tests_files.append(tfiles)
                 else:
-                    self.logger_check.error("File %s not found" % filename, extra = self.log_detail)
+                    self.logger_check.error("ERROR!! File %s not found" % filename, extra = self.log_detail)
 
             for tests in tests_files:
                 if 'tests_include' in tests:
@@ -301,7 +307,6 @@ class Comparator:
                             if reply_format != data_format1:
                                 self.logger_check.error(colorama.Fore.RED + "ERROR!! Data stored in database is not in %s format." % reply_format, extra = self.log_detail)
                                 sys.exit(1)
-
                         else:
                             snapfile1= self.generate_snap_file(device, pre, name, reply_format)
 

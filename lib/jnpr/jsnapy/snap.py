@@ -108,9 +108,11 @@ class Parser:
                 for tag in kwargs['filter_xml'].split('/')[::-1]:
                     filter_data = E(tag) if filter_data is None else E(tag,filter_data)
                     kwargs['filter_xml'] = filter_data
+                    print "filter_data"
                     if rpc == 'get-config':
                         self.logger_snap.info(colorama.Fore.BLUE + "Taking snapshot of %s......." %rpc, extra = self.log_detail)
                         rpc_reply = getattr(dev.rpc, rpc.replace('-','_'))(options={'format': reply_format},**kwargs)
+                        print "rpc_reply:", rpc_reply
                     else:
                         self.logger_snap.error(colorama.Fore.RED +"ERROR!!, filtering rpc works only for 'get-config' rpc")
             else:
@@ -120,7 +122,7 @@ class Parser:
                 except Exception:
                     self.logger_snap.error(colorama.Fore.RED +"ERROR occurred:\n %s" % str(sys.exc_info()[0]), extra = self.log_detail)
                     self.logger_snap.error(colorama.Fore.RED +"\n**********Complete error message***********\n%s" % str(sys.exc_info()), extra = self.log_detail)
-                    pass
+                    return
         else:
             try:
                 self.logger_snap.info(colorama.Fore.BLUE +"Taking snapshot of %s............" % rpc, extra = self.log_detail)
@@ -131,7 +133,7 @@ class Parser:
             except Exception:
                 self.logger_snap.error(colorama.Fore.RED + "ERROR occurred: \n%s" % str(sys.exc_info()[0]), extra = self.log_detail)
                 self.logger_snap.error(colorama.Fore.RED +"\n**********Complete error message***********\n%s" % str(sys.exc_info()), extra = self.log_detail)
-                pass
+                return
 
         if 'rpc_reply' in locals():
             snap_file = self.generate_snap_file(output_file, hostname, rpc, reply_format)
@@ -165,8 +167,7 @@ class Parser:
         for t in self.test_included:
             if t in test_file:
                 if test_file.get(t) is not None and ('command' in test_file[t][0]):
-                    command = test_file[t][0].get('command',"unknown command")
-                    self.command_list.append(command)
+                    #command = test_file[t][0].get('command',"unknown command")
                     self.run_cmd(test_file, t, formats, dev, output_file, hostname, db)
                 elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
                     self.run_rpc(test_file, t, formats, dev, output_file, hostname, db)

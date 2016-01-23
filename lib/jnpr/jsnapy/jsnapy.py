@@ -17,6 +17,7 @@ import logging
 import setup_logging
 from jnpr.junos.exception import ConnectTimeoutError
 from jnpr.jsnapy import get_path
+from jnpr.jsnapy.testop import Operator
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
@@ -415,6 +416,7 @@ class SnapAdmin:
             self.connect(hostname, username, password, output_file)
 
     def get_test(self, config_data, hostname, snap_file, post_snap, action):
+        res= Operator()
         if config_data.get("mail") and self.args.diff is not True:
             mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), config_data.get('mail'))\
                 if os.path.isfile(config_data.get('mail')) is False else config_data.get('mail')
@@ -441,7 +443,7 @@ class SnapAdmin:
 
 
     # function to connect to device
-    def connect(self, hostname, username, password, snap_file, config_data= None, action= None, post_snap= None):
+    def connect(self, hostname, username, password, output_file, config_data= None, action= None, post_snap= None):
         """
         connect to device and calls the function either to generate snapshots
         or compare them based on option given (--snap, --check, --snapcheck, --diff)
@@ -466,12 +468,12 @@ class SnapAdmin:
                 self.logger.error("\nERROR occurred %s" % str(ex), extra= self.log_detail)
                 raise ConnectTimeoutError("Not able to connect to device")
             else:
-                self.generate_rpc_reply(dev, snap_file, hostname, config_data)
+                self.generate_rpc_reply(dev, output_file, hostname, config_data)
                 dev.close()
                 res = True
 
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in ["check", "snapcheck"]:
-            res = self.get_test(config_data, hostname, snap_file, post_snap, action)
+            res = self.get_test(config_data, hostname, output_file, post_snap, action)
         return res
 
     ############################### functions to support module #######################################################
@@ -627,8 +629,10 @@ class SnapAdmin:
         :return:
         """
         # (self.args.check is True and (self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None))
+
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.snapcheck is True and self.args.file is None ) or
+            (self.args.check is True and self.args.file is None) or
             (self.args.diff is True and (self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None))
            ):
             self.logger.error(

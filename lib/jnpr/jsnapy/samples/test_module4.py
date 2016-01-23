@@ -8,8 +8,7 @@ dev.open()
 
 js = SnapAdmin()
 
-config_file = "/etc/jsnapy/config_single_snapcheck.yml"
-#config_file = "/etc/jsnapy/config_multiple_check.yml"
+config_file1 = "/etc/jsnapy/testfiles/config_single_snapcheck.yml"
 
 config_data= """
 hosts:
@@ -30,14 +29,17 @@ mail: send_mail.yml
 
 """
 
-snapvalue = js.check(config_file, "pre")
-print "snap value is:", snapvalue
+snap = js.snap(config_file, "pre")
+snap2 = js.snap(config_file, "post")
+
+chk = js.snapcheck(config_file1, "pre")
 
 
-for snapcheck in snapvalue:
-    print "\n -----------snapcheck----------", snapcheck
-    print "Tested on", snapcheck.device
-    print "Final result: ", snapcheck.result
-    print "Total passed: ", snapcheck.no_passed
-    print "Total failed:", snapcheck.no_failed
-    pprint (dict(snapcheck.test_details))
+for check in chk:
+    print "Tested on", check.device
+    print "Final result: ", check.result
+    print "Total passed: ", check.no_passed
+    print "Total failed:", check.no_failed
+    print check.test_details
+    pprint (dict(check.test_details))
+
