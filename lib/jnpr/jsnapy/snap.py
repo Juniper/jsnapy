@@ -112,7 +112,6 @@ class Parser:
                     if rpc == 'get-config':
                         self.logger_snap.info(colorama.Fore.BLUE + "Taking snapshot of %s......." %rpc, extra = self.log_detail)
                         rpc_reply = getattr(dev.rpc, rpc.replace('-','_'))(options={'format': reply_format},**kwargs)
-                        print "rpc_reply:", rpc_reply
                     else:
                         self.logger_snap.error(colorama.Fore.RED +"ERROR!!, filtering rpc works only for 'get-config' rpc")
             else:

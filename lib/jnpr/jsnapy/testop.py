@@ -40,12 +40,12 @@ class Operator:
                 *args)
         except AttributeError as e:
             self.logger_testop.error(
-                "\nTest Operator not defined !!!!! \nERROR Message : %s" % e.message, extra= self.log_detail)
+                "ERROR!! message %s" % e.message, extra= self.log_detail)
             self.no_failed = self.no_failed + 1
-        #except:
-        #    self.logger_testop.error(
-        #        "\nUndefined error occurred, please check test cases !!!", extra= self.log_detail)
-        #    self.no_failed = self.no_failed + 1
+        except:
+            self.logger_testop.error(
+                "\nUndefined error occurred, please check test cases !!!", extra= self.log_detail)
+            self.no_failed = self.no_failed + 1
 
     def print_result(self, testname, result):
         if result is False:

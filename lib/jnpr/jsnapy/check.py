@@ -50,7 +50,11 @@ class Comparator:
     """
     def get_xml_reply(self, db, snap):
         if db.get('check_from_sqlite') is True:
-            xml_value = etree.fromstring(snap)
+            if snap != str(None):
+                xml_value = etree.fromstring(snap)
+            else:
+                self.logger_check.error(colorama.Fore.RED + "ERROR, Database for either pre or post snapshot is not present in given path !!", extra = self.log_detail)
+                return
         elif os.path.isfile(snap):
             xml_value = etree.parse(snap)
         else:
@@ -183,6 +187,7 @@ class Comparator:
         :param post_snap_file: post snapshots
         :return: True if no difference in files, false if there is difference
         """
+        self.logger_check.info(colorama.Fore.BLUE + 30*'-' + "Performing --diff without any test operator" + 30*'-', extra= self.log_detail)
         pre_snap = self.get_xml_reply(db, pre_snap_value)
         post_snap = self.get_xml_reply(db, post_snap_value)
         flag = False
@@ -198,19 +203,26 @@ class Comparator:
         else:
             result = []
             xml_comp = XmlComparator()
-            tres= xml_comp.xml_compare(pre_root, post_root, result.append)
-            self.logger_check.info(colorama.Fore.BLUE + (20) * '-' + "Performing --diff without test Operation " +  (20) * '-', extra = self.log_detail)
-            self.logger_check.info(
-                colorama.Fore.BLUE +
-                "Difference in pre and post snap file", extra = self.log_detail)
-            if len(result) == 0:
+            if pre_root is not None and post_root is not None:
+                tres= xml_comp.xml_compare(pre_root, post_root, result.append)
+                self.logger_check.info(colorama.Fore.BLUE + (20) * '-' + "Performing --diff without test Operation " +  (20) * '-', extra = self.log_detail)
+                self.logger_check.info(
+                    colorama.Fore.BLUE +
+                    "Difference in pre and post snap file", extra = self.log_detail)
+                flag = tres['result']
+            else:
+                tres= {}
+                result = []
+                flag = False
+                self.logger_check.error(colorama.Fore.RED + "Final result of --diff without test operator: FAILED", extra = self.log_detail)
+            if len(result) == 0 and flag is True:
                 self.logger_check.info(colorama.Fore.BLUE + "    No difference   ", extra = self.log_detail)
                 self.logger_check.info(colorama.Fore.GREEN + "Final result of --diff without test operator: PASSED", extra = self.log_detail)
             else:
                 for index, res in enumerate(result):
                     self.logger_check.info(colorama.Fore.RED + str(index) + "] " + res, extra = self.log_detail)
             op.test_details[teston].append(tres)
-            flag = tres['result']
+
         return flag
 
 # generate names of snap files from hostname and out files given by user,
@@ -248,7 +260,7 @@ class Comparator:
                     tfiles = yaml.load(testfile)
                     tests_files.append(tfiles)
                 else:
-                    self.logger_check.error("ERROR!! File %s not found" % filename, extra = self.log_detail)
+                    self.logger_check.error(colorama.Fore.RED + "ERROR!! File %s not found for testing" % filename, extra = self.log_detail)
 
             for tests in tests_files:
                 if 'tests_include' in tests:
@@ -300,13 +312,15 @@ class Comparator:
                             if reply_format != data_format1 or reply_format != data_format2:
                                 self.logger_check.error(colorama.Fore.RED + "ERROR!! Data stored in database is not in %s format."
                                                         % reply_format, extra = self.log_detail)
-                                sys.exit(1)
+                                pass
+                                #sys.exit(1)
                         elif db.get('check_from_sqlite') is True:
                             a = SqliteExtractXml(db.get('db_name'))
                             snapfile1, data_format1 = a.get_xml_using_snapname(str(device), name, pre)
                             if reply_format != data_format1:
                                 self.logger_check.error(colorama.Fore.RED + "ERROR!! Data stored in database is not in %s format." % reply_format, extra = self.log_detail)
-                                sys.exit(1)
+                                pass
+                                #sys.exit(1)
                         else:
                             snapfile1= self.generate_snap_file(device, pre, name, reply_format)
 

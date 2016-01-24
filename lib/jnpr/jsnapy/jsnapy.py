@@ -189,7 +189,7 @@ class SnapAdmin:
             else:
                 self.logger.error(colorama.Fore.RED +"Specify name of the database.", extra= self.log_detail)
                 exit(1)
-            if check is True or action is "check":
+            if check is True or self.args.diff is True or action is "check":
                 if 'compare' in d.keys() and d['compare'] is not None:
                     strr = d['compare']
                     if not isinstance(strr, str):
@@ -287,7 +287,7 @@ class SnapAdmin:
             else:
                 self.logger.error(
                     colorama.Fore.RED +
-                    "ERROR!! File %s is not found" %
+                    "ERROR!! File %s is not found for taking snapshots" %
                     tfile, extra= self.log_detail)
 
         g = Parser()
@@ -517,22 +517,26 @@ class SnapAdmin:
                 colorama.Fore.RED +
                 "incorrect config file or data, please chk !!!!", extra= self.log_detail)
             exit(1)
-        host = config_data.get('hosts')[0]
-        if config_data.__contains__('sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
-                self.chk_database(config_data, pre_name, post_name, None, None, action)
-        if host.__contains__('include'):
-            res_obj = self.multiple_device_details(host, config_data, pre_name, action, post_name)
+        try:
+            host = config_data.get('hosts')[0]
+        except Exception as ex:
+            self.logger.error(colorama.Fore.RED + "ERROR!! config file not defined properly, %s"%ex, extra= self.log_detail)
         else:
-            hostname = host.get('devices')
-            self.log_detail = {'hostname':hostname}
-            username = host.get('username') or raw_input("\n Enter user name: ")
-            password = host.get('passwd') or getpass.getpass("\nPlease enter password to login to Device: ")
-            #pre_name = hostname + '_' + pre_name if not os.path.isfile(pre_name) else pre_name
-            #if action is "check":
-            #    post_name= hostname + '_' + post_name if not os.path.isfile(post_name) else post_name
-            val = self.connect(hostname, username, password, pre_name, config_data, action, post_name)
-            res_obj.append(val)
-        return res_obj
+            if config_data.__contains__('sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
+                    self.chk_database(config_data, pre_name, post_name, None, None, action)
+            if host.__contains__('include'):
+                res_obj = self.multiple_device_details(host, config_data, pre_name, action, post_name)
+            else:
+                hostname = host.get('devices')
+                self.log_detail = {'hostname':hostname}
+                username = host.get('username') or raw_input("\n Enter user name: ")
+                password = host.get('passwd') or getpass.getpass("\nPlease enter password to login to Device: ")
+                #pre_name = hostname + '_' + pre_name if not os.path.isfile(pre_name) else pre_name
+                #if action is "check":
+                #    post_name= hostname + '_' + post_name if not os.path.isfile(post_name) else post_name
+                val = self.connect(hostname, username, password, pre_name, config_data, action, post_name)
+                res_obj.append(val)
+            return res_obj
 
     def extract_dev_data(self, dev, config_data, pre_name= None, action=None, post_snap=None):
         res = []
@@ -546,22 +550,26 @@ class SnapAdmin:
                 colorama.Fore.RED +
                 "incorrect config file or data, please chk !!!!", extra= self.log_detail)
             exit(1)
-        hostname = dev.hostname
-        self.log_detail = {'hostname':hostname}
-        if config_data.__contains__('sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
-            self.chk_database(config_data, pre_name, post_snap, None, None, action)
+        try:
+            hostname = dev.hostname
+            self.log_detail = {'hostname':hostname}
+        except Exception as ex:
+            self.logger.error(colorama.Fore.RED + "ERROR!! message is: %s"%ex, extra = self.log_detail)
+        else:
+            if config_data.__contains__('sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
+                self.chk_database(config_data, pre_name, post_snap, None, None, action)
 
-        if action in ["snap", "snapcheck"]:
-            try:
-                self.generate_rpc_reply(dev, pre_name, hostname, config_data)
-            except Exception as ex:
-                self.logger.error("\nERROR occurred %s" % str(ex), extra= self.log_detail)
-            else:
-                res = True
-        if action in ["snapcheck", "check"]:
-            res =[]
-            res.append(self.get_test(config_data, hostname, pre_name, post_snap, action))
-        return res
+            if action in ["snap", "snapcheck"]:
+                try:
+                    self.generate_rpc_reply(dev, pre_name, hostname, config_data)
+                except Exception as ex:
+                    self.logger.error("\nERROR occurred %s" % str(ex), extra= self.log_detail)
+                else:
+                    res = True
+            if action in ["snapcheck", "check"]:
+                res =[]
+                res.append(self.get_test(config_data, hostname, pre_name, post_snap, action))
+            return res
 
     def snap(self, data, file_name, dev= None):
         if dev is None:
@@ -633,7 +641,7 @@ class SnapAdmin:
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.snapcheck is True and self.args.file is None ) or
             (self.args.check is True and self.args.file is None) or
-            (self.args.diff is True and (self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None))
+            (self.args.diff is True and self.args.file is None )
            ):
             self.logger.error(
                 "Arguments not given correctly, Please refer help message", extra= self.log_detail)
