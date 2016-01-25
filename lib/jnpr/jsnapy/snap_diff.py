@@ -49,7 +49,7 @@ class Differ(object):
                       "\033[7;3\\1m\\2\\3", string)
 
     def _accumulate_formatted_lines(self, diffs):
-        
+
         def compile_string(line_number, string):
             string = string.rstrip()
             try:
@@ -90,7 +90,7 @@ class Differ(object):
                 else:
                     ctr += 1
             p_char = char
-        return ctr        
+        return ctr
 
     def _decorate_lines(self, diff_data):
 
@@ -171,7 +171,7 @@ class Differ(object):
             yield (header_left, header_right)
         for text in diff_lines:
             if text is None:
-                separator = color_sep + '-'*3 + color_none
+                separator = color_sep + '-' * 3 + color_none
                 yield (separator, separator)
             else:
                 yield text
@@ -189,15 +189,15 @@ class Diff:
             with open(name, mode="rb") as f:
                 return f.readlines()
         else:
-            self.logger_diff.error(colorama.Fore.RED+
-                "ERROR!!! File is not present at given location", extra = self.log_detail)
+            self.logger_diff.error(colorama.Fore.RED +
+                                   "ERROR!!! File is not present at given location", extra=self.log_detail)
 
     def diff_files(self, a, b):
         headers = a, b
         for x in [a, b]:
             if os.path.isdir(x):
                 self.logger_diff.error(colorama.Fore.RED +
-                    "ERROR!!! File is not present at given location", extra= self.log_detail)
+                                       "ERROR!!! File is not present at given location", extra=self.log_detail)
                 return
         lines_a = self.readfile(a)
         lines_b = self.readfile(b)

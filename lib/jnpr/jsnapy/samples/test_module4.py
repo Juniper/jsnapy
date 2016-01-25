@@ -2,7 +2,7 @@ from jnpr.jsnapy import SnapAdmin
 from pprint import pprint
 from jnpr.junos import Device
 
-dev = Device(host='10.209.16.204', user='regress', password='MaRtInI' )
+dev = Device(host='10.209.16.204', user='regress', password='MaRtInI')
 dev.open()
 
 
@@ -10,7 +10,7 @@ js = SnapAdmin()
 
 config_file1 = "/etc/jsnapy/testfiles/config_single_snapcheck.yml"
 
-config_data= """
+config_data = """
 hosts:
   - include: devices.yml
     group: MX
@@ -41,5 +41,4 @@ for check in chk:
     print "Total passed: ", check.no_passed
     print "Total failed:", check.no_failed
     print check.test_details
-    pprint (dict(check.test_details))
-
+    pprint(dict(check.test_details))

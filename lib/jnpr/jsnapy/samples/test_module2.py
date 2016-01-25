@@ -6,7 +6,7 @@ js = SnapAdmin()
 config_file = "/etc/jsnapy/config_single_snapcheck.yml"
 
 
-dev = Device(host='10.209.61.156', user='regress', password='MaRtInI' )
+dev = Device(host='10.209.61.156', user='regress', password='MaRtInI')
 dev.open()
 
 config_data = "/etc/jsnapy/config_single_snapcheck.yml"
@@ -37,9 +37,9 @@ tests:
 print "config_data", config_data
 
 snapvalue = js.snap(config_file, "pre")
-print "snap value is:" , snapvalue
+print "snap value is:", snapvalue
 snapvalue2 = js.snap(config_data, "post", dev)
-#print "dev is:", dev
+# print "dev is:", dev
 snapchk = js.snapcheck(config_data, "pre", dev)
 
 for snapcheck in snapchk:
@@ -48,7 +48,7 @@ for snapcheck in snapchk:
     print "Final result: ", snapcheck.result
     print "Total passed: ", snapcheck.no_passed
     print "Total failed:", snapcheck.no_failed
-    pprint (dict(snapcheck.test_details))
+    pprint(dict(snapcheck.test_details))
 """
 chk = js.check(config_data, "pre", "post", dev)
 for check in chk:

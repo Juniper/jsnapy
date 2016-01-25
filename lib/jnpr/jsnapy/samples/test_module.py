@@ -2,7 +2,7 @@ from jnpr.jsnapy import SnapAdmin
 from pprint import pprint
 from jnpr.junos import Device
 
-dev = Device(host='10.209.16.206', user='regress', password='MaRtInI' )
+dev = Device(host='10.209.16.206', user='regress', password='MaRtInI')
 dev.open()
 
 
