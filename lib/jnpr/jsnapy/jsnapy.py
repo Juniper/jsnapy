@@ -529,8 +529,8 @@ class SnapAdmin:
             else:
                 hostname = host.get('devices')
                 self.log_detail = {'hostname':hostname}
-                username = host.get('username') or raw_input("\n Enter user name: ")
-                password = host.get('passwd') or getpass.getpass("\nPlease enter password to login to Device: ")
+                username = host.get('username')
+                password = host.get('passwd')
                 #pre_name = hostname + '_' + pre_name if not os.path.isfile(pre_name) else pre_name
                 #if action is "check":
                 #    post_name= hostname + '_' + post_name if not os.path.isfile(post_name) else post_name

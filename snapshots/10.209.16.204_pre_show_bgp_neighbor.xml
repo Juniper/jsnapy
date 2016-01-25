@@ -1,0 +1,447 @@
+<bgp-information>
+<bgp-peer style="detail">
+<peer-address>10.209.16.206</peer-address>
+<peer-as>8897</peer-as>
+<local-address>unspecified</local-address>
+<local-as>8897</local-as>
+<peer-group>IBGP</peer-group>
+<peer-cfg-rti>master</peer-cfg-rti>
+<peer-fwd-rti>master</peer-fwd-rti>
+<peer-type>Internal</peer-type>
+<peer-state>Active</peer-state>
+<peer-flags/>
+<last-state>Idle</last-state>
+<last-event>Start</last-event>
+<last-error>Open Message Error</last-error>
+<bgp-option-information>
+<bgp-options>Preference LogUpDown Refresh</bgp-options>
+<bgp-options2/>
+<bgp-options-extended/>
+<holdtime>90</holdtime>
+<preference>170</preference>
+<nlri-information>
+<nlri-type>inet-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-multicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-vpn-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-vpn-multicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-multicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>l2vpn</nlri-type>
+<nlri-flags>
+</nlri-flags>
+</nlri-information>
+<nlri-information>
+<nlri-type>l2vpn-mspw-ad</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-labeled-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-labeled-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-vpn-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-vpn-multicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>atmvpn</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>route-target</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-flow</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-vpn-flow</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-flow</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-vpn-flow</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>iso-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>iso-vpn-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-mvpn</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-mvpn</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-mdt</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>evpn</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>te-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+</bgp-option-information>
+<flap-count>0</flap-count>
+<bgp-error>
+<name>Open Message Error</name>
+<send-count>35033</send-count>
+<receive-count>0</receive-count>
+</bgp-error>
+</bgp-peer>
+<bgp-peer style="detail">
+<peer-address>10.209.16.208</peer-address>
+<peer-as>8897</peer-as>
+<local-address>unspecified</local-address>
+<local-as>8897</local-as>
+<peer-group>IBGP</peer-group>
+<peer-cfg-rti>master</peer-cfg-rti>
+<peer-fwd-rti>master</peer-fwd-rti>
+<peer-type>Internal</peer-type>
+<peer-state>Active</peer-state>
+<peer-flags/>
+<last-state>Idle</last-state>
+<last-event>Start</last-event>
+<last-error>None</last-error>
+<bgp-option-information>
+<bgp-options>Preference LogUpDown Refresh</bgp-options>
+<bgp-options2/>
+<bgp-options-extended/>
+<holdtime>90</holdtime>
+<preference>170</preference>
+<nlri-information>
+<nlri-type>inet-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-multicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-vpn-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-vpn-multicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-multicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>l2vpn</nlri-type>
+<nlri-flags>
+</nlri-flags>
+</nlri-information>
+<nlri-information>
+<nlri-type>l2vpn-mspw-ad</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-labeled-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-labeled-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-vpn-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-vpn-multicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>atmvpn</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>route-target</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-flow</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-vpn-flow</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-flow</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-vpn-flow</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>iso-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>iso-vpn-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-mvpn</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet6-mvpn</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>inet-mdt</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>evpn</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+<nlri-information>
+<nlri-type>te-unicast</nlri-type>
+<nlri-flags>
+</nlri-flags>
+<nlri-output-queue-priority>priority 1</nlri-output-queue-priority>
+<nlri-route-refresh-priority>priority 1</nlri-route-refresh-priority>
+<nlri-withdraw-priority>priority 1</nlri-withdraw-priority>
+</nlri-information>
+</bgp-option-information>
+<flap-count>0</flap-count>
+</bgp-peer>
+</bgp-information>

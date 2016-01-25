@@ -13,8 +13,8 @@ config_file = "/etc/jsnapy/config_multiple_check.yml"
 config_data = """
 hosts:
   - devices: 10.209.16.204
-    username : root
-    passwd: Embe1mpls
+    username : regress
+ #   passwd: Embe1mpls
 tests:
   - test_no_diff.yml
   - test_delta.yml
@@ -33,9 +33,10 @@ sqlite:
 #mail: send_mail.yml
 """
 
-snapvalue = js.check(config_file, "pre", "post")
+snapvalue = js.snap(config_data, "pre")
 print "snap value is:", snapvalue
 
+"""
 for snapcheck in snapvalue:
     print "\n -----------snapcheck----------", snapcheck
     print "Tested on", snapcheck.device
@@ -43,3 +44,4 @@ for snapcheck in snapvalue:
     print "Total passed: ", snapcheck.no_passed
     print "Total failed:", snapcheck.no_failed
     pprint (dict(snapcheck.test_details))
+"""
