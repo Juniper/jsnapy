@@ -137,6 +137,8 @@ class Parser:
             self.logger_snap.error(colorama.Fore.RED +
                                    "\n**********Complete error message***********\n %s" %
                                    str(sys.exc_info()), extra=self.log_detail)
+            #raise Exception("Error in command")
+            #sys.exc_clear()
             pass
         else:
             snap_file = self.generate_snap_file(

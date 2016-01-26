@@ -15,7 +15,6 @@ import getpass
 import Queue
 import logging
 import setup_logging
-from jnpr.junos.exception import ConnectTimeoutError
 from jnpr.jsnapy import get_path
 from jnpr.jsnapy.testop import Operator
 
@@ -218,9 +217,10 @@ class SnapAdmin:
                     lst = [val.strip() for val in strr.split(',')]
                     try:
                         lst = [int(x) for x in lst]
-                    except ValueError as e:
+                    except ValueError as ex:
                         self.logger.error(colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
                                           " in format: first_snapshot_id, second_snapshot_id", extra=self.log_detail)
+                        #raise Exception(ex)
                         exit(1)
                     if len(lst) > 2:
                         self.logger.error(colorama.Fore.RED + "No. of snapshots specified is more than two."
@@ -374,11 +374,13 @@ class SnapAdmin:
                     "\nERROR occurred !! Hostname not given properly %s" %
                     str(ex),
                     extra=self.log_detail)
+                #raise Exception(ex)
             except Exception as ex:
                 self.logger.error(
                     "\nERROR occurred !! %s" %
                     str(ex),
                     extra=self.log_detail)
+                #raise Exception(ex)
             else:
                 # when group of devices are given, searching for include keyword in
                 # hosts in main.yaml file
@@ -433,17 +435,19 @@ class SnapAdmin:
                     try:
                         hostname = k['devices']
                         self.log_detail = {'hostname': hostname}
-                    except KeyError:
+                    except KeyError as ex:
                         self.logger.error(
                             colorama.Fore.RED +
                             "ERROR!! KeyError 'devices' key not found",
                             extra=self.log_detail)
+                        #raise Exception(ex)
                     except Exception as ex:
                         self.logger.error(
                             colorama.Fore.RED +
                             "ERROR!! %s" %
                             ex,
                             extra=self.log_detail)
+                        #raise Exception(ex)
                     else:
                         username = k.get('username') or self.args.login or raw_input(
                             "\nEnter User name: ")
@@ -542,7 +546,7 @@ class SnapAdmin:
                     "\nERROR occurred %s" %
                     str(ex),
                     extra=self.log_detail)
-                raise ConnectTimeoutError("Not able to connect to device")
+                raise Exception(ex)
             else:
                 self.generate_rpc_reply(
                     dev,
@@ -646,6 +650,7 @@ class SnapAdmin:
                 "ERROR!! config file not defined properly, %s" %
                 ex,
                 extra=self.log_detail)
+            raise Exception("config file not defined properly",ex)
         else:
             if config_data.__contains__(
                     'sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
@@ -713,6 +718,7 @@ class SnapAdmin:
                 "ERROR!! message is: %s" %
                 ex,
                 extra=self.log_detail)
+            raise Exception(ex)
         else:
             if config_data.__contains__(
                     'sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
@@ -756,10 +762,10 @@ class SnapAdmin:
         :param file_name: snap file, either complete filename or file tag
         :param dev: device object
         """
-        if dev is None:
-            res = self.extract_data(data, file_name, "snap")
-        else:
+        if isinstance(dev, Device):
             res = self.extract_dev_data(dev, data, file_name, "snap")
+        else:
+            res = self.extract_data(data, file_name, "snap")
         return res
 
     def snapcheck(self, data, file_name=None, dev=None):
@@ -773,10 +779,10 @@ class SnapAdmin:
         if file_name is None:
             file_name = "snap_temp"
             self.snap_del = True
-        if dev is None:
-            res = self.extract_data(data, file_name, "snapcheck")
-        else:
+        if isinstance(dev, Device):
             res = self.extract_dev_data(dev, data, file_name, "snapcheck")
+        else:
+            res = self.extract_data(data, file_name, "snapcheck")
         return res
 
     def check(self, data, pre_file=None, post_file=None, dev=None):
@@ -788,15 +794,15 @@ class SnapAdmin:
         :param dev: device object
         :return: return object of testop.Operator containing test details
         """
-        if dev is None:
-            res = self.extract_data(data, pre_file, "check", post_file)
-        else:
+        if isinstance(dev, Device):
             res = self.extract_dev_data(
                 dev,
                 data,
                 pre_file,
                 "check",
                 post_file)
+        else:
+            res = self.extract_data(data, pre_file, "check", post_file)
         return res
 
     #######  generate init folder ######
