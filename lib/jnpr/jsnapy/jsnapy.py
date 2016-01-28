@@ -416,9 +416,8 @@ class SnapAdmin:
                                         hostname).keys():
                                     password = val.get(hostname).get('passwd')
                                 else:
-                                    password = self.args.passwd if self.args.passwd is not None else getpass.getpass(
-                                        "\nEnter Password for username: %s " %
-                                        username)
+                                    password = self.args.passwd
+                                        #if self.args.passwd is not None else getpass.getpass("\nEnter Password for username: %s " %username)
                                 t = Thread(
                                     target=self.connect,
                                     args=(
@@ -451,8 +450,7 @@ class SnapAdmin:
                     else:
                         username = k.get('username') or self.args.login or raw_input(
                             "\nEnter User name: ")
-                        password = k.get('passwd') or self.args.passwd or getpass.getpass(
-                            "\nEnter Password: ")
+                        password = k.get('passwd') or self.args.passwd
                         self.host_list.append(hostname)
                         self.connect(hostname, username, password, output_file)
 
@@ -462,8 +460,8 @@ class SnapAdmin:
             self.log_detail = {'hostname': hostname}
             username = self.args.login if self.args.login is not None else raw_input(
                 "\nEnter User name: ")
-            password = self.args.passwd if self.args.passwd is not None else getpass.getpass(
-                "\nEnter Password: ")
+            password = self.args.passwd
+               # if self.args.passwd is not None else getpass.getpass("\nEnter Password: ")
             self.host_list.append(hostname)
             self.connect(hostname, username, password, output_file)
 

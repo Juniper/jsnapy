@@ -1,5 +1,24 @@
 from setuptools import setup, find_packages
 import os
+from setuptools.command.install import install
+
+class OverrideInstall(install):
+    def run(self):
+        mode = 0o777 
+        install.run(self)
+        os.chmod('/etc/jsnapy', mode)
+        for root, dirs, files in os.walk('/etc/jsnapy'):  
+            for directory in dirs:  
+                os.chmod(os.path.join(root, directory), mode)
+            for fname in files:
+                os.chmod(os.path.join(root, fname), mode)
+
+        os.chmod('/var/log/jsnapy', mode)
+        for root, dirs, files in os.walk('/var/log/jsnapy'):
+            for directory in dirs:
+                os.chmod(os.path.join(root, directory), mode)
+            for fname in files:
+                os.chmod(os.path.join(root, fname), mode)
 
 req_lines = [line.strip() for line in open(
     'requirements.txt').readlines()]
@@ -37,8 +56,9 @@ setup(name="jsnapy",
                   ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
                   ('/etc/jsnapy/testfiles', ['lib/jnpr/jsnapy/testfiles/README']),
                   ('/etc/jsnapy/snapshots', ['lib/jnpr/jsnapy/snapshots/README']),
-                  ('/etc/logs/jsnapy', log_files)
+                  ('/var/log/jsnapy', log_files)
                   ],
+      cmdclass={'install': OverrideInstall},
       classifiers=[
           'Environment :: Console',
           'Intended Audience :: Developers',
