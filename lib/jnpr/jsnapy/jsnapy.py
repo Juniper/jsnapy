@@ -367,42 +367,6 @@ class SnapAdmin:
         """
         self.host_list = []
         if self.args.hostname is None:
-<<<<<<< HEAD
-            k = self.main_file['hosts'][0]
-            # when group of devices are given, searching for include keyword in
-            # hosts in main.yaml file
-            if k.__contains__('include'):
-                file_tag = k['include']
-                if os.path.isfile(file_tag):
-                    lfile = file_tag
-                else:
-                    lfile = os.path.join((self.config.get('DEFAULT', 'test_file_path', vars={'test_file_path':'/etc/jsnapy/testfiles'})).encode('utf-8'), file_tag)
-                login_file = open(lfile, 'r')
-                dev_file = yaml.load(login_file)
-                gp = k.get('group', 'all')
-
-                dgroup = [i.strip() for i in gp.split(',')]
-                for dgp in dev_file:
-                    if dgroup[0].lower() == 'all' or dgp in dgroup:
-                        for val in dev_file[dgp]:
-                            hostname = val.keys()[0]
-                            self.host_list.append(hostname)
-                            username = val.get(hostname).get('username')
-                            password = val.get(hostname).get('passwd')
-                            t = Thread(
-                                target=self.connect,
-                                args=(
-                                    hostname,
-                                    username,
-                                    password,
-                                    output_file,
-                                ))
-                            t.start()
-                            t.join()
-
-        # login credentials are given in main config file, can connect to only
-        # one device
-=======
             try:
                 k = self.main_file['hosts'][0]
             except KeyError as ex:
@@ -417,7 +381,6 @@ class SnapAdmin:
                     str(ex),
                     extra=self.log_detail)
                 #raise Exception(ex)
->>>>>>> module
             else:
                 # when group of devices are given, searching for include keyword in
                 # hosts in main.yaml file
@@ -589,18 +552,6 @@ class SnapAdmin:
                     hostname,
                     config_data)
                 dev.close()
-<<<<<<< HEAD
-        if self.args.check is True or self.args.snapcheck is True or self.args.diff is True:
-            if self.main_file.get("mail") and self.args.diff is not True:
-                mfile = os.path.join(self.config.get('DEFAULT', 'test_file_path', vars={'test_file_path':'/etc/jsnapy/testfiles'}).encode('utf-8'), self.main_file['mail']) \
-                    if os.path.isfile(self.main_file['mail']) is False else self.main_file['mail']
-                if os.path.isfile(mfile):
-                    mail_file = open(mfile, 'r')
-                    mail_file = yaml.load(mail_file)
-                    if "passwd" not in mail_file:
-                        passwd = getpass.getpass(
-                            "Please enter ur email password ")
-=======
                 res = True
 
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in [
@@ -660,7 +611,6 @@ class SnapAdmin:
                     t.start()
                     if action in ["snapcheck", "check"]:
                         res_obj.append(self.q.get())
->>>>>>> module
                     else:
                         res_obj.append(True)
                     t.join()
