@@ -3,7 +3,6 @@ import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch
 
-
 class TestComparisonOperator(unittest.TestCase):
 
     def setUp(self):
@@ -16,6 +15,8 @@ class TestComparisonOperator(unittest.TestCase):
         self.db['db_name'] = "jbb.db"
         self.db['first_snap_id'] = None
         self.db['first_snap_id'] = None
+        self.snap_del = False
+        self.action = None
 
     def test_no_diff(self):
         self.chk = True
@@ -30,7 +31,9 @@ class TestComparisonOperator(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_no-diff_pre",
+            self.action,
             "snap_no-diff_post")
 
         self.assertEqual(oper.no_passed, 2)
@@ -49,7 +52,9 @@ class TestComparisonOperator(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_no-diff_pre",
+            self.action,
             "snap_no-diff_post")
 
         self.assertEqual(oper.no_passed, 1)
@@ -68,7 +73,9 @@ class TestComparisonOperator(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_no-diff_pre",
+            self.action,
             "snap_no-diff_post")
 
         self.assertEqual(oper.no_passed, 1)
@@ -87,7 +94,9 @@ class TestComparisonOperator(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_no-diff_pre",
+            self.action,
             "snap_3")
 
         self.assertEqual(oper.no_passed, 2)
@@ -106,9 +115,10 @@ class TestComparisonOperator(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_no-diff_pre",
+            self.action,
             "snap_3")
-
         self.assertEqual(oper.no_passed, 2)
         self.assertEqual(oper.no_failed, 0)
 
@@ -125,9 +135,10 @@ class TestComparisonOperator(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_delta_pre",
+            self.action,
             "snap_delta_post")
-
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 
@@ -144,7 +155,9 @@ class TestComparisonOperator(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_delta_fail_pre",
+            self.action,
             "snap_delta_fail_post")
 
         self.assertEqual(oper.no_passed, 0)
@@ -163,11 +176,12 @@ class TestComparisonOperator(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_no-diff_pre",
+            self.action,
             "snap_no-diff_post")
-
-        self.assertEqual(oper.no_passed, 1)
-        self.assertEqual(oper.no_failed, 5)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 6)
 
     def test_no_diff_2_pass(self):
         self.chk = True
@@ -182,7 +196,9 @@ class TestComparisonOperator(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_no-diff_pre",
+            self.action,
             "snap_3")
 
         self.assertEqual(oper.no_passed, 6)
@@ -202,7 +218,9 @@ class TestComparisonOperator(unittest.TestCase):
             self.chk,
             self.diff,
             self.db,
+            self.snap_del,
             "snap_no-diff_pre",
+            self.action,
             "snap_no-diff_post1")
 
         self.assertEqual(oper.no_passed, 6)

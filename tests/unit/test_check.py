@@ -18,23 +18,27 @@ class TestCheck(unittest.TestCase):
         self.db['db_name'] = "jbb.db"
         self.db['first_snap_id'] = None
         self.db['first_snap_id'] = None
+        self.snap_del = False
+        self.action = None
 
-    def test_no_test_file(self):
+    @patch('logging.Logger.info')
+    def test_no_test_file(self, mock_info):
         self.chk = False
         comp = Comparator()
         conf_file = "configs/main_incorrect_1.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-        with patch('logging.Logger.info') as mock_log:
+        with patch('logging.Logger.error') as mock_error:
             comp.generate_test_files(
                 main_file,
                 self.hostname,
                 self.chk,
                 self.diff,
                 self.db,
+                self.snap_del,
                 "snap_is-equal_pre")
-            err = "No test file, Please mention test files"
-            c_list = mock_log.call_args_list[0]
+            err = "ERROR!! No test file found, Please mention test files !!"
+            c_list = mock_error.call_args_list[0]
             self.assertNotEqual(c_list[0][0].find(err), -1)
 
     @patch('logging.Logger.info')
@@ -44,18 +48,18 @@ class TestCheck(unittest.TestCase):
         conf_file = "configs/main_incorrect_2.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-        filename = os.path.join('/etc','jsnapy','testfiles', "dummy.yml")
-        with patch('logging.Logger.error') as mock_log:
+        filename = os.path.join('/etc', 'jsnapy', 'testfiles' ,"dummy.yml")
+        with patch('logging.Logger.error') as mock_error:
             comp.generate_test_files(
                 main_file,
                 self.hostname,
                 self.chk,
                 self.diff,
                 self.db,
+                self.snap_del,
                 "snap_is-equal_pre")
-            err = "File %s not found" % filename
-            c_list = mock_log.call_args_list[0]
-            print "c_list", c_list
+            err = "ERROR!! File %s not found" %filename
+            c_list = mock_error.call_args_list[0]
             self.assertNotEqual(c_list[0][0].find(err), -1)
 
     @patch('logging.Logger.info')
@@ -72,6 +76,7 @@ class TestCheck(unittest.TestCase):
                 self.chk,
                 self.diff,
                 self.db,
+                self.snap_del,
                 "snap_is-equal_pre")
             err = "ERROR occurred, test keys 'command' or 'rpc' not defined properly"
             c_list = mock_log.call_args_list[0]
@@ -97,9 +102,10 @@ class TestCheck(unittest.TestCase):
                     self.chk,
                     self.diff,
                     self.db,
+                    self.snap_del,
                     "snap_no-diff_pre",
+                    self.action,
                     "snap_no-diff_post1")
-
             except BaseException:
                 err = "ERROR!! Data stored in database is not in %s format"
                 c_list = mock_log.call_args_list[0]
@@ -119,9 +125,10 @@ class TestCheck(unittest.TestCase):
                 self.chk,
                 self.diff,
                 self.db,
+                self.snap_del,
                 "snap_no-diff_pre",
+                self.action,
                 "snap_no-diff_post1")
-
             err = "ERROR!! for checking snapshots in text format use '--diff' option"
             c_list = mock_log.call_args_list[0]
             self.assertNotEqual(c_list[0][0].find(err), -1)
@@ -140,7 +147,9 @@ class TestCheck(unittest.TestCase):
                 self.chk,
                 self.diff,
                 self.db,
+                self.snap_del,
                 "snap_no-diff_pre",
+                self.action,
                 "snap_no-diff_post")
             self.assertTrue(mock_compare.called)
 
@@ -158,7 +167,9 @@ class TestCheck(unittest.TestCase):
                 self.chk,
                 self.diff,
                 self.db,
+                self.snap_del,
                 "snap_no-diff_pre",
+                self.action,
                 "snap_no-diff_post")
             self.assertTrue(mock_compare.called)
 
