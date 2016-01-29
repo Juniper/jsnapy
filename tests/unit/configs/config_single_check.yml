@@ -1,0 +1,20 @@
+# for one device, can be given like this:
+hosts:
+  - devices: 10.209.16.204 
+    username : ruoot
+    passwd: Embe1mpls
+tests:
+  - test_no_diff.yml 
+#  - test_delta.yml
+# - test_not_less.yml
+# - test_not_more.yml 
+
+# can use sqlite to store data and compare them  
+sqlite:
+ - store_in_sqlite: True
+ #  check_from_sqlite: True 
+   database_name: jbb.db
+ #  compare: 5,4 
+
+# can send mail by specifying mail
+mail: send_mail.yml

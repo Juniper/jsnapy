@@ -1,10 +1,29 @@
 from setuptools import setup, find_packages
 import os
+from setuptools.command.install import install
+
+class OverrideInstall(install):
+    def run(self):
+        mode = 0o777 
+        install.run(self)
+        os.chmod('/etc/jsnapy', mode)
+        for root, dirs, files in os.walk('/etc/jsnapy'):  
+            for directory in dirs:  
+                os.chmod(os.path.join(root, directory), mode)
+            for fname in files:
+                os.chmod(os.path.join(root, fname), mode)
+
+        os.chmod('/var/log/jsnapy', mode)
+        for root, dirs, files in os.walk('/var/log/jsnapy'):
+            for directory in dirs:
+                os.chmod(os.path.join(root, directory), mode)
+            for fname in files:
+                os.chmod(os.path.join(root, fname), mode)
 
 req_lines = [line.strip() for line in open(
     'requirements.txt').readlines()]
 install_reqs = list(filter(None, req_lines))
-example_files = [os.path.join('lib/jnpr/jsnapy/examples',i) for i in os.listdir('lib/jnpr/jsnapy/examples')]
+example_files = [os.path.join('lib/jnpr/jsnapy/samples',i) for i in os.listdir('lib/jnpr/jsnapy/samples')]
 log_files = [os.path.join('lib/jnpr/jsnapy/logs',j) for j in os.listdir('lib/jnpr/jsnapy/logs')]
 exec(open('lib/jnpr/jsnapy/version.py').read())
 
@@ -19,8 +38,8 @@ setup(name="jsnapy",
       package_dir={'': 'lib'},
       packages=find_packages('lib'), 
       package_data={
-           'jnpr.jsnapy.examples': ['*.yml'],
-           'jnpr.jsnapy': ['hosts.yml', 'logging.yml', 'content.html'],
+           'jnpr.jsnapy.samples': ['*.yml'],
+           'jnpr.jsnapy': ['jsnapy.cfg','logging.yml', 'content.html'],
            'jnpr.jsnapy.snapshots': ['README'],
            'jnpr.jsnapy.testfiles': ['README'],
            'jnpr.jsnapy.logs': ['*.log']
@@ -33,12 +52,13 @@ setup(name="jsnapy",
       zip_safe=False,
       install_requires= install_reqs,
       data_files=[('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
-                  ('/etc/jsnapy/examples', example_files),
-                  ('/etc/jsnapy', ['lib/jnpr/jsnapy/hosts.yml']),
+                  ('/etc/jsnapy/samples', example_files),
+                  ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
                   ('/etc/jsnapy/testfiles', ['lib/jnpr/jsnapy/testfiles/README']),
                   ('/etc/jsnapy/snapshots', ['lib/jnpr/jsnapy/snapshots/README']),
-                  ('/etc/logs/jsnapy', log_files)
+                  ('/var/log/jsnapy', log_files)
                   ],
+      cmdclass={'install': OverrideInstall},
       classifiers=[
           'Environment :: Console',
           'Intended Audience :: Developers',

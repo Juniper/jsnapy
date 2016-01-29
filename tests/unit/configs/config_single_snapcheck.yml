@@ -1,0 +1,31 @@
+# for one device, can be given like this:
+hosts:
+  - devices: 10.209.16.204 
+#10.209.61.156 
+    username : regress
+    passwd: MaRtInI
+tests:
+#  - /etc/jsnapy/all_same.yml
+#  - test_diff.yml
+#  - test_exists.yml 
+#  - test_contains.yml
+  - test_is_gt.yml
+#  - test_all_same.yml   
+  - test_is_equal.yml   
+#  - test_not_more.yml
+#  - test_bgp_neighbor.yml   
+#  - test_not_range.yml
+#  - test_contains.yml   
+#  - test_is_in.yml
+#  - /etc/jsnapy/test_rpc.yml
+#  - test_rpc.yml
+
+
+
+# use sqlite to store data 
+#sqlite:
+#  - store_in_sqlite: yes 
+#    check_from_sqlite: yes 
+#    database_name: jbb.db
+# specify user and its details in yaml file to send mail
+mail: send_mail.yml

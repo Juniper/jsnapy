@@ -1,7 +1,7 @@
 import unittest
 import os
-from jnpr.jsnap.sqlite_store import JsnapSqlite
-from jnpr.jsnap.sqlite_get import SqliteExtractXml
+from jnpr.jsnapy.sqlite_store import JsnapSqlite
+from jnpr.jsnapy.sqlite_get import SqliteExtractXml
 from mock import patch
 
 
@@ -12,7 +12,6 @@ class TestSqlite(unittest.TestCase):
         self.hostname = "10.216.193.114"
         self.db = "mock_test.db"
         self.db_dict2 = dict()
-        self.db_dict2['username'] = "mock_test"
         self.db_dict2['cli_command'] = "show version"
         self.db_dict2['snap_name'] = "mock_snap"
         self.db_dict2['filename'] = "file_mock"
@@ -20,9 +19,9 @@ class TestSqlite(unittest.TestCase):
         self.db_dict2['data'] = "mock_data"
 
     def tearDown(self):
-        path = os.getcwd()
-        db_filename = os.path.join(path, 'snapshots', "mock_test.db")
+        db_filename = os.path.join('/etc','jsnapy', 'snapshots', "mock_test.db")
         os.remove(db_filename)
+
 
     @patch('sys.exit')
     def test_sqlite_1(self, mock_sys):
@@ -100,9 +99,7 @@ class TestSqlite(unittest.TestCase):
                 self.assertNotEqual(c_list[0][0].find(err), -1)
 
 
-suite = unittest.TestSuite()
-suite.addTest(TestSqlite("test_sqlite_1"))
-suite.addTest(TestSqlite("test_sqlite_2"))
-suite.addTest(TestSqlite("test_sqlite_3"))
-suite.addTest(TestSqlite("test_sqlite_4"))
-unittest.TextTestRunner().run(suite)
+if __name__ == "__main__":
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestSqlite)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+

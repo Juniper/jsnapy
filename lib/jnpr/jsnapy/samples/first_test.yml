@@ -1,0 +1,8 @@
+# for one device, can be given like this:
+hosts:
+  - devices: 10.209.16.204 
+    username : regress
+    passwd: MaRtInI
+tests:
+  - test_is_gt.yml
+
