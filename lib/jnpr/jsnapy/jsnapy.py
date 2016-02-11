@@ -417,7 +417,9 @@ class SnapAdmin:
                                     password = val.get(hostname).get('passwd')
                                 else:
                                     password = self.args.passwd
-                                        #if self.args.passwd is not None else getpass.getpass("\nEnter Password for username: %s " %username)
+                                    # if self.args.passwd is not None else
+                                    # getpass.getpass("\nEnter Password for
+                                    # username: %s " %username)
                                 t = Thread(
                                     target=self.connect,
                                     args=(
@@ -461,7 +463,8 @@ class SnapAdmin:
             username = self.args.login if self.args.login is not None else raw_input(
                 "\nEnter User name: ")
             password = self.args.passwd
-               # if self.args.passwd is not None else getpass.getpass("\nEnter Password: ")
+            # if self.args.passwd is not None else getpass.getpass("\nEnter
+            # Password: ")
             self.host_list.append(hostname)
             self.connect(hostname, username, password, output_file)
 
@@ -540,11 +543,24 @@ class SnapAdmin:
             try:
                 dev.open()
             except Exception as ex:
-                self.logger.error(
-                    "\nERROR occurred %s" %
-                    str(ex),
-                    extra=self.log_detail)
-                raise Exception(ex)
+                if password is None and action is None:
+                    password = getpass.getpass(
+                        "\nEnter Password for username: %s" %
+                        username)
+                    self.connect(
+                        hostname,
+                        username,
+                        password,
+                        output_file,
+                        config_data,
+                        action,
+                        post_snap)
+                else:
+                    self.logger.error(
+                        "\nERROR occurred %s" %
+                        str(ex),
+                        extra=self.log_detail)
+                    raise Exception(ex)
             else:
                 self.generate_rpc_reply(
                     dev,
@@ -648,7 +664,7 @@ class SnapAdmin:
                 "ERROR!! config file not defined properly, %s" %
                 ex,
                 extra=self.log_detail)
-            raise Exception("config file not defined properly",ex)
+            raise Exception("config file not defined properly", ex)
         else:
             if config_data.__contains__(
                     'sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
