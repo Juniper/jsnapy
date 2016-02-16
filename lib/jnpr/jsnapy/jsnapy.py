@@ -869,9 +869,15 @@ class SnapAdmin:
                 "Arguments not given correctly, Please refer help message", extra=self.log_detail)
             self.parser.print_help()
             sys.exit(1)
-        else:
-            pass
-
+         if self.args.diff is True:
+            if (self.args.pre_snapfile is not None and os.path.isfile(self.args.pre_snapfile)) and (self.args.post_snapfile is not None and os.path.isfile(self.args.post_snapfile)):
+                comp = Comparator()
+                comp.compare_diff(self.args.pre_snapfile, self.args.post_snapfile, None)
+                sys.exit(1)
+            else:
+                if self.args.file is None:
+                    self.parser.print_help()
+                    sys.exit(1)
 
 def main():
     js = SnapAdmin()
