@@ -17,6 +17,7 @@ import logging
 import setup_logging
 from jnpr.jsnapy import get_path
 from jnpr.jsnapy.testop import Operator
+from jnpr.junos.exception import ConnectAuthError
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
@@ -542,7 +543,7 @@ class SnapAdmin:
                 gather_facts=False)
             try:
                 dev.open()
-            except Exception as ex:
+            except ConnectAuthError as ex:
                 if password is None and action is None:
                     password = getpass.getpass(
                         "\nEnter Password for username: %s" %
@@ -561,6 +562,12 @@ class SnapAdmin:
                         str(ex),
                         extra=self.log_detail)
                     raise Exception(ex)
+            except Exception as ex:
+                self.logger.error(
+                    "\nERROR occurred %s" %
+                    str(ex),
+                    extra=self.log_detail)
+                raise Exception(ex)
             else:
                 self.generate_rpc_reply(
                     dev,
@@ -869,15 +876,20 @@ class SnapAdmin:
                 "Arguments not given correctly, Please refer help message", extra=self.log_detail)
             self.parser.print_help()
             sys.exit(1)
-         if self.args.diff is True:
-            if (self.args.pre_snapfile is not None and os.path.isfile(self.args.pre_snapfile)) and (self.args.post_snapfile is not None and os.path.isfile(self.args.post_snapfile)):
+        if self.args.diff is True:
+            if (self.args.pre_snapfile is not None and os.path.isfile(self.args.pre_snapfile)) and (
+                    self.args.post_snapfile is not None and os.path.isfile(self.args.post_snapfile)):
                 comp = Comparator()
-                comp.compare_diff(self.args.pre_snapfile, self.args.post_snapfile, None)
+                comp.compare_diff(
+                    self.args.pre_snapfile,
+                    self.args.post_snapfile,
+                    None)
                 sys.exit(1)
             else:
                 if self.args.file is None:
                     self.parser.print_help()
                     sys.exit(1)
+
 
 def main():
     js = SnapAdmin()

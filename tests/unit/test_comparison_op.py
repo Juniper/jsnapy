@@ -3,6 +3,7 @@ import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch
 
+
 class TestComparisonOperator(unittest.TestCase):
 
     def setUp(self):
@@ -228,6 +229,6 @@ class TestComparisonOperator(unittest.TestCase):
 
 with patch('logging.Logger') as mock_logger:
     if __name__ == "__main__":
-        suite = unittest.TestLoader().loadTestsFromTestCase(TestComparisonOperator)
+        suite = unittest.TestLoader().loadTestsFromTestCase(
+            TestComparisonOperator)
         unittest.TextTestRunner(verbosity=2).run(suite)
-

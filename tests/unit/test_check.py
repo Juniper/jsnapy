@@ -48,7 +48,7 @@ class TestCheck(unittest.TestCase):
         conf_file = "configs/main_incorrect_2.yml"
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-        filename = os.path.join('/etc', 'jsnapy', 'testfiles' ,"dummy.yml")
+        filename = os.path.join('/etc', 'jsnapy', 'testfiles', "dummy.yml")
         with patch('logging.Logger.error') as mock_error:
             comp.generate_test_files(
                 main_file,
@@ -58,7 +58,7 @@ class TestCheck(unittest.TestCase):
                 self.db,
                 self.snap_del,
                 "snap_is-equal_pre")
-            err = "ERROR!! File %s not found" %filename
+            err = "ERROR!! File %s not found" % filename
             c_list = mock_error.call_args_list[0]
             self.assertNotEqual(c_list[0][0].find(err), -1)
 

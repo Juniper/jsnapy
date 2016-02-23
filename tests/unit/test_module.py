@@ -12,7 +12,7 @@ class TestModule(unittest.TestCase):
     def test_snap(self, mock_extract_data):
         config_file = "/configs/config_module_snap.yml"
         snap_file = "pre"
-        self.js.snap(config_file,snap_file)
+        self.js.snap(config_file, snap_file)
         self.assertTrue(mock_extract_data.called)
 
     @patch('jnpr.jsnapy.SnapAdmin.extract_dev_data')

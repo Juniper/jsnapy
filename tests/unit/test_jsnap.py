@@ -1,6 +1,6 @@
 import unittest
 import yaml
-from jnpr.jsnapy import SnapAdmin 
+from jnpr.jsnapy import SnapAdmin
 from mock import patch
 from contextlib import nested
 
@@ -25,7 +25,11 @@ class TestSnapAdmin(unittest.TestCase):
         conf_file = "configs/main.yml"
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
-        js.generate_rpc_reply(None, "snap_mock", "10.216.193.114", js.main_file)
+        js.generate_rpc_reply(
+            None,
+            "snap_mock",
+            "10.216.193.114",
+            js.main_file)
         self.assertTrue(mock_parse.called)
 
     @patch('argparse.ArgumentParser.exit')
@@ -184,13 +188,19 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.pre_snapfile = "mock_snap1"
         js.args.post_snapfile = "mock_snap2"
         js.get_hosts()
-        mock_compare.assert_called_once_with('10.216.193.114', config_data, js.args.pre_snapfile, None, None)
+        mock_compare.assert_called_once_with(
+            '10.216.193.114',
+            config_data,
+            js.args.pre_snapfile,
+            None,
+            None)
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.jsnapy.Device')
     @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
     @patch('jnpr.jsnapy.SnapAdmin.generate_rpc_reply')
-    def test_connect_snapcheck(self, mock_snap, mock_check, mock_dev, mock_arg):
+    def test_connect_snapcheck(
+            self, mock_snap, mock_check, mock_dev, mock_arg):
         js = SnapAdmin()
         js.args.file = "configs/main_1.yml"
         js.args.snapcheck = True
@@ -200,7 +210,12 @@ class TestSnapAdmin(unittest.TestCase):
         js.get_hosts()
         self.assertTrue(mock_snap.called)
         self.assertTrue(mock_dev.called)
-        mock_check.assert_called_once_with('10.216.193.114', config_data, js.args.pre_snapfile, None, None)
+        mock_check.assert_called_once_with(
+            '10.216.193.114',
+            config_data,
+            js.args.pre_snapfile,
+            None,
+            None)
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
@@ -213,7 +228,12 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.pre_snapfile = "mock_snap1"
         js.args.post_snapfile = "mock_snap2"
         js.get_hosts()
-        mock_compare.assert_called_once_with('10.216.193.114', config_data, js.args.pre_snapfile, None, None )
+        mock_compare.assert_called_once_with(
+            '10.216.193.114',
+            config_data,
+            js.args.pre_snapfile,
+            None,
+            None)
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.jsnapy.sys.exit')
@@ -273,7 +293,6 @@ class TestSnapAdmin(unittest.TestCase):
             mock_sys.assert_called_with(1)
             mock_parser.assert_called_with()
 
-
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
     @patch('getpass.getpass')
@@ -322,7 +341,8 @@ class TestSnapAdmin(unittest.TestCase):
     @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
     @patch('getpass.getpass')
     @patch('jnpr.jsnapy.notify.Notification.notify')
-    def test_check_mail_password(self, mock_notify, mock_pass, mock_compare, mock_arg ):
+    def test_check_mail_password(
+            self, mock_notify, mock_pass, mock_compare, mock_arg):
         js = SnapAdmin()
         js.args.file = "configs/main_mail_2.yml"
         js.args.check = True

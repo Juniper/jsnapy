@@ -15,7 +15,7 @@ class TestStrNumericOperators(unittest.TestCase):
         self.db['check_from_sqlite'] = False
         self.db['db_name'] = ""
         self.snap_del = False
-        self.action= None
+        self.action = None
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
@@ -230,6 +230,6 @@ class TestStrNumericOperators(unittest.TestCase):
         self.assertEqual(oper.no_failed, 1)
 
 if __name__ == "__main__":
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestStrNumericOperators)
+    suite = unittest.TestLoader().loadTestsFromTestCase(
+        TestStrNumericOperators)
     unittest.TextTestRunner(verbosity=2).run(suite)
-

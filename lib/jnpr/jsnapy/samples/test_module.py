@@ -10,7 +10,7 @@ js = SnapAdmin()
 
 config_file = "/etc/jsnapy/config_single_check.yml"
 
-snapvalue = js.check(config_file, "pre","post", dev= dev1)
+snapvalue = js.check(config_file, "pre", "post", dev=dev1)
 print "snap value is:", snapvalue
 
 
@@ -20,7 +20,7 @@ for snapcheck in snapvalue:
     print "Final result: ", snapcheck.result
     print "Total passed: ", snapcheck.no_passed
     print "Total failed:", snapcheck.no_failed
-    pprint (dict(snapcheck.test_details))
+    pprint(dict(snapcheck.test_details))
 
 
 config_data = """

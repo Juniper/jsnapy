@@ -3,6 +3,7 @@ import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch
 
+
 class TestStringOperators(unittest.TestCase):
 
     def setUp(self):
@@ -118,6 +119,6 @@ class TestStringOperators(unittest.TestCase):
 
 with patch('logging.Logger') as mock_logger:
     if __name__ == "__main__":
-        suite = unittest.TestLoader().loadTestsFromTestCase(TestStringOperators)
+        suite = unittest.TestLoader().loadTestsFromTestCase(
+            TestStringOperators)
         unittest.TextTestRunner(verbosity=2).run(suite)
-
