@@ -14,11 +14,15 @@ Installation
 =============
 Installation requires Python 2.7 and associated pip tool
       
-    1. Download or clone the source code from this git repository
+    1. Install using pip command
+          sudo pip install git+https://github.com/Juniper/jsnapy.git 
+    2. Updating using pip command
+          sudo pip install -U git+https://github.com/Juniper/jsnapy.git 
+    3. Download or clone the source code from this git repository
           git clone https://github.com/Juniper/jsnapy
        Or Untar jsnapy-master.zip (if downloaded zip folder)
           unzip jsnapy-master.zip
-    3. Go to jsnapy-master folder and install by:
+       Go to jsnapy-master folder and install by:
           sudo python setup.py sdist
           sudo pip install dist/jsnap-py-0.1.tar.gz
           
