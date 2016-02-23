@@ -170,7 +170,6 @@ class TestNumericOperators(unittest.TestCase):
 
 with patch('logging.Logger') as mock_logger:
     if __name__ == "__main__":
-        suite = unittest.TestLoader().loadTestsFromTestCase(TestNumericOperators)
+        suite = unittest.TestLoader().loadTestsFromTestCase(
+            TestNumericOperators)
         unittest.TextTestRunner(verbosity=2).run(suite)
-
-    

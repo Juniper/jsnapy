@@ -17,6 +17,7 @@ import logging
 import setup_logging
 from jnpr.jsnapy import get_path
 from jnpr.jsnapy.testop import Operator
+from jnpr.junos.exception import ConnectAuthError
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
@@ -417,7 +418,9 @@ class SnapAdmin:
                                     password = val.get(hostname).get('passwd')
                                 else:
                                     password = self.args.passwd
-                                        #if self.args.passwd is not None else getpass.getpass("\nEnter Password for username: %s " %username)
+                                    # if self.args.passwd is not None else
+                                    # getpass.getpass("\nEnter Password for
+                                    # username: %s " %username)
                                 t = Thread(
                                     target=self.connect,
                                     args=(
@@ -461,7 +464,8 @@ class SnapAdmin:
             username = self.args.login if self.args.login is not None else raw_input(
                 "\nEnter User name: ")
             password = self.args.passwd
-               # if self.args.passwd is not None else getpass.getpass("\nEnter Password: ")
+            # if self.args.passwd is not None else getpass.getpass("\nEnter
+            # Password: ")
             self.host_list.append(hostname)
             self.connect(hostname, username, password, output_file)
 
@@ -539,6 +543,25 @@ class SnapAdmin:
                 gather_facts=False)
             try:
                 dev.open()
+            except ConnectAuthError as ex:
+                if password is None and action is None:
+                    password = getpass.getpass(
+                        "\nEnter Password for username: %s" %
+                        username)
+                    self.connect(
+                        hostname,
+                        username,
+                        password,
+                        output_file,
+                        config_data,
+                        action,
+                        post_snap)
+                else:
+                    self.logger.error(
+                        "\nERROR occurred %s" %
+                        str(ex),
+                        extra=self.log_detail)
+                    raise Exception(ex)
             except Exception as ex:
                 self.logger.error(
                     "\nERROR occurred %s" %
@@ -648,7 +671,7 @@ class SnapAdmin:
                 "ERROR!! config file not defined properly, %s" %
                 ex,
                 extra=self.log_detail)
-            raise Exception("config file not defined properly",ex)
+            raise Exception("config file not defined properly", ex)
         else:
             if config_data.__contains__(
                     'sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
@@ -853,8 +876,19 @@ class SnapAdmin:
                 "Arguments not given correctly, Please refer help message", extra=self.log_detail)
             self.parser.print_help()
             sys.exit(1)
-        else:
-            pass
+        if self.args.diff is True:
+            if (self.args.pre_snapfile is not None and os.path.isfile(self.args.pre_snapfile)) and (
+                    self.args.post_snapfile is not None and os.path.isfile(self.args.post_snapfile)):
+                comp = Comparator()
+                comp.compare_diff(
+                    self.args.pre_snapfile,
+                    self.args.post_snapfile,
+                    None)
+                sys.exit(1)
+            else:
+                if self.args.file is None:
+                    self.parser.print_help()
+                    sys.exit(1)
 
 
 def main():

@@ -61,10 +61,13 @@ class TestSnap(unittest.TestCase):
         dev.open()
         m_op = mock_open()
         with patch('jnpr.jsnapy.snap.open', m_op, create=True) as m_open:
-            js.generate_rpc_reply(dev, self.output_file, "10.216.193.114", js.main_file)
+            js.generate_rpc_reply(
+                dev,
+                self.output_file,
+                "10.216.193.114",
+                js.main_file)
             self.assertTrue(m_open.called)
         dev.close()
-
 
     @patch('jnpr.jsnapy.snap.Parser._write_file')
     @patch('jnpr.jsnapy.snap.etree')
@@ -334,7 +337,8 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnapy.snap.JsnapSqlite.__init__')
     @patch('jnpr.jsnapy.snap.Parser._check_reply')
     @patch('jnpr.jsnapy.snap.JsnapSqlite.insert_data')
-    def test_snap_sqlite_3(self, mock_insert, mock_reply, mock_init, mock_etree, mock_dev):
+    def test_snap_sqlite_3(
+            self, mock_insert, mock_reply, mock_init, mock_etree, mock_dev):
         mock_init.return_value = None
         prs = Parser()
         test_file = "configs/delta.yml"
@@ -359,22 +363,23 @@ class TestSnap(unittest.TestCase):
             db_dict = dict()
             db_dict['cli_command'] = 'show_chassis_fpc'
             db_dict['snap_name'] = "snap_mock"
-            db_dict['filename'] = "10.216.193.114" +"_" "snap_mock" + "_" + "show_chassis_fpc" + "." + "xml"
+            db_dict['filename'] = "10.216.193.114" + \
+                "_" "snap_mock" + "_" + "show_chassis_fpc" + "." + "xml"
             db_dict['format'] = "xml"
             db_dict['data'] = mock_reply()
             mock_insert.assert_called_once_with(db_dict)
         dev.close()
-
 
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnapy.snap.etree')
     @patch('jnpr.jsnapy.snap.JsnapSqlite.__init__')
     @patch('jnpr.jsnapy.snap.Parser._check_reply')
     @patch('jnpr.jsnapy.snap.JsnapSqlite.insert_data')
-    def test_snap_sqlite_4(self, mock_insert, mock_reply, mock_init, mock_etree, mock_dev):
+    def test_snap_sqlite_4(
+            self, mock_insert, mock_reply, mock_init, mock_etree, mock_dev):
         mock_init.return_value = None
         prs = Parser()
-        calls =[]
+        calls = []
         test_file = "configs/test_rpc.yml"
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
@@ -396,13 +401,15 @@ class TestSnap(unittest.TestCase):
             db_dict = dict()
             db_dict['cli_command'] = 'get-config'
             db_dict['snap_name'] = "snap_mock"
-            db_dict['filename'] = "10.216.193.114" + "_" + "snap_mock" + "_" + "get-config" + "." + "xml"
+            db_dict['filename'] = "10.216.193.114" + "_" + \
+                "snap_mock" + "_" + "get-config" + "." + "xml"
             db_dict['format'] = 'xml'
             db_dict['data'] = mock_reply()
             calls.append(call(db_dict))
             db_dict2 = db_dict.copy()
             db_dict2['cli_command'] = 'get-interface-information'
-            db_dict2['filename']= "10.216.193.114" + "_" + "snap_mock" + "_" + "get-interface-information" + "." + "xml"
+            db_dict2['filename'] = "10.216.193.114" + "_" + \
+                "snap_mock" + "_" + "get-interface-information" + "." + "xml"
             calls.append(call(db_dict2))
             print "\n 888888888 calls:", calls
             print "\n 9999986755 call list:", mock_insert.call_args_list

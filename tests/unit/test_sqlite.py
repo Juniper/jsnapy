@@ -19,9 +19,12 @@ class TestSqlite(unittest.TestCase):
         self.db_dict2['data'] = "mock_data"
 
     def tearDown(self):
-        db_filename = os.path.join('/etc','jsnapy', 'snapshots', "mock_test.db")
+        db_filename = os.path.join(
+            '/etc',
+            'jsnapy',
+            'snapshots',
+            "mock_test.db")
         os.remove(db_filename)
-
 
     @patch('sys.exit')
     def test_sqlite_1(self, mock_sys):
@@ -102,4 +105,3 @@ class TestSqlite(unittest.TestCase):
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(TestSqlite)
     unittest.TextTestRunner(verbosity=2).run(suite)
-

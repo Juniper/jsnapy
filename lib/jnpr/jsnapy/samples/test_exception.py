@@ -11,6 +11,6 @@ try:
     js.snap(config_file, "pre")
 except Exception as ex:
     print "inside exception"
-    print "Ex is",ex
+    print "Ex is", ex
 else:
     print "Hello"
