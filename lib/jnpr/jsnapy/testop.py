@@ -279,15 +279,18 @@ class Operator:
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
-                        res = False
-                        self.logger_testop.info(
-                            jinja2.Template(
-                                err_mssg.replace(
-                                    '-',
-                                    '_')).render(
-                                iddict,
-                                pre=predict,
-                                post=postdict), extra=self.log_detail)
+                        for k in range(len(postnode)):
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(predict, postdict, element, postnode[k], prenode[k])
+                            tresult['actual_node_value'].append(post_nodevalue)
+                            res = False
+                            self.logger_testop.info(
+                                jinja2.Template(
+                                    err_mssg.replace(
+                                        '-',
+                                        '_')).render(
+                                    iddict,
+                                    pre=predict,
+                                    post=postdict), extra=self.log_detail)
                     else:
                         # for k in range(len(postnode)):
                         #    predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
