@@ -56,9 +56,9 @@ class Operator:
             self.logger_testop.error(
                 "ERROR!! message %s" % e.message, extra=self.log_detail)
             self.no_failed = self.no_failed + 1
-        except:
+        except Exception as ex:
             self.logger_testop.error(
-                "\nUndefined error occurred, please check test cases !!!", extra=self.log_detail)
+                "\nException occurred: %s"%str(ex), extra=self.log_detail)
             self.no_failed = self.no_failed + 1
 
     def print_result(self, testname, result):
