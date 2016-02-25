@@ -869,8 +869,7 @@ class SnapAdmin:
         """
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.snapcheck is True and self.args.file is None) or
-            (self.args.check is True and self.args.file is None) or
-            (self.args.diff is True and self.args.file is None)
+            (self.args.check is True and self.args.file is None)
            ):
             self.logger.error(
                 "Arguments not given correctly, Please refer help message", extra=self.log_detail)
