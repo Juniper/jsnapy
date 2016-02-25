@@ -166,12 +166,12 @@ class Parser:
         self.rpc_list.append(rpc)
         reply_format = test_file[t][0].get('format', 'xml')
         reply_format = reply_format if reply_format in formats else 'xml'
-        if len(test_file[t]) >= 2 and 'args' in test_file[t][1]:
+        if len(test_file[t]) >= 2 and 'kwargs' in test_file[t][1]:
             kwargs = {
                 k.replace(
                     '-',
                     '_'): v for k,
-                v in test_file[t][1]['args'].items()}
+                v in test_file[t][1]['kwargs'].items()}
             if 'filter_xml' in kwargs:
                 from lxml.builder import E
                 filter_data = None
