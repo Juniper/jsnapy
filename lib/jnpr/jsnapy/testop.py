@@ -56,9 +56,9 @@ class Operator:
             self.logger_testop.error(
                 "ERROR!! message %s" % e.message, extra=self.log_detail)
             self.no_failed = self.no_failed + 1
-        except:
+        except Exception as ex:
             self.logger_testop.error(
-                "\nUndefined error occurred, please check test cases !!!", extra=self.log_detail)
+                "\nException occurred: %s"%str(ex), extra=self.log_detail)
             self.no_failed = self.no_failed + 1
 
     def print_result(self, testname, result):
@@ -1187,7 +1187,7 @@ class Operator:
                                         post=postdict), extra=self.log_detail)
                 else:
                     self.logger_testop.error(
-                        "ERROR, id miss match occurred!!! id list in post snapshots is: %s" %
+                        "ERROR, id miss match occurred!!! id list not in post snapshots is: %s" %
                         iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
                     # for kval in range(len(k)-1):
@@ -1276,7 +1276,7 @@ class Operator:
                 else:
                     tresult['id_miss_match'] = []
                     self.logger_testop.error(
-                        "ERROR, id miss match occurred !! id list in post snapshots is: %s" % iddict, extra=self.log_detail)
+                        "ERROR, id miss match occurred !! id list not in pre snapshots is: %s" % iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
                     # for kval in range(len(k)-1):
                     #    self.logger_testop.error(
