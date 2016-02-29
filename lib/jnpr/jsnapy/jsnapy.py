@@ -275,6 +275,8 @@ class SnapAdmin:
                 conf_file, extra=self.log_detail)
             sys.exit(1)
 
+        #### if --check option is given for sqlite, then snap file name is not compulsory  ####
+        #### else exit the function saying arguments not correct  ####
         if self.main_file.__contains__(
                 'sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
             self.chk_database(
@@ -546,7 +548,7 @@ class SnapAdmin:
             except ConnectAuthError as ex:
                 if password is None and action is None:
                     password = getpass.getpass(
-                        "\nEnter Password for username: %s" %
+                        "\nEnter Password for username <%s> : " %
                         username)
                     self.connect(
                         hostname,

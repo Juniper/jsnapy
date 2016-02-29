@@ -58,7 +58,7 @@ class Operator:
             self.no_failed = self.no_failed + 1
         except Exception as ex:
             self.logger_testop.error(
-                "\nException occurred: %s"%str(ex), extra=self.log_detail)
+                "\nException occurred: %s" % str(ex), extra=self.log_detail)
             self.no_failed = self.no_failed + 1
 
     def print_result(self, testname, result):
@@ -204,6 +204,7 @@ class Operator:
             raise
         else:
             tresult['node_name'] = element
+            #### this function will find set of pre and post nodes for given Xpath  ####
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(
@@ -211,12 +212,15 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
+                    #### get element node for test operation ####
                     iddict, postnode, prenode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    #### calculate value of any node mentioned inside info and error messages  ####
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+                    #### check only in postnode   ####
                     if postnode:
                         for k in range(len(postnode)):
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -280,7 +284,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(predict, postdict, element, postnode[k], prenode[k])
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
                             res = False
                             self.logger_testop.info(
