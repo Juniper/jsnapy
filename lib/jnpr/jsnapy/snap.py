@@ -5,6 +5,7 @@ import sys
 import logging
 import colorama
 from jnpr.jsnapy import get_path
+import re
 
 
 class Parser:
@@ -80,11 +81,12 @@ class Parser:
         :param cmd_format: xml/text
         :return: return output file
         """
+        cmd_rpc = re.sub('/|\*|\.|-','_', name)
         if os.path.isfile(output_file):
             return output_file
         else:
             filename = hostname + '_' + output_file + \
-                '_' + name + '.' + cmd_format
+                '_' + cmd_rpc + '.' + cmd_format
             output_file = os.path.join(
                 get_path(
                     'DEFAULT',

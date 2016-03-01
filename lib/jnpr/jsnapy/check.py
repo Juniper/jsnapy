@@ -8,6 +8,7 @@ from jnpr.jsnapy.xml_comparator import XmlComparator
 import colorama
 import logging
 from jnpr.jsnapy import get_path
+import re
 
 
 class Comparator:
@@ -20,13 +21,14 @@ class Comparator:
     def __del__(self):
         colorama.init(autoreset=True)
 
-    def generate_snap_file(self, device, prefix, cmd_rpc_name, reply_format):
+    def generate_snap_file(self, device, prefix, name, reply_format):
         """
         This function generates name of snapshot files
         """
         if os.path.isfile(prefix):
             return prefix
         else:
+            cmd_rpc_name = re.sub('/|\*|\.|-','_', name)
             sfile = str(device) + '_' + prefix + '_' + \
                 cmd_rpc_name + '.' + reply_format
             snapfile = os.path.join(
