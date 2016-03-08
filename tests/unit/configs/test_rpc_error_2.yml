@@ -4,7 +4,7 @@ tests_include:
 test_interface:
   - rpc: get-interface-infomation
     format: xml
-  - args:
+  - kwargs:
       interface-name: em0
       media: True
       detail: True

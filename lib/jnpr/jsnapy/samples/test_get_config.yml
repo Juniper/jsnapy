@@ -4,7 +4,7 @@ tests_include:
 
 test_rpc_version:
   - rpc: get-config
-  - args:
+  - kwargs:
       filter_xml: configuration/system/login
   - item:
       xpath: //configuration
@@ -16,7 +16,7 @@ test_rpc_version:
 test_interface:
   - rpc: get-interface-information
     #format: text
-  - args:
+  - kwargs:
       interface-name: em0
       media: True
       detail: True
