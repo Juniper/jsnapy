@@ -1,5 +1,5 @@
-import sqlite3
 import os
+import sqlite3
 import logging
 from jnpr.jsnapy import get_path
 

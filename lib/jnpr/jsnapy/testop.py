@@ -1,8 +1,8 @@
 import re
 import colorama
-from collections import defaultdict
 import jinja2
 import logging
+from collections import defaultdict
 
 
 class Operator:
@@ -204,7 +204,8 @@ class Operator:
             raise
         else:
             tresult['node_name'] = element
-            #### this function will find set of pre and post nodes for given Xpath  ####
+            # this function will find set of pre and post nodes for given Xpath
+            # ####
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(
@@ -215,7 +216,8 @@ class Operator:
                     #### get element node for test operation ####
                     iddict, postnode, prenode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
-                    #### calculate value of any node mentioned inside info and error messages  ####
+                    # calculate value of any node mentioned inside info and
+                    # error messages  ####
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
                     predict, postdict = self._get_nodevalue(
