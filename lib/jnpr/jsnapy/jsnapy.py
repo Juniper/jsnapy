@@ -40,7 +40,7 @@ class SnapAdmin:
             formatter_class=argparse.RawDescriptionHelpFormatter,
             description=textwrap.dedent('''\
                                         Tool to capture snapshots and compare them
-                                        It supports five subcommands:
+                                        It supports four subcommands:
                                          --snap, --check, --snapcheck, --diff
                                         1. Take snapshot:
                                                 jsnapy --snap pre_snapfile -f main_configfile
@@ -365,7 +365,7 @@ class SnapAdmin:
         """
         Extract device information from main config file. Stores device information and call connect function,
         device can be single or multiple. Instead of connecting to all devices mentioned in yaml file, user can
-        connect to some particular group of devices also.
+        connect to some particular group of device also.
         :param output_file: name of snapshot file
         """
         self.host_list = []
@@ -437,12 +437,12 @@ class SnapAdmin:
             # one device
                 else:
                     try:
-                        hostname = k['devices']
+                        hostname = k['device']
                         self.log_detail = {'hostname': hostname}
                     except KeyError as ex:
                         self.logger.error(
                             colorama.Fore.RED +
-                            "ERROR!! KeyError 'devices' key not found",
+                            "ERROR!! KeyError 'device' key not found",
                             extra=self.log_detail)
                         #raise Exception(ex)
                     except Exception as ex:
@@ -692,7 +692,7 @@ class SnapAdmin:
                     action,
                     post_name)
             else:
-                hostname = host.get('devices')
+                hostname = host.get('device')
                 self.log_detail = {'hostname': hostname}
                 username = host.get('username')
                 password = host.get('passwd')
