@@ -77,23 +77,24 @@ Overall Tests passed!!!
 ```
 
 File Paths:
-
+--------------
+```
 1. config file   
-You can give either:
+   can give either:
     - full file path  
-    - only file name, it will first look in present working 
-      directory, if file is not present then it will take file 
-      path from "config_file_path" in jsnapy.cfg file. Default 
-      onfig file path is "/etc/jsnapy"
+    - only file name, in this case JSNAPy will first look in present working 
+      directory, if file is not present then it will take file path from "config_file_path" 
+      in jsnapy.cfg file. Default config file path is "/etc/jsnapy"
 2. test file: 
     - full file path  
-    - only file name, in this case it will take path from "test_file_path" in jsnapy.cfg file. Default 
-      onfig file path is "/etc/jsnapy/testfiles"
+    - only file name, in this case it will take path from "test_file_path" in jsnapy.cfg file. 
+      Default test file path is "/etc/jsnapy/testfiles"
 3. snap file:
     - full file path
-    - prefix, in this case file name is formed automatically <(devicename_prefix_command/rpc.xml/text)>
+    - tag, in this case file name is formed automatically (<devicename>_<tag>_<command/rpc>.<xml/text>)
       Snap files will be taken from "snapshot_path" in jsnapy.cfg file. 
       Default path is "/etc/jsnapy/snapshots"
+```
 
 
 
