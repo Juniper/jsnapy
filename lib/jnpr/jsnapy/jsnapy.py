@@ -1,20 +1,20 @@
 #!/usr/bin/python
-import sys
 import os
+import sys
+import yaml
+import Queue
+import getpass
+import logging
 import textwrap
 import argparse
-import yaml
+import colorama
+import setup_logging
+from threading import Thread
 from jnpr.jsnapy.snap import Parser
 from jnpr.jsnapy.check import Comparator
 from jnpr.jsnapy.notify import Notification
-from threading import Thread
 from jnpr.junos import Device
 from jnpr.jsnapy import version
-import colorama
-import getpass
-import Queue
-import logging
-import setup_logging
 from jnpr.jsnapy import get_path
 from jnpr.jsnapy.testop import Operator
 from jnpr.junos.exception import ConnectAuthError

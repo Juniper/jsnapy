@@ -1,10 +1,10 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import jinja2
 import os
+import smtplib
+import jinja2
 import logging
 import colorama
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 class Notification:
@@ -18,8 +18,6 @@ class Notification:
         function to generate email, using jinja template in content.html
         :param m_file: main config file
         :param hostname: device name
-        :param test_obj:
-        :return:
         """
         self.log_details['hostname'] = hostname
         self.logger_notify.debug(

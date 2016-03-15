@@ -1,6 +1,6 @@
-import sqlite3
 import sys
 import os
+import sqlite3
 import logging
 import colorama
 from jnpr.jsnapy import get_path

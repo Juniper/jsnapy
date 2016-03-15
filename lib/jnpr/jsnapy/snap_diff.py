@@ -1,7 +1,7 @@
-import difflib
 import re
 import sys
 import os
+import difflib
 import logging
 import colorama
 

@@ -28,7 +28,7 @@ class Comparator:
         if os.path.isfile(prefix):
             return prefix
         else:
-            cmd_rpc_name = re.sub('/|\*|\.|-','_', name)
+            cmd_rpc_name = re.sub('/|\*|\.|-', '_', name)
             sfile = str(device) + '_' + prefix + '_' + \
                 cmd_rpc_name + '.' + reply_format
             snapfile = os.path.join(
@@ -136,7 +136,8 @@ class Comparator:
                 testcases = test['item']['tests']
                 iter = False
 
-            #### analyze individual test case and extract element list, info and err message ####
+            # analyze individual test case and extract element list, info and
+            # err message ####
             for path in testcases:
                 values = ['err', 'info']
                 testvalues = path.keys()
@@ -151,11 +152,13 @@ class Comparator:
                 else:
                     ele_list = ['no node']
 
-                # extract err and info messages , if not given then set the default error and info message
+                # extract err and info messages , if not given then set the
+                # default error and info message
                 err_mssg = self.get_err_mssg(path, ele_list)
                 info_mssg = self.get_info_mssg(path, ele_list)
 
-                #### check test operators, below mentioned four are allowed only with --check ####
+                # check test operators, below mentioned four are allowed only
+                # with --check ####
                 if testop in [
                         'no-diff', 'list-not-less', 'list-not-more', 'delta']:
                     if check is True or action is "check":
@@ -242,7 +245,8 @@ class Comparator:
         post_snap = self.get_xml_reply(db, post_snap_value)
         flag = False
 
-        #### check if snapshots need to be taken from sqlite or from local system ####
+        # check if snapshots need to be taken from sqlite or from local system
+        # ####
         try:
             if db.get('check_from_sqlite') is True:
                 pre_root = pre_snap
@@ -330,7 +334,7 @@ class Comparator:
                 colorama.Fore.RED +
                 "\nERROR!! No test file found, Please mention test files !!", extra=self.log_detail)
         else:
-            ####   extract test files, first search in path given in jsnapy.cfg file and then search in default path  #####
+            # extract test files, first search in path given in jsnapy.cfg
             for tfiles in main_file.get('tests'):
                 filename = os.path.join(
                     get_path(
@@ -348,7 +352,8 @@ class Comparator:
                         filename,
                         extra=self.log_detail)
 
-            #### check what all test cases need to be included, if nothing given then include all test cases ####
+            # check what all test cases need to be included, if nothing given
+            # then include all test cases ####
             for tests in tests_files:
                 if 'tests_include' in tests:
                     tests_included = tests.get('tests_include')
@@ -396,7 +401,7 @@ class Comparator:
                             colorama.Fore.RED +
                             "ERROR Occurred: %s" % str(ex), extra=self.log_detail)
                     else:
-                        #### extract snap files, if check from sqlite is true then take snapshot from database #####
+                        # extract snap files, if check from sqlite is true t
                         if db.get(
                                 'check_from_sqlite') is True and (check is True or diff is True or action in ["check", "diff"]):
                             a = SqliteExtractXml(db.get('db_name'))
@@ -438,7 +443,8 @@ class Comparator:
                                 name,
                                 reply_format)
 
-                        #### if check is true then call function to compare two snapshots ####
+                        # if check is true then call function to compare two
+                        # snapshots ####
                         if (check is True or action is "check") and reply_format == 'xml':
                             if db.get('check_from_sqlite') is False:
                                 snapfile2 = self.generate_snap_file(
@@ -456,7 +462,8 @@ class Comparator:
                                 snapfile2,
                                 action)
 
-                        #### if --diff is true then call compare_diff to compare two snapshots word by word ####
+                        # if --diff is true then call compare_diff to compare
+                        # two snapshots word by word ####
                         elif(diff is True):
                             if db.get('check_from_sqlite') is False:
                                 snapfile2 = self.generate_snap_file(
@@ -469,7 +476,8 @@ class Comparator:
                                 snapfile2,
                                 db.get('check_from_sqlite'))
 
-                        #### else call --snapcheck test operation, it works only for xml reply format   ####
+                        # else call --snapcheck test operation, it works only
+                        # for xml reply format   ####
                         elif (reply_format == 'xml'):
                             self.compare_reply(
                                 op,
@@ -488,12 +496,14 @@ class Comparator:
                                 os.remove(snapfile1)
                                 """
                         else:
-                            #### give error message if snapshot in text format is used with operations other than --diff  ####
+                            # give error message if snapshot in text format is
+                            # used with operations other than --diff  ####
                             self.logger_check.error(
                                 colorama.Fore.RED +
                                 "ERROR!! for checking snapshots in text format use '--diff' option ", extra=self.log_detail)
 
-            #### print final result, if operation is --diff then message gets printed compare_diff function only ####
+            # print final result, if operation is --diff then message gets
+            # printed compare_diff function only ####
             if (diff is not True):
                 op.final_result(self.log_detail)
 

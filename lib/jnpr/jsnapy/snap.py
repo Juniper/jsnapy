@@ -1,11 +1,12 @@
-from lxml import etree
 import os
-from jnpr.jsnapy.sqlite_store import JsnapSqlite
+import re
 import sys
 import logging
 import colorama
+from lxml import etree
 from jnpr.jsnapy import get_path
-import re
+from jnpr.junos.exception import RpcError
+from jnpr.jsnapy.sqlite_store import JsnapSqlite
 
 
 class Parser:
@@ -41,6 +42,20 @@ class Parser:
             else:
                 with open(output_file, 'w') as f:
                     f.write(etree.tostring(rpc_reply))
+
+    def _write_warning(
+            self, reply, db, snap_file, hostname, cmd_name, cmd_format, output_file):
+        with open(snap_file, 'w') as f:
+            f.write(reply)
+        if db['store_in_sqlite'] is True:
+            self.store_in_sqlite(
+                db,
+                hostname,
+                cmd_name,
+                cmd_format,
+                reply,
+                output_file,
+                warning=True)
 
     def _check_reply(self, rpc_reply, format):
         """
@@ -81,7 +96,7 @@ class Parser:
         :param cmd_format: xml/text
         :return: return output file
         """
-        cmd_rpc = re.sub('/|\*|\.|-','_', name)
+        cmd_rpc = re.sub('/|\*|\.|-', '_', name)
         if os.path.isfile(output_file):
             return output_file
         else:
@@ -95,7 +110,7 @@ class Parser:
             return output_file
 
     def store_in_sqlite(
-            self, db, hostname, cmd_rpc_name, reply_format, rpc_reply, snap_name):
+            self, db, hostname, cmd_rpc_name, reply_format, rpc_reply, snap_name, warning=False):
         """
         Store reply in database
         :param db: database name
@@ -112,7 +127,10 @@ class Parser:
         db_dict['filename'] = hostname + '_' + snap_name + \
             '_' + cmd_rpc_name + '.' + reply_format
         db_dict['format'] = reply_format
-        db_dict['data'] = self._check_reply(rpc_reply, reply_format)
+        if warning is False:
+            db_dict['data'] = self._check_reply(rpc_reply, reply_format)
+        else:
+            db_dict['data'] = rpc_reply
         sqlite_jsnap.insert_data(db_dict)
 
     def run_cmd(self, test_file, t, formats, dev, output_file, hostname, db):
@@ -132,6 +150,22 @@ class Parser:
                 command,
                 extra=self.log_detail)
             rpc_reply_command = dev.rpc.cli(command, format=cmd_format)
+        except RpcError as err:
+            snap_file = self.generate_snap_file(
+                output_file,
+                hostname,
+                cmd_name,
+                cmd_format)
+            self._write_warning(
+                etree.tostring(
+                    err.rsp),
+                db,
+                snap_file,
+                hostname,
+                cmd_name,
+                cmd_format,
+                output_file)
+            return
         except Exception:
             self.logger_snap.error(colorama.Fore.RED +
                                    "ERROR occurred %s" %
@@ -141,7 +175,7 @@ class Parser:
                                    str(sys.exc_info()), extra=self.log_detail)
             #raise Exception("Error in command")
             # sys.exc_clear()
-            pass
+            return
         else:
             snap_file = self.generate_snap_file(
                 output_file,
@@ -209,6 +243,22 @@ class Parser:
                         extra=self.log_detail)
                     rpc_reply = getattr(
                         dev.rpc, rpc.replace('-', '_'))({'format': reply_format}, **kwargs)
+                except RpcError as err:
+                    snap_file = self.generate_snap_file(
+                        output_file,
+                        hostname,
+                        rpc,
+                        reply_format)
+                    self._write_warning(
+                        etree.tostring(
+                            err.rsp),
+                        db,
+                        snap_file,
+                        hostname,
+                        rpc,
+                        reply_format,
+                        output_file)
+                    return
                 except Exception:
                     self.logger_snap.error(colorama.Fore.RED +
                                            "ERROR occurred:\n %s" %
@@ -235,6 +285,22 @@ class Parser:
                 else:
                     rpc_reply = getattr(
                         dev.rpc, rpc.replace('-', '_'))({'format': reply_format})
+            except RpcError as err:
+                snap_file = self.generate_snap_file(
+                    output_file,
+                    hostname,
+                    rpc,
+                    reply_format)
+                self._write_warning(
+                    etree.tostring(
+                        err.rsp),
+                    db,
+                    snap_file,
+                    hostname,
+                    rpc,
+                    reply_format,
+                    output_file)
+                return
             except Exception:
                 self.logger_snap.error(colorama.Fore.RED +
                                        "ERROR occurred: \n%s" %
