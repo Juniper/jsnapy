@@ -165,6 +165,12 @@ class Parser:
                 cmd_name,
                 cmd_format,
                 output_file)
+            self.logger_snap.error(colorama.Fore.RED +
+                                   "ERROR occurred %s" %
+                                   str(sys.exc_info()[0]), extra=self.log_detail)
+            self.logger_snap.error(colorama.Fore.RED +
+                                   "\n**********Complete error message***********\n %s" %
+                                   str(sys.exc_info()), extra=self.log_detail)
             return
         except Exception:
             self.logger_snap.error(colorama.Fore.RED +
@@ -258,6 +264,13 @@ class Parser:
                         rpc,
                         reply_format,
                         output_file)
+                    self.logger_snap.error(colorama.Fore.RED +
+                                           "ERROR occurred:\n %s" %
+                                           str(sys.exc_info()[0]), extra=self.log_detail)
+                    self.logger_snap.error(colorama.Fore.RED +
+                                           "\n**********Complete error message***********\n%s" %
+                                           str(sys.exc_info()), extra=self.log_detail)
+
                     return
                 except Exception:
                     self.logger_snap.error(colorama.Fore.RED +
@@ -300,6 +313,12 @@ class Parser:
                     rpc,
                     reply_format,
                     output_file)
+                self.logger_snap.error(colorama.Fore.RED +
+                                       "ERROR occurred: \n%s" %
+                                       str(sys.exc_info()[0]), extra=self.log_detail)
+                self.logger_snap.error(colorama.Fore.RED +
+                                       "\n**********Complete error message***********\n%s" %
+                                       str(sys.exc_info()), extra=self.log_detail)
                 return
             except Exception:
                 self.logger_snap.error(colorama.Fore.RED +
