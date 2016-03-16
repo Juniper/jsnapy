@@ -5,7 +5,6 @@ import argparse
 import yaml
 import re
 from pyparsing import *
-from collections import OrderedDict
 
 parser = argparse.ArgumentParser(
     description='Converts JSNAP test to JSNAPy yml file.')
