@@ -261,6 +261,7 @@ class Operator:
         tresult = {}
         tresult['xpath'] = x_path
         tresult['testoperation'] = "not-exists"
+        tresult['actual_node_value'] = []
         try:
             element = ele_list[0]
         except IndexError as e:
