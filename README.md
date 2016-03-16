@@ -35,9 +35,9 @@ config_check.yml:
 ```
 # for one device, can be given like this:
     hosts:
-      - devices: router 
-            username : abc
-            passwd: pqr
+      - device: router 
+        username : abc
+        passwd: pqr
     tests:
       - test_no_diff.yml 
 ```
