@@ -3,7 +3,7 @@ import colorama
 import jinja2
 import logging
 from collections import defaultdict
-
+from lxml import etree
 
 class Operator:
 
@@ -107,6 +107,7 @@ class Operator:
     def _find_element(self, id_list, iddict, element, pre_node, post_node):
         """
         get element node for test operation
+        Not used by "no-diff", "list-not-less", "list-not-more" and "delta" functions
         """
         prenode = pre_node.xpath(element)
         postnode = post_node.xpath(element)
@@ -205,7 +206,6 @@ class Operator:
         else:
             tresult['node_name'] = element
             # this function will find set of pre and post nodes for given Xpath
-            # ####
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(
@@ -214,7 +214,10 @@ class Operator:
             else:
                 for i in range(len(post_nodes)):
                     #### get element node for test operation ####
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     # calculate value of any node mentioned inside info and
                     # error messages  ####
@@ -224,7 +227,11 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     #### check only in postnode   ####
                     if postnode:
+
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
@@ -279,7 +286,10 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -287,6 +297,10 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
@@ -300,10 +314,6 @@ class Operator:
                                     pre=predict,
                                     post=postdict), extra=self.log_detail)
                     else:
-                        # for k in range(len(postnode)):
-                        #    predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
-                        #        predict, postdict, element, postnode[k], prenode[k])
-                        #    print "inside else of for loop"
                         self.logger_testop.debug(
                             jinja2.Template(
                                 info_mssg.replace(
@@ -353,7 +363,11 @@ class Operator:
                         '/' +
                         ele_list[0])[0].text.strip()
                 for i in range(len(post_nodes)):
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -361,6 +375,10 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
@@ -412,13 +430,16 @@ class Operator:
             tresult['expected_node_value'] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                # tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -426,6 +447,10 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
@@ -457,6 +482,7 @@ class Operator:
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
+
     def not_equal(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("not-equal")
@@ -481,13 +507,16 @@ class Operator:
             tresult['expected_node_value'] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                # tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -495,6 +524,10 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
@@ -552,13 +585,16 @@ class Operator:
             tresult['expected_node_value'] = [range1, range2]
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                # tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -566,6 +602,10 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(
@@ -591,7 +631,6 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        # tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra=self.log_detail)
@@ -630,7 +669,11 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -638,6 +681,10 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(
@@ -663,7 +710,6 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        # tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra=self.log_detail)
@@ -696,13 +742,16 @@ class Operator:
             tresult['expected_node_value'] = val1
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                # tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -710,6 +759,10 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for j in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if j >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[j], prenode[j])
                             tresult['actual_node_value'].append(
@@ -734,7 +787,6 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        # tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra=self.log_detail)
@@ -767,13 +819,16 @@ class Operator:
             tresult['expected_node_value'] = val1
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                # tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -781,6 +836,10 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(
@@ -805,7 +864,6 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        # tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra=self.log_detail)
@@ -839,13 +897,15 @@ class Operator:
             tresult['expected_node_value'] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                #tresult['actual_node_value']= None
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    Operator.iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -854,6 +914,10 @@ class Operator:
 
                     if postnode:
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict[
                                 (element.replace('-', '_'))] = prenode[k].text
                             postdict[
@@ -880,7 +944,6 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        # tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "Error!!, Node is not present in path given with test operator!!", extra=self.log_detail)
                         res = False
@@ -912,13 +975,16 @@ class Operator:
             tresult['expected_node_value'] = value_list
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                # tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -927,6 +993,10 @@ class Operator:
 
                     if postnode:
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
@@ -950,7 +1020,6 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        # tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra=self.log_detail)
@@ -983,13 +1052,16 @@ class Operator:
             tresult['expected_node_value'] = value_list
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                # tresult['actual_node_value'].append(None)
                 self.logger_testop.error(
                     "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    iddict, postnode, prenode = self._find_element(
+                    #### if length of pre node is less than post node, assign sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+
+                    iddict, prenode, postnode = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -998,6 +1070,10 @@ class Operator:
 
                     if postnode:
                         for k in range(len(postnode)):
+                            #### if length of pre node is less than post node, assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
@@ -1021,7 +1097,6 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        # tresult['actual_node_value'].append(None)
                         self.logger_testop.error(
                             "ERROR!! Node '%s' not found" %
                             element, extra=self.log_detail)
