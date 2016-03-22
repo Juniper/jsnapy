@@ -25,7 +25,7 @@ for snapcheck in snapvalue:
 
 config_data = """
 hosts:
-  - devices: 10.209.16.204
+  - device: 10.209.16.204
     username : regress
  #   passwd: Embe1mpls
 tests:

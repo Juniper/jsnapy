@@ -8,7 +8,7 @@ dev.open()
 js = SnapAdmin()
 config_data = """
 hosts:
-  - devices: 10.209.16.206
+  - device: 10.209.16.206
     username : regress
     passwd: MaRtInI
 tests:

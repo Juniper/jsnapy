@@ -12,7 +12,7 @@ config_file1 = "/etc/jsnapy/testfiles/config_single_snapcheck.yml"
 
 config_data = """
 hosts:
-  - include: devices.yml
+  - include: device.yml
     group: MX
 tests:
   - test_is_equal.yml

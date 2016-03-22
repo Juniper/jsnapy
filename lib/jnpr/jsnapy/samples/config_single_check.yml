@@ -1,6 +1,6 @@
 # for one device, can be given like this:
 hosts:
-  - devices: 10.209.16.204 
+  - device: 10.209.16.204 
     username : root
     passwd: Embe1mpls
 tests:

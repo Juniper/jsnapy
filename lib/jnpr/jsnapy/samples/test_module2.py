@@ -13,7 +13,7 @@ config_data = "/etc/jsnapy/config_single_snapcheck.yml"
 config_data1 = "/etc/jsnapy/config_single_check.yml"
 """
 hosts:
-  - devices: 10.209.16.204
+  - device: 10.209.16.204
     username : regress
     passwd: MaRtInI
 
