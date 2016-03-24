@@ -140,9 +140,9 @@ class Operator:
         :return: return dictionary containing ids and their respective values
         """
         data = {}
-        i = 0
+        #i = 0
         for path in nodes:
-            i = i + 1
+         #   i = i + 1
             xlist = [path.findall(id) for id in id_list]
             val = []
             for values in xlist:
@@ -152,7 +152,7 @@ class Operator:
                         val.append(tuple(val1))
                     else:
                         val.append(values.text)
-            val.append(i)
+          #  val.append(i)
             data[tuple(val)] = path
         return data
 
@@ -1137,7 +1137,7 @@ class Operator:
                 data1 = self._get_data(id_list, pre_nodes)
                 data2 = self._get_data(id_list, post_nodes)
                 for k in data1:
-                    for length in range(len(k) - 1):
+                    for length in range(len(k)):
                         iddict[
                             'id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
                         #iddict['id_' + str(length)] = k[length].strip()
@@ -1223,7 +1223,7 @@ class Operator:
             postdata = self._get_data(id_list, post_nodes)
 
             for k in predata:
-                for length in range(len(k) - 1):
+                for length in range(len(k)):
                     iddict['id_' + str(length)] = [k[length][i].strip()
                                                    for i in range(len(k[length]))]
 
@@ -1285,8 +1285,7 @@ class Operator:
 
     def list_not_more(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
-        msg = "Performing list-not-more Test Operation"
-        self.print_testmssg(msg)
+        self.print_testmssg("list-not-more")
         res = True
         tresult = {}
         tresult['xpath'] = x_path
@@ -1311,7 +1310,7 @@ class Operator:
             postdata = self._get_data(id_list, post_nodes)
 
             for k in postdata:
-                for length in range(len(k) - 1):
+                for length in range(len(k)):
                     #iddict['id_' + str(length)] = k[length].strip()
                     iddict['id_' + str(length)] = [k[length][i].strip()
                                                    for i in range(len(k[length]))]
@@ -1411,7 +1410,7 @@ class Operator:
                 for k in predata:
                     # checking if id in first data set is present in second data
                     # set or not
-                    for length in range(len(k) - 1):
+                    for length in range(len(k)):
                         #iddict['id_' + str(length)] = k[length]
                         iddict[
                             'id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
