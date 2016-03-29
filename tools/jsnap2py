@@ -77,8 +77,9 @@ else:
                         '"' +
                         ' '))))
         msg = nestedExpr(opener='{', closer='}')
+        comment = Keyword('#') + SkipTo(LineEnd())
         test_case = tcs + OneOrMore(Group(tc_name + cmd + ZeroOrMore(Group(loop + tc_id + Group(OneOrMore(Group(oper + msg)))) +
-                                    Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}")))))
+                                    Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}"))))+Suppress(ZeroOrMore(comment)))
         data = test_case.parseString(content, parseAll=True).asList()
         push = {'tests_include': data[0]}
         for cases in data[1:]:
