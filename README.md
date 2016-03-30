@@ -106,6 +106,15 @@ If you want to give different output file name, then use -o option
 ```
 jsnap2py -i test_interface.conf -o interface.yml
 ```
+For more information please refer [jsnap2py-wiki] (https://github.com/Juniper/jsnapy/wiki/7.-jsnap2py)
 
-          
+CONTRIBUTORS
+-------------
+
+Juniper Networks is actively contributing to and maintaining this repo. Please contact jnpr-community-netdev@juniper.net for any queries.
+
+Contributors:  
+[Nitin Kumar](https://github.com/vnitinv/)  
+[Priyal Jain] (https://github.com/jainpriyal)
+
 
