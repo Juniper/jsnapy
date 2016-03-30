@@ -12,19 +12,20 @@ parser.add_argument("-i", "--input", help="JSNAP test file", type=str)
 parser.add_argument("-o", "--output", help="JSNAPy test file", type=str)
 args = parser.parse_args()
 
+
 def msg_change(x):
     data = re.findall(
         '(PRE|POST)/([\w-]+)',
         x,
         re.I) or re.findall(
         '(ID)\.(\d)', x, re.I) or re.findall('[\w-]+',
-        x,
-        re.I)
+                                             x,
+                                             re.I)
     if data:
         data = data[0]
         if data[0] in ['id', 'ID']:
             msg = "{{%s_%s}}" % (data)
-        elif data[0] in ['PRE','POST']:
+        elif data[0] in ['PRE', 'POST']:
             msg = '{{%s["%s"]}}' % (data)
         else:
             msg = '{{POST["%s"]}}' % data
@@ -39,12 +40,14 @@ else:
         content = fp.read()
 
         tcs = Suppress(
-            'do' + Literal("{")) + Group(OneOrMore(Word(alphanums + '_'+'-') + Suppress(Literal(";")))) + Suppress(Literal("}"))
+            'do' + Literal("{")) + Group(OneOrMore(Word(alphanums + '_' + '-') + Suppress(Literal(";")))) + Suppress(Literal("}"))
         tc_name = Word(alphanums + '-' + '_') + Suppress(Literal("{"))
         cmd = Group('command' + OneOrMore(Word(alphanums + '-' + '*' + '.')
                                           ).setParseAction(lambda tokens: " ".join(tokens))) + Suppress(Literal(";"))
-        loop = Group(OneOrMore(Word(alphanums + '-' + '/'))) + \
-            Suppress(Literal("{"))
+        # loop = Group(OneOrMore(Word(alphanums + '-' + '/'+'['+']'+"'"+'='))) + \
+        #    Suppress(Literal("{"))
+        loop = Group(Word(alphanums) + (OneOrMore(Word(alphanums + '-' + '/' +
+                     '[' + ']' + "'" + '='))).setParseAction(lambda tokens: " ".join(tokens))) + Suppress(Literal("{"))
         tc_id = Group(ZeroOrMore(Group('id' +
                                        (ZeroOrMore('.') +
                                         ZeroOrMore('/') +
@@ -79,7 +82,7 @@ else:
         msg = nestedExpr(opener='{', closer='}')
         comment = Keyword('#') + SkipTo(LineEnd())
         test_case = tcs + OneOrMore(Group(tc_name + cmd + ZeroOrMore(Group(loop + tc_id + Group(OneOrMore(Group(oper + msg)))) +
-                                    Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}"))))+Suppress(ZeroOrMore(comment)))
+                                    Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(comment)))
         data = test_case.parseString(content, parseAll=True).asList()
         push = {'tests_include': data[0]}
         for cases in data[1:]:
@@ -96,13 +99,19 @@ else:
                     if len(tc[0]) == 1:
                         test = {tc[0][0]: None}
                     else:
-                        test = {tc[0][0]: (', '.join(tc[0][1:])).strip().replace('"','')}
+                        test = {
+                            tc[0][0]: (
+                                ', '.join(
+                                    tc[0][
+                                        1:])).strip().replace(
+                                '"',
+                                '')}
                     msg = [i.strip() for i in ' '.join(tc[-1]).split(';')]
                     for i in msg:
                         obj = re.search('(info|err) (.*)', i)
                         if obj:
                             data = re.search('"(.*?)"(.*)', obj.group(2))
-                            inputs=[]
+                            inputs = []
                             if data is not None and data.group(2) != '':
                                 inputs = re.findall(
                                     '\$id\.\d|\$pre/[\w-]+|\$post/[\w-]+|,\s?\.{0,2}/?[\w-]+',
@@ -110,7 +119,7 @@ else:
                                     re.I)
                                 inputs = map(msg_change, inputs)
                             #import pdb
-                            #pdb.set_trace()
+                            # pdb.set_trace()
                             #inputs = map(msg_change, inputs)
                             to_format = re.search('"(.*?)"', obj.group(2))
                             if len(inputs) > 0:
@@ -124,10 +133,9 @@ else:
                                     test[obj.group(1)] = obj.group(2)
                     tests.append(test)
                 iter_item['tests'] = tests
-                iter_list.append({case[0][0]:iter_item})
+                iter_list.append({case[0][0]: iter_item})
             push[cases[0]] = [{cases[1][0]:cases[1][1]}]
             push[cases[0]].extend(iter_list)
 
         with open(args.output, 'w') as fout:
             yaml.dump(push, fout, default_flow_style=False, indent=2)
-
