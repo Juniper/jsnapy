@@ -95,9 +95,17 @@ File Paths:
       Snap files will be taken from "snapshot_path" in jsnapy.cfg file. 
       Default path is "/etc/jsnapy/snapshots"
 ```
-
-
-
+jsnap2py: 
+----------
+Tool to convert conf file of JSNAP slax into yaml file that can be consumed by JSNAPy.
+```
+jsnap2py -i test_interface.conf
+```
+This will convert slax conf file "test_interface.conf" into yaml file "test_interface.yaml".  
+If you want to give different output file name, then use -o option
+```
+jsnap2py -i test_interface.conf -o interface.yml
+```
 
           
 
