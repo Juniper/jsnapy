@@ -44,7 +44,7 @@ class SqliteExtractXml:
             except Exception as ex:
                 self.logger_sqlite.error(
                     colorama.Fore.RED +
-                    "ERROR!! Eror message is %s" %
+                    "ERROR!! Complete message is %s" %
                     ex,
                     extra=self.sqlite_logs)
             else:
@@ -71,7 +71,7 @@ class SqliteExtractXml:
             except Exception as ex:
                 self.logger_sqlite.error(
                     colorama.Fore.RED +
-                    "ERROR!! Error message is: %s" % ex, extra=self.sqlite_logs)
+                    "ERROR!! Complete message is: %s" % ex, extra=self.sqlite_logs)
                 return str(None), None
 
             else:

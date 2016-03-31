@@ -288,7 +288,7 @@ class SnapAdmin:
         else:
             if (self.args.check is True and (
                     self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None)):
-                self.logger.error(
+                self.logger.error(colorama.Fore.RED +
                     "Arguments not given correctly, Please refer help message",
                     extra=self.log_detail)
                 self.parser.print_help()
@@ -373,13 +373,13 @@ class SnapAdmin:
             try:
                 k = self.main_file['hosts'][0]
             except KeyError as ex:
-                self.logger.error(
+                self.logger.error(colorama.Fore.RED +
                     "\nERROR occurred !! Hostname not given properly %s" %
                     str(ex),
                     extra=self.log_detail)
                 #raise Exception(ex)
             except Exception as ex:
-                self.logger.error(
+                self.logger.error(colorama.Fore.RED +
                     "\nERROR occurred !! %s" %
                     str(ex),
                     extra=self.log_detail)
@@ -559,13 +559,13 @@ class SnapAdmin:
                         action,
                         post_snap)
                 else:
-                    self.logger.error(
+                    self.logger.error(colorama.Fore.RED +
                         "\nERROR occurred %s" %
                         str(ex),
                         extra=self.log_detail)
                     raise Exception(ex)
             except Exception as ex:
-                self.logger.error(
+                self.logger.error(colorama.Fore.RED +
                     "\nERROR occurred %s" %
                     str(ex),
                     extra=self.log_detail)
@@ -761,7 +761,7 @@ class SnapAdmin:
                         hostname,
                         config_data)
                 except Exception as ex:
-                    self.logger.error(
+                    self.logger.error(colorama.Fore.RED +
                         "\nERROR occurred %s" %
                         str(ex),
                         extra=self.log_detail)
@@ -873,7 +873,7 @@ class SnapAdmin:
             (self.args.snapcheck is True and self.args.file is None) or
             (self.args.check is True and self.args.file is None)
            ):
-            self.logger.error(
+            self.logger.error(colorama.Fore.RED +
                 "Arguments not given correctly, Please refer help message", extra=self.log_detail)
             self.parser.print_help()
             sys.exit(1)
