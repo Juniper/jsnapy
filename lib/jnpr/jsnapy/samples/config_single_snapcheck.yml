@@ -1,8 +1,8 @@
 # for one device, can be given like this:
 hosts:
   - device: 10.209.16.204 
-    username : regress
-    passwd: MaRtInI
+    username : demo
+    passwd: demo123
 tests:
   - test_exists.yml 
   - test_contains.yml
