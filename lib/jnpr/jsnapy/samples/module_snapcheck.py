@@ -15,5 +15,3 @@ for snapcheck in snapvalue:
     print "Total passed: ", snapcheck.no_passed
     print "Total failed:", snapcheck.no_failed
     pprint(dict(snapcheck.test_details))
-
-

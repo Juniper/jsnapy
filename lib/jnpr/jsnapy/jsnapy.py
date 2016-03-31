@@ -289,8 +289,8 @@ class SnapAdmin:
             if (self.args.check is True and (
                     self.args.file is None or self.args.pre_snapfile is None or self.args.post_snapfile is None)):
                 self.logger.error(colorama.Fore.RED +
-                    "Arguments not given correctly, Please refer help message",
-                    extra=self.log_detail)
+                                  "Arguments not given correctly, Please refer help message",
+                                  extra=self.log_detail)
                 self.parser.print_help()
                 sys.exit(1)
         self.login(output_file)
@@ -374,15 +374,15 @@ class SnapAdmin:
                 k = self.main_file['hosts'][0]
             except KeyError as ex:
                 self.logger.error(colorama.Fore.RED +
-                    "\nERROR occurred !! Hostname not given properly %s" %
-                    str(ex),
-                    extra=self.log_detail)
+                                  "\nERROR occurred !! Hostname not given properly %s" %
+                                  str(ex),
+                                  extra=self.log_detail)
                 #raise Exception(ex)
             except Exception as ex:
                 self.logger.error(colorama.Fore.RED +
-                    "\nERROR occurred !! %s" %
-                    str(ex),
-                    extra=self.log_detail)
+                                  "\nERROR occurred !! %s" %
+                                  str(ex),
+                                  extra=self.log_detail)
                 #raise Exception(ex)
             else:
                 # when group of devices are given, searching for include keyword in
@@ -560,15 +560,15 @@ class SnapAdmin:
                         post_snap)
                 else:
                     self.logger.error(colorama.Fore.RED +
-                        "\nERROR occurred %s" %
-                        str(ex),
-                        extra=self.log_detail)
+                                      "\nERROR occurred %s" %
+                                      str(ex),
+                                      extra=self.log_detail)
                     raise Exception(ex)
             except Exception as ex:
                 self.logger.error(colorama.Fore.RED +
-                    "\nERROR occurred %s" %
-                    str(ex),
-                    extra=self.log_detail)
+                                  "\nERROR occurred %s" %
+                                  str(ex),
+                                  extra=self.log_detail)
                 raise Exception(ex)
             else:
                 self.generate_rpc_reply(
@@ -762,9 +762,9 @@ class SnapAdmin:
                         config_data)
                 except Exception as ex:
                     self.logger.error(colorama.Fore.RED +
-                        "\nERROR occurred %s" %
-                        str(ex),
-                        extra=self.log_detail)
+                                      "\nERROR occurred %s" %
+                                      str(ex),
+                                      extra=self.log_detail)
                 else:
                     res = True
             if action in ["snapcheck", "check"]:
@@ -874,7 +874,7 @@ class SnapAdmin:
             (self.args.check is True and self.args.file is None)
            ):
             self.logger.error(colorama.Fore.RED +
-                "Arguments not given correctly, Please refer help message", extra=self.log_detail)
+                              "Arguments not given correctly, Please refer help message", extra=self.log_detail)
             self.parser.print_help()
             sys.exit(1)
         if self.args.diff is True:
