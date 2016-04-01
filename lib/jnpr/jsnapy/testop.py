@@ -5,6 +5,7 @@ import logging
 from collections import defaultdict
 from lxml import etree
 
+
 class Operator:
 
     def __init__(self):
@@ -53,12 +54,12 @@ class Operator:
                 id,
                 *args)
         except AttributeError as e:
-            self.logger_testop.error(
-                "ERROR!! message %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "ERROR!! Complete message: %s" % e.message, extra=self.log_detail)
             self.no_failed = self.no_failed + 1
         except Exception as ex:
-            self.logger_testop.error(
-                "\nException occurred: %s" % str(ex), extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "ERROR!! Complete message: %s" % str(ex), extra=self.log_detail)
             self.no_failed = self.no_failed + 1
 
     def print_result(self, testname, result):
@@ -197,24 +198,25 @@ class Operator:
         try:
             element = ele_list[0]
         except IndexError as e:
-            self.logger_testop.error(
-                "\n Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "\n Element is not specified for testing",
-                extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n Element is not specified for testing",
+                                     extra=self.log_detail)
             raise
         else:
             tresult['node_name'] = element
             # this function will find set of pre and post nodes for given Xpath
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
                     #### get element node for test operation ####
-                    #### if length of pre node is less than post node, assign sample node
+                    # if length of pre node is less than post node, assign
+                    # sample node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
                     iddict, prenode, postnode = self._find_element(
@@ -229,7 +231,8 @@ class Operator:
                     if postnode:
 
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -272,21 +275,22 @@ class Operator:
         try:
             element = ele_list[0]
         except IndexError as e:
-            self.logger_testop.error(
-                "\n Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "\n Element is not specified for testing", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n Element is not specified for testing", extra=self.log_detail)
             raise
         else:
             tresult['node_name'] = element
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample node
+                    # if length of pre node is less than post node, assign
+                    # sample node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
                     iddict, prenode, postnode = self._find_element(
@@ -297,7 +301,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -340,15 +345,15 @@ class Operator:
         try:
             element = ele_list[0]
         except IndexError as e:
-            self.logger_testop.error(
-                "\nError occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\nError occurred while accessing test element: %s" % e.message, extra=self.log_detail)
             raise
         else:
             tresult['node_name'] = element
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 if len(ele_list) >= 2:
@@ -363,7 +368,8 @@ class Operator:
                         '/' +
                         ele_list[0])[0].text.strip()
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -375,7 +381,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -420,22 +427,23 @@ class Operator:
             element = ele_list[0]
             value = ele_list[1]
         except IndexError as e:
-            self.logger_testop.error(
-                "\nError occurred while accessing test element %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "\n'is-equal' test operator requires two parameter", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\nError occurred while accessing test element %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n'is-equal' test operator requires two parameter", extra=self.log_detail)
             raise
         else:
             tresult['node_name'] = element
             tresult['expected_node_value'] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -447,7 +455,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -474,14 +483,13 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        self.logger_testop.error(
-                            "ERROR!! Node '%s' not found" %
-                            element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR!! Node '%s' not found" %
+                                                 element, extra=self.log_detail)
                         res = False
         self.print_result('is-equal', res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
-
 
     def not_equal(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
@@ -498,21 +506,22 @@ class Operator:
             element = ele_list[0]
             value = ele_list[1]
         except IndexError as e:
-            self.logger_testop.error(
-                "\nError occurred while accessing test element: %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "\n'not-equal' test operator requires two parameter", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\nError occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n'not-equal' test operator requires two parameter", extra=self.log_detail)
         else:
             tresult['node_name'] = element
             tresult['expected_node_value'] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -524,7 +533,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -552,9 +562,9 @@ class Operator:
                                         post=postdict), extra=self.log_detail)
                     else:
                         # tresult['actual_node_value'].append(None)
-                        self.logger_testop.error(
-                            "ERROR!! Node '%s' not found" %
-                            element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR!! Node '%s' not found" %
+                                                 element, extra=self.log_detail)
                         res = False
         self.print_result('not-equal', res)
         tresult['result'] = res
@@ -576,21 +586,22 @@ class Operator:
             range1 = float(ele_list[1])
             range2 = float(ele_list[2])
         except IndexError as e:
-            self.logger_testop.error(
-                "\nError occurred while accessing test element %s\n" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "\n'in-range' test operator requires two parameter", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\nError occurred while accessing test element %s\n" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n'in-range' test operator requires two parameter", extra=self.log_detail)
         else:
             tresult['node_name'] = element
             tresult['expected_node_value'] = [range1, range2]
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -602,7 +613,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -631,9 +643,9 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        self.logger_testop.error(
-                            "ERROR!! Node '%s' not found" %
-                            element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR!! Node '%s' not found" %
+                                                 element, extra=self.log_detail)
                         res = False
         self.print_result('in-range', res)
         tresult['result'] = res
@@ -655,21 +667,22 @@ class Operator:
             range1 = float(ele_list[1])
             range2 = float(ele_list[2])
         except IndexError as e:
-            self.logger_testop.error(
-                "\n Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "\n not-range test operator require two parameters", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n not-range test operator require two parameters", extra=self.log_detail)
         else:
             tresult['node_name'] = element
             tresult['expected_node_value'] = [range1, range2]
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -681,7 +694,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -710,9 +724,9 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        self.logger_testop.error(
-                            "ERROR!! Node '%s' not found" %
-                            element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR!! Node '%s' not found" %
+                                                 element, extra=self.log_detail)
                         res = False
         self.print_result('not-range', res)
         tresult['result'] = res
@@ -733,21 +747,22 @@ class Operator:
             element = ele_list[0]
             val1 = float(ele_list[1])
         except IndexError as e:
-            self.logger_testop.error(
-                "Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "'is-gt' test operator require two parameters", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "'is-gt' test operator require two parameters", extra=self.log_detail)
         else:
             tresult['node_name'] = element
             tresult['expected_node_value'] = val1
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -759,7 +774,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for j in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if j >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -787,9 +803,9 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        self.logger_testop.error(
-                            "ERROR!! Node '%s' not found" %
-                            element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR!! Node '%s' not found" %
+                                                 element, extra=self.log_detail)
                         res = False
         self.print_result('is-gt', res)
         tresult['result'] = res
@@ -810,21 +826,22 @@ class Operator:
             element = ele_list[0]
             val1 = float(ele_list[1])
         except IndexError as e:
-            self.logger_testop.error(
-                "Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "'is-lt' test operator require two parameters", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "'is-lt' test operator require two parameters", extra=self.log_detail)
         else:
             tresult['node_name'] = element
             tresult['expected_node_value'] = val1
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -836,7 +853,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -864,9 +882,9 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        self.logger_testop.error(
-                            "ERROR!! Node '%s' not found" %
-                            element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR!! Node '%s' not found" %
+                                                 element, extra=self.log_detail)
                         res = False
         self.print_result('is-lt', res)
         tresult['result'] = res
@@ -887,22 +905,23 @@ class Operator:
             element = ele_list[0]
             value = ele_list[1]
         except IndexError as e:
-            self.logger_testop.error(
-                "Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "\n'contains' require two parameters",
-                extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n'contains' require two parameters",
+                                     extra=self.log_detail)
         else:
             tresult['node_name'] = element
             tresult['expected_node_value'] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
                     iddict, prenode, postnode = self._find_element(
@@ -914,7 +933,8 @@ class Operator:
 
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -944,8 +964,8 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        self.logger_testop.error(
-                            "Error!!, Node is not present in path given with test operator!!", extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR!!, Node is not present in path given with test operator!!", extra=self.log_detail)
                         res = False
         self.print_result('contains', res)
         tresult['result'] = res
@@ -966,21 +986,22 @@ class Operator:
             element = ele_list[0]
             value_list = ele_list[1:]
         except IndexError as e:
-            self.logger_testop.error(
-                "\nError occurred while accessing test element %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "\n'is-in' test operator require two parameters", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\nError occurred while accessing test element %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n'is-in' test operator require two parameters", extra=self.log_detail)
         else:
             tresult['node_name'] = element
             tresult['expected_node_value'] = value_list
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -993,7 +1014,8 @@ class Operator:
 
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -1020,9 +1042,9 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        self.logger_testop.error(
-                            "ERROR!! Node '%s' not found" %
-                            element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR!! Node '%s' not found" %
+                                                 element, extra=self.log_detail)
                         res = False
         self.print_result('is-in', res)
         tresult['result'] = res
@@ -1043,21 +1065,22 @@ class Operator:
             element = ele_list[0]
             value_list = ele_list[1:]
         except IndexError as e:
-            self.logger_testop.error(
-                "Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "'not-in' test operator require two parameters", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "'not-in' test operator require two parameters", extra=self.log_detail)
         else:
             tresult['node_name'] = element
             tresult['expected_node_value'] = value_list
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -1070,7 +1093,8 @@ class Operator:
 
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -1097,9 +1121,9 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                     else:
-                        self.logger_testop.error(
-                            "ERROR!! Node '%s' not found" %
-                            element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR!! Node '%s' not found" %
+                                                 element, extra=self.log_detail)
                         res = False
         self.print_result('not-in', res)
         tresult['result'] = res
@@ -1122,13 +1146,13 @@ class Operator:
         tresult['id_miss_match'] = []
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
         if re.match(ele_list[0], "no node"):
-            self.logger_testop.error(
-                "ERROR!! 'no-diff' operator requires node value to test !!", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "ERROR!! 'no-diff' operator requires node value to test !!", extra=self.log_detail)
         else:
             if (not pre_nodes) or (not post_nodes):
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!",
-                    extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!",
+                                         extra=self.log_detail)
                 res = False
             else:
                 # assuming one iterator has unique set of ids, i.e only one node matching to id
@@ -1180,8 +1204,8 @@ class Operator:
                                     pre=predict,
                                     post=postdict), extra=self.log_detail)
                     else:
-                        self.logger_testop.error(
-                            "ERROR, id miss match occurred!!! id list in pre snapshots is: %s" % iddict, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR, id miss match occurred!!! id list in pre snapshots is: %s" % iddict, extra=self.log_detail)
                         tresult['id_miss_match'].append(iddict.copy())
                         """
                         for kval in k:
@@ -1211,9 +1235,9 @@ class Operator:
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         if not pre_nodes or not post_nodes:
-            self.logger_testop.error(
-                "ERROR!! Nodes are not present in given Xpath!!",
-                extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "ERROR!! Nodes are not present in given Xpath!!",
+                                     extra=self.log_detail)
             res = False
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
@@ -1269,9 +1293,9 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                 else:
-                    self.logger_testop.error(
-                        "ERROR, id miss match occurred!!! id list not in post snapshots is: %s" %
-                        iddict, extra=self.log_detail)
+                    self.logger_testop.error(colorama.Fore.RED +
+                                             "ERROR, id miss match occurred!!! id list not in post snapshots is: %s" %
+                                             iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
                     # for kval in range(len(k)-1):
                     #    print "kval, k", kval,k
@@ -1299,9 +1323,9 @@ class Operator:
         postdict = {}
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
         if not pre_nodes or not post_nodes:
-            self.logger_testop.error(
-                "ERROR!! Nodes are not present in given Xpath!!",
-                extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "ERROR!! Nodes are not present in given Xpath!!",
+                                     extra=self.log_detail)
             res = False
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
@@ -1357,8 +1381,8 @@ class Operator:
 
                 else:
                     tresult['id_miss_match'] = []
-                    self.logger_testop.error(
-                        "ERROR, id miss match occurred !! id list not in pre snapshots is: %s" % iddict, extra=self.log_detail)
+                    self.logger_testop.error(colorama.Fore.RED +
+                                             "ERROR, id miss match occurred !! id list not in pre snapshots is: %s" % iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
                     # for kval in range(len(k)-1):
                     #    self.logger_testop.error(
@@ -1389,15 +1413,15 @@ class Operator:
             node_name = ele_list[0]
             delta_val = ele_list[1]
         except IndexError as e:
-            self.logger_testop.error(
-                "Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
-            self.logger_testop.error(
-                "'delta' test operator require two parameters", extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "'delta' test operator require two parameters", extra=self.log_detail)
         else:
             if not pre_nodes or not post_nodes:
-                self.logger_testop.error(
-                    "ERROR!! Nodes are not present in given Xpath!!",
-                    extra=self.log_detail)
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in given Xpath!!",
+                                         extra=self.log_detail)
                 res = False
 
             else:
@@ -1580,14 +1604,14 @@ class Operator:
                                                 pre=predict,
                                                 post=postdict), extra=self.log_detail)
                             else:
-                                self.logger_testop.error(
-                                    "ERROR!! Node '%s' not found" %
-                                    node_name,
-                                    extra=self.log_detail)
+                                self.logger_testop.error(colorama.Fore.RED +
+                                                         "ERROR!! Node '%s' not found" %
+                                                         node_name,
+                                                         extra=self.log_detail)
                                 res = False
 
                     else:
-                        self.logger_testop.error("\n ERROR!! id miss match occurred !! mismatched id from pre snapshot"
+                        self.logger_testop.error(colorama.Fore.RED + "\n ERROR!! id miss match occurred !! mismatched id from pre snapshot"
                                                  "is: %s" % iddict, extra=self.log_detail)
                         tresult['id_miss_match'].append(iddict.copy())
 

@@ -35,10 +35,8 @@ class Parser:
                     "\nERROR:",
                     extra=self.log_detail)
                 for err_node in err:
-                    self.logger_snap.error(
-                        err_node.findtext(
-                            colorama.Fore.RED +
-                            './/error-message'), extra=self.log_detail)
+                    self.logger_snap.error(colorama.Fore.RED +
+                                           err_node.findtext('.//error-message'), extra=self.log_detail)
             else:
                 with open(output_file, 'w') as f:
                     f.write(etree.tostring(rpc_reply))
@@ -80,10 +78,8 @@ class Parser:
                     "Complete Error Message: %s" % rpc_reply,
                     extra=self.log_detail)
                 for err_node in err:
-                    self.logger_snap.error(
-                        err_node.findtext(
-                            colorama.Fore.RED +
-                            './/error-message'), extra=self.log_detail)
+                    self.logger_snap.error(colorama.Fore.RED +
+                                           err_node.findtext('.//error-message'), extra=self.log_detail)
             else:
                 return etree.tostring(rpc_reply)
         return(False)

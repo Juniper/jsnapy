@@ -8,7 +8,7 @@ js = SnapAdmin()
 config_data = """
 hosts:
   - device: 10.209.16.204
-    username : demo 
+    username : demo
     passwd: demo123
 tests:
   - test_exists.yml
