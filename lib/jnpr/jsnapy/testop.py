@@ -5,6 +5,7 @@ import logging
 from collections import defaultdict
 from lxml import etree
 
+
 class Operator:
 
     def __init__(self):
@@ -214,7 +215,8 @@ class Operator:
             else:
                 for i in range(len(post_nodes)):
                     #### get element node for test operation ####
-                    #### if length of pre node is less than post node, assign sample node
+                    # if length of pre node is less than post node, assign
+                    # sample node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
                     iddict, prenode, postnode = self._find_element(
@@ -229,7 +231,8 @@ class Operator:
                     if postnode:
 
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
@@ -286,7 +289,8 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample node
+                    # if length of pre node is less than post node, assign
+                    # sample node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
                     iddict, prenode, postnode = self._find_element(
@@ -297,7 +301,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -363,7 +368,8 @@ class Operator:
                         '/' +
                         ele_list[0])[0].text.strip()
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -375,7 +381,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -435,7 +442,8 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -447,7 +455,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -482,7 +491,6 @@ class Operator:
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
-
     def not_equal(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("not-equal")
@@ -512,7 +520,8 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -524,7 +533,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -590,7 +600,8 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -602,7 +613,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -669,7 +681,8 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -681,7 +694,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -747,7 +761,8 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -759,7 +774,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for j in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if j >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -824,7 +840,8 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -836,7 +853,8 @@ class Operator:
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -902,7 +920,8 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
                     iddict, prenode, postnode = self._find_element(
@@ -914,7 +933,8 @@ class Operator:
 
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -980,7 +1000,8 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -993,7 +1014,8 @@ class Operator:
 
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -1057,7 +1079,8 @@ class Operator:
                 res = False
             else:
                 for i in range(len(post_nodes)):
-                    #### if length of pre node is less than post node, assign sample xml element node
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
@@ -1070,7 +1093,8 @@ class Operator:
 
                     if postnode:
                         for k in range(len(postnode)):
-                            #### if length of pre node is less than post node, assign sample node
+                            # if length of pre node is less than post node,
+                            # assign sample node
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
@@ -1136,12 +1160,19 @@ class Operator:
                 # one xpath has only one set of id
                 data1 = self._get_data(id_list, pre_nodes)
                 data2 = self._get_data(id_list, post_nodes)
-                for k in data1:
+                # making union of id keys
+                data1_key = set(data1.keys())
+                data2_key = set(data2.keys())
+                keys_union = data1_key.union(data2_key)
+                # iterating through ids which are present either in pre
+                # snapshot or post snapshot or both
+                for k in keys_union:
                     for length in range(len(k)):
+                        # making dictionary of ids for given xpath, ex id_0,
+                        # id_1 ..etc
                         iddict[
                             'id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
-                        #iddict['id_' + str(length)] = k[length].strip()
-                    if k in data2:
+                    if k in data1 and k in data2:
                         predict, postdict = self._get_nodevalue(
                             predict, postdict, data1[k], data2[k], x_path, ele_list[0], err_mssg)
                         predict, postdict = self._get_nodevalue(
@@ -1180,15 +1211,18 @@ class Operator:
                                     pre=predict,
                                     post=postdict), extra=self.log_detail)
                     else:
-                        self.logger_testop.error(
-                            "ERROR, id miss match occurred!!! id list in pre snapshots is: %s" % iddict, extra=self.log_detail)
-                        tresult['id_miss_match'].append(iddict.copy())
-                        """
-                        for kval in k:
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR, ID miss match occurred!!!", extra=self.log_detail)
+                        if k in data1:
                             self.logger_testop.error(
-                                "Missing node: %s" %
-                                kval.strip(), extra= self.log_detail)
-                                """
+                                "ID list '%s' is not present in post snapshot" %
+                                iddict, extra=self.log_detail)
+                        else:
+                            self.logger_testop.error(
+                                "ID list '%s' is not present in pre snapshot" %
+                                iddict, extra=self.log_detail)
+                        tresult['id_miss_match'].append(iddict.copy())
+
                         res = False
         self.print_result('no-diff', res)
         tresult['result'] = res
@@ -1269,8 +1303,10 @@ class Operator:
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
                 else:
+                    self.logger_testop.error(colorama.Fore.RED +
+                                             "ERROR!! ID miss match occurred!! ", extra=self.log_detail)
                     self.logger_testop.error(
-                        "ERROR, id miss match occurred!!! id list not in post snapshots is: %s" %
+                        "\nID list ' %s ' is not present in post snapshots " %
                         iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
                     # for kval in range(len(k)-1):
@@ -1357,8 +1393,11 @@ class Operator:
 
                 else:
                     tresult['id_miss_match'] = []
+                    self.logger_testop.error(colorama.Fore.RED +
+                                             "ERROR, ID miss match occurred !!", extra=self.log_detail)
                     self.logger_testop.error(
-                        "ERROR, id miss match occurred !! id list not in pre snapshots is: %s" % iddict, extra=self.log_detail)
+                        "\nID list ' %s ' is not present in pre snapshots" %
+                        iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
                     # for kval in range(len(k)-1):
                     #    self.logger_testop.error(
@@ -1407,7 +1446,11 @@ class Operator:
                 predata = self._get_data(id_list, pre_nodes)
                 postdata = self._get_data(id_list, post_nodes)
 
-                for k in predata:
+                predata_keys = set(predata.keys())
+                postdata_keys = set(postdata.keys())
+                keys_union = predata_keys.union(postdata_keys)
+
+                for k in keys_union:
                     # checking if id in first data set is present in second data
                     # set or not
                     for length in range(len(k)):
@@ -1415,7 +1458,7 @@ class Operator:
                         iddict[
                             'id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
 
-                    if k in postdata:
+                    if k in predata and k in postdata:
                         predict, postdict = self._get_nodevalue(
                             predict, postdict, predata[k], postdata[k], x_path, node_name, err_mssg)
                         predict, postdict = self._get_nodevalue(
@@ -1580,15 +1623,25 @@ class Operator:
                                                 pre=predict,
                                                 post=postdict), extra=self.log_detail)
                             else:
-                                self.logger_testop.error(
-                                    "ERROR!! Node '%s' not found" %
-                                    node_name,
-                                    extra=self.log_detail)
+                                self.logger_testop.error(colorama.Fore.RED +
+                                                         "ERROR!! Node '%s' not found" %
+                                                         node_name,
+                                                         extra=self.log_detail)
                                 res = False
 
                     else:
-                        self.logger_testop.error("\n ERROR!! id miss match occurred !! mismatched id from pre snapshot"
-                                                 "is: %s" % iddict, extra=self.log_detail)
+                        self.logger_testop.error(
+                            colorama.Fore.RED +
+                            "\nERROR!! id miss match occurred !!",
+                            extra=self.log_detail)
+                        if k in predata:
+                            self.logger_testop.error(
+                                "ID list '%s' is not present in post snapshot" %
+                                iddict, extra=self.log_detail)
+                        else:
+                            self.logger_testop.error(
+                                "ID list '%s' is not present in pre snapshot" %
+                                iddict, extra=self.log_detail)
                         tresult['id_miss_match'].append(iddict.copy())
 
                         # for kval in k:

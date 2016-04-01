@@ -1,4 +1,4 @@
-### Performing function similar to --check in command line ### 
+### Performing function similar to --check in command line ###
 from jnpr.jsnapy import SnapAdmin
 from pprint import pprint
 from jnpr.junos import Device

@@ -9,8 +9,8 @@ dev_obj.open()
 js = SnapAdmin()
 config_file = "/etc/jsnapy/testfiles/config_check.yml"
 
-### can pass device object
-### it will not create new connection with device
+# can pass device object
+# it will not create new connection with device
 snapchk = js.snapcheck(config_file, "snap", dev=dev_obj)
 
 for val in snapchk:
