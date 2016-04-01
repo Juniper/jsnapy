@@ -1160,12 +1160,19 @@ class Operator:
                 # one xpath has only one set of id
                 data1 = self._get_data(id_list, pre_nodes)
                 data2 = self._get_data(id_list, post_nodes)
-                for k in data1:
+                # making union of id keys
+                data1_key = set(data1.keys())
+                data2_key = set(data2.keys())
+                keys_union = data1_key.union(data2_key)
+                # iterating through ids which are present either in pre
+                # snapshot or post snapshot or both
+                for k in keys_union:
                     for length in range(len(k)):
+                        # making dictionary of ids for given xpath, ex id_0,
+                        # id_1 ..etc
                         iddict[
                             'id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
-                        #iddict['id_' + str(length)] = k[length].strip()
-                    if k in data2:
+                    if k in data1 and k in data2:
                         predict, postdict = self._get_nodevalue(
                             predict, postdict, data1[k], data2[k], x_path, ele_list[0], err_mssg)
                         predict, postdict = self._get_nodevalue(
@@ -1205,14 +1212,17 @@ class Operator:
                                     post=postdict), extra=self.log_detail)
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR, id miss match occurred!!! id list in pre snapshots is: %s" % iddict, extra=self.log_detail)
-                        tresult['id_miss_match'].append(iddict.copy())
-                        """
-                        for kval in k:
+                                                 "ERROR, ID miss match occurred!!!", extra=self.log_detail)
+                        if k in data1:
                             self.logger_testop.error(
-                                "Missing node: %s" %
-                                kval.strip(), extra= self.log_detail)
-                                """
+                                "ID list '%s' is not present in post snapshot" %
+                                iddict, extra=self.log_detail)
+                        else:
+                            self.logger_testop.error(
+                                "ID list '%s' is not present in pre snapshot" %
+                                iddict, extra=self.log_detail)
+                        tresult['id_miss_match'].append(iddict.copy())
+
                         res = False
         self.print_result('no-diff', res)
         tresult['result'] = res
@@ -1294,8 +1304,10 @@ class Operator:
                                         post=postdict), extra=self.log_detail)
                 else:
                     self.logger_testop.error(colorama.Fore.RED +
-                                             "ERROR, id miss match occurred!!! id list not in post snapshots is: %s" %
-                                             iddict, extra=self.log_detail)
+                                             "ERROR!! ID miss match occurred!! ", extra=self.log_detail)
+                    self.logger_testop.error(
+                        "\nID list ' %s ' is not present in post snapshots " %
+                        iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
                     # for kval in range(len(k)-1):
                     #    print "kval, k", kval,k
@@ -1382,7 +1394,10 @@ class Operator:
                 else:
                     tresult['id_miss_match'] = []
                     self.logger_testop.error(colorama.Fore.RED +
-                                             "ERROR, id miss match occurred !! id list not in pre snapshots is: %s" % iddict, extra=self.log_detail)
+                                             "ERROR, ID miss match occurred !!", extra=self.log_detail)
+                    self.logger_testop.error(
+                        "\nID list ' %s ' is not present in pre snapshots" %
+                        iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
                     # for kval in range(len(k)-1):
                     #    self.logger_testop.error(
@@ -1431,7 +1446,11 @@ class Operator:
                 predata = self._get_data(id_list, pre_nodes)
                 postdata = self._get_data(id_list, post_nodes)
 
-                for k in predata:
+                predata_keys = set(predata.keys())
+                postdata_keys = set(postdata.keys())
+                keys_union = predata_keys.union(postdata_keys)
+
+                for k in keys_union:
                     # checking if id in first data set is present in second data
                     # set or not
                     for length in range(len(k)):
@@ -1439,7 +1458,7 @@ class Operator:
                         iddict[
                             'id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
 
-                    if k in postdata:
+                    if k in predata and k in postdata:
                         predict, postdict = self._get_nodevalue(
                             predict, postdict, predata[k], postdata[k], x_path, node_name, err_mssg)
                         predict, postdict = self._get_nodevalue(
@@ -1611,8 +1630,18 @@ class Operator:
                                 res = False
 
                     else:
-                        self.logger_testop.error(colorama.Fore.RED + "\n ERROR!! id miss match occurred !! mismatched id from pre snapshot"
-                                                 "is: %s" % iddict, extra=self.log_detail)
+                        self.logger_testop.error(
+                            colorama.Fore.RED +
+                            "\nERROR!! id miss match occurred !!",
+                            extra=self.log_detail)
+                        if k in predata:
+                            self.logger_testop.error(
+                                "ID list '%s' is not present in post snapshot" %
+                                iddict, extra=self.log_detail)
+                        else:
+                            self.logger_testop.error(
+                                "ID list '%s' is not present in pre snapshot" %
+                                iddict, extra=self.log_detail)
                         tresult['id_miss_match'].append(iddict.copy())
 
                         # for kval in k:

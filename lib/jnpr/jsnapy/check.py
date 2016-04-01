@@ -76,13 +76,19 @@ class Comparator:
                     "ERROR, Database for either pre or post snapshot is not present in given path !!",
                     extra=self.log_detail)
                 return
-        elif os.path.isfile(snap):
+        elif os.path.isfile(snap) and os.stat(snap).st_size > 0:
             xml_value = etree.parse(snap)
+        ##### sometimes snapshot files are empty, when cmd/rpc reply do not contain any value
+        elif os.path.isfile(snap) and os.stat(snap).st_size <= 0:
+            self.logger_check.error(
+                colorama.Fore.RED +
+                "ERROR, Snapshot file is empty !!",
+                extra=self.log_detail)
+            return
         else:
             self.logger_check.error(
                 colorama.Fore.RED +
-                "ERROR, Pre snapshot file: %s is not present in given path !!" %
-                snap,
+                "ERROR, Snapshot file is not present in given path !!",
                 extra=self.log_detail)
             return
         return xml_value
@@ -372,7 +378,7 @@ class Comparator:
                         extra=self.log_detail)
                     try:
                         if tests[val][0].keys()[0] == 'command':
-                            command = tests[val][0].get('command')
+                            command = tests[val][0].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
                             self.logger_check.info(
                                 colorama.Fore.BLUE +
