@@ -7,7 +7,7 @@ from lxml import etree
 from jnpr.jsnapy import get_path
 from jnpr.junos.exception import RpcError
 from jnpr.jsnapy.sqlite_store import JsnapSqlite
-
+import lxml
 
 class Parser:
 
@@ -23,12 +23,21 @@ class Parser:
         :param format: xml/text
         :param output_file: name of file
         """
-        if isinstance(rpc_reply, bool) and format == "text":
-            self.logger_snap.error(
-                colorama.Fore.RED +
-                "ERROR!! requested node is not present", extra=self.log_detail)
+        ### pyEz returns true if there is no output of given command ###
+        ### Ex. show configuration security certificates returns nothing if its not set
+
+
+        if rpc_reply is True :
+            with open(output_file, 'w') as f:
+                f.write("")
+            self.logger_snap.info(
+                colorama.Fore.BLUE +
+                "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
+
         else:
-            err = rpc_reply.xpath("//rpc-error")
+            """
+            ### No need of checking reply, as writing all rpc-replies including error and warbing in snap files
+            err = rpc_reply.xpath("//rpc-error") if isinstance(rpc_reply, lxml.etree._Element) else list()
             if len(err):
                 self.logger_snap.error(
                     colorama.Fore.RED +
@@ -40,8 +49,9 @@ class Parser:
                             colorama.Fore.RED +
                             './/error-message'), extra=self.log_detail)
             else:
-                with open(output_file, 'w') as f:
-                    f.write(etree.tostring(rpc_reply))
+            """
+            with open(output_file, 'w') as f:
+                f.write(etree.tostring(rpc_reply))
 
     def _write_warning(
             self, reply, db, snap_file, hostname, cmd_name, cmd_format, output_file):
@@ -64,12 +74,15 @@ class Parser:
         :param format: xml/ text
         :return: return false if reply contains error ow return rpc reply
         """
-        if isinstance(rpc_reply, bool) and format == "text":
-            self.logger_snap.error(
-                colorama.Fore.RED +
-                "ERROR!! requested node is not present", extra=self.log_detail)
+        if rpc_reply is True :
+            self.logger_snap.info(
+                colorama.Fore.BLUE +
+                "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
+            return ""
         else:
-            err = rpc_reply.xpath("//rpc-error")
+            """
+            ### No need of checking rpc replies as writing all replies inluding warnings and errors in snap files
+            err = rpc_reply.xpath("//rpc-error") if isinstance(rpc_reply, lxml.etree._Element) else list()
             if len(err):
                 self.logger_snap.error(
                     colorama.Fore.RED +
@@ -84,9 +97,11 @@ class Parser:
                         err_node.findtext(
                             colorama.Fore.RED +
                             './/error-message'), extra=self.log_detail)
+                return(False)
             else:
-                return etree.tostring(rpc_reply)
-        return(False)
+            """
+            return etree.tostring(rpc_reply)
+
 
     def generate_snap_file(self, output_file, hostname, name, cmd_format):
         """
@@ -96,7 +111,8 @@ class Parser:
         :param cmd_format: xml/text
         :return: return output file
         """
-        cmd_rpc = re.sub('/|\*|\.|-', '_', name)
+        name = name.split('|')[0].strip()
+        cmd_rpc = re.sub('/|\*|\.|-|\|', '_', name)
         if os.path.isfile(output_file):
             return output_file
         else:
@@ -142,14 +158,20 @@ class Parser:
         cmd_format = test_file[t][0].get('format', 'xml')
         cmd_format = cmd_format if cmd_format in formats else 'xml'
         self.command_list.append(command)
-        cmd_name = '_'.join(command.split())
+        cmd_name = command.split('|')[0].strip()
+        cmd_name = '_'.join(cmd_name.split())
         try:
             self.logger_snap.info(
                 colorama.Fore.BLUE +
                 "Taking snapshot for %s ................" %
                 command,
                 extra=self.log_detail)
-            rpc_reply_command = dev.rpc.cli(command, format=cmd_format)
+            ##### for commands containing "| display xml" only text format works in PyEz
+            if re.search('\|\s+display\s+xml',command):
+                rpc_reply_command = dev.rpc.cli(command, format='text')
+            else:
+                rpc_reply_command = dev.rpc.cli(command, format=cmd_format)
+
         except RpcError as err:
             snap_file = self.generate_snap_file(
                 output_file,
@@ -189,8 +211,7 @@ class Parser:
                 cmd_name,
                 cmd_format)
             self._write_file(rpc_reply_command, cmd_format, snap_file)
-            if db['store_in_sqlite'] is True and self._check_reply(
-                    rpc_reply_command, cmd_format):
+            if db['store_in_sqlite'] is True:
                 self.store_in_sqlite(
                     db,
                     hostname,
@@ -337,8 +358,7 @@ class Parser:
                 reply_format)
             self._write_file(rpc_reply, reply_format, snap_file)
 
-        if db['store_in_sqlite'] is True and self._check_reply(
-                rpc_reply, reply_format):
+        if db['store_in_sqlite'] is True:
             self.store_in_sqlite(
                 db,
                 hostname,
