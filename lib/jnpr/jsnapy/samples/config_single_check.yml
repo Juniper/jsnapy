@@ -1,8 +1,8 @@
 # for one device, can be given like this:
 hosts:
   - device: 10.209.16.204 
-    username : root
-    passwd: Embe1mpls
+    username : demo 
+    passwd: demo123
 tests:
  - test_no_diff.yml 
  - test_delta.yml

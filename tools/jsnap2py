@@ -47,7 +47,7 @@ else:
         # loop = Group(OneOrMore(Word(alphanums + '-' + '/'+'['+']'+"'"+'='))) + \
         #    Suppress(Literal("{"))
         loop = Group(Word(alphanums) + (OneOrMore(Word(alphanums + '-' + '/' +
-                     '[' + ']' + "'" + '='))).setParseAction(lambda tokens: " ".join(tokens))) + Suppress(Literal("{"))
+                                                       '[' + ']' + "'" + '='))).setParseAction(lambda tokens: " ".join(tokens))) + Suppress(Literal("{"))
         tc_id = Group(ZeroOrMore(Group('id' +
                                        (ZeroOrMore('.') +
                                         ZeroOrMore('/') +
@@ -82,7 +82,7 @@ else:
         msg = nestedExpr(opener='{', closer='}')
         comment = Keyword('#') + SkipTo(LineEnd())
         test_case = tcs + OneOrMore(Group(tc_name + cmd + ZeroOrMore(Group(loop + tc_id + Group(OneOrMore(Group(oper + msg)))) +
-                                    Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(comment)))
+                                                                     Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(comment)))
         data = test_case.parseString(content, parseAll=True).asList()
         push = {'tests_include': data[0]}
         for cases in data[1:]:
