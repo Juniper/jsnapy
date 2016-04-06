@@ -1,6 +1,6 @@
 hosts:
-  - devices: 10.209.16.204
-    username : regress
-    passwd: MaRtInI
+  - devices: 10.209.1.2
+    username : demo
+    passwd: demo123
 tests:
   - test_get_config.yml 
