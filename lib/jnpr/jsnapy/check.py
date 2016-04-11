@@ -124,8 +124,11 @@ class Comparator:
             if 'iterate' in test:
                 x_path = test.get('iterate').get('xpath', "no_xpath")
                 if 'id' in test.get('iterate'):
-                    id = test.get('iterate').get('id')
-                    id_list = [val.strip() for val in id.split(',')]
+                    ids = test.get('iterate').get('id')
+                    if isinstance(ids, list):
+                        id_list = ids
+                    else:
+                        id_list = [val.strip() for val in ids.split(',')]
                 else:
                     id_list = []
                 testcases = test.get('iterate').get(
@@ -135,8 +138,11 @@ class Comparator:
             elif 'item' in test:
                 x_path = test.get('item').get('xpath', "no_xpath")
                 if 'id' in test.get('item'):
-                    id = test.get('item').get('id')
-                    id_list = [val.strip() for val in id.split(',')]
+                    ids = test.get('item').get('id')
+                    if isinstance(ids, list):
+                        id_list = ids
+                    else:
+                        id_list = [val.strip() for val in ids.split(',')]
                 else:
                     id_list = []
                 testcases = test['item']['tests']
