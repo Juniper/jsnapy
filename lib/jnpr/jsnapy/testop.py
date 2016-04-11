@@ -1212,7 +1212,7 @@ class Operator:
                                     post=postdict), extra=self.log_detail)
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR, ID miss match occurred!!!", extra=self.log_detail)
+                                                 "ID gone missing!!!", extra=self.log_detail)
                         if k in data1:
                             self.logger_testop.error(
                                 "ID list '%s' is not present in post snapshot" %
@@ -1222,7 +1222,14 @@ class Operator:
                                 "ID list '%s' is not present in pre snapshot" %
                                 iddict, extra=self.log_detail)
                         tresult['id_miss_match'].append(iddict.copy())
-
+                        self.logger_testop.info(colorama.Fore.RED +
+                                                jinja2.Template(
+                                                    err_mssg.replace(
+                                                        '-',
+                                                        '_')).render(
+                                                    iddict,
+                                                    pre=predict,
+                                                    post=postdict), extra=self.log_detail)
                         res = False
         self.print_result('no-diff', res)
         tresult['result'] = res
@@ -1302,13 +1309,31 @@ class Operator:
                                         iddict,
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
+                    else:
+                        self.logger_testop.debug(colorama.Fore.BLUE +
+                                                 jinja2.Template(
+                                                     info_mssg.replace(
+                                                         '-',
+                                                         '_')).render(
+                                                     iddict,
+                                                     pre=predict,
+                                                     post=postdict), extra=self.log_detail)
+
                 else:
                     self.logger_testop.error(colorama.Fore.RED +
-                                             "ERROR!! ID miss match occurred!! ", extra=self.log_detail)
+                                             "ID gone missing !! ", extra=self.log_detail)
                     self.logger_testop.error(
-                        "\nID list ' %s ' is not present in post snapshots " %
+                        "ID list ' %s ' is not present in post snapshots " %
                         iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
+                    self.logger_testop.info(colorama.Fore.RED +
+                                            jinja2.Template(
+                                                err_mssg.replace(
+                                                    '-',
+                                                    '_')).render(
+                                                iddict,
+                                                pre=predict,
+                                                post=postdict), extra=self.log_detail)
                     # for kval in range(len(k)-1):
                     #    print "kval, k", kval,k
                     # self.logger_testop.error(
@@ -1390,15 +1415,33 @@ class Operator:
                                         iddict,
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
+                    else:
+                        self.logger_testop.debug(colorama.Fore.BLUE +
+                                                 jinja2.Template(
+                                                     info_mssg.replace(
+                                                         '-',
+                                                         '_')).render(
+                                                     iddict,
+                                                     pre=predict,
+                                                     post=postdict), extra=self.log_detail)
 
                 else:
                     tresult['id_miss_match'] = []
                     self.logger_testop.error(colorama.Fore.RED +
-                                             "ERROR, ID miss match occurred !!", extra=self.log_detail)
+                                             "ID gone missing!!", extra=self.log_detail)
                     self.logger_testop.error(
                         "\nID list ' %s ' is not present in pre snapshots" %
                         iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
+                    self.logger_testop.info(
+                        jinja2.Template(
+                            err_mssg.replace(
+                                '-',
+                                '_')).render(
+                            iddict,
+                            pre=predict,
+                            post=postdict), extra=self.log_detail)
+
                     # for kval in range(len(k)-1):
                     #    self.logger_testop.error(
                     #        "Missing Ids in pre snapshots: %s" %
@@ -1632,7 +1675,7 @@ class Operator:
                     else:
                         self.logger_testop.error(
                             colorama.Fore.RED +
-                            "\nERROR!! id miss match occurred !!",
+                            "\nID gone missing!!",
                             extra=self.log_detail)
                         if k in predata:
                             self.logger_testop.error(
@@ -1643,6 +1686,14 @@ class Operator:
                                 "ID list '%s' is not present in pre snapshot" %
                                 iddict, extra=self.log_detail)
                         tresult['id_miss_match'].append(iddict.copy())
+                        self.logger_testop.info(
+                            jinja2.Template(
+                                err_mssg.replace(
+                                    '-',
+                                    '_')).render(
+                                iddict,
+                                pre=predict,
+                                post=postdict), extra=self.log_detail)
 
                         # for kval in k:
                         #    self.logger_testop.error(
