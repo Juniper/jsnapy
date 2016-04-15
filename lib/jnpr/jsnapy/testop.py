@@ -63,16 +63,17 @@ class Operator:
                                      "ERROR!! Complete message: %s" % str(ex), extra=self.log_detail)
             self.no_failed = self.no_failed + 1
 
-    def print_result(self, testname, result):
+
+    def _print_result(self, testmssg, result):
         if result is False:
             self.no_failed = self.no_failed + 1
             self.logger_testop.info(colorama.Fore.RED +
-                                    'Final result of ' + testname + ': FAILED\n', extra=self.log_detail)
+                                    'FAIL | ' +  testmssg ,  extra=self.log_detail)
         elif result is True:
             self.no_passed = self.no_passed + 1
             self.logger_testop.info(
                 colorama.Fore.GREEN +
-                'Final result of ' + testname + ': PASSED \n', extra=self.log_detail)
+                'PASS | ' + testmssg , extra=self.log_detail)
 
     def print_testmssg(self, testname):
         """
@@ -86,6 +87,9 @@ class Operator:
             colorama.Fore.BLUE +
             testmssg,
             extra=self.log_detail)
+
+    def _print_message(self, mssg, iddict, predict, postdict):
+        self.logger_testop.debug(jinja2.Template(mssg.replace('-','_')).render(iddict, pre=predict,post=postdict), extra=self.log_detail)
 
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
@@ -200,10 +204,10 @@ class Operator:
         predict = {}
         postdict = {}
         iddict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "exists"
-        tresult['actual_node_value'] = []
+        tresult = {'xpath':x_path, 'testoperation': 'exists',
+                   'actual_node_value':[]}
+        count_pass = 0
+        count_fail = 0
         try:
             element = ele_list[0]
         except IndexError as e:
@@ -221,6 +225,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     #### get element node for test operation ####
@@ -247,25 +252,19 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
-                            self.logger_testop.debug(
-                                jinja2.Template(
-                                    info_mssg.replace(
-                                        '-',
-                                        '_')).render(
-                                    iddict,
-                                    pre=predict,
-                                    post=postdict), extra=self.log_detail)
+                            self._print_message(info_mssg, iddict, predict, postdict)
+                            count_pass = count_pass + 1
                     else:
                         res = False
-                        self.logger_testop.info(
-                            jinja2.Template(
-                                err_mssg.replace(
-                                    '-',
-                                    '_')).render(
-                                iddict,
-                                pre=predict,
-                                post=postdict), extra=self.log_detail)
-        self.print_result('exists', res)
+                        self._print_message(err_mssg, iddict, predict, postdict)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "%s" do not exists at xpath "%s" [ %d matched / %d failed ]'%(element, x_path, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "%s" exists at xpath "%s" [ %d matched ]'%(element, x_path, count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -277,10 +276,9 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "not-exists"
-        tresult['actual_node_value'] = []
+        tresult= {'xpath': x_path, 'testoperation': "not-exists", 'actual_node_value': []}
+        count_pass = 0
+        count_fail = 0
         try:
             element = ele_list[0]
         except IndexError as e:
@@ -296,6 +294,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
@@ -319,24 +318,17 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
                             res = False
-                            self.logger_testop.info(
-                                jinja2.Template(
-                                    err_mssg.replace(
-                                        '-',
-                                        '_')).render(
-                                    iddict,
-                                    pre=predict,
-                                    post=postdict), extra=self.log_detail)
+                            self._print_message(err_mssg, iddict, predict, postdict)
+                            count_fail = count_fail + 1
                     else:
-                        self.logger_testop.debug(
-                            jinja2.Template(
-                                info_mssg.replace(
-                                    '-',
-                                    '_')).render(
-                                iddict,
-                                pre=predict,
-                                post=postdict), extra=self.log_detail)
-        self.print_result('not-exists', res)
+                        self._print_message(info_mssg, iddict, predict, postdict)
+                        count_pass = count_pass + 1
+        if res is False:
+            msg = ' "%s" exists at xpath "%s" [ %d matched / %d failed ]'%(element, x_path, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "%s" do not exists at xpath "%s" [ %d matched ]'%(element, x_path, count_pass)
+            self._print_result(msg, res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -347,10 +339,9 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['actual_node_value'] = []
-        tresult['testoperation'] = "all-same"
+        tresult = {'xpath': x_path, 'actual_node_value': [], 'testoperation': "all-same"}
+        count_pass = 0
+        count_fail = 0
         try:
             element = ele_list[0]
         except IndexError as e:
@@ -364,6 +355,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 if len(ele_list) >= 2:
                     vpath = x_path + ele_list[1] + '/' + ele_list[0]
@@ -400,24 +392,17 @@ class Operator:
                             tresult['actual_node_value'].append(post_nodevalue)
                             if post_nodevalue != value:
                                 res = False
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_fail = count_fail + 1
+                                self._print_message(err_mssg, iddict, predict, postdict)
                             else:
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
-        self.print_result('all-same', res)
+                                count_pass = count_pass + 1
+                                self._print_message(info_mssg, iddict, predict, postdict)
+        if res is False:
+            msg = 'Value of all "%s" at xpath "%s" is not same [ %d matched / %d failed ]'%(element, x_path, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'Value of all "%s" at xpath "%s" is same [ %d matched ]'%(element, x_path, count_pass)
+            self._print_result(msg, res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -429,9 +414,9 @@ class Operator:
         predict = {}
         postdict = {}
         iddict = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "is-equal"
-        tresult['actual_node_value'] = []
+        count_pass = 0
+        count_fail = 0
+        tresult = {'xpath': x_path, 'testoperation': "is-equal", 'actual_node_value': [] }
         try:
             element = ele_list[0]
             value = ele_list[1]
@@ -449,6 +434,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
@@ -473,30 +459,25 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
                             if post_nodevalue == value.strip():
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_pass= count_pass + 1
+                                self._print_message(info_mssg, iddict, predict, postdict)
                             else:
                                 res = False
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_fail = count_fail + 1
+                                self._print_message(err_mssg, iddict, predict, postdict)
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
                                                  element, extra=self.log_detail)
                         res = False
-        self.print_result('is-equal', res)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "%s" is not equal to "%s" [ %d matched / %d failed ]'%(element, value, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "%s" is equal to "%s" [ %d matched ]'%(element, value, count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -504,13 +485,12 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("not-equal")
         res = True
-        tresult = {}
         predict = {}
         postdict = {}
         iddict = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "not-equal"
-        tresult['actual_node_value'] = []
+        tresult = {'xpath': x_path, 'testoperation': "not-equal", 'actual_node_value': [] }
+        count_pass = 0
+        count_fail = 0
         try:
             element = ele_list[0]
             value = ele_list[1]
@@ -527,6 +507,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
@@ -551,31 +532,26 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
                             if post_nodevalue != value.strip():
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(info_mssg, iddict, predict, postdict)
+                                count_pass = count_pass + 1
                             else:
                                 res = False
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(err_mssg, iddict, predict, postdict)
+                                count_fail = count_fail + 1
                     else:
                         # tresult['actual_node_value'].append(None)
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
                                                  element, extra=self.log_detail)
                         res = False
-        self.print_result('not-equal', res)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "%s" is equal to "%s" [ %d matched / %d failed ]'%(element, value, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "%s" is not equal to "%s" [ %d matched ]'%(element, value, count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -586,10 +562,9 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "in-range"
-        tresult['actual_node_value'] = []
+        tresult = {'xpath': x_path, 'testoperation': "in-range", 'actual_node_value': [] }
+        count_pass = 0
+        count_fail = 0
         try:
             element = ele_list[0]
             range1 = float(ele_list[1])
@@ -607,6 +582,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
@@ -633,30 +609,24 @@ class Operator:
                                 float(post_nodevalue))
                             if (float(post_nodevalue) >= range1
                                     and float(post_nodevalue) <= range2):
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(info_mssg, iddict, predict, postdict)
+                                count_pass = count_pass + 1
                             else:
                                 res = False
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(err_mssg, iddict, predict, postdict)
+                                count_fail = count_fail + 1
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
                                                  element, extra=self.log_detail)
                         res = False
-        self.print_result('in-range', res)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "%s" is not in range:  "%f - %f" [ %d matched / %d failed ]'%(element, range1, range2, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "%s" is in range "%f - %f" [ %d matched ]'%(element, range1, range2, count_pass)
+            self._print_result(msg, res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -667,10 +637,9 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "not-range"
-        tresult['actual_node_value'] = []
+        tresult = {'xpath': x_path, 'testoperation': "not-range", 'actual_node_value': []}
+        count_pass = 0
+        count_fail =0
         try:
             element = ele_list[0]
             range1 = float(ele_list[1])
@@ -688,6 +657,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
@@ -714,30 +684,25 @@ class Operator:
                                 float(post_nodevalue))
                             if float(post_nodevalue) <= range1 or float(
                                     post_nodevalue) >= range2:
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_pass = count_pass + 1
+                                self._print_message(info_mssg, iddict, predict, postdict)
                             else:
                                 res = False
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_fail = count_fail + 1
+                                self._print_message(err_mssg, iddict, predict, postdict)
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
                                                  element, extra=self.log_detail)
                         res = False
-        self.print_result('not-range', res)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "%s" is in range:  "%f - %f" [ %d matched / %d failed ]'%(element, range1, range2, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "%s" is not in range "%f - %f" [ %d matched ]'%(element, range1, range2, count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -748,10 +713,9 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "is-gt"
-        tresult['actual_node_value'] = []
+        tresult = {'xpath': x_path, 'testoperation': "is-gt", 'actual_node_value': [] }
+        count_pass = 0
+        count_fail =0
         try:
             element = ele_list[0]
             val1 = float(ele_list[1])
@@ -768,6 +732,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
@@ -793,30 +758,25 @@ class Operator:
                             tresult['actual_node_value'].append(
                                 float(post_nodevalue))
                             if (float(post_nodevalue) > val1):
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(info_mssg, iddict, predict, postdict)
+                                count_pass = count_pass + 1
                             else:
                                 res = False
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(err_mssg, iddict, predict, postdict)
+                                count_fail = count_fail + 1
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
                                                  element, extra=self.log_detail)
                         res = False
-        self.print_result('is-gt', res)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "%s" is not greater than  "%d" [ %d matched / %d failed ]'%(element, val1, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "%s" is greater than %d" [ %d matched ]'%(element, val1, count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -827,10 +787,10 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "is-lt"
-        tresult['actual_node_value'] = []
+        tresult = {'xpath': x_path, 'testoperation': "is-lt", 'actual_node_value': [] }
+        count_pass = 0
+        count_fail =0
+
         try:
             element = ele_list[0]
             val1 = float(ele_list[1])
@@ -847,6 +807,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
@@ -872,30 +833,25 @@ class Operator:
                             tresult['actual_node_value'].append(
                                 float(post_nodevalue))
                             if (float(post_nodevalue) < val1):
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(info_mssg, iddict, predict, postdict)
+                                count_pass = count_pass + 1
                             else:
                                 res = False
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(err_mssg, iddict, predict, postdict)
+                                count_fail = count_fail + 1
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
                                                  element, extra=self.log_detail)
                         res = False
-        self.print_result('is-lt', res)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "%s" is not less than %d" [ %d matched / %d failed ]'%(element, val1, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "%s" is less than %d [ %d matched ]'%(element, val1, count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -906,10 +862,10 @@ class Operator:
         postdict = {}
         iddict = {}
         res = True
-        tresult = {}
-        tresult['actual_node_value'] = []
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "contains"
+        tresult = {'actual_node_value': [], 'xpath': x_path, 'testoperation': "contains"}
+        count_pass = 0
+        count_fail = 0
+
         try:
             element = ele_list[0]
             value = ele_list[1]
@@ -927,6 +883,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
@@ -955,28 +912,23 @@ class Operator:
                                 postnode[k].text)
                             if (postnode[k].text.find(value) == -1):
                                 res = False
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_fail = count_fail + 1
+                                self._print_message(err_mssg, iddict, predict, postdict)
                             else:
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_pass = count_pass + 1
+                                self._print_message(info_mssg, iddict, predict, postdict)
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!!, Node is not present in path given with test operator!!", extra=self.log_detail)
                         res = False
-        self.print_result('contains', res)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "%s" do not contains %s" [ %d matched / %d failed ]'%(element, value, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "%s" contains %s [ %d matched ]'%(element, value, count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -987,10 +939,10 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "is-in"
-        tresult['actual_node_value'] = []
+        tresult = {'xpath': x_path, 'testoperation': "is-in", 'actual_node_value': [] }
+        count_pass = 0
+        count_fail =0
+
         try:
             element = ele_list[0]
             value_list = ele_list[1:]
@@ -1007,6 +959,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
@@ -1032,30 +985,25 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
                             if (post_nodevalue in value_list):
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(info_mssg, iddict, predict, postdict)
+                                count_pass = count_pass + 1
                             else:
                                 res = False
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_fail = count_fail + 1
+                                self._print_message(err_mssg, iddict, predict, postdict)
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
                                                  element, extra=self.log_detail)
                         res = False
-        self.print_result('is-in', res)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "{0}" is not in list {1} [ {2} matched / {3} failed ]'.format(element, value_list, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "{0}" is in list {1}  [ {2} matched ]'.format(element, value_list, count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -1066,10 +1014,10 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "not-in"
-        tresult['actual_node_value'] = []
+        tresult = {'xpath': x_path, 'testoperation': "not-in", 'actual_node_value': []}
+        count_pass = 0
+        count_fail =0
+
         try:
             element = ele_list[0]
             value_list = ele_list[1:]
@@ -1086,6 +1034,7 @@ class Operator:
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
@@ -1111,30 +1060,25 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
                             if (post_nodevalue not in value_list):
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(info_mssg, iddict, predict, postdict)
+                                count_pass = count_pass + 1
                             else:
                                 res = False
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_fail = count_fail + 1
+                                self._print_message(err_mssg, iddict, predict, postdict)
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
                                                  element, extra=self.log_detail)
                         res = False
-        self.print_result('not-in', res)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = '"{0}" is in list {1} [ {2} matched / {3} failed ]'.format(element, value_list, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "{0}" is not in list {1}  [ {2} matched ]'.format(element, value_list, count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -1146,13 +1090,10 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "no-diff"
-        tresult['node_name'] = ele_list[0]
-        tresult['pre_node_value'] = []
-        tresult['post_node_value'] = []
-        tresult['id_miss_match'] = []
+        tresult = {'xpath': x_path, 'testoperation': "no-diff", 'node_name': ele_list[0], 'pre_node_value': [],'post_node_value': [], 'id_miss_match': [] }
+        count_pass = 0
+        count_fail =0
+
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
         if re.match(ele_list[0], "no node"):
             self.logger_testop.error(colorama.Fore.RED +
@@ -1163,6 +1104,7 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath!!",
                                          extra=self.log_detail)
                 res = False
+                count_fail = count_fail + 1
             else:
                 # assuming one iterator has unique set of ids, i.e only one node matching to id
                 # making dictionary for id and its corresponding xpath
@@ -1201,24 +1143,11 @@ class Operator:
                             res = False
                             tresult['pre_node_value'].append(val_list1)
                             tresult['post_node_value'].append(val_list2)
-
-                            self.logger_testop.info(
-                                jinja2.Template(
-                                    err_mssg.replace(
-                                        '-',
-                                        '_')).render(
-                                    iddict,
-                                    pre=predict,
-                                    post=postdict), extra=self.log_detail)
+                            count_fail = count_fail + 1
+                            self._print_message(err_mssg, iddict, predict, postdict)
                         else:
-                            self.logger_testop.debug(
-                                jinja2.Template(
-                                    info_mssg.replace(
-                                        '-',
-                                        '_')).render(
-                                    iddict,
-                                    pre=predict,
-                                    post=postdict), extra=self.log_detail)
+                            count_pass = count_pass + 1
+                            self._print_message(info_mssg, iddict, predict, postdict)
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ID gone missing!!!", extra=self.log_detail)
@@ -1231,7 +1160,7 @@ class Operator:
                                 "ID list '%s' is not present in pre snapshot" %
                                 iddict, extra=self.log_detail)
                         tresult['id_miss_match'].append(iddict.copy())
-                        self.logger_testop.info(colorama.Fore.RED +
+                        self.logger_testop.debug(colorama.Fore.RED +
                                                 jinja2.Template(
                                                     err_mssg.replace(
                                                         '-',
@@ -1240,7 +1169,14 @@ class Operator:
                                                     pre=predict,
                                                     post=postdict), extra=self.log_detail)
                         res = False
-        self.print_result('no-diff', res)
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "{0}" is not same in pre and post snapshot [ {1} matched / {2} failed ]'.format(tresult['node_name'], count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "{0}" is same in pre and post snapshot [ {1} matched ]'.format(tresult['node_name'], count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -1248,16 +1184,13 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("list-not-less")
         res = True
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "list-not-less"
-        tresult['node_name'] = ele_list[0]
+        tresult = {'xpath': x_path, 'testoperation': "list-not-less", 'node_name': ele_list[0], 'pre_node_value': [], 'post_node_value': [],'id_miss_match': []}
         iddict = {}
         predict = {}
         postdict = {}
-        tresult['pre_node_value'] = []
-        tresult['post_node_value'] = []
-        tresult['id_miss_match'] = []
+        count_pass = 0
+        count_fail =0
+
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         if not pre_nodes or not post_nodes:
@@ -1265,6 +1198,7 @@ class Operator:
                                      "ERROR!! Nodes are not present in given Xpath!!",
                                      extra=self.log_detail)
             res = False
+            count_fail = count_fail + 1
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
             # making dictionary for id and its corresponding xpath
@@ -1299,34 +1233,15 @@ class Operator:
                                 # and not in post
                                 tresult['post_node_value'].append(val1)
                                 res = False
+                                count_fail = count_fail + 1
                                 self.logger_testop.info("Missing node : %s for element tag %s and parent element %s" % (val1, ele_xpath1[0].tag,
                                                                                                                         ele_xpath1[0].getparent().tag), extra=self.log_detail)
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(err_mssg, iddict, predict, postdict)
                             else:
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_pass = count_pass + 1
+                                self._print_message(info_mssg, iddict, predict, postdict)
                     else:
-                        self.logger_testop.debug(colorama.Fore.BLUE +
-                                                 jinja2.Template(
-                                                     info_mssg.replace(
-                                                         '-',
-                                                         '_')).render(
-                                                     iddict,
-                                                     pre=predict,
-                                                     post=postdict), extra=self.log_detail)
+                        self._print_message(info_mssg, iddict, predict, postdict)
 
                 else:
                     self.logger_testop.error(colorama.Fore.RED +
@@ -1335,21 +1250,15 @@ class Operator:
                         "ID list ' %s ' is not present in post snapshots " %
                         iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
-                    self.logger_testop.info(colorama.Fore.RED +
-                                            jinja2.Template(
-                                                err_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
-                    # for kval in range(len(k)-1):
-                    #    print "kval, k", kval,k
-                    # self.logger_testop.error(
-                    #    "Missing Ids in post snapshot: %s" %
-                    #    k[kval].strip(), extra= self.log_detail)
+                    self._print_message(err_mssg, iddict, predict, postdict)
                     res = False
-        self.print_result('list-not-less', res)
+                    count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "{0}" in pre snapshot is not present in post snapshot [ {1} matched / {2} failed ]'.format(tresult['node_name'], count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "{0}" in pre snapshot is present in post snapshot [ {1} matched ]'.format(tresult['node_name'], count_pass)
+            self._print_result(msg, res)
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -1357,22 +1266,20 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("list-not-more")
         res = True
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "list-not-more"
-        tresult['node_name'] = ele_list[0]
-        tresult['pre_node_value'] = []
-        tresult['post_node_value'] = []
-        tresult['id_miss_match'] = []
+        tresult = {'xpath': x_path, 'testoperation': "list-not-more", 'node_name': ele_list[0], 'pre_node_value': [], 'post_node_value': [], 'id_miss_match': []}
         iddict = {}
         predict = {}
         postdict = {}
+        count_pass = 0
+        count_fail =0
+
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
         if not pre_nodes or not post_nodes:
             self.logger_testop.error(colorama.Fore.RED +
                                      "ERROR!! Nodes are not present in given Xpath!!",
                                      extra=self.log_detail)
             res = False
+            count_fail = count_fail + 1
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
             # making dictionary for id and its corresponding xpath
@@ -1397,43 +1304,21 @@ class Operator:
                                      for element in ele_xpath1]
                         val_list2 = [element.text.strip()
                                      for element in ele_xpath2]
-                        # tresult['pre_node_value'].append(val_list1)
-                        # tresult['post_node_value'].append(val_list2)
                         for val2 in val_list2:
                             postdict[ele_list[0].replace('-', '_')] = val2
                             tresult['post_node_value'].append(val2)
                             if val2 not in val_list1:
                                 res = False
+                                count_fail = count_fail + 1
                                 tresult['pre_node_value'].append(val2)
                                 self.logger_testop.error("Missing node: %s for element tag: %s and parent element %s" % (val2, ele_xpath2[0].tag,
                                                                                                                          ele_xpath2[0].getparent().tag), extra=self.log_detail)
-                                self.logger_testop.info(
-                                    jinja2.Template(
-                                        err_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                self._print_message(err_mssg, iddict, predict, postdict)
                             else:
-                                self.logger_testop.debug(
-                                    jinja2.Template(
-                                        info_mssg.replace(
-                                            '-',
-                                            '_')).render(
-                                        iddict,
-                                        pre=predict,
-                                        post=postdict), extra=self.log_detail)
+                                count_pass = count_pass + 1
+                                self._print_message(info_mssg, iddict, predict, postdict)
                     else:
-                        self.logger_testop.debug(colorama.Fore.BLUE +
-                                                 jinja2.Template(
-                                                     info_mssg.replace(
-                                                         '-',
-                                                         '_')).render(
-                                                     iddict,
-                                                     pre=predict,
-                                                     post=postdict), extra=self.log_detail)
-
+                        self._print_message(info_mssg, iddict, predict, postdict)
                 else:
                     tresult['id_miss_match'] = []
                     self.logger_testop.error(colorama.Fore.RED +
@@ -1442,21 +1327,17 @@ class Operator:
                         "\nID list ' %s ' is not present in pre snapshots" %
                         iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
-                    self.logger_testop.info(
-                        jinja2.Template(
-                            err_mssg.replace(
-                                '-',
-                                '_')).render(
-                            iddict,
-                            pre=predict,
-                            post=postdict), extra=self.log_detail)
-
-                    # for kval in range(len(k)-1):
-                    #    self.logger_testop.error(
-                    #        "Missing Ids in pre snapshots: %s" %
-                    #        k[kval].strip(), extra= self.log_detail)
+                    self._print_message(err_mssg, iddict, predict, postdict)
                     res = False
-        self.print_result('list-not-more', res)
+                    count_fail = count_fail + 1
+
+        if res is False:
+            msg = 'All "{0}" in post snapshot is not present in pre snapshot [ {1} matched / {2} failed ]'.format(tresult['node_name'], count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "{0}" is post snapshot is present in pre snapshot [ {1} matched ]'.format(tresult['node_name'], count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
@@ -1464,16 +1345,13 @@ class Operator:
               info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("delta")
         res = True
-        tresult = {}
-        tresult['xpath'] = x_path
-        tresult['testoperation'] = "delta"
+        tresult = {'xpath': x_path, 'testoperation': "delta", 'pre_node_value': [], 'post_node_value': [], 'id_miss_match': [], 'node_name': ele_list[0]}
         iddict = {}
         predict = {}
         postdict = {}
-        tresult['pre_node_value'] = []
-        tresult['post_node_value'] = []
-        tresult['id_miss_match'] = []
-        tresult['node_name'] = ele_list[0]
+        count_pass = 0
+        count_fail =0
+
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         try:
@@ -1490,7 +1368,7 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath!!",
                                          extra=self.log_detail)
                 res = False
-
+                count_fail = count_fail + 1
             else:
                 # assuming one iterator has unique set of ids, i.e only one node matching to id
                 # making dictionary for id and its corresponding xpath
@@ -1536,23 +1414,11 @@ class Operator:
                                     mvalue = val1 - ((val1 * dvalue) / 100)
                                     if (val2 > val1 or val2 < mvalue):
                                         res = False
-                                        self.logger_testop.info(
-                                            jinja2.Template(
-                                                err_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_fail = count_fail + 1
+                                        self._print_message(err_mssg, iddict, predict, postdict)
                                     else:
-                                        self.logger_testop.debug(
-                                            jinja2.Template(
-                                                info_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_pass = count_pass + 1
+                                        self._print_message(info_mssg, iddict, predict, postdict)
 
                                 # for positive percent change
                                 elif re.search('%', del_val) and (re.search('/+', del_val)):
@@ -1560,23 +1426,11 @@ class Operator:
                                     mvalue = val1 + ((val1 * dvalue) / 100)
                                     if (val2 < val1 or val2 > mvalue):
                                         res = False
-                                        self.logger_testop.info(
-                                            jinja2.Template(
-                                                err_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_fail = count_fail + 1
+                                        self._print_message(err_mssg, iddict, predict, postdict)
                                     else:
-                                        self.logger_testop.debug(
-                                            jinja2.Template(
-                                                info_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_pass = count_pass + 1
+                                        self._print_message(info_mssg, iddict, predict, postdict)
 
                                 # absolute percent change
                                 elif re.search('%', del_val):
@@ -1585,23 +1439,11 @@ class Operator:
                                     mvalue2 = val1 + (val1 * dvalue) / 100
                                     if (val2 < mvalue1 or val2 > mvalue2):
                                         res = False
-                                        self.logger_testop.info(
-                                            jinja2.Template(
-                                                err_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_fail = count_fail + 1
+                                        self._print_message(err_mssg, iddict, predict, postdict)
                                     else:
-                                        self.logger_testop.debug(
-                                            jinja2.Template(
-                                                info_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_pass = count_pass + 1
+                                        self._print_message(info_mssg, iddict, predict, postdict)
 
                                 # for negative change
                                 elif re.search('-', del_val):
@@ -1609,23 +1451,11 @@ class Operator:
                                     mvalue = val1 - dvalue
                                     if (val2 < mvalue or val2 > val1):
                                         res = False
-                                        self.logger_testop.info(
-                                            jinja2.Template(
-                                                err_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_fail = count_fail + 1
+                                        self._print_message(err_mssg, iddict, predict, postdict)
                                     else:
-                                        self.logger_testop.debug(
-                                            jinja2.Template(
-                                                info_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_pass = count_pass + 1
+                                        self._print_message(info_mssg, iddict, predict, postdict)
 
                                  # for positive change
                                 elif re.search('\+', del_val):
@@ -1633,23 +1463,11 @@ class Operator:
                                     mvalue = val1 + dvalue
                                     if (val2 >= mvalue or val2 <= val1):
                                         res = False
-                                        self.logger_testop.info(
-                                            jinja2.Template(
-                                                err_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_fail = count_fail + 1
+                                        self._print_message(err_mssg, iddict, predict, postdict)
                                     else:
-                                        self.logger_testop.debug(
-                                            jinja2.Template(
-                                                info_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_pass = count_pass + 1
+                                        self._print_message(info_mssg, iddict, predict, postdict)
 
                                 else:
                                     dvalue = float(delta_val.strip('%'))
@@ -1657,29 +1475,18 @@ class Operator:
                                     mvalue2 = val1 + dvalue
                                     if (val2 < mvalue1 or val2 > mvalue2):
                                         res = False
-                                        self.logger_testop.info(
-                                            jinja2.Template(
-                                                err_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_fail = count_fail + 1
+                                        self._print_message(err_mssg, iddict, predict, postdict)
                                     else:
-                                        self.logger_testop.debug(
-                                            jinja2.Template(
-                                                info_mssg.replace(
-                                                    '-',
-                                                    '_')).render(
-                                                iddict,
-                                                pre=predict,
-                                                post=postdict), extra=self.log_detail)
+                                        count_pass = count_pass + 1
+                                        self._print_message(info_mssg, iddict, predict, postdict)
                             else:
                                 self.logger_testop.error(colorama.Fore.RED +
                                                          "ERROR!! Node '%s' not found" %
                                                          node_name,
                                                          extra=self.log_detail)
                                 res = False
+                                count_fail = count_fail + 1
 
                     else:
                         self.logger_testop.error(
@@ -1695,22 +1502,17 @@ class Operator:
                                 "ID list '%s' is not present in pre snapshot" %
                                 iddict, extra=self.log_detail)
                         tresult['id_miss_match'].append(iddict.copy())
-                        self.logger_testop.info(
-                            jinja2.Template(
-                                err_mssg.replace(
-                                    '-',
-                                    '_')).render(
-                                iddict,
-                                pre=predict,
-                                post=postdict), extra=self.log_detail)
-
-                        # for kval in k:
-                        #    self.logger_testop.error(
-                        #        "missing node: %s" %
-                        #        kval.strip(), extra= self.log_detail)
+                        self._print_message(err_mssg, iddict, predict, postdict)
                         res = False
+                        count_fail = count_fail + 1
 
-        self.print_result('delta', res)
+        if res is False:
+            msg = 'All "{0}" is not with in delta difference of {1} [ {2} matched / {3} failed ]'.format(node_name, delta_val, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "{0}" is with in delta difference of {1} [ {2} matched ]'.format(node_name, delta_val, count_pass)
+            self._print_result(msg, res)
+
         tresult['result'] = res
         self.test_details[teston].append(tresult)
 
