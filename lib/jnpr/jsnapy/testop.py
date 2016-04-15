@@ -22,6 +22,10 @@ class Operator:
     def __del__(self):
         colorama.init(autoreset=True)
 
+    @property
+    def test_results(self):
+        return dict(self.test_details)
+
     def define_operator(
             self, logdetail, testop, x_path, ele_list, err_mssg, info_mssg, teston, iter, id, *args):
         """

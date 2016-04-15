@@ -722,7 +722,9 @@ class SnapAdmin:
         :return: return object of testop.Operator containing test details
         """
         res = []
-        if os.path.isfile(config_data):
+        if isinstance(config_data, dict):
+            pass
+        elif os.path.isfile(config_data):
             data = open(config_data, 'r')
             config_data = yaml.load(data)
         elif isinstance(config_data, str):
