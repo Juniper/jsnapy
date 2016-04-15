@@ -771,10 +771,10 @@ class Operator:
                         res = False
                         count_fail = count_fail + 1
         if res is False:
-            msg = 'All "%s" is greater than  "%d" [ %d matched / %d failed ]'%(element, val1, count_pass, count_fail)
+            msg = 'All "%s" is not greater than  "%d" [ %d matched / %d failed ]'%(element, val1, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" is not greater than %d" [ %d matched ]'%(element, val1, count_pass)
+            msg = 'All "%s" is greater than %d" [ %d matched ]'%(element, val1, count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
@@ -846,10 +846,10 @@ class Operator:
                         res = False
                         count_fail = count_fail + 1
         if res is False:
-            msg = 'All "%s" is less than %d" [ %d matched / %d failed ]'%(element, val1, count_pass, count_fail)
+            msg = 'All "%s" is not less than %d" [ %d matched / %d failed ]'%(element, val1, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" is not less than %d [ %d matched ]'%(element, val1, count_pass)
+            msg = 'All "%s" is less than %d [ %d matched ]'%(element, val1, count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
@@ -923,10 +923,10 @@ class Operator:
                         res = False
                         count_fail = count_fail + 1
         if res is False:
-            msg = 'All "%s" contains %s" [ %d matched / %d failed ]'%(element, value, count_pass, count_fail)
+            msg = 'All "%s" do not contains %s" [ %d matched / %d failed ]'%(element, value, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" do not contains %s [ %d matched ]'%(element, value, count_pass)
+            msg = 'All "%s" contains %s [ %d matched ]'%(element, value, count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
