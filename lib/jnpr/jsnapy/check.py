@@ -372,10 +372,8 @@ class Comparator:
                 else:
                     for t in tests:
                         tests_included.append(t)
-
-                self.logger_check.info(colorama.Fore.BLUE + (25) * '*' + "Performing test on Device: " +
-                                       device + (25) * '*', extra=self.log_detail)
-
+                message= self._print_testmssg("Device: "+device, "*")
+                self.logger_check.info(colorama.Fore.BLUE + message, extra=self.log_detail)
                 for val in tests_included:
                     self.logger_check.info(
                         colorama.Fore.BLUE +
@@ -386,15 +384,13 @@ class Comparator:
                         if tests[val][0].keys()[0] == 'command':
                             command = tests[val][0].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
+                            message = self._print_testmssg("Command: "+command, "*")
+                        
                             self.logger_check.info(
                                 colorama.Fore.BLUE +
-                                (25) *
-                                "*" +
-                                "Command is " +
-                                command +
-                                (25) *
-                                '*',
+                                message,
                                 extra=self.log_detail)
+                        
                             name = '_'.join(command.split())
                             teston = command
                         else:
@@ -520,3 +516,13 @@ class Comparator:
                 op.final_result(self.log_detail)
 
         return op
+
+    def _print_testmssg(self, msg, delimiter):
+        """
+        Print info and error messages
+        :param testname: test operation like "no-diff", "is-equal"
+        """
+        msg = ' '+msg+' '
+        ln = (80 - len(msg) - 2) / 2
+        testmssg = (ln * delimiter) + msg + (ln * delimiter)
+        return testmssg

@@ -171,7 +171,7 @@ class Operator:
         """
         Used to calculate value of any node mentioned inside info and error messages
         """
-        mssg = re.findall('{{\s(.*?)\s}}', mssg)
+        mssg = re.findall('{{\s?(.*?)\s?}}', mssg)
         for e in mssg:
             if (e.startswith("post") or e.startswith("Post")):
                 val = e[6:-2]
