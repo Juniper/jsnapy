@@ -124,15 +124,17 @@ class Operator:
     def _find_value(self, predict, postdict, element, postnode, prenode):
         """
         get value of element node for test operation
-        in case of attributes, attribute values are given directly 
+        in case of attributes, attribute values are given directly
         in case of element node, need to use text to get node value
         """
-        if isinstance(postnode,lxml.etree._Element):
-            post_nodevalue = postnode.text.strip() if postnode.text is not None else None
+        if isinstance(postnode, lxml.etree._Element):
+            post_nodevalue = postnode.text.strip(
+            ) if postnode.text is not None else None
         else:
             post_nodevalue = postnode
-        if isinstance(prenode,lxml.etree._Element):
-           pre_nodevalue = prenode.text.strip() if prenode.text is not None else None
+        if isinstance(prenode, lxml.etree._Element):
+            pre_nodevalue = prenode.text.strip(
+            ) if prenode.text is not None else None
         else:
             pre_nodevalue = prenode
         predict[element.replace('-', '_')] = pre_nodevalue
