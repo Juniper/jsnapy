@@ -2,6 +2,7 @@ import re
 import colorama
 import jinja2
 import logging
+import lxml
 from collections import defaultdict
 from lxml import etree
 
@@ -123,11 +124,19 @@ class Operator:
     def _find_value(self, predict, postdict, element, postnode, prenode):
         """
         get value of element node for test operation
+        in case of attributes, attribute values are given directly
+        in case of element node, need to use text to get node value
         """
-        post_nodevalue = postnode.text.strip(
-        ) if postnode.text is not None else None
-        pre_nodevalue = prenode.text.strip(
-        ) if prenode.text is not None else None
+        if isinstance(postnode, lxml.etree._Element):
+            post_nodevalue = postnode.text.strip(
+            ) if postnode.text is not None else None
+        else:
+            post_nodevalue = postnode
+        if isinstance(prenode, lxml.etree._Element):
+            pre_nodevalue = prenode.text.strip(
+            ) if prenode.text is not None else None
+        else:
+            pre_nodevalue = prenode
         predict[element.replace('-', '_')] = pre_nodevalue
         postdict[element.replace('-', '_')] = post_nodevalue
         return predict, postdict, post_nodevalue, pre_nodevalue
