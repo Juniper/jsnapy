@@ -87,13 +87,13 @@ class Operator:
         msg = "Performing %s Test Operation" % testname
         testmssg = (80 - len(msg) - 2) / 2 * '-' + \
             msg + (80 - len(msg) - 2) / 2 * '-'
-        self.logger_testop.info(
+        self.logger_testop.debug(
             colorama.Fore.BLUE +
             testmssg,
             extra=self.log_detail)
 
-    def _print_message(self, mssg, iddict, predict, postdict):
-        self.logger_testop.debug(jinja2.Template(mssg.replace('-','_')).render(iddict, pre=predict,post=postdict), extra=self.log_detail)
+    def _print_message(self, mssg, iddict, predict, postdict, mode = "info"):
+        getattr(self.logger_testop, mode)(jinja2.Template(mssg.replace('-','_')).render(iddict, pre=predict,post=postdict), extra=self.log_detail)
 
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
@@ -256,11 +256,11 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
-                            self._print_message(info_mssg, iddict, predict, postdict)
+                            self._print_message(info_mssg, iddict, predict, postdict, "debug")
                             count_pass = count_pass + 1
                     else:
                         res = False
-                        self._print_message(err_mssg, iddict, predict, postdict)
+                        self._print_message(err_mssg, iddict, predict, postdict, "info")
                         count_fail = count_fail + 1
         if res is False:
             msg = 'All "%s" do not exists at xpath "%s" [ %d matched / %d failed ]'%(element, x_path, count_pass, count_fail)
@@ -322,10 +322,10 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
                             res = False
-                            self._print_message(err_mssg, iddict, predict, postdict)
+                            self._print_message(err_mssg, iddict, predict, postdict, "info")
                             count_fail = count_fail + 1
                     else:
-                        self._print_message(info_mssg, iddict, predict, postdict)
+                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
                         count_pass = count_pass + 1
         if res is False:
             msg = ' "%s" exists at xpath "%s" [ %d matched / %d failed ]'%(element, x_path, count_pass, count_fail)
@@ -397,10 +397,10 @@ class Operator:
                             if post_nodevalue != value:
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
         if res is False:
             msg = 'Value of all "%s" at xpath "%s" is not same [ %d matched / %d failed ]'%(element, x_path, count_pass, count_fail)
             self._print_result(msg, res)
@@ -464,11 +464,11 @@ class Operator:
                             tresult['actual_node_value'].append(post_nodevalue)
                             if post_nodevalue == value.strip():
                                 count_pass= count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                             else:
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
@@ -536,11 +536,11 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
                             if post_nodevalue != value.strip():
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                                 count_pass = count_pass + 1
                             else:
                                 res = False
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                                 count_fail = count_fail + 1
                     else:
                         # tresult['actual_node_value'].append(None)
@@ -613,11 +613,11 @@ class Operator:
                                 float(post_nodevalue))
                             if (float(post_nodevalue) >= range1
                                     and float(post_nodevalue) <= range2):
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                                 count_pass = count_pass + 1
                             else:
                                 res = False
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                                 count_fail = count_fail + 1
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
@@ -689,11 +689,11 @@ class Operator:
                             if float(post_nodevalue) <= range1 or float(
                                     post_nodevalue) >= range2:
                                 count_pass = count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                             else:
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
@@ -762,11 +762,11 @@ class Operator:
                             tresult['actual_node_value'].append(
                                 float(post_nodevalue))
                             if (float(post_nodevalue) > val1):
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                                 count_pass = count_pass + 1
                             else:
                                 res = False
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                                 count_fail = count_fail + 1
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
@@ -837,11 +837,11 @@ class Operator:
                             tresult['actual_node_value'].append(
                                 float(post_nodevalue))
                             if (float(post_nodevalue) < val1):
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                                 count_pass = count_pass + 1
                             else:
                                 res = False
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                                 count_fail = count_fail + 1
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
@@ -917,10 +917,10 @@ class Operator:
                             if (postnode[k].text.find(value) == -1):
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!!, Node is not present in path given with test operator!!", extra=self.log_detail)
@@ -989,12 +989,12 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
                             if (post_nodevalue in value_list):
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                                 count_pass = count_pass + 1
                             else:
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
@@ -1064,12 +1064,12 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
                             tresult['actual_node_value'].append(post_nodevalue)
                             if (post_nodevalue not in value_list):
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                                 count_pass = count_pass + 1
                             else:
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node '%s' not found" %
@@ -1148,10 +1148,10 @@ class Operator:
                             tresult['pre_node_value'].append(val_list1)
                             tresult['post_node_value'].append(val_list2)
                             count_fail = count_fail + 1
-                            self._print_message(err_mssg, iddict, predict, postdict)
+                            self._print_message(err_mssg, iddict, predict, postdict, "info")
                         else:
                             count_pass = count_pass + 1
-                            self._print_message(info_mssg, iddict, predict, postdict)
+                            self._print_message(info_mssg, iddict, predict, postdict, "debug")
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ID gone missing!!!", extra=self.log_detail)
@@ -1240,10 +1240,10 @@ class Operator:
                                 count_fail = count_fail + 1
                                 self.logger_testop.info("Missing node : %s for element tag %s and parent element %s" % (val1, ele_xpath1[0].tag,
                                                                                                                         ele_xpath1[0].getparent().tag), extra=self.log_detail)
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                     else:
                         self._print_message(info_mssg, iddict, predict, postdict)
 
@@ -1254,7 +1254,7 @@ class Operator:
                         "ID list ' %s ' is not present in post snapshots " %
                         iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
-                    self._print_message(err_mssg, iddict, predict, postdict)
+                    self._print_message(err_mssg, iddict, predict, postdict, "info")
                     res = False
                     count_fail = count_fail + 1
         if res is False:
@@ -1317,12 +1317,12 @@ class Operator:
                                 tresult['pre_node_value'].append(val2)
                                 self.logger_testop.error("Missing node: %s for element tag: %s and parent element %s" % (val2, ele_xpath2[0].tag,
                                                                                                                          ele_xpath2[0].getparent().tag), extra=self.log_detail)
-                                self._print_message(err_mssg, iddict, predict, postdict)
+                                self._print_message(err_mssg, iddict, predict, postdict, "info")
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict)
+                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
                     else:
-                        self._print_message(info_mssg, iddict, predict, postdict)
+                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
                 else:
                     tresult['id_miss_match'] = []
                     self.logger_testop.error(colorama.Fore.RED +
@@ -1331,7 +1331,7 @@ class Operator:
                         "\nID list ' %s ' is not present in pre snapshots" %
                         iddict, extra=self.log_detail)
                     tresult['id_miss_match'].append(iddict.copy())
-                    self._print_message(err_mssg, iddict, predict, postdict)
+                    self._print_message(err_mssg, iddict, predict, postdict, "info")
                     res = False
                     count_fail = count_fail + 1
 
@@ -1419,10 +1419,10 @@ class Operator:
                                     if (val2 > val1 or val2 < mvalue):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict)
+                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict)
+                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
 
                                 # for positive percent change
                                 elif re.search('%', del_val) and (re.search('/+', del_val)):
@@ -1431,10 +1431,10 @@ class Operator:
                                     if (val2 < val1 or val2 > mvalue):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict)
+                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict)
+                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
 
                                 # absolute percent change
                                 elif re.search('%', del_val):
@@ -1444,10 +1444,10 @@ class Operator:
                                     if (val2 < mvalue1 or val2 > mvalue2):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict)
+                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict)
+                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
 
                                 # for negative change
                                 elif re.search('-', del_val):
@@ -1456,10 +1456,10 @@ class Operator:
                                     if (val2 < mvalue or val2 > val1):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict)
+                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict)
+                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
 
                                  # for positive change
                                 elif re.search('\+', del_val):
@@ -1468,10 +1468,10 @@ class Operator:
                                     if (val2 >= mvalue or val2 <= val1):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict)
+                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict)
+                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
 
                                 else:
                                     dvalue = float(delta_val.strip('%'))
@@ -1480,10 +1480,10 @@ class Operator:
                                     if (val2 < mvalue1 or val2 > mvalue2):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict)
+                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict)
+                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
                             else:
                                 self.logger_testop.error(colorama.Fore.RED +
                                                          "ERROR!! Node '%s' not found" %
@@ -1506,7 +1506,7 @@ class Operator:
                                 "ID list '%s' is not present in pre snapshot" %
                                 iddict, extra=self.log_detail)
                         tresult['id_miss_match'].append(iddict.copy())
-                        self._print_message(err_mssg, iddict, predict, postdict)
+                        self._print_message(err_mssg, iddict, predict, postdict, "info")
                         res = False
                         count_fail = count_fail + 1
 
