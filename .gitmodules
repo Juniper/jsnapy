@@ -1,0 +1,3 @@
+[submodule "examples"]
+	path = jsnapy
+	url = https://github.com/Juniper/automation-examples.git
