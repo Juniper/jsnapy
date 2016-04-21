@@ -347,21 +347,21 @@ class Comparator:
                 "\nERROR!! No test file found, Please mention test files !!", extra=self.log_detail)
         else:
             # extract test files, first search in path given in jsnapy.cfg
-            for tfiles in main_file.get('tests'):
-                filename = os.path.join(
-                    get_path(
-                        'DEFAULT',
-                        'test_file_path'),
-                    tfiles)
-                if os.path.isfile(filename):
-                    testfile = open(filename, 'r')
-                    tfiles = yaml.load(testfile)
-                    tests_files.append(tfiles)
+            for tfile in main_file.get('tests'):
+                if not os.path.isfile(tfile):
+                    tfile = os.path.join(
+                        get_path(
+                            'DEFAULT',
+                            'test_file_path'),
+                        tfile)
+                if os.path.isfile(tfile):
+                    test_file = open(tfile, 'r')
+                    tests_files.append(yaml.load(test_file))
                 else:
                     self.logger_check.error(
                         colorama.Fore.RED +
                         "ERROR!! File %s not found for testing" %
-                        filename,
+                        tfile,
                         extra=self.log_detail)
 
             # check what all test cases need to be included, if nothing given
