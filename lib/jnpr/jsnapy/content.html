@@ -80,7 +80,6 @@
                     {% else %}
                         <br> <i> xpath: </i> {{values['xpath']}}
                         <br> <i> Node Name: </i> {{values['node_name']}}
-                        <br> <i> Values: </i> {{values}}
                         {% if values['testoperation'] in ["no-diff", "list-not-less", "list-not-more", "delta"] %}
                             <br> <i> Pre Node Value: </i> {{values['pre_node_value']}}
                             <br> <i> Post Node Value: </i> {{values['post_node_value']}}

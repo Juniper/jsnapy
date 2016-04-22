@@ -93,7 +93,7 @@ class Operator:
             extra=self.log_detail)
 
     def _print_message(self, mssg, iddict, predict, postdict, mode = "info"):
-        getattr(self.logger_testop, mode)(jinja2.Template(mssg.replace('-','_')).render(iddict, pre=predict,post=postdict), extra=self.log_detail)
+        getattr(self.logger_testop, mode)(jinja2.Template(mssg).render(iddict, pre=predict,post=postdict), extra=self.log_detail)
 
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
@@ -145,8 +145,8 @@ class Operator:
             ) if prenode.text is not None else None
         else:
             pre_nodevalue = prenode
-        predict[element.replace('-', '_')] = pre_nodevalue
-        postdict[element.replace('-', '_')] = post_nodevalue
+        predict[element] = pre_nodevalue
+        postdict[element] = post_nodevalue
         return predict, postdict, post_nodevalue, pre_nodevalue
 
     def _get_data(self, id_list, nodes):
@@ -184,18 +184,12 @@ class Operator:
             if (e.startswith("post") or e.startswith("Post")):
                 val = e[6:-2]
                 if val not in [x_path, element]:
-                    postdict[
-                        val.replace(
-                            '-',
-                            '_')] = post_nodes.findtext(val).strip()if post_nodes.findtext(val) is not None else None
+                    postdict[val] = post_nodes.findtext(val).strip()if post_nodes.findtext(val) is not None else None
 
             if (e.startswith("pre") or e.startswith("PRE")):
                 val = e[5:-2]
                 if val not in [x_path, element]:
-                    predict[
-                        val.replace(
-                            '-',
-                            '_')] = pre_nodes.findtext(val).strip() if pre_nodes.findtext(val) is not None else None
+                    predict[val] = pre_nodes.findtext(val).strip() if pre_nodes.findtext(val) is not None else None
         return predict, postdict
 
     def exists(self, x_path, ele_list, err_mssg, info_mssg,
@@ -908,10 +902,8 @@ class Operator:
                             if k >= len(prenode):
                                 prenode.append(etree.XML('<sample></sample>'))
 
-                            predict[
-                                (element.replace('-', '_'))] = prenode[k].text
-                            postdict[
-                                (element.replace('-', '_'))] = postnode[k].text
+                            predict[element] = prenode[k].text
+                            postdict[element] = postnode[k].text
                             tresult['actual_node_value'].append(
                                 postnode[k].text)
                             if (postnode[k].text.find(value) == -1):
@@ -1140,8 +1132,8 @@ class Operator:
                         val_list2 = [element.text.strip() for element in ele_xpath2] if len(
                             ele_xpath2) != 0 else None
 
-                        predict[ele_list[0].replace('-', '_')] = val_list1
-                        postdict[ele_list[0].replace('-', '_')] = val_list2
+                        predict[ele_list[0]] = val_list1
+                        postdict[ele_list[0]] = val_list2
 
                         if val_list1 != val_list2:
                             res = False
@@ -1166,9 +1158,7 @@ class Operator:
                         tresult['id_miss_match'].append(iddict.copy())
                         self.logger_testop.debug(colorama.Fore.RED +
                                                 jinja2.Template(
-                                                    err_mssg.replace(
-                                                        '-',
-                                                        '_')).render(
+                                                    err_mssg).render(
                                                     iddict,
                                                     pre=predict,
                                                     post=postdict), extra=self.log_detail)
@@ -1230,7 +1220,7 @@ class Operator:
                         # tresult['pre_node_value'].append(val_list1)
                         # tresult['post_node_value'].append(val_list2)
                         for val1 in val_list1:
-                            predict[ele_list[0].replace('-', '_')] = val1
+                            predict[ele_list[0]] = val1
                             tresult['pre_node_value'].append(val1)
                             if val1 not in val_list2:
                                 # user can only ask for values which are in pre
@@ -1309,7 +1299,7 @@ class Operator:
                         val_list2 = [element.text.strip()
                                      for element in ele_xpath2]
                         for val2 in val_list2:
-                            postdict[ele_list[0].replace('-', '_')] = val2
+                            postdict[ele_list[0]] = val2
                             tresult['post_node_value'].append(val2)
                             if val2 not in val_list1:
                                 res = False
@@ -1408,8 +1398,8 @@ class Operator:
                                 del_val = delta_val
                                 tresult['pre_node_value'].append(val1)
                                 tresult['post_node_value'].append(val2)
-                                predict[node_name.replace('-', '_')] = val1
-                                postdict[node_name.replace('-', '_')] = val2
+                                predict[node_name] = val1
+                                postdict[node_name] = val2
 
                                 # for negative percentage
                                 if re.search('%', del_val) and (
