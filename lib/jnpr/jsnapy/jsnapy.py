@@ -877,6 +877,13 @@ class SnapAdmin:
         set of combination is not given.
         :return: print message in command line, regarding correct usage of JSNAPy
         """
+        ## only four test operation is permitted, if given anything apart from this, then it should print error message
+        if (self.args.snap is False and self.args.snapcheck is False and self.args.check is False and self.args.diff is False):
+            self.logger.error(colorama.Fore.RED +
+                              "Arguments not given correctly, Please refer help message", extra=self.log_detail)
+            self.parser.print_help()
+            sys.exit(1)
+
         if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.snapcheck is True and self.args.file is None) or
             (self.args.check is True and self.args.file is None)
