@@ -1,3 +1,8 @@
+# Copyright (c) 1999-2016, Juniper Networks Inc.
+#
+# All rights reserved.
+#
+
 from .version import __version__
 import ConfigParser
 import os

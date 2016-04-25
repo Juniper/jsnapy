@@ -1,3 +1,10 @@
+#!/usr/bin/python
+
+# Copyright (c) 1999-2016, Juniper Networks Inc.
+#
+# All rights reserved.
+#
+
 import yaml
 from lxml import etree
 from jnpr.jsnapy.testop import Operator
