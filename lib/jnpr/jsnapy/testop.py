@@ -128,13 +128,17 @@ class Operator:
         """
         prenode = pre_node.xpath(element)
         postnode = post_node.xpath(element)
+        id_val= {}
         for j in range(len(id_list)):
-            iddict[
-                'id_' +
-                str(j)] = post_node.xpath(
+            val = post_node.xpath(
                 id_list[j])[0].text.strip() if post_node.xpath(
                 id_list[j]) else None
-        return iddict, prenode, postnode
+            iddict[
+                'id_' +
+                str(j)] = val
+            id_val[id_list[j]]= val
+
+        return iddict, prenode, postnode, id_val
 
     def _find_value(self, predict, postdict, element, postnode, prenode):
         """
@@ -234,7 +238,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}> ".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -244,7 +248,7 @@ class Operator:
                     # sample node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     # calculate value of any node mentioned inside info and
                     # error messages  ####
@@ -303,7 +307,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -312,7 +316,7 @@ class Operator:
                     # sample node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -364,7 +368,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -385,7 +389,7 @@ class Operator:
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -421,7 +425,6 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("is-equal")
         res = True
-        tresult = {}
         predict = {}
         postdict = {}
         iddict = {}
@@ -443,7 +446,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -453,7 +456,7 @@ class Operator:
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -478,8 +481,8 @@ class Operator:
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node '%s' not found" %
-                                                 element, extra=self.log_detail)
+                                                 "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path, id_val)
+                                                 ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
         if res is False:
@@ -516,7 +519,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -526,7 +529,7 @@ class Operator:
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -551,9 +554,8 @@ class Operator:
                                 count_fail = count_fail + 1
                     else:
                         # tresult['actual_node_value'].append(None)
-                        self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node '%s' not found" %
-                                                 element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                                                    id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
         if res is False:
@@ -591,7 +593,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -601,7 +603,7 @@ class Operator:
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -627,9 +629,8 @@ class Operator:
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                                 count_fail = count_fail + 1
                     else:
-                        self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node '%s' not found" %
-                                                 element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                            id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
         if res is False:
@@ -666,7 +667,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -676,7 +677,7 @@ class Operator:
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -702,9 +703,8 @@ class Operator:
                                 count_fail = count_fail + 1
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
-                        self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node '%s' not found" %
-                                                 element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                            id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
         if res is False:
@@ -741,7 +741,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -751,7 +751,7 @@ class Operator:
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -776,9 +776,8 @@ class Operator:
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                                 count_fail = count_fail + 1
                     else:
-                        self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node '%s' not found" %
-                                                 element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                            id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
         if res is False:
@@ -816,7 +815,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -826,7 +825,7 @@ class Operator:
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -851,9 +850,8 @@ class Operator:
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                                 count_fail = count_fail + 1
                     else:
-                        self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node '%s' not found" %
-                                                 element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                            id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
         if res is False:
@@ -892,7 +890,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -901,7 +899,7 @@ class Operator:
                     # sample xml element node
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -929,8 +927,9 @@ class Operator:
                                 count_pass = count_pass + 1
                                 self._print_message(info_mssg, iddict, predict, postdict, "debug")
                     else:
-                        self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!!, Node is not present in path given with test operator!!", extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                            id_val) ,extra=self.log_detail)
+
                         res = False
                         count_fail = count_fail + 1
         if res is False:
@@ -968,7 +967,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -978,7 +977,7 @@ class Operator:
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -1003,9 +1002,8 @@ class Operator:
                                 count_fail = count_fail + 1
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
-                        self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node '%s' not found" %
-                                                 element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                            id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
         if res is False:
@@ -1043,7 +1041,7 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!", extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
             else:
@@ -1053,7 +1051,7 @@ class Operator:
                     if i >= len(pre_nodes):
                         pre_nodes.append(etree.XML('<sample></sample>'))
 
-                    iddict, prenode, postnode = self._find_element(
+                    iddict, prenode, postnode, id_val = self._find_element(
                         id_list, iddict, element, pre_nodes[i], post_nodes[i])
                     predict, postdict = self._get_nodevalue(
                         predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
@@ -1078,9 +1076,8 @@ class Operator:
                                 count_fail = count_fail + 1
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
-                        self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node '%s' not found" %
-                                                 element, extra=self.log_detail)
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                            id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
         if res is False:
@@ -1112,7 +1109,7 @@ class Operator:
         else:
             if (not pre_nodes) or (not post_nodes):
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!",
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path),
                                          extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
@@ -1206,7 +1203,7 @@ class Operator:
 
         if not pre_nodes or not post_nodes:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "ERROR!! Nodes are not present in given Xpath!!",
+                                     "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path),
                                      extra=self.log_detail)
             res = False
             count_fail = count_fail + 1
@@ -1287,7 +1284,7 @@ class Operator:
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
         if not pre_nodes or not post_nodes:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "ERROR!! Nodes are not present in given Xpath!!",
+                                     "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path),
                                      extra=self.log_detail)
             res = False
             count_fail = count_fail + 1
@@ -1376,7 +1373,7 @@ class Operator:
         else:
             if not pre_nodes or not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath!!",
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path),
                                          extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
