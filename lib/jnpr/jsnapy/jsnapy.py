@@ -16,6 +16,7 @@ import argparse
 import colorama
 import setup_logging
 from threading import Thread
+from copy import deepcopy
 from jnpr.jsnapy.snap import Parser
 from jnpr.jsnapy.check import Comparator
 from jnpr.jsnapy.notify import Notification
@@ -121,6 +122,12 @@ class SnapAdmin:
             "--login",
             help="username to login",
             type=str)
+        self.parser.add_argument(
+            "-P",
+            "--port",
+            help="port no to connect to device",
+            type=int
+        )
        # self.parser.add_argument(
        #     "-m",
        #     "--mail",
@@ -367,6 +374,13 @@ class SnapAdmin:
                 action)
         return test_obj
 
+    def get_values(self, key_value):
+        del_value = ['device', 'username', 'passwd' ]
+        for v in del_value:
+            if key_value.has_key(v):
+                del key_value[v]
+        return key_value
+
     def login(self, output_file):
         """
         Extract device information from main config file. Stores device information and call connect function,
@@ -414,6 +428,7 @@ class SnapAdmin:
                                 hostname = val.keys()[0]
                                 self.log_detail = {'hostname': hostname}
                                 self.host_list.append(hostname)
+                                key_value = deepcopy(val.get(hostname))
                                 if val.get(hostname) is not None and 'username' in val.get(
                                         hostname).keys():
                                     username = val.get(
@@ -429,19 +444,24 @@ class SnapAdmin:
                                     # if self.args.passwd is not None else
                                     # getpass.getpass("\nEnter Password for
                                     # username: %s " %username)
+                                key_value = self.get_values(key_value)
                                 t = Thread(
                                     target=self.connect,
                                     args=(
                                         hostname,
                                         username,
                                         password,
-                                        output_file,
-                                    ))
+                                        output_file
+                                    ),
+                                    kwargs= key_value
+                                )
                                 t.start()
                                 t.join()
             # login credentials are given in main config file, can connect to only
             # one device
                 else:
+                    key_value = deepcopy(k)
+
                     try:
                         hostname = k['device']
                         self.log_detail = {'hostname': hostname}
@@ -463,7 +483,8 @@ class SnapAdmin:
                             "\nEnter User name: ")
                         password = k.get('passwd') or self.args.passwd
                         self.host_list.append(hostname)
-                        self.connect(hostname, username, password, output_file)
+                        key_value= self.get_values(key_value)
+                        self.connect(hostname, username, password, output_file, **key_value)
 
         # login credentials are given from command line
         else:
@@ -475,7 +496,9 @@ class SnapAdmin:
             # if self.args.passwd is not None else getpass.getpass("\nEnter
             # Password: ")
             self.host_list.append(hostname)
-            self.connect(hostname, username, password, output_file)
+            port = self.args.port
+            key_value = {'port': port} if port is not None else {}
+            self.connect(hostname, username, password, output_file, **key_value)
 
     def get_test(self, config_data, hostname, snap_file, post_snap, action):
         """
@@ -524,7 +547,7 @@ class SnapAdmin:
         return res
 
     def connect(self, hostname, username, password, output_file,
-                config_data=None, action=None, post_snap=None):
+                config_data=None, action=None, post_snap=None, **kwargs):
         """
         connect to device and calls the function either to generate snapshots
         or compare them based on option given (--snap, --check, --snapcheck, --diff)
@@ -548,7 +571,8 @@ class SnapAdmin:
                 host=hostname,
                 user=username,
                 passwd=password,
-                gather_facts=False)
+                gather_facts=False,
+                **kwargs)
             try:
                 dev.open()
             except ConnectAuthError as ex:
@@ -629,6 +653,8 @@ class SnapAdmin:
                     self.log_detail['hostname'] = hostname
                     username = val.get(hostname).get('username')
                     password = val.get(hostname).get('passwd')
+                    key_value = val.get(hostname)
+                    key_value= self.get_values(key_value)
                     t = Thread(
                         target=self.connect,
                         args=(
@@ -638,7 +664,9 @@ class SnapAdmin:
                             pre_name,
                             config_data,
                             action,
-                            post_name))
+                            post_name),
+                        kwargs= key_value
+                    )
                     t.start()
                     if action in ["snapcheck", "check"]:
                         res_obj.append(self.q.get())
@@ -702,6 +730,8 @@ class SnapAdmin:
                 self.log_detail = {'hostname': hostname}
                 username = host.get('username')
                 password = host.get('passwd')
+                key_value = host
+                key_value= self.get_values(key_value)
                 #pre_name = hostname + '_' + pre_name if not os.path.isfile(pre_name) else pre_name
                 # if action is "check":
                 #    post_name= hostname + '_' + post_name if not os.path.isfile(post_name) else post_name
@@ -712,7 +742,8 @@ class SnapAdmin:
                     pre_name,
                     config_data,
                     action,
-                    post_name)
+                    post_name,
+                    **key_value)
                 res_obj.append(val)
             return res_obj
 

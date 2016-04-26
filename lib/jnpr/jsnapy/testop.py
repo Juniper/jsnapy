@@ -1239,6 +1239,7 @@ class Operator:
                                 count_pass = count_pass + 1
                                 self._print_message(info_mssg, iddict, predict, postdict, "debug")
                     else:
+                        count_pass = count_pass + 1
                         self._print_message(info_mssg, iddict, predict, postdict)
 
                 else:
@@ -1316,6 +1317,7 @@ class Operator:
                                 count_pass = count_pass + 1
                                 self._print_message(info_mssg, iddict, predict, postdict, "debug")
                     else:
+                        count_pass = count_pass + 1
                         self._print_message(info_mssg, iddict, predict, postdict, "debug")
                 else:
                     tresult['id_miss_match'] = []
@@ -1333,7 +1335,7 @@ class Operator:
             msg = 'All "{0}" in post snapshot is not present in pre snapshot [ {1} matched / {2} failed ]'.format(tresult['node_name'], count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "{0}" is post snapshot is present in pre snapshot [ {1} matched ]'.format(tresult['node_name'], count_pass)
+            msg = 'All "{0}" in post snapshot is present in pre snapshot [ {1} matched ]'.format(tresult['node_name'], count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
