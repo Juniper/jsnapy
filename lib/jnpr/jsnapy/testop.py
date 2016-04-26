@@ -69,10 +69,10 @@ class Operator:
             self.logger_testop.error(colorama.Fore.RED +
                                      "ERROR!! Complete message: %s" % e.message, extra=self.log_detail)
             self.no_failed = self.no_failed + 1
-       # except Exception as ex:
-       #     self.logger_testop.error(colorama.Fore.RED +
-       #                              "ERROR!! Complete message: %s" % str(ex), extra=self.log_detail)
-       #     self.no_failed = self.no_failed + 1
+        except Exception as ex:
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "ERROR!! Complete message: %s" % str(ex), extra=self.log_detail)
+            self.no_failed = self.no_failed + 1
 
 
     def _print_result(self, testmssg, result):
