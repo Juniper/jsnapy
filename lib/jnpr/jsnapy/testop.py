@@ -69,10 +69,10 @@ class Operator:
             self.logger_testop.error(colorama.Fore.RED +
                                      "ERROR!! Complete message: %s" % e.message, extra=self.log_detail)
             self.no_failed = self.no_failed + 1
-        except Exception as ex:
-            self.logger_testop.error(colorama.Fore.RED +
-                                     "ERROR!! Complete message: %s" % str(ex), extra=self.log_detail)
-            self.no_failed = self.no_failed + 1
+       # except Exception as ex:
+       #     self.logger_testop.error(colorama.Fore.RED +
+       #                              "ERROR!! Complete message: %s" % str(ex), extra=self.log_detail)
+       #     self.no_failed = self.no_failed + 1
 
 
     def _print_result(self, testmssg, result):
@@ -1515,6 +1515,99 @@ class Operator:
 
         tresult['result'] = res
         self.test_details[teston].append(tresult)
+
+    def regex(
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+        self.print_testmssg("regex")
+        res = False
+        tresult = {}
+        predict = {}
+        postdict = {}
+        iddict = {}
+        tresult['xpath'] = x_path
+        tresult['testoperation'] = "regex"
+        tresult['actual_node_value'] = []
+        count_fail = 0
+        count_pass = 0
+        try:
+            element = ele_list[0]
+            value = ele_list[1]
+        except IndexError as e:
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\nError occurred while accessing test element %s" % e.message, extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED +
+                                     "\n'regex' test operator requires two parameter", extra=self.log_detail)
+            raise
+        else:
+            tresult['node_name'] = element
+            tresult['expected_node_value'] = value
+            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
+            if not post_nodes:
+                self.logger_testop.error(colorama.Fore.RED +
+                                         "ERROR!! Nodes are not present in Xpath <%s> !!"%x_path, extra=self.log_detail)
+                count_fail = count_fail + 1
+                res = False
+            else:
+                for i in range(len(post_nodes)):
+                    # if length of pre node is less than post node, assign
+                    # sample xml element node
+                    if i >= len(pre_nodes):
+                        pre_nodes.append(etree.XML('<sample></sample>'))
+
+                    iddict, prenode, postnode, id_val = self._find_element(
+                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                    predict, postdict = self._get_nodevalue(
+                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+                    if postnode:
+                        for k in range(len(postnode)):
+                            # if length of pre node is less than post node,
+                            # assign sample node
+                            if k >= len(prenode):
+                                prenode.append(etree.XML('<sample></sample>'))
+
+                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                predict, postdict, element, postnode[k], prenode[k])
+                            tresult['actual_node_value'].append(post_nodevalue)
+
+                            if re.search(value,post_nodevalue):
+                                res = True
+                                count_pass = count_pass + 1
+                                self.logger_testop.debug(
+                                    jinja2.Template(
+                                        info_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict), extra=self.log_detail)
+                            else:
+                                res = False
+                                count_fail = count_fail + 1
+                                self.logger_testop.info(
+                                    jinja2.Template(
+                                        err_mssg.replace(
+                                            '-',
+                                            '_')).render(
+                                        iddict,
+                                        pre=predict,
+                                        post=postdict), extra=self.log_detail)
+                    else:
+                        self.logger_testop.error(colorama.Fore.RED +
+                                                 "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path, id_val)
+                                                 ,extra=self.log_detail)
+                        res = False
+                        count_fail = count_fail + 1
+        if res is False:
+            msg = 'All "%s" do not match with regex  "%s" [ %d matched / %d failed ]'%(element, value, count_pass, count_fail)
+            self._print_result(msg, res)
+        else:
+            msg = 'All "%s" matches with regex "%s" [ %d matched ]'%(element, value, count_pass)
+            self._print_result(msg, res)
+        tresult['result'] = res
+        self.test_details[teston].append(tresult)
+
 
     def final_result(self, logs):
         """
