@@ -93,7 +93,7 @@ class SnapAdmin:
             help="display difference between two snapshots"
         )
         group.add_argument(
-            "--version",
+            "-v", "--version",
             action="store_true",
             help="displays version"
         )
@@ -909,7 +909,7 @@ class SnapAdmin:
         :return: print message in command line, regarding correct usage of JSNAPy
         """
         ## only four test operation is permitted, if given anything apart from this, then it should print error message
-        if (self.args.snap is False and self.args.snapcheck is False and self.args.check is False and self.args.diff is False):
+        if (self.args.snap is False and self.args.snapcheck is False and self.args.check is False and self.args.diff is False and self.args.version is False):
             self.logger.error(colorama.Fore.RED +
                               "Arguments not given correctly, Please refer help message", extra=self.log_detail)
             self.parser.print_help()
