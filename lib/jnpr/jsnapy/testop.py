@@ -475,7 +475,7 @@ class Operator:
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path, id_val)
+                                                 "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path, id_val)
                                                  ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
@@ -548,7 +548,7 @@ class Operator:
                                 count_fail = count_fail + 1
                     else:
                         # tresult['actual_node_value'].append(None)
-                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                     id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
@@ -623,7 +623,7 @@ class Operator:
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                                 count_fail = count_fail + 1
                     else:
-                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                             id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
@@ -697,7 +697,7 @@ class Operator:
                                 count_fail = count_fail + 1
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
-                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                             id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
@@ -770,7 +770,7 @@ class Operator:
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                                 count_fail = count_fail + 1
                     else:
-                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                             id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
@@ -844,7 +844,7 @@ class Operator:
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                                 count_fail = count_fail + 1
                     else:
-                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                             id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
@@ -919,7 +919,7 @@ class Operator:
                                 count_pass = count_pass + 1
                                 self._print_message(info_mssg, iddict, predict, postdict, "debug")
                     else:
-                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                             id_val) ,extra=self.log_detail)
 
                         res = False
@@ -994,7 +994,7 @@ class Operator:
                                 count_fail = count_fail + 1
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
-                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                             id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
@@ -1068,7 +1068,7 @@ class Operator:
                                 count_fail = count_fail + 1
                                 self._print_message(err_mssg, iddict, predict, postdict, "info")
                     else:
-                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path,
+                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                             id_val) ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
@@ -1481,10 +1481,7 @@ class Operator:
                                         count_pass = count_pass + 1
                                         self._print_message(info_mssg, iddict, predict, postdict, "debug")
                             else:
-                                self.logger_testop.error(colorama.Fore.RED +
-                                                         "ERROR!! Node '%s' not found" %
-                                                         node_name,
-                                                         extra=self.log_detail)
+                                self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> ".format(node_name, x_path) ,extra=self.log_detail)
                                 res = False
                                 count_fail = count_fail + 1
 
@@ -1595,7 +1592,7 @@ class Operator:
                                         post=postdict), extra=self.log_detail)
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node <{}>not found at xpath <{}> for IDs: {}".format(element, x_path, id_val)
+                                                 "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path, id_val)
                                                  ,extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
