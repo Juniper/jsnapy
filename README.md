@@ -24,7 +24,7 @@ Installation requires Python 2.7 and associated pip tool
           unzip jsnapy-master.zip
        Go to jsnapy-master folder and install by:
           sudo python setup.py sdist
-          sudo pip install dist/jsnap-py-0.1.tar.gz
+          sudo pip install dist/jsnapy-x.x.tar.gz
           
 Hello, World
 =============
@@ -114,7 +114,7 @@ CONTRIBUTORS
 Juniper Networks is actively contributing to and maintaining this repo. Please contact jnpr-community-netdev@juniper.net for any queries.
 
 Contributors:  
-[Nitin Kumar](https://github.com/vnitinv/)  
 [Priyal Jain] (https://github.com/jainpriyal)
+[Nitin Kumar](https://github.com/vnitinv/)  
 
 
