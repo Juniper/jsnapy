@@ -114,7 +114,7 @@ CONTRIBUTORS
 Juniper Networks is actively contributing to and maintaining this repo. Please contact jnpr-community-netdev@juniper.net for any queries.
 
 Contributors:  
-[Priyal Jain] (https://github.com/jainpriyal)
-[Nitin Kumar](https://github.com/vnitinv/)  
+[Priyal Jain] (https://github.com/jainpriyal)  
+[Nitin Kumar] (https://github.com/vnitinv/)  
 
 
