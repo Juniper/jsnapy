@@ -17,6 +17,7 @@ import logging
 from jnpr.jsnapy import get_path
 import re
 
+colorama.init(autoreset=True)
 
 class Comparator:
 
@@ -383,7 +384,6 @@ class Comparator:
                 self.logger_check.info(colorama.Fore.BLUE + message, extra=self.log_detail)
                 for val in tests_included:
                     self.logger_check.info(
-                        colorama.Fore.BLUE +
                         "Tests Included: %s " %
                         (val),
                         extra=self.log_detail)

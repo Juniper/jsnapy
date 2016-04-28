@@ -27,7 +27,7 @@ from jnpr.jsnapy.testop import Operator
 from jnpr.junos.exception import ConnectAuthError
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
-
+colorama.init(autoreset=True)
 
 class SnapAdmin:
 

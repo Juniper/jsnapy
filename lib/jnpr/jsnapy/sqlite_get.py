@@ -12,6 +12,8 @@ import logging
 import colorama
 from jnpr.jsnapy import get_path
 
+colorama.init(autoreset=True)
+
 
 class SqliteExtractXml:
 
