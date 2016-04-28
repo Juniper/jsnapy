@@ -9,6 +9,8 @@ from jnpr.junos.exception import RpcError
 from jnpr.jsnapy.sqlite_store import JsnapSqlite
 import lxml
 
+colorama.init(autoreset=True)
+
 class Parser:
 
     def __init__(self):

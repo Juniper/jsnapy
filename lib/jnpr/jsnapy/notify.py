@@ -6,6 +6,7 @@ import colorama
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+colorama.init(autoreset=True)
 
 class Notification:
 

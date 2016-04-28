@@ -6,6 +6,7 @@ import lxml
 from collections import defaultdict
 from lxml import etree
 
+colorama.init(autoreset=True)
 
 class Operator:
 

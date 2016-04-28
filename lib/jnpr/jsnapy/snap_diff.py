@@ -5,6 +5,8 @@ import difflib
 import logging
 import colorama
 
+colorama.init(autoreset=True)
+
 color_add = '\033[1;32;44m'
 color_sub = '\033[1;31;44m'
 color_change = '\033[1;33;41m'
