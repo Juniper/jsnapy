@@ -1,1 +1,5 @@
 include requirements.txt
+recursive-include samples *.py *.yml
+recursive-include testfiles *
+recursive-include snapshots *
+recursive-include logs *
