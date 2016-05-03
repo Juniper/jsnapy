@@ -230,8 +230,8 @@ class Comparator:
         """
         This function is called when --diff is used
         """
-        #diff_obj = jnpr.jsnapy.snap_diff.Diff(self.log_detail)
         if check_from_sqlite:
+            diff_obj = jnpr.jsnapy.snap_diff.Diff(self.log_detail)
             diff_obj.diff_strings(
                 pre_snap_file,
                 post_snap_file,
