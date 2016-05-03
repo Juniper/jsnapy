@@ -5,10 +5,9 @@
 # All rights reserved.
 #
 
-from setuptools import setup, find_packages
 import os
+from setuptools import setup, find_packages
 from setuptools.command.install import install
-
 
 class OverrideInstall(install):
 
@@ -34,10 +33,10 @@ req_lines = [line.strip() for line in open(
 install_reqs = list(filter(None, req_lines))
 example_files = [
     os.path.join(
-        'lib/jnpr/jsnapy/samples',
-        i) for i in os.listdir('lib/jnpr/jsnapy/samples')]
-log_files = [os.path.join('lib/jnpr/jsnapy/logs', j)
-             for j in os.listdir('lib/jnpr/jsnapy/logs')]
+        'samples',
+        i) for i in os.listdir('samples')]
+log_files = [os.path.join('logs', j)
+             for j in os.listdir('logs')]
 exec(open('lib/jnpr/jsnapy/version.py').read())
 
 setup(name="jsnapy",
@@ -51,11 +50,7 @@ setup(name="jsnapy",
       package_dir={'': 'lib'},
       packages=find_packages('lib'),
       package_data={
-           'jnpr.jsnapy.samples': ['*.yml'],
            'jnpr.jsnapy': ['jsnapy.cfg', 'logging.yml', 'content.html'],
-           'jnpr.jsnapy.snapshots': ['README'],
-           'jnpr.jsnapy.testfiles': ['README'],
-           'jnpr.jsnapy.logs': ['*.log']
       },
       entry_points={
           'console_scripts': [
@@ -69,9 +64,9 @@ setup(name="jsnapy",
                   ('/etc/jsnapy/samples', example_files),
                   ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
                   ('/etc/jsnapy/testfiles',
-                   ['lib/jnpr/jsnapy/testfiles/README']),
+                   ['testfiles/README']),
                   ('/etc/jsnapy/snapshots',
-                   ['lib/jnpr/jsnapy/snapshots/README']),
+                   ['snapshots/README']),
                   ('/var/log/jsnapy', log_files)
                   ],
       cmdclass={'install': OverrideInstall},
