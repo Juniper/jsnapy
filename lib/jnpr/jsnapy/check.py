@@ -11,6 +11,7 @@ from jnpr.jsnapy.testop import Operator
 import os
 from jnpr.jsnapy.sqlite_get import SqliteExtractXml
 import jnpr.jsnapy.snap_diff
+from icdiff import diff
 from jnpr.jsnapy.xml_comparator import XmlComparator
 import colorama
 import logging
@@ -229,7 +230,7 @@ class Comparator:
         """
         This function is called when --diff is used
         """
-        diff_obj = jnpr.jsnapy.snap_diff.Diff(self.log_detail)
+        #diff_obj = jnpr.jsnapy.snap_diff.Diff(self.log_detail)
         if check_from_sqlite:
             diff_obj.diff_strings(
                 pre_snap_file,
@@ -239,7 +240,7 @@ class Comparator:
         else:
             if os.path.isfile(pre_snap_file) and os.path.isfile(
                     post_snap_file):
-                diff_obj.diff_files(pre_snap_file, post_snap_file)
+                diff(pre_snap_file, post_snap_file)
             else:
                 self.logger_check.info(
                     colorama.Fore.RED +

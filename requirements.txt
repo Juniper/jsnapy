@@ -2,3 +2,4 @@ junos-eznc
 colorama
 ConfigParser
 pyparsing
+icdiff
