@@ -5,18 +5,19 @@
 # All rights reserved.
 #
 
+import os
+import re
+import sys
+import colorama
+import logging
 import yaml
 from lxml import etree
 from jnpr.jsnapy.testop import Operator
-import os
 from jnpr.jsnapy.sqlite_get import SqliteExtractXml
 import jnpr.jsnapy.snap_diff
-from icdiff import diff
+from icdiff import diff, codec_print, get_options, ConsoleDiff
 from jnpr.jsnapy.xml_comparator import XmlComparator
-import colorama
-import logging
 from jnpr.jsnapy import get_path
-import re
 
 colorama.init(autoreset=True)
 
@@ -231,12 +232,23 @@ class Comparator:
         This function is called when --diff is used
         """
         if check_from_sqlite:
-            diff_obj = jnpr.jsnapy.snap_diff.Diff(self.log_detail)
-            diff_obj.diff_strings(
-                pre_snap_file,
-                post_snap_file,
-                ("Snap_1",
-                 "Snap_2"))
+            #diff_obj = jnpr.jsnapy.snap_diff.Diff(self.log_detail)
+            lines_a = pre_snap_file.splitlines(True)
+            lines_b = post_snap_file.splitlines(True)
+            headers = ("Snap_1", "Snap_2")
+            options = get_options()[0]
+            cd = ConsoleDiff(cols=int(options.cols),
+                     show_all_spaces=options.show_all_spaces,
+                     highlight=options.highlight,
+                     no_bold=options.no_bold,
+                     line_numbers=options.line_numbers,
+                     tabsize=int(options.tabsize))
+            for line in cd.make_table(
+                    lines_a, lines_b, headers[0], headers[1],
+                    context=(not options.whole_file),
+                    numlines=int(options.unified)):
+                codec_print(line, options)
+                sys.stdout.flush()
         else:
             if os.path.isfile(pre_snap_file) and os.path.isfile(
                     post_snap_file):
