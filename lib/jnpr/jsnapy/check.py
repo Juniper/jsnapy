@@ -14,7 +14,6 @@ import yaml
 from lxml import etree
 from jnpr.jsnapy.testop import Operator
 from jnpr.jsnapy.sqlite_get import SqliteExtractXml
-import jnpr.jsnapy.snap_diff
 from icdiff import diff, codec_print, get_options, ConsoleDiff
 from jnpr.jsnapy.xml_comparator import XmlComparator
 from jnpr.jsnapy import get_path
@@ -232,7 +231,6 @@ class Comparator:
         This function is called when --diff is used
         """
         if check_from_sqlite:
-            #diff_obj = jnpr.jsnapy.snap_diff.Diff(self.log_detail)
             lines_a = pre_snap_file.splitlines(True)
             lines_b = post_snap_file.splitlines(True)
             headers = ("Snap_1", "Snap_2")
