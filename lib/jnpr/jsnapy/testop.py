@@ -215,7 +215,7 @@ class Operator:
         predict = {}
         postdict = {}
         iddict = {}
-        tresult = {'xpath':x_path, 'testoperation': 'exists', 'passed': [], 'failed': []}
+        tresult = {'xpath':x_path, 'testoperation': 'exists', 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
         count_pass = 0
         count_fail = 0
         try:
@@ -296,7 +296,7 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult= {'xpath': x_path, 'testoperation': "not-exists", 'passed': [], 'failed': [] }
+        tresult= {'xpath': x_path, 'testoperation': "not-exists", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2 }
         count_pass = 0
         count_fail = 0
         try:
@@ -362,12 +362,11 @@ class Operator:
     def all_same(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("all-same")
-        print "\n ele_list", ele_list
         res = True
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "all-same", 'passed': [], 'failed': []}
+        tresult = {'xpath': x_path, 'testoperation': "all-same", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
         count_pass = 0
         count_fail = 0
         try:
@@ -451,7 +450,7 @@ class Operator:
         iddict = {}
         count_pass = 0
         count_fail = 0
-        tresult = {'xpath': x_path, 'testoperation': "is-equal", 'passed': [], 'failed': []}
+        tresult = {'xpath': x_path, 'testoperation': "is-equal", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
         try:
             element = ele_list[0]
             value = ele_list[1]
@@ -535,7 +534,7 @@ class Operator:
         predict = {}
         postdict = {}
         iddict = {}
-        tresult = {'xpath': x_path, 'testoperation': "not-equal", 'passed': [], 'failed': [] }
+        tresult = {'xpath': x_path, 'testoperation': "not-equal", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2 }
         count_pass = 0
         count_fail = 0
         try:
@@ -618,7 +617,7 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "in-range", 'passed': [], 'failed': [] }
+        tresult = {'xpath': x_path, 'testoperation': "in-range", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2 }
         count_pass = 0
         count_fail = 0
         try:
@@ -701,7 +700,7 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "not-range", 'passed': [], 'failed': []}
+        tresult = {'xpath': x_path, 'testoperation': "not-range", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
         count_pass = 0
         count_fail =0
         try:
@@ -784,7 +783,7 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "is-gt", 'passed': [], 'failed': [] }
+        tresult = {'xpath': x_path, 'testoperation': "is-gt", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2 }
         count_pass = 0
         count_fail =0
         try:
@@ -867,7 +866,7 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "is-lt", 'passed': [], 'failed': [] }
+        tresult = {'xpath': x_path, 'testoperation': "is-lt", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2 }
         count_pass = 0
         count_fail =0
 
@@ -949,7 +948,7 @@ class Operator:
         postdict = {}
         iddict = {}
         res = True
-        tresult = {'xpath': x_path, 'testoperation': "contains", 'passed': [], 'failed': []}
+        tresult = {'xpath': x_path, 'testoperation': "contains", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
         count_pass = 0
         count_fail = 0
 
@@ -1032,7 +1031,7 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "is-in", 'passed': [], 'failed': [] }
+        tresult = {'xpath': x_path, 'testoperation': "is-in", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
         count_pass = 0
         count_fail =0
 
@@ -1116,7 +1115,7 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "not-in", 'passed': [], 'failed': []}
+        tresult = {'xpath': x_path, 'testoperation': "not-in", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
         count_pass = 0
         count_fail =0
 
@@ -1200,7 +1199,7 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "no-diff", 'node_name': ele_list[0], 'failed': [], 'passed': []}
+        tresult = {'xpath': x_path, 'testoperation': "no-diff", 'node_name': ele_list[0], 'failed': [], 'passed': [], 'pre_xml': xml1, 'post_xml': xml2}
         count_pass = 0
         count_fail =0
         id_val = {}
@@ -1310,7 +1309,7 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("list-not-less")
         res = True
-        tresult = {'xpath': x_path, 'testoperation': "list-not-less", 'node_name': ele_list[0], 'passed': [], 'failed': []}
+        tresult = {'xpath': x_path, 'testoperation': "list-not-less", 'node_name': ele_list[0], 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
         iddict = {}
         predict = {}
         postdict = {}
@@ -1412,7 +1411,7 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("list-not-more")
         res = True
-        tresult = {'xpath': x_path, 'testoperation': "list-not-more", 'node_name': ele_list[0], 'failed': [], 'passed': []}
+        tresult = {'xpath': x_path, 'testoperation': "list-not-more", 'node_name': ele_list[0], 'failed': [], 'passed': [], 'pre_xml': xml1, 'post_xml': xml2}
         iddict = {}
         predict = {}
         postdict = {}
@@ -1509,7 +1508,7 @@ class Operator:
               info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("delta")
         res = True
-        tresult = {'xpath': x_path, 'testoperation': "delta", 'passed': [], 'failed': [], 'node_name': ele_list[0]}
+        tresult = {'xpath': x_path, 'testoperation': "delta", 'passed': [], 'failed': [], 'node_name': ele_list[0], 'pre_xml': xml1, 'post_xml': xml2}
         iddict = {}
         predict = {}
         postdict = {}
@@ -1623,13 +1622,11 @@ class Operator:
                                         self._print_message(err_mssg, iddict, predict, postdict, "info")
                                         node_value_failed = [{'id': id_val}, {'pre': predict}, {'post':postdict}, {'pre_node_value': val1}, {'post_node_value': val2}]
                                         tresult['failed'].append(deepcopy(node_value_failed))
-
                                     else:
                                         count_pass = count_pass + 1
                                         self._print_message(info_mssg, iddict, predict, postdict, "debug")
                                         node_value_passed = [{'id': id_val} , {'pre': predict}, {'post':postdict}, {'pre_node_value': val1}, {'post_node_value': val2}]
                                         tresult['passed'].append(deepcopy(node_value_passed))
-
 
                                 # for negative change
                                 elif re.search('-', del_val):
@@ -1641,7 +1638,6 @@ class Operator:
                                         self._print_message(err_mssg, iddict, predict, postdict, "info")
                                         node_value_failed = [{'id': id_val}, {'pre': predict}, {'post':postdict}, {'pre_node_value': val1}, {'post_node_value': val2}]
                                         tresult['failed'].append(deepcopy(node_value_failed))
-
                                     else:
                                         count_pass = count_pass + 1
                                         self._print_message(info_mssg, iddict, predict, postdict, "debug")
@@ -1674,18 +1670,15 @@ class Operator:
                                         self._print_message(err_mssg, iddict, predict, postdict, "info")
                                         node_value_failed = [{'id': id_val}, {'pre': predict}, {'post':postdict}, {'pre_node_value': val1}, {'post_node_value': val2}]
                                         tresult['failed'].append(deepcopy(node_value_failed))
-
                                     else:
                                         count_pass = count_pass + 1
                                         self._print_message(info_mssg, iddict, predict, postdict, "debug")
                                         node_value_passed = [{'id': id_val} , {'pre': predict}, {'post':postdict}, {'pre_node_value': val1}, {'post_node_value': val2}]
                                         tresult['passed'].append(deepcopy(node_value_passed))
-
                             else:
                                 self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> ".format(node_name, x_path) ,extra=self.log_detail)
                                 res = False
                                 count_fail = count_fail + 1
-
                     else:
                         for length in range(len(k)):
                             id_val[id_list[length]] = k[length][0].strip()
@@ -1699,7 +1692,6 @@ class Operator:
                                 "ID list '%s' is not present in post snapshot" %
                                 iddict, extra=self.log_detail)
                             tresult['failed'].append({'id_missing_post': deepcopy(id_val) })
-
                         else:
                             self.logger_testop.error(
                                 "ID list '%s' is not present in pre snapshot" %
@@ -1708,14 +1700,12 @@ class Operator:
                         self._print_message(err_mssg, iddict, predict, postdict, "info")
                         res = False
                         count_fail = count_fail + 1
-
         if res is False:
             msg = 'All "{0}" is not with in delta difference of {1} [ {2} matched / {3} failed ]'.format(node_name, delta_val, count_pass, count_fail)
             self._print_result(msg, res)
         else:
             msg = 'All "{0}" is with in delta difference of {1} [ {2} matched ]'.format(node_name, delta_val, count_pass)
             self._print_result(msg, res)
-
         tresult['result'] = res
         tresult['count']= {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1727,7 +1717,7 @@ class Operator:
         predict = {}
         postdict = {}
         iddict = {}
-        tresult = {'xpath': x_path, 'testoperation': "regex", 'passed': [], 'failed': [] }
+        tresult = {'xpath': x_path, 'testoperation': "regex", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
         count_fail = 0
         count_pass = 0
         try:

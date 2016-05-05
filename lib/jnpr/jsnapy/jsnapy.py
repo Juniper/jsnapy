@@ -93,7 +93,7 @@ class SnapAdmin:
             help="display difference between two snapshots"
         )
         group.add_argument(
-            "-v", "--version",
+            "-V", "--version",
             action="store_true",
             help="displays version"
         )
