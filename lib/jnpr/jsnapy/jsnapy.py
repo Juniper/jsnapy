@@ -946,7 +946,7 @@ def main():
     else:
         js.check_arguments()
         if js.args.version is True:
-            print "Jsnapy version:", version.__version__
+            print "JSNAPy version:", version.__version__
         else:
             js.get_hosts()
 
