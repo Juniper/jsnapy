@@ -24,6 +24,7 @@ class Parser:
         self.logger_snap = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
         colorama.init(autoreset=True)
+        self.reply = {}
 
     def _write_file(self, rpc_reply, format, output_file):
         """
@@ -178,6 +179,7 @@ class Parser:
                 rpc_reply_command = dev.rpc.cli(command, format='text')
             else:
                 rpc_reply_command = dev.rpc.cli(command, format=cmd_format)
+            self.reply[command] = rpc_reply_command
 
         except RpcError as err:
             snap_file = self.generate_snap_file(
@@ -226,6 +228,7 @@ class Parser:
                     cmd_format,
                     rpc_reply_command,
                     output_file)
+
 
     def run_rpc(self, test_file, t, formats, dev, output_file, hostname, db):
         """
@@ -373,6 +376,7 @@ class Parser:
                 reply_format,
                 rpc_reply,
                 output_file)
+        self.reply[rpc] = rpc_reply
 
     def generate_reply(self, test_file, dev, output_file, hostname, db):
         """
@@ -421,3 +425,4 @@ class Parser:
                 self.logger_snap.error(
                     colorama.Fore.RED +
                     "ERROR!!! Test case: '%s' not defined !!!!" % t, extra=self.log_detail)
+        return self

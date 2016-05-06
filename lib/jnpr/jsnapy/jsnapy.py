@@ -40,6 +40,7 @@ class SnapAdmin:
         """
         colorama.init(autoreset=True)
         self.q = Queue.Queue()
+        self.snap_q = Queue.Queue()
         self.log_detail = {'hostname': None}
         self.snap_del = False
         self.logger = logging.getLogger(__name__)
@@ -335,7 +336,8 @@ class SnapAdmin:
 
         g = Parser()
         for tests in test_files:
-            g.generate_reply(tests, dev, output_file, hostname, self.db)
+            val = g.generate_reply(tests, dev, output_file, hostname, self.db)
+        return val
 
     def compare_tests(
             self, hostname, config_data, pre_snap=None, post_snap=None, action=None):
@@ -558,7 +560,6 @@ class SnapAdmin:
         :return: if snap operation is performed then return true on success
                  if snapcheck or check operation is performed then return test details
         """
-        res = False
         if config_data is None:
             config_data = self.main_file
 
@@ -601,14 +602,13 @@ class SnapAdmin:
                                   extra=self.log_detail)
                 raise Exception(ex)
             else:
-                self.generate_rpc_reply(
+                res = self.generate_rpc_reply(
                     dev,
                     output_file,
                     hostname,
                     config_data)
+                self.snap_q.put(res)
                 dev.close()
-                res = True
-
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in [
                 "check", "snapcheck"]:
             res = self.get_test(
@@ -668,10 +668,12 @@ class SnapAdmin:
                         kwargs= key_value
                     )
                     t.start()
-                    if action in ["snapcheck", "check"]:
+                    if action == "snap":
+                        res_obj.append(self.snap_q.get())
+                    elif action in ["snapcheck", "check"]:
                         res_obj.append(self.q.get())
                     else:
-                        res_obj.append(True)
+                        res_obj.append(False)
                     t.join()
         return res_obj
 
@@ -687,8 +689,7 @@ class SnapAdmin:
         :param post_name: post snapshot filename or file tag
         :return: return object of testop.Operator containing test details
         """
-        res_obj = []
-
+        val =[]
         if os.path.isfile(config_data):
             data = open(config_data, 'r')
             config_data = yaml.load(data)
@@ -725,6 +726,7 @@ class SnapAdmin:
                     pre_name,
                     action,
                     post_name)
+                return res_obj
             else:
                 hostname = host.get('device')
                 self.log_detail = {'hostname': hostname}
@@ -735,7 +737,7 @@ class SnapAdmin:
                 #pre_name = hostname + '_' + pre_name if not os.path.isfile(pre_name) else pre_name
                 # if action is "check":
                 #    post_name= hostname + '_' + post_name if not os.path.isfile(post_name) else post_name
-                val = self.connect(
+                val.append(self.connect(
                     hostname,
                     username,
                     password,
@@ -743,9 +745,8 @@ class SnapAdmin:
                     config_data,
                     action,
                     post_name,
-                    **key_value)
-                res_obj.append(val)
-            return res_obj
+                    **key_value))
+                return val
 
     def extract_dev_data(
             self, dev, config_data, pre_name=None, action=None, post_snap=None):
@@ -794,18 +795,18 @@ class SnapAdmin:
 
             if action in ["snap", "snapcheck"]:
                 try:
-                    self.generate_rpc_reply(
+                    res.append(self.generate_rpc_reply(
                         dev,
                         pre_name,
                         hostname,
-                        config_data)
+                        config_data))
                 except Exception as ex:
                     self.logger.error(colorama.Fore.RED +
                                       "\nERROR occurred %s" %
                                       str(ex),
                                       extra=self.log_detail)
-                else:
-                    res = True
+                    res.append(False)
+
             if action in ["snapcheck", "check"]:
                 res = []
                 res.append(
