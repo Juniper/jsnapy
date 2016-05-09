@@ -673,7 +673,7 @@ class SnapAdmin:
                     elif action in ["snapcheck", "check"]:
                         res_obj.append(self.q.get())
                     else:
-                        res_obj.append(False)
+                        res_obj.append(None)
                     t.join()
         return res_obj
 
@@ -805,7 +805,7 @@ class SnapAdmin:
                                       "\nERROR occurred %s" %
                                       str(ex),
                                       extra=self.log_detail)
-                    res.append(False)
+                    res.append(None)
 
             if action in ["snapcheck", "check"]:
                 res = []
