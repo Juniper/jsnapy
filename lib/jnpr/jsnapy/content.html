@@ -1,9 +1,6 @@
-# Copyright (c) 1999-2016, Juniper Networks Inc.
-#
-# All rights reserved.
-#
-
 <!doctype html>
+<! -- Copyright (c) 1999-2016, Juniper Networks Inc. -->
+<! -- All rights reserved. -->
 <html lang="en">
 
 <head>
@@ -88,12 +85,14 @@
                         <br> <i> xpath: </i> {{values['xpath']}}
                         <br> <i> Node Name: </i> {{values['node_name']}}
                         {% if values['testoperation'] in ["no-diff", "list-not-less", "list-not-more", "delta"] %}
-                            <br> <i> Pre Node Value: </i> {{values['pre_node_value']}}
-                            <br> <i> Post Node Value: </i> {{values['post_node_value']}}
-                            <br> <i> Id miss match: </i> {{values['id_miss_match']}}
+                            <br> <i> Count: </i> {{values['count']}}
+                            <br> <i>Passed: </i> {{values['passed']}}
+                            <br> <i> Failed: </i> {{values['failed']}}
                         {% else %}
                             <br> <i> Expected Node Value: </i> {{values['expected_node_value']}}
-                            <br> <i> Actual Node Value: </i> {{values['actual_node_value']}}
+                            <br> <i> Count: </i> {{values['count']}}
+                            <br> <i>Passed: </i> {{values['passed']}}
+                            <br> <i> Failed: </i> {{values['failed']}}
                         {% endif %}
                     {% endif %}
                 </p>
