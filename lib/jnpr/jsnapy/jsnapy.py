@@ -45,7 +45,7 @@ class SnapAdmin:
         self.snap_del = False
         self.logger = logging.getLogger(__name__)
         self.parser = argparse.ArgumentParser(
-            formatter_class=argparse.RawDescriptionHelpFormatter,
+            formatter_class=argparse.RawTextHelpFormatter,
             description=textwrap.dedent('''\
                                         Tool to capture snapshots and compare them
                                         It supports four subcommands:
@@ -59,8 +59,8 @@ class SnapAdmin:
                                         4. Take diff without specifying test case:
                                                 jsnapy --diff pre_snapfile post_snapfile -f main_configfile
                                             '''),
-            usage="\n This tool enables you to capture and audit runtime environment snapshots of your "
-            "networked devices running the Junos operating system (Junos OS)\n")
+            usage="\nThis tool enables you to capture and audit runtime environment of "
+            "\nnetworked devices running the Junos operating system (Junos OS)\n")
 
         group = self.parser.add_mutually_exclusive_group()
         # for mutually exclusive gp, can not use two or more options at a time
@@ -129,6 +129,17 @@ class SnapAdmin:
             help="port no to connect to device",
             type=int
         )
+        self.parser.add_argument(
+            "-v", "--verbosity",
+            action = "count",
+            help= textwrap.dedent('''\
+            Set verbosity
+            -v: Debug level messages
+            -vv: Info level messages
+            -vvv: Warning level messages
+            -vvvv: Error level messages
+            -vvvvv: Critical level messages''')
+        )
        # self.parser.add_argument(
        #     "-m",
        #     "--mail",
@@ -191,6 +202,13 @@ class SnapAdmin:
         self.logger.info(colorama.Fore.BLUE + mssg1)
     '''
 
+    def set_verbosity(self, val):
+        self.logger.root.setLevel(val)
+        handlers = self.logger.root.handlers
+        for handle in handlers:
+            if handle.__class__.__name__=='StreamHandler':
+                handle.setLevel(val)
+
     def chk_database(self, config_file, pre_snapfile,
                      post_snapfile, check=None, snap=None, action=None):
         """
@@ -252,7 +270,7 @@ class SnapAdmin:
         if self.db['check_from_sqlite'] is False or compare_from_id is False:
             if (check is True and (pre_snapfile is None or post_snapfile is None) or
                     self.args.diff is True and (pre_snapfile is None or post_snapfile is None)):
-                self.logger.debug(
+                self.logger.error(
                     colorama.Fore.RED +
                     "Arguments not given correctly, Please refer below help message", extra=self.log_detail)
                 self.parser.print_help()
@@ -949,6 +967,8 @@ def main():
         if js.args.version is True:
             print "JSNAPy version:", version.__version__
         else:
+            if js.args.verbosity:
+                js.set_verbosity(10*js.args.verbosity)
             js.get_hosts()
 
 if __name__ == '__main__':
