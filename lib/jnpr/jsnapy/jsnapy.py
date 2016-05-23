@@ -303,7 +303,7 @@ class SnapAdmin:
         else:
             self.logger.error(
                 colorama.Fore.RED +
-                "ERROR!! file path '%s' for main config file is not correct" %
+                "ERROR!! Config file '%s' is not present " %
                 conf_file, extra=self.log_detail)
             sys.exit(1)
 
@@ -716,17 +716,17 @@ class SnapAdmin:
         else:
             self.logger.info(
                 colorama.Fore.RED +
-                "incorrect config file or data, please chk !!!!", extra=self.log_detail)
+                "Incorrect config file or data, please chk !!!!", extra=self.log_detail)
             exit(1)
         try:
             host = config_data.get('hosts')[0]
         except Exception as ex:
             self.logger.error(
                 colorama.Fore.RED +
-                "ERROR!! config file not defined properly, %s" %
+                "ERROR!! config file %s is not present" %
                 ex,
                 extra=self.log_detail)
-            raise Exception("config file not defined properly", ex)
+            raise Exception("config file is not present ", ex)
         else:
             if config_data.__contains__(
                     'sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
@@ -788,7 +788,7 @@ class SnapAdmin:
         else:
             self.logger.info(
                 colorama.Fore.RED +
-                "incorrect config file or data, please chk !!!!", extra=self.log_detail)
+                "Incorrect config file or data, please chk !!!!", extra=self.log_detail)
             exit(1)
         try:
             hostname = dev.hostname
