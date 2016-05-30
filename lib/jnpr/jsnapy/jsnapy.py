@@ -335,6 +335,7 @@ class SnapAdmin:
         :param hostname: hostname of device
         :param config_data : data of main config file
         """
+        val = None
         test_files = []
         for tfile in config_data.get('tests'):
             if not os.path.isfile(tfile):
@@ -454,8 +455,7 @@ class SnapAdmin:
                                     username = val.get(
                                         hostname).get('username')
                                 else:
-                                    username = self.args.login if self.args.login is not None else raw_input(
-                                        "\nEnter User name: ")
+                                    username = self.args.login
                                 if val.get(hostname) is not None and 'passwd' in val.get(
                                         hostname).keys():
                                     password = val.get(hostname).get('passwd')
@@ -499,8 +499,7 @@ class SnapAdmin:
                             extra=self.log_detail)
                         #raise Exception(ex)
                     else:
-                        username = k.get('username') or self.args.login or raw_input(
-                            "\nEnter User name: ")
+                        username = k.get('username') or self.args.login
                         password = k.get('passwd') or self.args.passwd
                         self.host_list.append(hostname)
                         key_value= self.get_values(key_value)
@@ -510,8 +509,7 @@ class SnapAdmin:
         else:
             hostname = self.args.hostname
             self.log_detail = {'hostname': hostname}
-            username = self.args.login if self.args.login is not None else raw_input(
-                "\nEnter User name: ")
+            username = self.args.login
             password = self.args.passwd
             # if self.args.passwd is not None else getpass.getpass("\nEnter
             # Password: ")
@@ -578,6 +576,7 @@ class SnapAdmin:
         :return: if snap operation is performed then return true on success
                  if snapcheck or check operation is performed then return test details
         """
+        res = None
         if config_data is None:
             config_data = self.main_file
 
@@ -586,6 +585,8 @@ class SnapAdmin:
             self.logger.info(
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................", hostname, extra=self.log_detail)
+            if username is None:
+                username = raw_input("\nEnter User name: ")
             dev = Device(
                 host=hostname,
                 user=username,
