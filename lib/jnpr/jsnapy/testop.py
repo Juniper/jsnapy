@@ -16,6 +16,7 @@ from copy import deepcopy
 
 colorama.init(autoreset=True)
 
+
 class Operator:
 
     def __init__(self):
@@ -76,17 +77,16 @@ class Operator:
                                      "ERROR!! Complete message: %s" % str(ex), extra=self.log_detail)
             self.no_failed = self.no_failed + 1
 
-
     def _print_result(self, testmssg, result):
         if result is False:
             self.no_failed = self.no_failed + 1
             self.logger_testop.info(colorama.Fore.RED +
-                                    'FAIL | ' +  testmssg ,  extra=self.log_detail)
+                                    'FAIL | ' + testmssg, extra=self.log_detail)
         elif result is True:
             self.no_passed = self.no_passed + 1
             self.logger_testop.info(
                 colorama.Fore.GREEN +
-                'PASS | ' + testmssg , extra=self.log_detail)
+                'PASS | ' + testmssg, extra=self.log_detail)
 
     def print_testmssg(self, testname):
         """
@@ -101,8 +101,15 @@ class Operator:
             testmssg,
             extra=self.log_detail)
 
-    def _print_message(self, mssg, iddict, predict, postdict, mode = "info"):
-        getattr(self.logger_testop, mode)(jinja2.Template(mssg).render(iddict, pre=predict,post=postdict), extra=self.log_detail)
+    def _print_message(self, mssg, iddict, predict, postdict, mode="info"):
+        getattr(
+            self.logger_testop,
+            mode)(
+            jinja2.Template(mssg).render(
+                iddict,
+                pre=predict,
+                post=postdict),
+            extra=self.log_detail)
 
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
@@ -130,7 +137,7 @@ class Operator:
         """
         prenode = pre_node.xpath(element)
         postnode = post_node.xpath(element)
-        id_val= {}
+        id_val = {}
         for j in range(len(id_list)):
             val = post_node.xpath(
                 id_list[j])[0].text.strip() if post_node.xpath(
@@ -138,7 +145,7 @@ class Operator:
             iddict[
                 'id_' +
                 str(j)] = val
-            id_val[id_list[j]]= val
+            id_val[id_list[j]] = val
 
         return iddict, prenode, postnode, id_val
 
@@ -197,12 +204,14 @@ class Operator:
             if (e.startswith("post") or e.startswith("Post")):
                 val = e[6:-2]
                 if val not in [x_path, element]:
-                    postdict[val] = post_nodes.findtext(val).strip()if post_nodes.findtext(val) is not None else None
+                    postdict[val] = post_nodes.findtext(
+                        val).strip()if post_nodes.findtext(val) is not None else None
 
             if (e.startswith("pre") or e.startswith("PRE")):
                 val = e[5:-2]
                 if val not in [x_path, element]:
-                    predict[val] = pre_nodes.findtext(val).strip() if pre_nodes.findtext(val) is not None else None
+                    predict[val] = pre_nodes.findtext(
+                        val).strip() if pre_nodes.findtext(val) is not None else None
         return predict, postdict
 
     def exists(self, x_path, ele_list, err_mssg, info_mssg,
@@ -215,7 +224,13 @@ class Operator:
         predict = {}
         postdict = {}
         iddict = {}
-        tresult = {'xpath':x_path, 'testoperation': 'exists', 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': 'exists',
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
         count_fail = 0
         try:
@@ -236,7 +251,12 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath: <{}> ".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
@@ -266,26 +286,46 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
 
-                            node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                            tresult['passed'].append(deepcopy(node_value_passed))
-                            self._print_message(info_mssg, iddict, predict, postdict, "debug")
+                            node_value_passed = {
+                                'id': id_val,
+                                'pre': predict,
+                                'post': postdict,
+                                'actual_node_value': post_nodevalue}
+                            tresult['passed'].append(
+                                deepcopy(node_value_passed))
+                            self._print_message(
+                                info_mssg,
+                                iddict,
+                                predict,
+                                postdict,
+                                "debug")
                             count_pass = count_pass + 1
                     else:
                         res = False
-                        self._print_message(err_mssg, iddict, predict, postdict, "info")
+                        self._print_message(
+                            err_mssg,
+                            iddict,
+                            predict,
+                            postdict,
+                            "info")
                         count_fail = count_fail + 1
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict}
+                        node_value_failed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict}
                         tresult['failed'].append(deepcopy(node_value_failed))
 
         if res is False:
-            msg = 'All "%s" do not exists at xpath "%s" [ %d matched / %d failed ]'%(element, x_path, count_pass, count_fail)
+            msg = 'All "%s" do not exists at xpath "%s" [ %d matched / %d failed ]' % (
+                element, x_path, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" exists at xpath "%s" [ %d matched ]'%(element, x_path, count_pass)
+            msg = 'All "%s" exists at xpath "%s" [ %d matched ]' % (
+                element, x_path, count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def not_exists(self, x_path, ele_list, err_mssg, info_mssg,
@@ -296,7 +336,13 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult= {'xpath': x_path, 'testoperation': "not-exists", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2 }
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "not-exists",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
         count_fail = 0
         try:
@@ -315,7 +361,12 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
@@ -340,23 +391,43 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             res = False
-                            self._print_message(err_mssg, iddict, predict, postdict, "info")
+                            self._print_message(
+                                err_mssg,
+                                iddict,
+                                predict,
+                                postdict,
+                                "info")
                             count_fail = count_fail + 1
-                            node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                            tresult['failed'].append(deepcopy(node_value_failed))
+                            node_value_failed = {
+                                'id': id_val,
+                                'pre': predict,
+                                'post': postdict,
+                                'actual_node_value': post_nodevalue}
+                            tresult['failed'].append(
+                                deepcopy(node_value_failed))
                     else:
-                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
+                        self._print_message(
+                            info_mssg,
+                            iddict,
+                            predict,
+                            postdict,
+                            "debug")
                         count_pass = count_pass + 1
-                        node_value_passed = {'id':id_val, 'PRE': predict, 'POST':postdict}
+                        node_value_passed = {
+                            'id': id_val,
+                            'PRE': predict,
+                            'POST': postdict}
                         tresult['passed'].append(deepcopy(node_value_passed))
         if res is False:
-            msg = ' "%s" exists at xpath "%s" [ %d matched / %d failed ]'%(element, x_path, count_pass, count_fail)
+            msg = ' "%s" exists at xpath "%s" [ %d matched / %d failed ]' % (
+                element, x_path, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" do not exists at xpath "%s" [ %d matched ]'%(element, x_path, count_pass)
+            msg = 'All "%s" do not exists at xpath "%s" [ %d matched ]' % (
+                element, x_path, count_pass)
             self._print_result(msg, res)
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def all_same(
@@ -366,7 +437,13 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "all-same", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "all-same",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
         count_fail = 0
         try:
@@ -383,7 +460,12 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
@@ -422,23 +504,45 @@ class Operator:
                             if post_nodevalue != value:
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                self._print_message(
+                                    err_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "info")
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(deepcopy(node_value_passed))
+                                self._print_message(
+                                    info_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "debug")
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
 
         if res is False:
-            msg = 'Value of all "%s" at xpath "%s" is not same [ %d matched / %d failed ]'%(element, x_path, count_pass, count_fail)
+            msg = 'Value of all "%s" at xpath "%s" is not same [ %d matched / %d failed ]' % (
+                element, x_path, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'Value of all "%s" at xpath "%s" is same [ %d matched ]'%(element, x_path, count_pass)
+            msg = 'Value of all "%s" at xpath "%s" is same [ %d matched ]' % (
+                element, x_path, count_pass)
             self._print_result(msg, res)
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def is_equal(
@@ -450,7 +554,13 @@ class Operator:
         iddict = {}
         count_pass = 0
         count_fail = 0
-        tresult = {'xpath': x_path, 'testoperation': "is-equal", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "is-equal",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         try:
             element = ele_list[0]
             value = ele_list[1]
@@ -469,7 +579,12 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath: <{}>O".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
@@ -498,33 +613,58 @@ class Operator:
                                 predict, postdict, element, postnode[k], prenode[k])
 
                             if post_nodevalue == value.strip():
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(deepcopy(node_value_passed))
-                                count_pass= count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
+                                count_pass = count_pass + 1
+                                self._print_message(
+                                    info_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "debug")
                             else:
-                                node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
+                                self._print_message(
+                                    err_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "info")
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path, id_val)
-                                                 ,extra=self.log_detail)
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': None}
+                                                 "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path, id_val), extra=self.log_detail)
+                        node_value_failed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict,
+                            'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
                         res = False
                         count_fail = count_fail + 1
         if res is False:
-            msg = 'All "%s" is not equal to "%s" [ %d matched / %d failed ]'%(element, value, count_pass, count_fail)
+            msg = 'All "%s" is not equal to "%s" [ %d matched / %d failed ]' % (
+                element, value, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" is equal to "%s" [ %d matched ]'%(element, value, count_pass)
+            msg = 'All "%s" is equal to "%s" [ %d matched ]' % (
+                element, value, count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def not_equal(
@@ -534,7 +674,13 @@ class Operator:
         predict = {}
         postdict = {}
         iddict = {}
-        tresult = {'xpath': x_path, 'testoperation': "not-equal", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2 }
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "not-equal",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
         count_fail = 0
         try:
@@ -554,7 +700,12 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
@@ -580,34 +731,60 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if post_nodevalue != value.strip():
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(deepcopy(node_value_passed))
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
+                                self._print_message(
+                                    info_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "debug")
                                 count_pass = count_pass + 1
                             else:
-                                node_value_failed  = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
                                 res = False
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
+                                self._print_message(
+                                    err_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "info")
                                 count_fail = count_fail + 1
                     else:
                         # tresult['actual_node_value'].append(None)
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
-                                                    id_val) ,extra=self.log_detail)
+                                                                                                                                    id_val), extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': None}
+                        node_value_failed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict,
+                            'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
 
         if res is False:
-            msg = 'All "%s" is equal to "%s" [ %d matched / %d failed ]'%(element, value, count_pass, count_fail)
+            msg = 'All "%s" is equal to "%s" [ %d matched / %d failed ]' % (
+                element, value, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" is not equal to "%s" [ %d matched ]'%(element, value, count_pass)
+            msg = 'All "%s" is not equal to "%s" [ %d matched ]' % (
+                element, value, count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def in_range(
@@ -617,7 +794,13 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "in-range", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2 }
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "in-range",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
         count_fail = 0
         try:
@@ -630,67 +813,108 @@ class Operator:
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n'in-range' test operator requires two parameter", extra=self.log_detail)
         else:
-            tresult['node_name'] = element
-            tresult['expected_node_value'] = [range1, range2]
-            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
-            if not post_nodes:
-                self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
+            if range1 > range2:
+                self.logger_testop.error(
+                    colorama.Fore.RED +
+                    "Range values are not valid, start range must be less than end range",
+                    extra=self.log_detail)
                 res = False
-                count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
-                tresult['failed'].append(deepcopy(node_value_failed))
-
             else:
-                for i in range(len(post_nodes)):
-                    # if length of pre node is less than post node, assign
-                    # sample xml element node
-                    if i >= len(pre_nodes):
-                        pre_nodes.append(etree.XML('<sample></sample>'))
+                tresult['node_name'] = element
+                tresult['expected_node_value'] = [range1, range2]
+                pre_nodes, post_nodes = self._find_xpath(
+                    iter, x_path, xml1, xml2)
+                if not post_nodes:
+                    self.logger_testop.error(colorama.Fore.RED +
+                                             "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
+                    res = False
+                    count_fail = count_fail + 1
+                    node_value_failed = {
+                        'id': iddict,
+                        'pre': predict,
+                        'post': postdict,
+                        'actual_node_value': None,
+                        'xpath_error': True}
+                    tresult['failed'].append(deepcopy(node_value_failed))
 
-                    iddict, prenode, postnode, id_val = self._find_element(
-                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
-                    if postnode:
-                        for k in range(len(postnode)):
-                            # if length of pre node is less than post node,
-                            # assign sample node
-                            if k >= len(prenode):
-                                prenode.append(etree.XML('<sample></sample>'))
+                else:
+                    for i in range(len(post_nodes)):
+                        # if length of pre node is less than post node, assign
+                        # sample xml element node
+                        if i >= len(pre_nodes):
+                            pre_nodes.append(etree.XML('<sample></sample>'))
 
-                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
-                                predict, postdict, element, postnode[k], prenode[k])
-                            if (float(post_nodevalue) >= range1
-                                    and float(post_nodevalue) <= range2):
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                count_pass = count_pass + 1
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(deepcopy(node_value_passed))
-                            else:
-                                res = False
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                count_fail = count_fail + 1
-                                node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                        iddict, prenode, postnode, id_val = self._find_element(
+                            id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                        predict, postdict = self._get_nodevalue(
+                            predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                        predict, postdict = self._get_nodevalue(
+                            predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+                        if postnode:
+                            for k in range(len(postnode)):
+                                # if length of pre node is less than post node,
+                                # assign sample node
+                                if k >= len(prenode):
+                                    prenode.append(
+                                        etree.XML('<sample></sample>'))
 
-                    else:
-                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
-                            id_val) ,extra=self.log_detail)
-                        res = False
-                        count_fail = count_fail + 1
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': None}
-                        tresult['failed'].append(deepcopy(node_value_failed))
+                                predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                    predict, postdict, element, postnode[k], prenode[k])
+                                if (float(post_nodevalue) >= range1
+                                        and float(post_nodevalue) <= range2):
+                                    self._print_message(
+                                        info_mssg,
+                                        iddict,
+                                        predict,
+                                        postdict,
+                                        "debug")
+                                    count_pass = count_pass + 1
+                                    node_value_passed = {
+                                        'id': id_val,
+                                        'pre': predict,
+                                        'post': postdict,
+                                        'actual_node_value': post_nodevalue}
+                                    tresult['passed'].append(
+                                        deepcopy(node_value_passed))
+                                else:
+                                    res = False
+                                    self._print_message(
+                                        err_mssg,
+                                        iddict,
+                                        predict,
+                                        postdict,
+                                        "info")
+                                    count_fail = count_fail + 1
+                                    node_value_failed = {
+                                        'id': id_val,
+                                        'pre': predict,
+                                        'post': postdict,
+                                        'actual_node_value': post_nodevalue}
+                                    tresult['failed'].append(
+                                        deepcopy(node_value_failed))
+
+                        else:
+                            self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
+                                                                                                                                        id_val), extra=self.log_detail)
+                            res = False
+                            count_fail = count_fail + 1
+                            node_value_failed = {
+                                'id': id_val,
+                                'pre': predict,
+                                'post': postdict,
+                                'actual_node_value': None}
+                            tresult['failed'].append(
+                                deepcopy(node_value_failed))
         if res is False:
-            msg = 'All "%s" is not in range:  "%f - %f" [ %d matched / %d failed ]'%(element, range1, range2, count_pass, count_fail)
+            msg = 'All "%s" is not in range:  "%f - %f" [ %d matched / %d failed ]' % (
+                element, range1, range2, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" is in range "%f - %f" [ %d matched ]'%(element, range1, range2, count_pass)
+            msg = 'All "%s" is in range "%f - %f" [ %d matched ]' % (
+                element, range1, range2, count_pass)
             self._print_result(msg, res)
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def not_range(
@@ -700,9 +924,15 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "not-range", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "not-range",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
-        count_fail =0
+        count_fail = 0
         try:
             element = ele_list[0]
             range1 = float(ele_list[1])
@@ -713,67 +943,108 @@ class Operator:
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n not-range test operator require two parameters", extra=self.log_detail)
         else:
-            tresult['node_name'] = element
-            tresult['expected_node_value'] = [range1, range2]
-            pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
-            if not post_nodes:
-                self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
+            if range1 > range2:
+                self.logger_testop.error(
+                    colorama.Fore.RED +
+                    "Range values are not valid, start range must be less than end range",
+                    extra=self.log_detail)
                 res = False
-                count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
-                tresult['failed'].append(deepcopy(node_value_failed))
-
             else:
-                for i in range(len(post_nodes)):
-                    # if length of pre node is less than post node, assign
-                    # sample xml element node
-                    if i >= len(pre_nodes):
-                        pre_nodes.append(etree.XML('<sample></sample>'))
+                tresult['node_name'] = element
+                tresult['expected_node_value'] = [range1, range2]
+                pre_nodes, post_nodes = self._find_xpath(
+                    iter, x_path, xml1, xml2)
+                if not post_nodes:
+                    self.logger_testop.error(colorama.Fore.RED +
+                                             "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
+                    res = False
+                    count_fail = count_fail + 1
+                    node_value_failed = {
+                        'id': iddict,
+                        'pre': predict,
+                        'post': postdict,
+                        'actual_node_value': None,
+                        'xpath_error': True}
+                    tresult['failed'].append(deepcopy(node_value_failed))
 
-                    iddict, prenode, postnode, id_val = self._find_element(
-                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
-                    if postnode:
-                        for k in range(len(postnode)):
-                            # if length of pre node is less than post node,
-                            # assign sample node
-                            if k >= len(prenode):
-                                prenode.append(etree.XML('<sample></sample>'))
+                else:
+                    for i in range(len(post_nodes)):
+                        # if length of pre node is less than post node, assign
+                        # sample xml element node
+                        if i >= len(pre_nodes):
+                            pre_nodes.append(etree.XML('<sample></sample>'))
 
-                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
-                                predict, postdict, element, postnode[k], prenode[k])
-                            if float(post_nodevalue) <= range1 or float(
-                                    post_nodevalue) >= range2:
-                                count_pass = count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(deepcopy(node_value_passed))
-                            else:
-                                res = False
-                                count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(deepcopy(node_value_failed))
-                    else:
-                        self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
-                            id_val) ,extra=self.log_detail)
-                        res = False
-                        count_fail = count_fail + 1
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': None}
-                        tresult['failed'].append(deepcopy(node_value_failed))
+                        iddict, prenode, postnode, id_val = self._find_element(
+                            id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                        predict, postdict = self._get_nodevalue(
+                            predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                        predict, postdict = self._get_nodevalue(
+                            predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+                        if postnode:
+                            for k in range(len(postnode)):
+                                # if length of pre node is less than post node,
+                                # assign sample node
+                                if k >= len(prenode):
+                                    prenode.append(
+                                        etree.XML('<sample></sample>'))
+
+                                predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                    predict, postdict, element, postnode[k], prenode[k])
+                                if float(post_nodevalue) <= range1 or float(
+                                        post_nodevalue) >= range2:
+                                    count_pass = count_pass + 1
+                                    self._print_message(
+                                        info_mssg,
+                                        iddict,
+                                        predict,
+                                        postdict,
+                                        "debug")
+                                    node_value_passed = {
+                                        'id': id_val,
+                                        'pre': predict,
+                                        'post': postdict,
+                                        'actual_node_value': post_nodevalue}
+                                    tresult['passed'].append(
+                                        deepcopy(node_value_passed))
+                                else:
+                                    res = False
+                                    count_fail = count_fail + 1
+                                    self._print_message(
+                                        err_mssg,
+                                        iddict,
+                                        predict,
+                                        postdict,
+                                        "info")
+                                    node_value_failed = {
+                                        'id': id_val,
+                                        'pre': predict,
+                                        'post': postdict,
+                                        'actual_node_value': post_nodevalue}
+                                    tresult['failed'].append(
+                                        deepcopy(node_value_failed))
+                        else:
+                            self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
+                                                                                                                                        id_val), extra=self.log_detail)
+                            res = False
+                            count_fail = count_fail + 1
+                            node_value_failed = {
+                                'id': id_val,
+                                'pre': predict,
+                                'post': postdict,
+                                'actual_node_value': None}
+                            tresult['failed'].append(
+                                deepcopy(node_value_failed))
         if res is False:
-            msg = 'All "%s" is in range:  "%f - %f" [ %d matched / %d failed ]'%(element, range1, range2, count_pass, count_fail)
+            msg = 'All "%s" is in range:  "%f - %f" [ %d matched / %d failed ]' % (
+                element, range1, range2, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" is not in range "%f - %f" [ %d matched ]'%(element, range1, range2, count_pass)
+            msg = 'All "%s" is not in range "%f - %f" [ %d matched ]' % (
+                element, range1, range2, count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def is_gt(self, x_path, ele_list, err_mssg,
@@ -783,9 +1054,15 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "is-gt", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2 }
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "is-gt",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
-        count_fail =0
+        count_fail = 0
         try:
             element = ele_list[0]
             val1 = float(ele_list[1])
@@ -803,7 +1080,12 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
@@ -829,34 +1111,60 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[j], prenode[j])
                             if (float(post_nodevalue) > val1):
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
+                                self._print_message(
+                                    info_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "debug")
                                 count_pass = count_pass + 1
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(deepcopy(node_value_passed))
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
                             else:
                                 res = False
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
+                                self._print_message(
+                                    err_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "info")
                                 count_fail = count_fail + 1
-                                node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
 
                     else:
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
-                            id_val) ,extra=self.log_detail)
+                                                                                                                                    id_val), extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': None}
+                        node_value_failed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict,
+                            'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
 
         if res is False:
-            msg = 'All "%s" is not greater than  "%d" [ %d matched / %d failed ]'%(element, val1, count_pass, count_fail)
+            msg = 'All "%s" is not greater than  "%d" [ %d matched / %d failed ]' % (
+                element, val1, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" is greater than %d" [ %d matched ]'%(element, val1, count_pass)
+            msg = 'All "%s" is greater than %d" [ %d matched ]' % (
+                element, val1, count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def is_lt(self, x_path, ele_list, err_mssg,
@@ -866,9 +1174,15 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "is-lt", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2 }
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "is-lt",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
-        count_fail =0
+        count_fail = 0
 
         try:
             element = ele_list[0]
@@ -887,7 +1201,12 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
             else:
                 for i in range(len(post_nodes)):
@@ -912,33 +1231,59 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (float(post_nodevalue) < val1):
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
+                                self._print_message(
+                                    info_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "debug")
                                 count_pass = count_pass + 1
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(deepcopy(node_value_passed))
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
                             else:
                                 res = False
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
+                                self._print_message(
+                                    err_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "info")
                                 count_fail = count_fail + 1
-                                node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
                     else:
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
-                            id_val) ,extra=self.log_detail)
+                                                                                                                                    id_val), extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': None}
+                        node_value_failed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict,
+                            'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
 
         if res is False:
-            msg = 'All "%s" is not less than %d" [ %d matched / %d failed ]'%(element, val1, count_pass, count_fail)
+            msg = 'All "%s" is not less than %d" [ %d matched / %d failed ]' % (
+                element, val1, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" is less than %d [ %d matched ]'%(element, val1, count_pass)
+            msg = 'All "%s" is less than %d [ %d matched ]' % (
+                element, val1, count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def contains(self, x_path, ele_list, err_mssg, info_mssg,
@@ -948,7 +1293,13 @@ class Operator:
         postdict = {}
         iddict = {}
         res = True
-        tresult = {'xpath': x_path, 'testoperation': "contains", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "contains",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
         count_fail = 0
 
@@ -970,7 +1321,12 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
@@ -998,30 +1354,56 @@ class Operator:
                             if (postnode[k].text.find(value) == -1):
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': postnode[k].text}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                self._print_message(
+                                    err_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "info")
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': postnode[k].text}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': postnode[k].text}
-                                tresult['passed'].append(deepcopy(node_value_passed))
+                                self._print_message(
+                                    info_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "debug")
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': postnode[k].text}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
                     else:
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
-                            id_val) ,extra=self.log_detail)
+                                                                                                                                    id_val), extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': None}
+                        node_value_failed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict,
+                            'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
         if res is False:
-            msg = 'All "%s" do not contains %s" [ %d matched / %d failed ]'%(element, value, count_pass, count_fail)
+            msg = 'All "%s" do not contains %s" [ %d matched / %d failed ]' % (
+                element, value, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" contains %s [ %d matched ]'%(element, value, count_pass)
+            msg = 'All "%s" contains %s [ %d matched ]' % (
+                element, value, count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def is_in(self, x_path, ele_list, err_mssg,
@@ -1031,9 +1413,15 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "is-in", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "is-in",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
-        count_fail =0
+        count_fail = 0
 
         try:
             element = ele_list[0]
@@ -1052,7 +1440,12 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
@@ -1079,33 +1472,64 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (post_nodevalue in value_list):
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
+                                self._print_message(
+                                    info_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "debug")
                                 count_pass = count_pass + 1
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(deepcopy(node_value_passed))
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
                             else:
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                self._print_message(
+                                    err_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "info")
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
                     else:
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
-                            id_val) ,extra=self.log_detail)
+                                                                                                                                    id_val), extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': None}
+                        node_value_failed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict,
+                            'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
 
         if res is False:
-            msg = 'All "{0}" is not in list {1} [ {2} matched / {3} failed ]'.format(element, value_list, count_pass, count_fail)
+            msg = 'All "{0}" is not in list {1} [ {2} matched / {3} failed ]'.format(
+                element,
+                value_list,
+                count_pass,
+                count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "{0}" is in list {1}  [ {2} matched ]'.format(element, value_list, count_pass)
+            msg = 'All "{0}" is in list {1}  [ {2} matched ]'.format(
+                element,
+                value_list,
+                count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def not_in(self, x_path, ele_list, err_mssg,
@@ -1115,9 +1539,15 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "not-in", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "not-in",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
-        count_fail =0
+        count_fail = 0
 
         try:
             element = ele_list[0]
@@ -1136,7 +1566,12 @@ class Operator:
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
             else:
                 for i in range(len(post_nodes)):
@@ -1162,33 +1597,64 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (post_nodevalue not in value_list):
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
+                                self._print_message(
+                                    info_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "debug")
                                 count_pass = count_pass + 1
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(deepcopy(node_value_passed))
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
                             else:
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                self._print_message(
+                                    err_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "info")
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
                     else:
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
-                            id_val) ,extra=self.log_detail)
+                                                                                                                                    id_val), extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': None}
+                        node_value_failed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict,
+                            'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
 
         if res is False:
-            msg = '"{0}" is in list {1} [ {2} matched / {3} failed ]'.format(element, value_list, count_pass, count_fail)
+            msg = '"{0}" is in list {1} [ {2} matched / {3} failed ]'.format(
+                element,
+                value_list,
+                count_pass,
+                count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "{0}" is not in list {1}  [ {2} matched ]'.format(element, value_list, count_pass)
+            msg = 'All "{0}" is not in list {1}  [ {2} matched ]'.format(
+                element,
+                value_list,
+                count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     ################## operator requiring two snapshots, pre and post ########
@@ -1199,9 +1665,16 @@ class Operator:
         iddict = {}
         predict = {}
         postdict = {}
-        tresult = {'xpath': x_path, 'testoperation': "no-diff", 'node_name': ele_list[0], 'failed': [], 'passed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "no-diff",
+            'node_name': ele_list[0],
+            'failed': [],
+            'passed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_pass = 0
-        count_fail =0
+        count_fail = 0
         id_val = {}
 
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
@@ -1211,11 +1684,17 @@ class Operator:
         else:
             if (not pre_nodes) or (not post_nodes):
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path),
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(
+                                             x_path),
                                          extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
             else:
                 # assuming one iterator has unique set of ids, i.e only one node matching to id
@@ -1237,7 +1716,7 @@ class Operator:
                         iddict[
                             'id_' + str(length)] = [k[length][i].strip() for i in range(len(k[length]))]
                     if k in data1 and k in data2:
-                        ## mapping id name to its value
+                        # mapping id name to its value
                         for length in range(len(k)):
                             id_val[id_list[length]] = k[length][0].strip()
 
@@ -1259,73 +1738,115 @@ class Operator:
                         if val_list1 != val_list2:
                             res = False
                             count_fail = count_fail + 1
-                            self._print_message(err_mssg, iddict, predict, postdict, "info")
-                            node_value_failed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val_list1, 'post_node_value': val_list2}
-                            tresult['failed'].append(deepcopy(node_value_failed))
+                            self._print_message(
+                                err_mssg,
+                                iddict,
+                                predict,
+                                postdict,
+                                "info")
+                            node_value_failed = {
+                                'id': id_val,
+                                'pre': predict,
+                                'post': postdict,
+                                'pre_node_value': val_list1,
+                                'post_node_value': val_list2}
+                            tresult['failed'].append(
+                                deepcopy(node_value_failed))
 
                         else:
                             count_pass = count_pass + 1
-                            self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                            node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val_list1, 'post_node_value': val_list2}
-                            tresult['passed'].append(deepcopy(node_value_passed))
+                            self._print_message(
+                                info_mssg,
+                                iddict,
+                                predict,
+                                postdict,
+                                "debug")
+                            node_value_passed = {
+                                'id': id_val,
+                                'pre': predict,
+                                'post': postdict,
+                                'pre_node_value': val_list1,
+                                'post_node_value': val_list2}
+                            tresult['passed'].append(
+                                deepcopy(node_value_passed))
 
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ID gone missing!!!", extra=self.log_detail)
-                        ## mapping id name to its value
+                        # mapping id name to its value
                         for length in range(len(k)):
                             id_val[id_list[length]] = k[length][0].strip()
                         if k in data1:
                             self.logger_testop.error(
                                 "ID list '%s' is not present in post snapshot" %
                                 iddict, extra=self.log_detail)
-                            tresult['failed'].append({'id_missing_post': deepcopy(id_val) })
+                            tresult['failed'].append(
+                                {'id_missing_post': deepcopy(id_val)})
                         else:
                             self.logger_testop.error(
                                 "ID list '%s' is not present in pre snapshot" %
                                 iddict, extra=self.log_detail)
-                            tresult['failed'].append({'id_missing_pre': deepcopy(id_val) })
-                        #tresult['id_miss_match'].append(iddict.copy())
+                            tresult['failed'].append(
+                                {'id_missing_pre': deepcopy(id_val)})
+                        # tresult['id_miss_match'].append(iddict.copy())
                         self.logger_testop.debug(colorama.Fore.RED +
-                                                jinja2.Template(
-                                                    err_mssg).render(
-                                                    iddict,
-                                                    pre=predict,
-                                                    post=postdict), extra=self.log_detail)
+                                                 jinja2.Template(
+                                                     err_mssg).render(
+                                                     iddict,
+                                                     pre=predict,
+                                                     post=postdict), extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
         if res is False:
-            msg = 'All "{0}" is not same in pre and post snapshot [ {1} matched / {2} failed ]'.format(tresult['node_name'], count_pass, count_fail)
+            msg = 'All "{0}" is not same in pre and post snapshot [ {1} matched / {2} failed ]'.format(
+                tresult['node_name'],
+                count_pass,
+                count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "{0}" is same in pre and post snapshot [ {1} matched ]'.format(tresult['node_name'], count_pass)
+            msg = 'All "{0}" is same in pre and post snapshot [ {1} matched ]'.format(
+                tresult['node_name'],
+                count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def list_not_less(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("list-not-less")
         res = True
-        tresult = {'xpath': x_path, 'testoperation': "list-not-less", 'node_name': ele_list[0], 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "list-not-less",
+            'node_name': ele_list[0],
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         iddict = {}
         predict = {}
         postdict = {}
         count_pass = 0
-        count_fail =0
-        id_val ={}
+        count_fail = 0
+        id_val = {}
 
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         if not pre_nodes or not post_nodes:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path),
+                                     "ERROR!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
                                      extra=self.log_detail)
             res = False
             count_fail = count_fail + 1
-            node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+            node_value_failed = {
+                'id': iddict,
+                'pre': predict,
+                'post': postdict,
+                'actual_node_value': None,
+                'xpath_error': True}
             tresult['failed'].append(deepcopy(node_value_failed))
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
@@ -1347,12 +1868,11 @@ class Operator:
                     predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
                                                             x_path, ele_list[0], info_mssg)
 
-
                     if not re.match(ele_list[0], "no node"):
-                        #predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
+                        # predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
                         #                                        x_path, ele_list[0], err_mssg)
-                        #predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
-                        #                                        x_path, ele_list[0], info_mssg)
+                        # predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
+                        # x_path, ele_list[0], info_mssg)
                         ele_xpath1 = predata.get(k).xpath(ele_list[0])
                         ele_xpath2 = postdata.get(k).xpath(ele_list[0])
                         val_list1 = [element.text.strip()
@@ -1370,19 +1890,48 @@ class Operator:
                                 count_fail = count_fail + 1
                                 self.logger_testop.info("Missing node : %s for element tag %s and parent element %s" % (val1, ele_xpath1[0].tag,
                                                                                                                         ele_xpath1[0].getparent().tag), extra=self.log_detail)
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                node_value_failed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': ''}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                self._print_message(
+                                    err_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "info")
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'pre_node_value': val1,
+                                    'post_node_value': ''}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
 
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val1}
-                                tresult['passed'].append(deepcopy(node_value_passed))
+                                self._print_message(
+                                    info_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "debug")
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'pre_node_value': val1,
+                                    'post_node_value': val1}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
                     else:
                         count_pass = count_pass + 1
-                        self._print_message(info_mssg, iddict, predict, postdict)
-                        node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict}
+                        self._print_message(
+                            info_mssg,
+                            iddict,
+                            predict,
+                            postdict)
+                        node_value_passed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict}
                         tresult['passed'].append(deepcopy(node_value_passed))
                 else:
                     self.logger_testop.error(colorama.Fore.RED +
@@ -1392,41 +1941,65 @@ class Operator:
                     self.logger_testop.error(
                         "ID list ' %s ' is not present in post snapshots " %
                         iddict, extra=self.log_detail)
-                    #tresult['id_miss_match'].append(iddict.copy())
-                    tresult['failed'].append({'id_missing_post': deepcopy(id_val) })
-                    self._print_message(err_mssg, iddict, predict, postdict, "info")
+                    # tresult['id_miss_match'].append(iddict.copy())
+                    tresult['failed'].append(
+                        {'id_missing_post': deepcopy(id_val)})
+                    self._print_message(
+                        err_mssg,
+                        iddict,
+                        predict,
+                        postdict,
+                        "info")
                     res = False
                     count_fail = count_fail + 1
         if res is False:
-            msg = 'All "{0}" in pre snapshot is not present in post snapshot [ {1} matched / {2} failed ]'.format(tresult['node_name'], count_pass, count_fail)
+            msg = 'All "{0}" in pre snapshot is not present in post snapshot [ {1} matched / {2} failed ]'.format(
+                tresult['node_name'],
+                count_pass,
+                count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "{0}" in pre snapshot is present in post snapshot [ {1} matched ]'.format(tresult['node_name'], count_pass)
+            msg = 'All "{0}" in pre snapshot is present in post snapshot [ {1} matched ]'.format(
+                tresult['node_name'],
+                count_pass)
             self._print_result(msg, res)
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def list_not_more(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("list-not-more")
         res = True
-        tresult = {'xpath': x_path, 'testoperation': "list-not-more", 'node_name': ele_list[0], 'failed': [], 'passed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "list-not-more",
+            'node_name': ele_list[0],
+            'failed': [],
+            'passed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         iddict = {}
         predict = {}
         postdict = {}
         count_pass = 0
-        count_fail =0
-        id_val ={}
+        count_fail = 0
+        id_val = {}
 
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
         if not pre_nodes or not post_nodes:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path),
+                                     "ERROR!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
                                      extra=self.log_detail)
             res = False
             count_fail = count_fail + 1
-            node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+            node_value_failed = {
+                'id': iddict,
+                'pre': predict,
+                'post': postdict,
+                'actual_node_value': None,
+                'xpath_error': True}
             tresult['failed'].append(deepcopy(node_value_failed))
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
@@ -1449,10 +2022,10 @@ class Operator:
                                                             x_path, ele_list[0], info_mssg)
 
                     if not re.match(ele_list[0], "no node"):
-#                        predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
-#                                                                x_path, ele_list[0], err_mssg)
-#                        predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
-#                                                                x_path, ele_list[0], info_mssg)
+                        #                        predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
+                        #                                                                x_path, ele_list[0], err_mssg)
+                        #                        predict, postdict = self._get_nodevalue(predict, postdict, predata[k], postdata[k],
+                        # x_path, ele_list[0], info_mssg)
                         ele_xpath1 = predata.get(k).xpath(ele_list[0])
                         ele_xpath2 = postdata.get(k).xpath(ele_list[0])
                         val_list1 = [element.text.strip()
@@ -1464,20 +2037,50 @@ class Operator:
                             if val2 not in val_list1:
                                 res = False
                                 count_fail = count_fail + 1
-                                node_value_failed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': '', 'post_node_value': val2}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'pre_node_value': '',
+                                    'post_node_value': val2}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
                                 self.logger_testop.error("Missing node: %s for element tag: %s and parent element %s" % (val2, ele_xpath2[0].tag,
                                                                                                                          ele_xpath2[0].getparent().tag), extra=self.log_detail)
-                                self._print_message(err_mssg, iddict, predict, postdict, "info")
+                                self._print_message(
+                                    err_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "info")
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val2, 'post_node_value': val2}
-                                tresult['passed'].append(deepcopy(node_value_passed))
+                                self._print_message(
+                                    info_mssg,
+                                    iddict,
+                                    predict,
+                                    postdict,
+                                    "debug")
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'pre_node_value': val2,
+                                    'post_node_value': val2}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
                     else:
                         count_pass = count_pass + 1
-                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                        node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict}
+                        self._print_message(
+                            info_mssg,
+                            iddict,
+                            predict,
+                            postdict,
+                            "debug")
+                        node_value_passed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict}
                         tresult['passed'].append(deepcopy(node_value_passed))
                 else:
                     self.logger_testop.error(colorama.Fore.RED +
@@ -1487,33 +2090,51 @@ class Operator:
                     self.logger_testop.error(
                         "\nID list ' %s ' is not present in pre snapshots" %
                         iddict, extra=self.log_detail)
-                    tresult['failed'].append({'id_missing_pre': deepcopy(id_val) })
-                    #tresult['id_miss_match'].append(iddict.copy())
-                    self._print_message(err_mssg, iddict, predict, postdict, "info")
+                    tresult['failed'].append(
+                        {'id_missing_pre': deepcopy(id_val)})
+                    # tresult['id_miss_match'].append(iddict.copy())
+                    self._print_message(
+                        err_mssg,
+                        iddict,
+                        predict,
+                        postdict,
+                        "info")
                     res = False
                     count_fail = count_fail + 1
 
         if res is False:
-            msg = 'All "{0}" in post snapshot is not present in pre snapshot [ {1} matched / {2} failed ]'.format(tresult['node_name'], count_pass, count_fail)
+            msg = 'All "{0}" in post snapshot is not present in pre snapshot [ {1} matched / {2} failed ]'.format(
+                tresult['node_name'],
+                count_pass,
+                count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "{0}" in post snapshot is present in pre snapshot [ {1} matched ]'.format(tresult['node_name'], count_pass)
+            msg = 'All "{0}" in post snapshot is present in pre snapshot [ {1} matched ]'.format(
+                tresult['node_name'],
+                count_pass)
             self._print_result(msg, res)
 
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def delta(self, x_path, ele_list, err_mssg,
               info_mssg, teston, iter, id_list, xml1, xml2):
         self.print_testmssg("delta")
         res = True
-        tresult = {'xpath': x_path, 'testoperation': "delta", 'passed': [], 'failed': [], 'node_name': ele_list[0], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "delta",
+            'passed': [],
+            'failed': [],
+            'node_name': ele_list[0],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         iddict = {}
         predict = {}
         postdict = {}
         count_pass = 0
-        count_fail =0
+        count_fail = 0
         id_val = {}
 
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
@@ -1529,11 +2150,17 @@ class Operator:
         else:
             if not pre_nodes or not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path),
+                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(
+                                             x_path),
                                          extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
             else:
                 # assuming one iterator has unique set of ids, i.e only one node matching to id
@@ -1556,7 +2183,6 @@ class Operator:
 
                     for length in range(len(k)):
                         id_val[id_list[length]] = k[length][0].strip()
-
 
                     if k in predata and k in postdata:
                         predict, postdict = self._get_nodevalue(
@@ -1583,15 +2209,36 @@ class Operator:
                                     if (val2 > val1 or val2 < mvalue):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                        node_value_failed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['failed'].append(deepcopy(node_value_failed))
+                                        self._print_message(
+                                            err_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "info")
+                                        node_value_failed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['failed'].append(
+                                            deepcopy(node_value_failed))
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                        node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['passed'].append(deepcopy(node_value_passed))
-
+                                        self._print_message(
+                                            info_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "debug")
+                                        node_value_passed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['passed'].append(
+                                            deepcopy(node_value_passed))
 
                                 # for positive percent change
                                 elif re.search('%', del_val) and (re.search('/+', del_val)):
@@ -1600,16 +2247,37 @@ class Operator:
                                     if (val2 < val1 or val2 > mvalue):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                        node_value_failed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['failed'].append(deepcopy(node_value_failed))
+                                        self._print_message(
+                                            err_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "info")
+                                        node_value_failed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['failed'].append(
+                                            deepcopy(node_value_failed))
 
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                        node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['passed'].append(deepcopy(node_value_passed))
-
+                                        self._print_message(
+                                            info_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "debug")
+                                        node_value_passed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['passed'].append(
+                                            deepcopy(node_value_passed))
 
                                 # absolute percent change
                                 elif re.search('%', del_val):
@@ -1619,14 +2287,36 @@ class Operator:
                                     if (val2 < mvalue1 or val2 > mvalue2):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                        node_value_failed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['failed'].append(deepcopy(node_value_failed))
+                                        self._print_message(
+                                            err_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "info")
+                                        node_value_failed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['failed'].append(
+                                            deepcopy(node_value_failed))
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                        node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['passed'].append(deepcopy(node_value_passed))
+                                        self._print_message(
+                                            info_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "debug")
+                                        node_value_passed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['passed'].append(
+                                            deepcopy(node_value_passed))
 
                                 # for negative change
                                 elif re.search('-', del_val):
@@ -1635,15 +2325,36 @@ class Operator:
                                     if (val2 < mvalue or val2 > val1):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                        node_value_failed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['failed'].append(deepcopy(node_value_failed))
+                                        self._print_message(
+                                            err_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "info")
+                                        node_value_failed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['failed'].append(
+                                            deepcopy(node_value_failed))
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                        node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['passed'].append(deepcopy(node_value_passed))
-
+                                        self._print_message(
+                                            info_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "debug")
+                                        node_value_passed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['passed'].append(
+                                            deepcopy(node_value_passed))
 
                                  # for positive change
                                 elif re.search('\+', del_val):
@@ -1652,14 +2363,36 @@ class Operator:
                                     if (val2 >= mvalue or val2 <= val1):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                        node_value_failed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['failed'].append(deepcopy(node_value_failed))
+                                        self._print_message(
+                                            err_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "info")
+                                        node_value_failed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['failed'].append(
+                                            deepcopy(node_value_failed))
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                        node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['passed'].append(deepcopy(node_value_passed))
+                                        self._print_message(
+                                            info_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "debug")
+                                        node_value_passed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['passed'].append(
+                                            deepcopy(node_value_passed))
                                 else:
                                     dvalue = float(delta_val.strip('%'))
                                     mvalue1 = val1 - dvalue
@@ -1667,16 +2400,43 @@ class Operator:
                                     if (val2 < mvalue1 or val2 > mvalue2):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(err_mssg, iddict, predict, postdict, "info")
-                                        node_value_failed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['failed'].append(deepcopy(node_value_failed))
+                                        self._print_message(
+                                            err_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "info")
+                                        node_value_failed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['failed'].append(
+                                            deepcopy(node_value_failed))
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(info_mssg, iddict, predict, postdict, "debug")
-                                        node_value_passed = {'id': id_val, 'pre': predict, 'post':postdict, 'pre_node_value': val1, 'post_node_value': val2}
-                                        tresult['passed'].append(deepcopy(node_value_passed))
+                                        self._print_message(
+                                            info_mssg,
+                                            iddict,
+                                            predict,
+                                            postdict,
+                                            "debug")
+                                        node_value_passed = {
+                                            'id': id_val,
+                                            'pre': predict,
+                                            'post': postdict,
+                                            'pre_node_value': val1,
+                                            'post_node_value': val2}
+                                        tresult['passed'].append(
+                                            deepcopy(node_value_passed))
                             else:
-                                self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> ".format(node_name, x_path) ,extra=self.log_detail)
+                                self.logger_testop.error(
+                                    colorama.Fore.RED +
+                                    "ERROR!! Node <{}> not found at xpath <{}> ".format(
+                                        node_name,
+                                        x_path),
+                                    extra=self.log_detail)
                                 res = False
                                 count_fail = count_fail + 1
                     else:
@@ -1691,23 +2451,37 @@ class Operator:
                             self.logger_testop.error(
                                 "ID list '%s' is not present in post snapshot" %
                                 iddict, extra=self.log_detail)
-                            tresult['failed'].append({'id_missing_post': deepcopy(id_val) })
+                            tresult['failed'].append(
+                                {'id_missing_post': deepcopy(id_val)})
                         else:
                             self.logger_testop.error(
                                 "ID list '%s' is not present in pre snapshot" %
                                 iddict, extra=self.log_detail)
-                            tresult['failed'].append({'id_missing_pre': deepcopy(id_val) })
-                        self._print_message(err_mssg, iddict, predict, postdict, "info")
+                            tresult['failed'].append(
+                                {'id_missing_pre': deepcopy(id_val)})
+                        self._print_message(
+                            err_mssg,
+                            iddict,
+                            predict,
+                            postdict,
+                            "info")
                         res = False
                         count_fail = count_fail + 1
         if res is False:
-            msg = 'All "{0}" is not with in delta difference of {1} [ {2} matched / {3} failed ]'.format(node_name, delta_val, count_pass, count_fail)
+            msg = 'All "{0}" is not with in delta difference of {1} [ {2} matched / {3} failed ]'.format(
+                node_name,
+                delta_val,
+                count_pass,
+                count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "{0}" is with in delta difference of {1} [ {2} matched ]'.format(node_name, delta_val, count_pass)
+            msg = 'All "{0}" is with in delta difference of {1} [ {2} matched ]'.format(
+                node_name,
+                delta_val,
+                count_pass)
             self._print_result(msg, res)
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
     def regex(
@@ -1717,7 +2491,13 @@ class Operator:
         predict = {}
         postdict = {}
         iddict = {}
-        tresult = {'xpath': x_path, 'testoperation': "regex", 'passed': [], 'failed': [], 'pre_xml': xml1, 'post_xml': xml2}
+        tresult = {
+            'xpath': x_path,
+            'testoperation': "regex",
+            'passed': [],
+            'failed': [],
+            'pre_xml': xml1,
+            'post_xml': xml2}
         count_fail = 0
         count_pass = 0
         try:
@@ -1735,10 +2515,15 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in Xpath <%s> !!"%x_path, extra=self.log_detail)
+                                         "ERROR!! Nodes are not present in Xpath <%s> !!" % x_path, extra=self.log_detail)
                 count_fail = count_fail + 1
                 res = False
-                node_value_failed = {'id':iddict, 'pre': predict, 'post':postdict, 'actual_node_value': None, 'xpath_error': True}
+                node_value_failed = {
+                    'id': iddict,
+                    'pre': predict,
+                    'post': postdict,
+                    'actual_node_value': None,
+                    'xpath_error': True}
                 tresult['failed'].append(deepcopy(node_value_failed))
             else:
                 for i in range(len(post_nodes)):
@@ -1763,7 +2548,7 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
 
-                            if re.search(value,post_nodevalue):
+                            if re.search(value, post_nodevalue):
                                 res = True
                                 count_pass = count_pass + 1
                                 self.logger_testop.debug(
@@ -1774,8 +2559,13 @@ class Operator:
                                         iddict,
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
-                                node_value_passed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(deepcopy(node_value_passed))
+                                node_value_passed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['passed'].append(
+                                    deepcopy(node_value_passed))
 
                             else:
                                 res = False
@@ -1788,27 +2578,36 @@ class Operator:
                                         iddict,
                                         pre=predict,
                                         post=postdict), extra=self.log_detail)
-                                node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(deepcopy(node_value_failed))
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'actual_node_value': post_nodevalue}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
                     else:
                         self.logger_testop.error(colorama.Fore.RED +
-                                                 "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path, id_val)
-                                                 ,extra=self.log_detail)
+                                                 "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path, id_val), extra=self.log_detail)
                         res = False
                         count_fail = count_fail + 1
-                        node_value_failed = {'id':id_val, 'pre': predict, 'post':postdict, 'actual_node_value': None}
+                        node_value_failed = {
+                            'id': id_val,
+                            'pre': predict,
+                            'post': postdict,
+                            'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
 
         if res is False:
-            msg = 'All "%s" do not match with regex  "%s" [ %d matched / %d failed ]'%(element, value, count_pass, count_fail)
+            msg = 'All "%s" do not match with regex  "%s" [ %d matched / %d failed ]' % (
+                element, value, count_pass, count_fail)
             self._print_result(msg, res)
         else:
-            msg = 'All "%s" matches with regex "%s" [ %d matched ]'%(element, value, count_pass)
+            msg = 'All "%s" matches with regex "%s" [ %d matched ]' % (
+                element, value, count_pass)
             self._print_result(msg, res)
         tresult['result'] = res
-        tresult['count']= {'pass': count_pass, 'fail': count_fail}
+        tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
-
 
     def final_result(self, logs):
         """
