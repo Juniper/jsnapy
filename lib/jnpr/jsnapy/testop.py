@@ -13,6 +13,7 @@ import lxml
 from collections import defaultdict
 from lxml import etree
 from copy import deepcopy
+import traceback
 
 colorama.init(autoreset=True)
 
@@ -73,9 +74,9 @@ class Operator:
             self.no_failed = self.no_failed + 1
         except Exception as ex:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "ERROR!! Complete message: %s" % str(ex), extra=self.log_detail)
+                                     "ERROR!! %s" % str(ex), extra=self.log_detail)
+            self.logger_testop.error(colorama.Fore.RED + "Complete Error message:\n {}".format(traceback.format_exc()), extra=self.log_detail)
             self.no_failed = self.no_failed + 1
-
 
     def _print_result(self, testmssg, result):
         if result is False:
