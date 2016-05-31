@@ -13,6 +13,7 @@ import lxml
 from collections import defaultdict
 from lxml import etree
 from copy import deepcopy
+import traceback
 
 colorama.init(autoreset=True)
 
@@ -70,11 +71,14 @@ class Operator:
                 *args)
         except AttributeError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "ERROR!! Complete message: %s" % e.message, extra=self.log_detail)
+                                     "ERROR!! AttributeError \nComplete Message: %s" % e.message, extra=self.log_detail)
+            self.no_failed = self.no_failed + 1
+        except etree.XPathEvalError as ex:
+            self.logger_testop.error(colorama.Fore.RED + "Error in evaluating XPATH, \nComplete Message: %s" % ex.message, extra=self.log_detail )
             self.no_failed = self.no_failed + 1
         except Exception as ex:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "ERROR!! Complete message: %s" % str(ex), extra=self.log_detail)
+                                     "ERROR!! %s \nComplete Message: %s" % (type(ex).__name__, str(ex)), extra=self.log_detail)
             self.no_failed = self.no_failed + 1
 
     def _print_result(self, testmssg, result):
