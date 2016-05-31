@@ -969,7 +969,14 @@ def main():
         else:
             if js.args.verbosity:
                 js.set_verbosity(10*js.args.verbosity)
-            js.get_hosts()
+            try:
+                js.get_hosts()
+            except yaml.scanner.ScannerError as ex:
+                js.logger.error(colorama.Fore.RED +
+                                "ERROR!! YAML file not defined properly, \nComplete Message: %s" % str(ex), extra=js.log_detail)
+            except Exception as ex:
+                js.logger.error(colorama.Fore.RED +
+                                "ERROR!! %s \nComplete Message:  %s" % (type(ex).__name__, str(ex)), extra=js.log_detail)
 
 if __name__ == '__main__':
     main()
