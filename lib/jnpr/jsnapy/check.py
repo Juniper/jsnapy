@@ -357,7 +357,6 @@ class Comparator:
         op = Operator()
         op.device = device
         tests_files = []
-        tests_included = []
         self.log_detail['hostname'] = device
         # get the test files from config.yml
         if main_file.get('tests') is None:
@@ -386,6 +385,7 @@ class Comparator:
             # check what all test cases need to be included, if nothing given
             # then include all test cases ####
             for tests in tests_files:
+                tests_included = []
                 if 'tests_include' in tests:
                     tests_included = tests.get('tests_include')
                 else:
