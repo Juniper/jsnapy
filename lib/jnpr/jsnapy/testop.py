@@ -233,8 +233,9 @@ class Operator:
             'testoperation': 'exists',
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+        #     'pre_xml': xml1,
+        #     'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
         try:
@@ -345,8 +346,9 @@ class Operator:
             'testoperation': "not-exists",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
         try:
@@ -446,8 +448,9 @@ class Operator:
             'testoperation': "all-same",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
         try:
@@ -563,8 +566,9 @@ class Operator:
             'testoperation': "is-equal",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         try:
             element = ele_list[0]
             value = ele_list[1]
@@ -683,8 +687,9 @@ class Operator:
             'testoperation': "not-equal",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
         try:
@@ -803,8 +808,9 @@ class Operator:
             'testoperation': "in-range",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
         try:
@@ -933,8 +939,9 @@ class Operator:
             'testoperation': "not-range",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
         try:
@@ -1063,8 +1070,9 @@ class Operator:
             'testoperation': "is-gt",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
         try:
@@ -1183,8 +1191,9 @@ class Operator:
             'testoperation': "is-lt",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
 
@@ -1302,8 +1311,9 @@ class Operator:
             'testoperation': "contains",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
 
@@ -1422,8 +1432,9 @@ class Operator:
             'testoperation': "is-in",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
 
@@ -1548,8 +1559,9 @@ class Operator:
             'testoperation': "not-in",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
 
@@ -1675,8 +1687,9 @@ class Operator:
             'node_name': ele_list[0],
             'failed': [],
             'passed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_pass = 0
         count_fail = 0
         id_val = {}
@@ -1827,8 +1840,9 @@ class Operator:
             'node_name': ele_list[0],
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         iddict = {}
         predict = {}
         postdict = {}
@@ -1981,8 +1995,9 @@ class Operator:
             'node_name': ele_list[0],
             'failed': [],
             'passed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         iddict = {}
         predict = {}
         postdict = {}
@@ -2132,8 +2147,9 @@ class Operator:
             'passed': [],
             'failed': [],
             'node_name': ele_list[0],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         iddict = {}
         predict = {}
         postdict = {}
@@ -2500,8 +2516,9 @@ class Operator:
             'testoperation': "regex",
             'passed': [],
             'failed': [],
-            'pre_xml': xml1,
-            'post_xml': xml2}
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
+        }
         count_fail = 0
         count_pass = 0
         try:
