@@ -1,12 +1,15 @@
 import unittest
 import yaml
+import os
 from jnpr.jsnapy.snap import Parser
 from jnpr.jsnapy import SnapAdmin
 import jnpr.junos.device
-from mock import patch, mock_open, ANY, call
+from mock import patch, mock_open, ANY, call, MagicMock
 from contextlib import nested
+from nose.plugins.attrib import attr
 
 
+@attr('unit')
 class TestSnap(unittest.TestCase):
 
     def setUp(self):
@@ -19,12 +22,15 @@ class TestSnap(unittest.TestCase):
         self.db['first_snap_id'] = None
         self.db['second_snap_id'] = None
         self.output_file = "abc"
+        self.logger_snap = MagicMock()
 
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnapy.snap.etree')
-    def test_snap(self, mock_etree, mock_dev):
+    @patch('jnpr.jsnapy.snap.logging.getLogger')
+    def test_snap(self, mock_log, mock_etree, mock_dev):
         prs = Parser()
-        test_file = "configs/delta.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'delta.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -49,9 +55,11 @@ class TestSnap(unittest.TestCase):
     @patch('argparse.ArgumentParser.print_help')
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnapy.snap.etree')
-    def test_snap_2(self, mock_etree, mock_dev, mock_parser, mock_exit):
+    @patch('jnpr.jsnapy.snap.logging.getLogger')
+    def test_snap_2(self, mock_log, mock_etree, mock_dev, mock_parser, mock_exit):
         js = SnapAdmin()
-        conf_file = "configs/main.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main.yml')
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
         dev = jnpr.junos.device.Device(
@@ -60,20 +68,25 @@ class TestSnap(unittest.TestCase):
             passwd="xyz")
         dev.open()
         m_op = mock_open()
-        with patch('jnpr.jsnapy.snap.open', m_op, create=True) as m_open:
+        with nested (
+                patch('jnpr.jsnapy.snap.open', m_op, create=True),
+                patch('jnpr.jsnapy.jsnapy.get_path')
+        )as (m_open, mock_path):
+            mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
             js.generate_rpc_reply(
                 dev,
                 self.output_file,
                 "10.216.193.114",
                 js.main_file)
-            self.assertTrue(m_open.called)
+            self.assertTrue(mock_path.called)
         dev.close()
 
     @patch('jnpr.jsnapy.snap.Parser._write_file')
     @patch('jnpr.jsnapy.snap.etree')
     def test_snap_3(self, mock_etree, mock_parse):
         prs = Parser()
-        test_file = "configs/delta.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'delta.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -93,7 +106,8 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnapy.snap.etree')
     def test_snap_4(self, mock_etree, mock_parse):
         prs = Parser()
-        test_file = "configs/delta_text.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'delta_text.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -113,7 +127,8 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnapy.snap.etree')
     def test_snap_5(self, mock_etree, mock_parse):
         prs = Parser()
-        test_file = "configs/delta_error.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'delta_error.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -134,7 +149,8 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnapy.snap.etree')
     def test_rpc_1(self, mock_etree, mock_dev):
         prs = Parser()
-        test_file = "configs/test_rpc.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'test_rpc.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -164,7 +180,8 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnapy.snap.etree')
     def test_rpc_2(self, mock_etree, mock_parse):
         prs = Parser()
-        test_file = "configs/test_rpc.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'test_rpc.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -192,7 +209,8 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnapy.snap.etree')
     def test_rpc_3(self, mock_etree, mock_parse, mock_dev):
         prs = Parser()
-        test_file = "configs/test_rpc_error.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'test_rpc_error.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -216,7 +234,8 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnapy.snap.etree')
     def test_rpc_4(self, mock_etree, mock_parse):
         prs = Parser()
-        test_file = "configs/test_rpc_2.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'test_rpc_2.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -240,7 +259,8 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnapy.snap.etree')
     def test_rpc_5(self, mock_etree, mock_parse):
         prs = Parser()
-        test_file = "configs/test_rpc_error_2.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'test_rpc_error_2.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -262,7 +282,8 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnapy.snap.etree')
     def test_rpc_6(self, mock_etree, mock_parse):
         prs = Parser()
-        test_file = "configs/test_rpc_2_error.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'test_rpc_2_error.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -284,7 +305,8 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.jsnapy.snap.JsnapSqlite')
     def test_snap_sqlite_1(self, mock_sqlite, mock_etree, mock_dev):
         prs = Parser()
-        test_file = "configs/delta.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'delta.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -312,7 +334,8 @@ class TestSnap(unittest.TestCase):
     def test_snap_sqlite_2(self, mock_insert, mock_init, mock_etree, mock_dev):
         mock_init.return_value = None
         prs = Parser()
-        test_file = "configs/delta.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'delta.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -341,7 +364,8 @@ class TestSnap(unittest.TestCase):
             self, mock_insert, mock_reply, mock_init, mock_etree, mock_dev):
         mock_init.return_value = None
         prs = Parser()
-        test_file = "configs/delta.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'delta.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -380,7 +404,8 @@ class TestSnap(unittest.TestCase):
         mock_init.return_value = None
         prs = Parser()
         calls = []
-        test_file = "configs/test_rpc.yml"
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'test_rpc.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
         dev = jnpr.junos.device.Device(
@@ -411,13 +436,14 @@ class TestSnap(unittest.TestCase):
             db_dict2['filename'] = "10.216.193.114" + "_" + \
                 "snap_mock" + "_" + "get-interface-information" + "." + "xml"
             calls.append(call(db_dict2))
-            print "\n 888888888 calls:", calls
-            print "\n 9999986755 call list:", mock_insert.call_args_list
-            print "\n 0000000000000mock_insert.mock_calls", mock_insert.mock_calls
             mock_insert.assert_has_calls(calls)
         dev.close()
 
-with patch('logging.Logger.info') as mock_logger:
+with nested(
+        patch('jnpr.jsnapy.snap.logging.getLogger'),
+        patch('logging.Logger'),
+        patch('jnpr.jsnapy.snap.logging.getLogger')
+)as (mock_logger, mock_log, mock_log1):
     if __name__ == "__main__":
         suite = unittest.TestLoader().loadTestsFromTestCase(TestSnap)
         unittest.TextTestRunner(verbosity=2).run(suite)
