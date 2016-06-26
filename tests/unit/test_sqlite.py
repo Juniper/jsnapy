@@ -18,17 +18,12 @@ class TestSqlite(unittest.TestCase):
         self.db_dict2['format'] = "text"
         self.db_dict2['data'] = "mock_data"
 
-    def tearDown(self):
-        db_filename = os.path.join(
-            '/etc',
-            'jsnapy',
-            'snapshots',
-            "mock_test.db")
-        os.remove(db_filename)
-
+    # def tearDown(self):
+    #     db_filename = os.path.join(os.path.dirname(__file__), 'configs', 'mock_test.db')
+    #     os.remove(db_filename)
+    #
     @patch('sys.exit')
     def test_sqlite_1(self, mock_sys):
-
         js = JsnapSqlite("10.216.193.114", self.db)
         js.insert_data(self.db_dict2)
         with patch('logging.Logger.error') as mock_log:
@@ -48,7 +43,6 @@ class TestSqlite(unittest.TestCase):
 
     @patch('sys.exit')
     def test_sqlite_2(self, mock_sys):
-
         def fun():
             raise BaseException
         mock_sys.return_value = fun

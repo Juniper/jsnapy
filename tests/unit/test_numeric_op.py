@@ -2,6 +2,7 @@ import unittest
 import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch
+import os
 
 
 class TestNumericOperators(unittest.TestCase):
@@ -17,13 +18,15 @@ class TestNumericOperators(unittest.TestCase):
         self.snap_del = False
         self.action = None
 
-    def test_in_range(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_in_range(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_in-range.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_in-range.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -35,13 +38,15 @@ class TestNumericOperators(unittest.TestCase):
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 
-    def test_in_range_fail(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_in_range_fail(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_in-range.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_in-range.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -50,17 +55,18 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             self.snap_del,
             "snap_in-range_fail_pre")
-
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
-    def test_not_range_fail(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_not_range_fail(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_not-range.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_not-range.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -69,17 +75,18 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             self.snap_del,
             "snap_not-range_pre")
-
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
-    def test_not_range_pass(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_not_range_pass(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_not-range.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_not-range.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -88,17 +95,18 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             self.snap_del,
             "snap_in-range_fail_pre")
-
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 
-    def test_is_lt(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_is_lt(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_is-lt.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_is-lt.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -107,17 +115,18 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             self.snap_del,
             "snap_is-lt_pre")
-
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
-    def test_is_lt_pass(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_is_lt_pass(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_is-lt.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_is-lt.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -126,17 +135,18 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             self.snap_del,
             "snap_is-lt_fail_pre")
-
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 
-    def test_is_gt(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_is_gt(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_is-gt.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_is-gt.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -145,17 +155,18 @@ class TestNumericOperators(unittest.TestCase):
             self.db,
             self.snap_del,
             "snap_is-gt_pre")
-
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 
-    def test_is_gt_fail(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_is_gt_fail(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_is-gt.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_is-gt.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,

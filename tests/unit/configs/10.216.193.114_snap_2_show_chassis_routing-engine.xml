@@ -1,0 +1,25 @@
+<route-engine-information>
+<route-engine>
+<slot>0</slot>
+<mastership-state>master</mastership-state>
+<mastership-priority>master (default)</mastership-priority>
+<status>OK</status>
+<temperature celsius="0">0 degrees C / 32 degrees F</temperature>
+<memory-dram-size>3584 MB</memory-dram-size>
+<memory-installed-size>(4096 MB installed)</memory-installed-size>
+<memory-buffer-utilization>22</memory-buffer-utilization>
+<cpu-user>2</cpu-user>
+<cpu-background>0</cpu-background>
+<cpu-system>2</cpu-system>
+<cpu-interrupt>0</cpu-interrupt>
+<cpu-idle>95</cpu-idle>
+<model>RE-VMX</model>
+<serial-number>9bea3a2e-aad</serial-number>
+<start-time seconds="1422881740">2015-02-02 04:55:40 PST</start-time>
+<up-time seconds="3964304">45 days, 21 hours, 11 minutes, 44 seconds</up-time>
+<last-reboot-reason>0x200:normal shutdown </last-reboot-reason>
+<load-average-one>0.04</load-average-one>
+<load-average-five>0.02</load-average-five>
+<load-average-fifteen>0.00</load-average-fifteen>
+</route-engine>
+</route-engine-information>

@@ -70,7 +70,6 @@ class TestCheck(unittest.TestCase):
     def test_incorrect_test_command(self, mock_path, mock_info):
         self.chk = False
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-
         comp = Comparator()
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_incorrect_3.yml')
@@ -146,26 +145,28 @@ class TestCheck(unittest.TestCase):
             print "c_list:", c_list
             self.assertNotEqual(c_list[0][0].find(err), -1)
 
-    # @patch('logging.Logger.info')
-    # def test_compare_xml(self, mock_info):
-    #     self.chk = True
-    #     comp = Comparator()
-    #     conf_file = os.path.join(os.path.dirname(__file__),
-    #                              'configs', 'main_empty_test.yml')
-    #     config_file = open(conf_file, 'r')
-    #     main_file = yaml.load(config_file)
-    #     with patch('jnpr.jsnapy.check.XmlComparator.xml_compare') as mock_compare:
-    #         comp.generate_test_files(
-    #             main_file,
-    #             self.hostname,
-    #             self.chk,
-    #             self.diff,
-    #             self.db,
-    #             self.snap_del,
-    #             "snap_no-diff_pre",
-    #             self.action,
-    #             "snap_no-diff_post")
-    #         self.assertTrue(mock_compare.called)
+    @patch('logging.Logger.info')
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_compare_xml(self, mock_path, mock_info):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_empty_test.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        with patch('jnpr.jsnapy.check.XmlComparator.xml_compare') as mock_compare:
+            comp.generate_test_files(
+                main_file,
+                self.hostname,
+                self.chk,
+                self.diff,
+                self.db,
+                self.snap_del,
+                "snap_no-diff_pre",
+                self.action,
+                "snap_no-diff_post")
+            self.assertTrue(mock_compare.called)
 
     @patch('logging.Logger.info')
     @patch('jnpr.jsnapy.check.get_path')
@@ -177,7 +178,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_empty_test.yml')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-        with patch('icdiff.diff') as mock_compare:
+        with patch('jnpr.jsnapy.check.icdiff.diff') as mock_compare:
             comp.generate_test_files(
                 main_file,
                 self.hostname,

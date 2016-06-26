@@ -245,7 +245,8 @@ class TestSnapAdmin(unittest.TestCase):
     @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
     @patch('getpass.getpass')
     @patch('jnpr.jsnapy.notify.Notification.notify')
-    def test_check_mail(self, mock_notify, mock_pass, mock_compare, mock_arg):
+    @patch('jnpr.jsnapy.jsnapy.get_path')
+    def test_check_mail(self, mock_path, mock_notify, mock_pass, mock_compare, mock_arg):
         argparse.ArgumentParser.parse_args = MagicMock()
         argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
             diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
@@ -258,6 +259,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.snapcheck = False
         js.args.pre_snapfile = "mock_snap"
         js.args.post_snapfile = "mock_snap2"
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         js.get_hosts()
         self.assertTrue(mock_notify.called)
         self.assertTrue(mock_pass.called)
@@ -270,8 +272,9 @@ class TestSnapAdmin(unittest.TestCase):
     @patch('getpass.getpass')
     @patch('jnpr.jsnapy.notify.Notification.notify')
     @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
+    @patch('jnpr.jsnapy.jsnapy.get_path')
     def test_snapcheck_mail(
-            self, mock_getlogger, mock_notify, mock_pass, mock_compare, mock_reply, mock_dev, mock_arg):
+            self, mock_path, mock_getlogger, mock_notify, mock_pass, mock_compare, mock_reply, mock_dev, mock_arg):
         argparse.ArgumentParser.parse_args = MagicMock()
         argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
             diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
@@ -281,6 +284,7 @@ class TestSnapAdmin(unittest.TestCase):
                                     'configs', 'main_mail_2.yml')
         js.args.snapcheck = True
         js.args.pre_snapfile = "mock_snap"
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         js.get_hosts()
         self.assertTrue(mock_notify.called)
 
@@ -306,13 +310,15 @@ class TestSnapAdmin(unittest.TestCase):
     @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
     @patch('getpass.getpass')
     @patch('jnpr.jsnapy.notify.Notification.notify')
+    @patch('jnpr.jsnapy.jsnapy.get_path')
     def test_check_mail_password(
-            self, mock_notify, mock_pass, mock_compare, mock_arg):
+            self, mock_path, mock_notify, mock_pass, mock_compare, mock_arg):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__),
                                     'configs', 'main_mail_2.yml')
         js.args.check = True
         js.args.pre_snapfile = "mock_snap"
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         js.get_hosts()
         self.assertTrue(mock_pass.called)
         self.assertTrue(mock_notify.called)
