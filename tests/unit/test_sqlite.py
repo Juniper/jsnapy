@@ -3,8 +3,9 @@ import os
 from jnpr.jsnapy.sqlite_store import JsnapSqlite
 from jnpr.jsnapy.sqlite_get import SqliteExtractXml
 from mock import patch
+from nose.plugins.attrib import attr
 
-
+@attr('unit')
 class TestSqlite(unittest.TestCase):
 
     def setUp(self):

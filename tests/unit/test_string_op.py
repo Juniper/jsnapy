@@ -3,8 +3,9 @@ import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch
 import os
+from nose.plugins.attrib import attr
 
-
+@attr('unit')
 class TestStringOperators(unittest.TestCase):
 
     def setUp(self):

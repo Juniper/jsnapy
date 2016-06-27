@@ -3,9 +3,10 @@ import os
 import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch, MagicMock
+from nose.plugins.attrib import attr
 import jnpr
 
-
+@attr('unit')
 class TestCheck(unittest.TestCase):
 
     def setUp(self):
@@ -86,7 +87,6 @@ class TestCheck(unittest.TestCase):
                 "snap_is-equal_pre")
             err = "ERROR occurred, test keys 'command' or 'rpc' not defined properly"
             c_list = mock_log.call_args_list[0]
-            print "c_list:",c_list
             self.assertNotEqual(c_list[0][0].find(err), -1)
 
     @patch('sys.exit')
@@ -142,7 +142,6 @@ class TestCheck(unittest.TestCase):
                 "snap_no-diff_post1")
             err = "ERROR!! for checking snapshots in text format use '--diff' option"
             c_list = mock_log.call_args_list[0]
-            print "c_list:", c_list
             self.assertNotEqual(c_list[0][0].find(err), -1)
 
     @patch('logging.Logger.info')
@@ -178,7 +177,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_empty_test.yml')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-        with patch('jnpr.jsnapy.check.icdiff.diff') as mock_compare:
+        with patch('jnpr.jsnapy.check.diff') as mock_compare:
             comp.generate_test_files(
                 main_file,
                 self.hostname,

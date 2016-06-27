@@ -347,6 +347,7 @@ class Parser:
                 rpc,
                 reply_format)
             self._write_file(rpc_reply, reply_format, snap_file)
+            self.reply[rpc] = rpc_reply
 
         if db['store_in_sqlite'] is True:
             self.store_in_sqlite(
@@ -356,7 +357,6 @@ class Parser:
                 reply_format,
                 rpc_reply,
                 output_file)
-        self.reply[rpc] = rpc_reply
 
     def generate_reply(self, test_file, dev, output_file, hostname, db):
         """

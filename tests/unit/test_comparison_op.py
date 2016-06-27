@@ -2,9 +2,10 @@ import unittest
 import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch
+from nose.plugins.attrib import attr
 import os
 
-
+@attr('unit')
 class TestComparisonOperator(unittest.TestCase):
 
     def setUp(self):

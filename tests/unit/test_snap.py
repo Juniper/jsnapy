@@ -8,7 +8,6 @@ from mock import patch, mock_open, ANY, call, MagicMock
 from contextlib import nested
 from nose.plugins.attrib import attr
 
-
 @attr('unit')
 class TestSnap(unittest.TestCase):
 
