@@ -43,21 +43,7 @@ class Parser:
             self.logger_snap.info(
                 colorama.Fore.BLUE +
                 "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
-
         else:
-            """
-            ### No need of checking reply, as writing all rpc-replies including error and warbing in snap files
-            err = rpc_reply.xpath("//rpc-error") if isinstance(rpc_reply, lxml.etree._Element) else list()
-            if len(err):
-                self.logger_snap.error(
-                    colorama.Fore.RED +
-                    "\nERROR:",
-                    extra=self.log_detail)
-                for err_node in err:
-                    self.logger_snap.error(colorama.Fore.RED +
-                                           err_node.findtext('.//error-message'), extra=self.log_detail)
-            else:
-            """
             with open(output_file, 'w') as f:
                 f.write(etree.tostring(rpc_reply))
 
@@ -88,27 +74,7 @@ class Parser:
                 "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
             return ""
         else:
-            """
-            ### No need of checking rpc replies as writing all replies inluding warnings and errors in snap files
-            err = rpc_reply.xpath("//rpc-error") if isinstance(rpc_reply, lxml.etree._Element) else list()
-            if len(err):
-                self.logger_snap.error(
-                    colorama.Fore.RED +
-                    "ERROR:",
-                    extra=self.log_detail)
-                self.logger_snap.error(
-                    colorama.Fore.RED +
-                    "Complete Error Message: %s" % rpc_reply,
-                    extra=self.log_detail)
-                for err_node in err:
-                    self.logger_snap.error(
-                        err_node.findtext(
-                            colorama.Fore.RED +
-                            './/error-message'), extra=self.log_detail)
-                return(False)
-            else:
-            """
-            return etree.tostring(rpc_reply)
+             return etree.tostring(rpc_reply)
 
 
     def generate_snap_file(self, output_file, hostname, name, cmd_format):
@@ -168,12 +134,20 @@ class Parser:
         self.command_list.append(command)
         cmd_name = command.split('|')[0].strip()
         cmd_name = '_'.join(cmd_name.split())
+        self.logger_snap.debug(colorama.Fore.BLUE +
+                               "Tests Included: %s " %t,
+                               extra=self.log_detail)
+        self.logger_snap.info(
+            colorama.Fore.BLUE +
+            "Taking snapshot of COMMAND: %s " %
+            command,
+            extra=self.log_detail)
         try:
-            self.logger_snap.info(
-                colorama.Fore.BLUE +
-                "Taking snapshot for %s ................" %
-                command,
-                extra=self.log_detail)
+            # self.logger_snap.info(
+            #     colorama.Fore.BLUE +
+            #     "Taking snapshot of COMMAND: %s " %
+            #     command,
+            #     extra=self.log_detail)
             ##### for commands containing "| display xml" only text format works in PyEz
             if re.search('\|\s+display\s+xml',command):
                 rpc_reply_command = dev.rpc.cli(command, format='text')
@@ -239,6 +213,13 @@ class Parser:
         self.rpc_list.append(rpc)
         reply_format = test_file[t][0].get('format', 'xml')
         reply_format = reply_format if reply_format in formats else 'xml'
+        self.logger_snap.debug(colorama.Fore.BLUE +
+                              "Tests Included : %s " %t,
+                              extra=self.log_detail)
+        self.logger_snap.info(colorama.Fore.BLUE +
+                              "Taking snapshot of RPC: %s" %
+                              rpc,
+                              extra=self.log_detail)
         if len(test_file[t]) >= 2 and 'kwargs' in test_file[t][1]:
             kwargs = {
                 k.replace(
@@ -254,11 +235,11 @@ class Parser:
                         filter_data)
                 kwargs['filter_xml'] = filter_data
                 if rpc == 'get-config':
-                    self.logger_snap.info(
-                        colorama.Fore.BLUE +
-                        "Taking snapshot of %s......." %
-                        rpc,
-                        extra=self.log_detail)
+                    # self.logger_snap.info(
+                    #     colorama.Fore.BLUE +
+                    #     "Taking snapshot of RPC: %s" %
+                    #     rpc,
+                    #     extra=self.log_detail)
                     rpc_reply = getattr(
                         dev.rpc,
                         rpc.replace(
@@ -273,11 +254,11 @@ class Parser:
                         "ERROR!!, filtering rpc works only for 'get-config' rpc")
             else:
                 try:
-                    self.logger_snap.info(
-                        colorama.Fore.BLUE +
-                        "Taking snapshot of %s......." %
-                        rpc,
-                        extra=self.log_detail)
+                    # self.logger_snap.info(
+                    #     colorama.Fore.BLUE +
+                    #     "Taking snapshot of %s......." %
+                    #     rpc,
+                    #     extra=self.log_detail)
                     rpc_reply = getattr(
                         dev.rpc, rpc.replace('-', '_'))({'format': reply_format}, **kwargs)
                 except RpcError as err:
@@ -301,7 +282,6 @@ class Parser:
                     self.logger_snap.error(colorama.Fore.RED +
                                            "\n**********Complete error message***********\n%s" %
                                            str(sys.exc_info()), extra=self.log_detail)
-
                     return
                 except Exception:
                     self.logger_snap.error(colorama.Fore.RED +
@@ -313,11 +293,11 @@ class Parser:
                     return
         else:
             try:
-                self.logger_snap.info(
-                    colorama.Fore.BLUE +
-                    "Taking snapshot of %s............" %
-                    rpc,
-                    extra=self.log_detail)
+                # self.logger_snap.info(
+                #     colorama.Fore.BLUE +
+                #     "Taking snapshot of %s............" %
+                #     rpc,
+                #     extra=self.log_detail)
                 if rpc == 'get-config':
                     rpc_reply = getattr(
                         dev.rpc,
