@@ -2,8 +2,10 @@ import unittest
 import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch
+import os
+from nose.plugins.attrib import attr
 
-
+@attr('unit')
 class TestStringOperators(unittest.TestCase):
 
     def setUp(self):
@@ -15,11 +17,14 @@ class TestStringOperators(unittest.TestCase):
         self.db['db_name'] = ""
         self.snap_del = False
 
-    def test_contains(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_contains(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_contains.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_contains.yml')
         config_file = open(conf_file, 'r')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
             main_file,
@@ -32,11 +37,14 @@ class TestStringOperators(unittest.TestCase):
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 
-    def test_contains_fail(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_contains_fail(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_contains.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_contains.yml')
         config_file = open(conf_file, 'r')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
             main_file,
@@ -49,11 +57,14 @@ class TestStringOperators(unittest.TestCase):
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
-    def test_is_in(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_is_in(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_is-in.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_is-in.yml')
         config_file = open(conf_file, 'r')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
             main_file,
@@ -66,11 +77,14 @@ class TestStringOperators(unittest.TestCase):
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
 
-    def test_is_in_fail(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_is_in_fail(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_is-in.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_is-in.yml')
         config_file = open(conf_file, 'r')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
             main_file,
@@ -83,10 +97,13 @@ class TestStringOperators(unittest.TestCase):
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
-    def test_not_in(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_not_in(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_not-in.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_not-in.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
@@ -100,10 +117,13 @@ class TestStringOperators(unittest.TestCase):
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
-    def test_not_in_pass(self):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_not_in_pass(self, mock_path):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_not-in.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_not-in.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(

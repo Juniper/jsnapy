@@ -2,8 +2,10 @@ import unittest
 import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch
+import os
+from nose.plugins.attrib import attr
 
-
+@attr('unit')
 class TestStrNumericOperators(unittest.TestCase):
 
     def setUp(self):
@@ -19,10 +21,13 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_all_same_equal_fail(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_all_same_equal_fail(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_all-same-equal-fail.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_all-same-equal-fail.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
@@ -38,10 +43,13 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_all_same_fail(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_all_same_fail(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_all-same-fail.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_all-same-fail.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
@@ -57,10 +65,13 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_all_same_success(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_all_same_success(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_all-same-success.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_all-same-success.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
@@ -76,10 +87,13 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_is_equal_success(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_is_equal_success(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_is-equal-item.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_is-equal-item.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
@@ -95,10 +109,13 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_is_equal_fail(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_is_equal_fail(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_is-equal.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_is-equal.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
@@ -114,10 +131,13 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_not_equal(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_not_equal(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_not-equal.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_not-equal.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
@@ -133,10 +153,13 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_not_equal_fail(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_not_equal_fail(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_not-equal.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_not-equal.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
@@ -152,10 +175,13 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_not_exists_pass(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_not_exists_pass(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_not-exists.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_not-exists.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
@@ -171,10 +197,13 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_not_exists_fail(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_not_exists_fail(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_not-exists_fail.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_not-exists_fail.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
 
@@ -191,10 +220,13 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_exists(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_exists(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_exists.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_exists.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
         oper = comp.generate_test_files(
@@ -210,13 +242,15 @@ class TestStrNumericOperators(unittest.TestCase):
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
-    def test_exists_fail(self, mock_debug, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_exists_fail(self, mock_path, mock_debug, mock_info):
         self.chk = False
         comp = Comparator()
-        conf_file = "configs/main_exists.yml"
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_exists.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
-
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -225,7 +259,6 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             self.snap_del,
             "snap_exists_fail_pre")
-
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
