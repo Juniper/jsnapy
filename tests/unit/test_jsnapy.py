@@ -20,38 +20,35 @@ class TestSnapAdmin(unittest.TestCase):
         self.db['first_snap_id'] = None
         self.db['second_snap_id'] = None
 
-    # @patch('jnpr.jsnapy.jsnapy.Parser')
-    # def test_snap(self, mock_parse):
-    #     argparse.ArgumentParser.parse_args = MagicMock()
-    #     argparse.ArgumentParser.parse_args.return_value = argparse.Namespace()
-    #     js = SnapAdmin()
-    #     print argparse.ArgumentParser.parse_args
-    #
-    #     conf_file = os.path.join(os.path.dirname(__file__),
-    #                  'configs', 'main.yml')
-    #     config_file = open(conf_file, 'r')
-    #     js.main_file = yaml.load(config_file)
-    #     js.generate_rpc_reply(
-    #         None,
-    #         "snap_mock",
-    #         "10.216.193.114",
-    #         js.main_file)
-    #     self.assertTrue(mock_parse.called)
-    #
-    # @patch('jnpr.jsnapy.SnapAdmin.connect')
-    # def test_hostname(self, mock_connect ):
-    #     print "hello"
-    #     argparse.ArgumentParser.parse_args = MagicMock()
-    #     argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
-    #         diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
-    #     js = SnapAdmin()
-    #     conf_file = os.path.join(os.path.dirname(__file__),
-    #                              'configs', 'main_1.yml')
-    #     config_file = open(conf_file, 'r')
-    #     js.main_file = yaml.load(config_file)
-    #     js.login("snap_1")
-    #     hosts = ['10.216.193.114']
-    #     self.assertEqual(js.host_list, hosts)
+    @patch('jnpr.jsnapy.jsnapy.Parser')
+    def test_snap(self, mock_parse):
+        argparse.ArgumentParser.parse_args = MagicMock()
+        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace()
+        js = SnapAdmin()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                     'configs', 'main.yml')
+        config_file = open(conf_file, 'r')
+        js.main_file = yaml.load(config_file)
+        js.generate_rpc_reply(
+            None,
+            "snap_mock",
+            "10.216.193.114",
+            js.main_file)
+        self.assertTrue(mock_parse.called)
+
+    @patch('jnpr.jsnapy.SnapAdmin.connect')
+    def test_hostname(self, mock_connect ):
+        argparse.ArgumentParser.parse_args = MagicMock()
+        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
+            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
+        js = SnapAdmin()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_1.yml')
+        config_file = open(conf_file, 'r')
+        js.main_file = yaml.load(config_file)
+        js.login("snap_1")
+        hosts = ['10.216.193.114']
+        self.assertEqual(js.host_list, hosts)
 
 
     @patch('argparse.ArgumentParser.exit')

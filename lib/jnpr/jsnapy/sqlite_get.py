@@ -42,14 +42,22 @@ class SqliteExtractXml:
         self.sqlite_logs['hostname'] = hostname
         table_name = 'table_' + hostname.replace('.', '__')
         with sqlite3.connect(self.db_filename) as con:
-            cursor = con.cursor()
-            cursor.execute(
-                "SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
             try:
+                cursor = con.cursor()
+                cursor.execute(
+                    "SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
                 cursor.execute("SELECT MIN(id), data_format, data FROM %s WHERE snap_name = :snap AND cli_command = :cli" % table_name,
                                {'snap': snap_name, 'cli': command_name})
                 row = cursor.fetchone()
+                if not row:
+                    raise Exception("No previous snapshots exists with name = %s for command = %s" %
+                        (snap_name,
+                         command_name.replace(
+                             '_',
+                             ' ')))
                 idd, data_format, data = row
+                if data is None:
+                    raise Exception("No previous snapshots exists with name = %s for command = %s" %(snap_name, command_name.replace('_',' ')))
             except Exception as ex:
                 self.logger_sqlite.error(
                     colorama.Fore.RED +
@@ -69,14 +77,23 @@ class SqliteExtractXml:
         self.sqlite_logs['hostname'] = hostname
         table_name = 'table_' + hostname.replace('.', '__')
         with sqlite3.connect(self.db_filename) as con:
-            cursor = con.cursor()
-            cursor.execute(
-                "SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
             try:
+                cursor = con.cursor()
+                cursor.execute(
+                    "SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
                 cursor.execute("SELECT id, data_format, data FROM %s WHERE id = :id AND cli_command = :cli" % table_name,
                                {'id': snap_id, 'cli': command_name})
                 row = cursor.fetchone()
                 idd, data_format, data = row
+                if not row:
+                    raise Exception("No previous snapshots exists with id = %s for command = %s" %
+                        (snap_id,
+                         command_name.replace(
+                             '_',
+                             ' ')))
+                idd, data_format, data = row
+                if data is None:
+                    raise Exception("No previous snapshots exists with id = %s for command = %s" %(snap_id, command_name.replace('_',' ')))
             except Exception as ex:
                 self.logger_sqlite.error(
                     colorama.Fore.RED +

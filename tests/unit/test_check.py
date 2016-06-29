@@ -4,7 +4,6 @@ import yaml
 from jnpr.jsnapy.check import Comparator
 from mock import patch, MagicMock
 from nose.plugins.attrib import attr
-import jnpr
 
 @attr('unit')
 class TestCheck(unittest.TestCase):
@@ -91,11 +90,13 @@ class TestCheck(unittest.TestCase):
 
     @patch('sys.exit')
     @patch('logging.Logger.info')
-    def test_incorrect_test_format(self, mock_info, mock_sys):
+    @patch('jnpr.jsnapy.sqlite_get.get_path')
+    def test_incorrect_test_format(self, mock_path, mock_info, mock_sys):
         def fun():
             raise BaseException
         mock_sys.return_value = fun
         self.chk = True
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         comp = Comparator()
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_incorrect_4.yml')
