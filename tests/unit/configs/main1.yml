@@ -1,5 +1,5 @@
 hosts:
-  - include: /Users/jpriyal/Desktop/developement/unit_test/jsnapy/tests/unit/configs/devices.yml
+  - include: devices.yml
     group: MX
 tests:
   - tests.yml

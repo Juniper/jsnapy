@@ -53,11 +53,12 @@ class TestSnapAdmin(unittest.TestCase):
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.SnapAdmin.connect')
-    def test_multiple_hostname(self, mock_connect, mock_arg):
+    @patch('jnpr.jsnapy.jsnapy.get_path')
+    def test_multiple_hostname(self, mock_path, mock_connect, mock_arg):
         argparse.ArgumentParser.parse_args = MagicMock()
         argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
             diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
-
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         js = SnapAdmin()
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main1.yml')
