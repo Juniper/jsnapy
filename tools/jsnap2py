@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/Users/nitinkr/miniconda2/bin/python
 __author__ = "Nitin Kumar"
 
 import argparse
@@ -15,10 +15,10 @@ args = parser.parse_args()
 
 def msg_change(x):
     data = re.findall(
-        '(PRE|POST)/([\w-]+)',
-        x,
+        '(PRE|POST)(/?\.?/\s?[\w-]+/?[\w-]*)',
+        x.replace(' ', ''),
         re.I) or re.findall(
-        '(ID)\.(\d)', x, re.I) or re.findall('[\w-]+',
+        '(ID)\.(\d)', x, re.I) or re.findall('\s?\.{0,2}/?[\w-]+/?[\w-]*/?[\w-]*',
                                              x,
                                              re.I)
     if data:
@@ -28,7 +28,7 @@ def msg_change(x):
         elif data[0] in ['PRE', 'POST']:
             msg = '{{%s["%s"]}}' % (data)
         else:
-            msg = '{{POST["%s"]}}' % data
+            msg = '{{POST["%s"]}}' % data.strip()
         return msg.lower()
 
 if args.input is None:
@@ -42,12 +42,10 @@ else:
         tcs = Suppress(
             'do' + Literal("{")) + Group(OneOrMore(Word(alphanums + '_' + '-') + Suppress(Literal(";")))) + Suppress(Literal("}"))
         tc_name = Word(alphanums + '-' + '_') + Suppress(Literal("{"))
-        cmd = Group('command' + OneOrMore(Word(alphanums + '-' + '*' + '.')
+        cmd = Group('command' + OneOrMore(Word(alphanums + '-' + '*' + '.' + '"' + '[' + ']')
                                           ).setParseAction(lambda tokens: " ".join(tokens))) + Suppress(Literal(";"))
-        # loop = Group(OneOrMore(Word(alphanums + '-' + '/'+'['+']'+"'"+'='))) + \
-        #    Suppress(Literal("{"))
-        loop = Group(Word(alphanums) + (OneOrMore(Word(alphanums + '-' + '/' +
-                                                       '[' + ']' + "'" + '='))).setParseAction(lambda tokens: " ".join(tokens))) + Suppress(Literal("{"))
+        loop = Group(OneOrMore(Word(alphanums + '-' + '/' + '.'))) + \
+            Suppress(Literal("{"))
         tc_id = Group(ZeroOrMore(Group('id' +
                                        (ZeroOrMore('.') +
                                         ZeroOrMore('/') +
@@ -75,14 +73,14 @@ else:
                         Literal(",")) +
                     Word(
                         alphanums +
-                        '-' +
+                        '-' + '(' + ')'
                         '%' +
                         '"' +
                         ' '))))
         msg = nestedExpr(opener='{', closer='}')
         comment = Keyword('#') + SkipTo(LineEnd())
         test_case = tcs + OneOrMore(Group(tc_name + cmd + ZeroOrMore(Group(loop + tc_id + Group(OneOrMore(Group(oper + msg)))) +
-                                                                     Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(comment)))
+                                    Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(comment)))
         data = test_case.parseString(content, parseAll=True).asList()
         push = {'tests_include': data[0]}
         for cases in data[1:]:
@@ -114,13 +112,10 @@ else:
                             inputs = []
                             if data is not None and data.group(2) != '':
                                 inputs = re.findall(
-                                    '\$id\.\d|\$pre/[\w-]+|\$post/[\w-]+|,\s?\.{0,2}/?[\w-]+',
+                                    '\$id\.\d|\$pre\s?/?\.?/\s?[\w-]+/?[\w-]*|\$post\s?/?\.?/\s?[\w-]+/?[\w-]*|,\s?\.{0,2}/?[\w-]+/?[\w-]*/?[\w-]*',
                                     data.group(2),
                                     re.I)
                                 inputs = map(msg_change, inputs)
-                            #import pdb
-                            # pdb.set_trace()
-                            #inputs = map(msg_change, inputs)
                             to_format = re.search('"(.*?)"', obj.group(2))
                             if len(inputs) > 0:
                                 if to_format:
