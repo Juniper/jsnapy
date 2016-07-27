@@ -1,15 +1,6 @@
-FROM ubuntu:14.04
+FROM juniper/pyez
 
-RUN apt-get -y update && \
-    apt-get -y upgrade && \
-    apt-get install -y wget build-essential libwrap0-dev libssl-dev \
-         python-distutils-extra libc-ares-dev uuid-dev python-pip \
-         python-dev libxml2-dev libxslt1-dev libffi-dev ansible libyaml-dev
-
-#1 install Pyez & update distribute package
-RUN pip install -U ncclient junos-eznc distribute
-
-#2 install jsnapy
+#1 install jsnapy
 RUN mkdir -p /usr/local/tmp/jsnapy
 ADD lib /usr/local/tmp/jsnapy/lib
 ADD logs /usr/local/tmp/jsnapy/logs
@@ -24,15 +15,18 @@ WORKDIR /usr/local/tmp/jsnapy
 RUN python setup.py sdist
 RUN pip install dist/jsnapy-0.1.tar.gz
 
-#3 install  netconify
+#2 install  netconify
 RUN pip install junos-netconify
 
-#4 - Install Junos Galaxy on ansible
-RUN ansible-galaxy install Juniper.junos
+#3 - Install ansible and Junos Galaxy module
+RUN apk update \
+    && apk upgrade \
+    && apk add ansible \
+    && ansible-galaxy install Juniper.junos
 
-#5 - Clean up
-RUN apt-get clean &&\
-apt-get purge
+#4 - Clean up
+RUN rm -rf /var/cache/apk/*
 
-#6 Optional - Copy example files
+#5 Optional - Copy example files
 #ADD ./example /tmp/example
+
