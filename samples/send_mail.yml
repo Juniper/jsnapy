@@ -1,7 +1,6 @@
 to: abc@juniper.net
 from: foo@gmail.com  
 sub: "Sample Jsnap Results, please verify"
-date: "March 5, 2015"
 recipient_name: ABC 
 passwd: pass123 
 #server: smtp.gmail.com optional
