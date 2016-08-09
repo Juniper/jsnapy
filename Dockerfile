@@ -1,40 +1,32 @@
-FROM ubuntu:14.04
+FROM juniper/pyez
 
-RUN apt-get -y update && \
-    apt-get -y upgrade
-
-RUN apt-get install -y wget build-essential libwrap0-dev libssl-dev python-distutils-extra libc-ares-dev uuid-dev
-RUN apt-get install -y python-pip python-dev libxml2-dev libxslt1-dev
-
-#1 install Pyez
-RUN pip install ncclient
-RUN pip install junos-eznc
-
-#2 install jsnapy 
+#1 install jsnapy
 RUN mkdir -p /usr/local/tmp/jsnapy
 ADD lib /usr/local/tmp/jsnapy/lib
-ADD setup.py /usr/local/tmp/jsnapy/setup.py
-ADD tests /usr/local/tmp/jsnapy/tests
+ADD logs /usr/local/tmp/jsnapy/logs
 ADD MANIFEST.in /usr/local/tmp/jsnapy/MANIFEST.in
 ADD requirements.txt /usr/local/tmp/jsnapy/requirements.txt
+ADD samples /usr/local/tmp/jsnapy/samples
+ADD setup.py /usr/local/tmp/jsnapy/setup.py
 ADD snapshots /usr/local/tmp/jsnapy/snapshots
+ADD testfiles /usr/local/tmp/jsnapy/testfiles
+ADD tools /usr/local/tmp/jsnapy/tools
 WORKDIR /usr/local/tmp/jsnapy
 RUN python setup.py sdist
 RUN pip install dist/jsnapy-0.1.tar.gz
 
-#3 install  netconify
+#2 install  netconify
 RUN pip install junos-netconify
 
-#4 Install Ansible
-RUN mkdir -p /etc/ansible
-RUN pip install ansible 
+#3 - Install ansible and Junos Galaxy module
+RUN apk update \
+    && apk upgrade \
+    && apk add ansible \
+    && ansible-galaxy install Juniper.junos
 
-#5 - Install Junos Galaxy on ansible
-RUN ansible-galaxy install Juniper.junos
+#4 - Clean up
+RUN rm -rf /var/cache/apk/*
 
-#6 - Clean up
-RUN apt-get clean &&\ 
-apt-get purge
-
-#7 Optional - Copy example files
+#5 Optional - Copy example files
 #ADD ./example /tmp/example
+
