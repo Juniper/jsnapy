@@ -10,6 +10,7 @@ import smtplib
 import jinja2
 import logging
 import colorama
+import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -36,7 +37,8 @@ class Notification:
         templateEnv = jinja2.Environment(loader=templateLoader)
         TEMPLATE_FILE = os.path.join(os.path.dirname(__file__), 'content.html')
         template = templateEnv.get_template(TEMPLATE_FILE)
-        outputText = template.render(device=hostname, name=mail_file['recipient_name'], tests=testdetails, date=mail_file['date'],
+        outputText = template.render(device=hostname, name=mail_file['recipient_name'], tests=testdetails, 
+                                     date=mail_file.get('date', time.ctime()),
                                      tpassed=test_obj.no_passed, tfailed=test_obj.no_failed,
                                      fresult=test_obj.result, sname=mail_file['sender_name'])
         msg = MIMEMultipart()
