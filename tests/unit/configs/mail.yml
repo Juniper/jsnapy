@@ -2,6 +2,5 @@ to: reciever@gmail.com
 from: sender@gmail.com
 passwd: pass
 sub: "Sample Jsnap Results, please verify"
-date: "March 5, 2015"
 recipient_name: recipient
 sender_name: "Juniper Networks"
