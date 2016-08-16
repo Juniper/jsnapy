@@ -462,9 +462,17 @@ class SnapAdmin:
                                     password = val.get(hostname).get('passwd')
                                 else:
                                     password = self.args.passwd
+
+                                if val.get(hostname) is not None and 'port' in val.get(
+                                        hostname).keys():
+                                    port = val.get(hostname).get('port')
+                                else:
+                                    port = self.args.port
                                     # if self.args.passwd is not None else
                                     # getpass.getpass("\nEnter Password for
                                     # username: %s " %username)
+                                if port is not None:
+                                    key_value['port'] = port
                                 key_value = self.get_values(key_value)
                                 t = Thread(
                                     target=self.connect,
@@ -502,8 +510,11 @@ class SnapAdmin:
                     else:
                         username = k.get('username') or self.args.login
                         password = k.get('passwd') or self.args.passwd
+                        port = self.args.port
                         self.host_list.append(hostname)
-                        key_value= self.get_values(key_value)
+                        if 'port' not in key_value and port is not None:              #precedence of file over cmd
+                            key_value['port'] = port 
+                        key_value = self.get_values(key_value)
                         self.connect(hostname, username, password, output_file, **key_value)
 
         # login credentials are given from command line
