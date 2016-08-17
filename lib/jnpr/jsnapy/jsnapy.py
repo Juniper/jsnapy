@@ -480,7 +480,7 @@ class SnapAdmin:
                         else:
                             self.host_list.append(hostname)
                             if hostname not in host_dict:
-                                host.pop('device')
+                                # host.pop('device')
                                 host_dict[hostname] = deepcopy(host)
 
             for hostname, key_value in host_dict.iteritems():
