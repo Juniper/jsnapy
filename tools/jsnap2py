@@ -59,7 +59,7 @@ else:
             Word(
                 alphanums +
                 '-') +
-            Optional(
+            Optional((
                 ZeroOrMore('.') +
                 ZeroOrMore('/') +
                 ZeroOrMore('.') +
@@ -67,7 +67,7 @@ else:
                 Word(
                     alphanums +
                     '-' +
-                    '/') +
+                    '/')).setParseAction(lambda tokens: "".join(tokens)) +
                 ZeroOrMore(
                     Suppress(
                         Literal(",")) +
@@ -94,6 +94,7 @@ else:
                     iter_item['id'] = ', '.join(ids)
                 tests = []
                 for tc in case[2]:
+                    # settting operators
                     if len(tc[0]) == 1:
                         test = {tc[0][0]: None}
                     else:
