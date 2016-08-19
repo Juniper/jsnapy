@@ -1,0 +1,37 @@
+MX:                      # for multiple hostnames assuming login credentials are same for all
+  - 10.209.16.203:
+      username: abc
+      passwd: def
+      port: 100
+  - 10.209.16.204:
+      username: abc
+      passwd: def
+      port: 101
+  - 10.209.16.205:
+      username: abc
+      passwd: def
+      port: 102
+
+EX:                      # for multiple hostnames assuming login credentials are same for all
+  - 10.209.16.206:
+      username: abc
+      passwd: def
+      port: 103
+  - 10.209.16.212:
+      username: abc
+      passwd: def
+      port: 104
+
+QFX:                      # for multiple hostnames assuming login credentials are same for all
+  - 10.209.16.214:
+      username: abc
+      passwd: def
+      port: 105
+  - 10.209.16.221:
+      username: abc
+      passwd: def
+      port: 106
+  - 10.209.16.222:
+      username: abc
+      passwd: def
+      port: 107

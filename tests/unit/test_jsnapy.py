@@ -2,7 +2,7 @@ import unittest
 import yaml
 import os
 from jnpr.jsnapy.jsnapy import SnapAdmin
-from mock import patch, MagicMock
+from mock import patch, MagicMock, call
 from contextlib import nested
 from nose.plugins.attrib import attr
 import argparse
@@ -459,6 +459,88 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.post_snapfile = "mock_snap2"
         js.get_hosts()
         self.assertEqual(js.db, self.db)   
+    @patch('jnpr.jsnapy.SnapAdmin.connect')
+    def test_port_without_include(self,mock_connect):
+        #this test case is for scenarios when devices are mentioned in the cfg file itself
+        js = SnapAdmin()
+        # js.args.snap = True  
+        js.args.hostname = None
+
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_with_port.yml')
+        config_file = open(conf_file, 'r')
+        js.main_file = yaml.load(config_file)
+        js.login("snap_1")
+        hosts = ['10.216.193.114']
+        self.assertEqual(js.host_list, hosts)
+        mock_connect.assert_called_with('10.216.193.114','abc','xyz','snap_1',port=44)
+        
+        #adding another device in the config dictionary 
+        #and checking the precedence b/w cmd and config params
+        js.main_file['hosts'].append({'device':'10.216.193.115',
+                                    'username':'abc',
+                                    'passwd':'xyz',
+                                    'port':45})
+        js.args.port=100
+        
+        
+        expected_calls_made = [call('10.216.193.114','abc','xyz','snap_1',port=100),
+                                call('10.216.193.115','abc','xyz','snap_1',port=100)]   
+        js.login("snap_1")
+        mock_connect.assert_has_calls(expected_calls_made, any_order=True)
+        
+        #deleting the port paramater from the config file and keeping the port param on cmd args
+        for host in js.main_file['hosts']: 
+            if 'port' in host:
+                del host['port']
+           
+        js.login("snap_1")
+        mock_connect.assert_has_calls(expected_calls_made, any_order=True)
+        
+        #deleting the cmd line port param
+        expected_calls_made = [call('10.216.193.114','abc','xyz','snap_1'),
+                                call('10.216.193.115','abc','xyz','snap_1')]   
+        js.args.port=None
+        js.login("snap_1")
+        mock_connect.assert_has_calls(expected_calls_made, any_order=True)
+
+   
+    @patch('jnpr.jsnapy.jsnapy.get_path')
+    @patch('jnpr.jsnapy.SnapAdmin.connect')
+    def test_port_with_include(self,mock_connect,mock_path):
+        #this test case is for scenarios when devices are included using some other file
+        js = SnapAdmin()
+        js.args.snap = True  
+        js.args.hostname = None
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main2_with_port.yml')
+        config_file = open(conf_file, 'r')
+        js.main_file = yaml.load(config_file)
+        js.login("snap_1")
+        hosts = ['10.209.16.203','10.209.16.204','10.209.16.205']
+        expected_calls_made = [call('10.209.16.203','abc','def','snap_1',port=100),
+                                call('10.209.16.204','abc','def','snap_1',port=101), 
+                                call('10.209.16.205','abc','def','snap_1',port=102)] 
+        
+        self.assertEqual(js.host_list, hosts)
+        mock_connect.assert_has_calls(expected_calls_made, any_order=True)
+        #    mock_connect.assert_called_with('10.216.193.114','abc','xyz','snap_1',port=44)
+        
+        #adding another device in the config dictionary 
+        #and checking the precedence b/w cmd and config params
+        js.args.port=55
+        
+        
+        expected_calls_made = [call('10.209.16.203','abc','def','snap_1',port=55),
+                                call('10.209.16.204','abc','def','snap_1',port=55), 
+                                call('10.209.16.205','abc','def','snap_1',port=55)]   
+        js.login("snap_1")
+        mock_connect.assert_has_calls(expected_calls_made, any_order=True)
+        
+           
+        
 
 with nested(
     patch('sys.exit'),

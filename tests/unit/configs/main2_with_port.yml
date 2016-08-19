@@ -1,0 +1,10 @@
+hosts:
+  - include: devices_with_port.yml
+    group: mx  
+tests:
+  - delta.yml
+sqlite:
+  - store_in_sqlite: no
+    check_from_sqlite: no
+    database_name: jbb.db
+    compare: 0,1
