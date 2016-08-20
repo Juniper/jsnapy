@@ -18,7 +18,7 @@ def msg_change(x):
         '(PRE|POST)(/?\.?/\s?[\w-]+/?[\w-]*)',
         x.replace(' ', ''),
         re.I) or re.findall(
-        '(ID)\.(\d)', x, re.I) or re.findall('\s?\.{0,2}/?[\w-]+/?[\w-]*/?[\w-]*',
+        '(ID)\.(\d)', x, re.I) or re.findall('\s?\.{0,2}/?\.{0,2}/?[\w-]+/?[\w-]*/?[\w-]*',
                                              x,
                                              re.I)
     if data:
@@ -42,19 +42,20 @@ else:
         tcs = Suppress(
             'do' + Literal("{")) + Group(OneOrMore(Word(alphanums + '_' + '-') + Suppress(Literal(";")))) + Suppress(Literal("}"))
         tc_name = Word(alphanums + '-' + '_') + Suppress(Literal("{"))
-        cmd = Group('command' + OneOrMore(Word(alphanums + '-' + '*' + '.' + '"' + '[' + ']')
-                                          ).setParseAction(lambda tokens: " ".join(tokens))) + Suppress(Literal(";"))
-        loop = Group(OneOrMore(Word(alphanums + '-' + '/' + '.'))) + \
-            Suppress(Literal("{"))
-        tc_id = Group(ZeroOrMore(Group('id' +
-                                       (ZeroOrMore('.') +
-                                        ZeroOrMore('/') +
-                                           ZeroOrMore('.') +
-                                           ZeroOrMore('/') +
-                                           Word(alphanums +
-                                                '-' +
-                                                '/')).setParseAction(lambda tokens: "".join(tokens))) +
-                                 Suppress(Literal(";"))))
+        cmd = Group('command' + SkipTo(';')) + Suppress(Literal(";"))
+        loop = Group(
+            oneOf('item iterate') +
+            SkipTo(
+                oneOf('{ ;')) +
+            Suppress(
+                oneOf('{ ;')))
+        tc_id = Group(
+            ZeroOrMore(
+                Group(
+                    'id' +
+                    SkipTo(';') +
+                    Suppress(
+                        Literal(";")))))
         oper = Group(
             Word(
                 alphanums +
@@ -67,7 +68,7 @@ else:
                 Word(
                     alphanums +
                     '-' +
-                    '/')).setParseAction(lambda tokens: "".join(tokens)) +
+                    '/' + '[' + ']')).setParseAction(lambda tokens: "".join(tokens)) +
                 ZeroOrMore(
                     Suppress(
                         Literal(",")) +
@@ -76,17 +77,17 @@ else:
                         '-' + '(' + ')'
                         '%' +
                         '"' +
-                        ' '))))
+                        ' ' + '.'))))
         msg = nestedExpr(opener='{', closer='}')
         comment = Keyword('#') + SkipTo(LineEnd())
-        test_case = tcs + OneOrMore(Group(tc_name + cmd + ZeroOrMore(Group(loop + tc_id + Group(OneOrMore(Group(oper + msg)))) +
-                                    Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(comment)))
+        test_case = Suppress(ZeroOrMore(comment)) + tcs + OneOrMore(Group(tc_name + cmd + ZeroOrMore(Group(loop + tc_id + Group(OneOrMore(Group(oper + msg)))) +
+                                                                                                     Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(comment)))
         data = test_case.parseString(content, parseAll=True).asList()
         push = {'tests_include': data[0]}
         for cases in data[1:]:
             iter_list = []
             for case in cases[2:]:
-                iter_item = {'xpath': case[0][1]}
+                iter_item = {'xpath': (case[0][1]).strip()}
                 if case[1] != []:
                     # handle ids
                     ids = [i[1] for i in case[1]]
@@ -113,7 +114,7 @@ else:
                             inputs = []
                             if data is not None and data.group(2) != '':
                                 inputs = re.findall(
-                                    '\$id\.\d|\$pre\s?/?\.?/\s?[\w-]+/?[\w-]*|\$post\s?/?\.?/\s?[\w-]+/?[\w-]*|,\s?\.{0,2}/?[\w-]+/?[\w-]*/?[\w-]*',
+                                    '\$id\.\d|\$pre\s?/?\.?/\s?[\w-]+/?[\w-]*|\$post\s?/?\.?/\s?[\w-]+/?[\w-]*|,\s?\.{0,2}/?\.{0,2}/?[\w-]+/?[\w-]*/?[\w-]*',
                                     data.group(2),
                                     re.I)
                                 inputs = map(msg_change, inputs)
