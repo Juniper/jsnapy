@@ -14,7 +14,7 @@ import sys
 import textwrap
 from copy import deepcopy
 # from threading import Thread
-from multiprocessing.dummy import Pool as ThreadPool
+# from multiprocessing.dummy import Pool as ThreadPool
 
 import yaml
 from jnpr.jsnapy import get_path, version
@@ -454,9 +454,9 @@ class SnapAdmin:
                             for val in dev_file[dgp]:
                                 hostname = val.keys()[0]
                                 self.log_detail = {'hostname': hostname}
-                                self.host_list.append(hostname)
                                 if val.get(hostname) is not None and hostname not in host_dict:
                                     host_dict[hostname] = deepcopy(val.get(hostname))
+                                    self.host_list.append(hostname)
                 # login credentials are given in main config file, can connect to multiple devices
                 else:
                     #key_value = deepcopy(k)
@@ -478,8 +478,8 @@ class SnapAdmin:
                             extra=self.log_detail)
                             #raise Exception(ex)
                         else:
-                            self.host_list.append(hostname)
                             if hostname not in host_dict:
+                                self.host_list.append(hostname)
                                 # host.pop('device')
                                 host_dict[hostname] = deepcopy(host)
 
@@ -492,19 +492,19 @@ class SnapAdmin:
                 if port is not None:
                     key_value['port'] = port
                 key_value = self.get_values(key_value)
-                # t = Thread(
-                #     target=self.connect,
-                #     args=(
-                #         hostname,
-                #         username,
-                #         password,
-                #         output_file
-                #     ),
-                #     kwargs= key_value
-                # )
-                # t.start()
-                # t.join()
-                self.connect(hostname,username, password,output_file, **key_value)
+                t = Thread(
+                    target=self.connect,
+                    args=(
+                        hostname,
+                        username,
+                        password,
+                        output_file
+                    ),
+                    kwargs= key_value
+                )
+                t.start()
+                t.join()
+                # self.connect(hostname,username, password,output_file, **key_value)
         # login credentials are given from command line
         else:
             hostname = self.args.hostname

@@ -43,12 +43,19 @@ class TestSnapAdmin(unittest.TestCase):
             diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
         js = SnapAdmin()
         conf_file = os.path.join(os.path.dirname(__file__),
-                                 'configs', 'main_1.yml')
+                                 'configs', 'main_6.yml')
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
         js.login("snap_1")
-        hosts = ['10.216.193.114']
+        expected_calls_made = [call('10.216.193.114','abc','xyz','snap_1'),
+                                call('10.216.193.115','abc','xyz','snap_1'), 
+                                call('10.216.193.116','abc','xyz','snap_1'),
+                                ]  
+        
+        hosts = ['10.216.193.114','10.216.193.115','10.216.193.116']
         self.assertEqual(js.host_list, hosts)
+        mock_connect.assert_has_calls(expected_calls_made, any_order=True)
+        
 
 
     @patch('argparse.ArgumentParser.exit')
@@ -61,12 +68,25 @@ class TestSnapAdmin(unittest.TestCase):
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         js = SnapAdmin()
         conf_file = os.path.join(os.path.dirname(__file__),
-                                 'configs', 'main1.yml')
+                                 'configs', 'main2.yml')
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
         js.login("snap_1")
         hosts = ['10.209.16.203', '10.209.16.204', '10.209.16.205']
         self.assertEqual(js.host_list, hosts)
+
+        #extending the test to check for device overlap among groups
+        js.main_file['hosts'][0]['group']='MX, EX'
+        expected_calls_made = [call('10.209.16.203','abc','def','snap_1'),
+                                call('10.209.16.204','abc','def','snap_1'), 
+                                call('10.209.16.205','abc','def','snap_1'),
+                                call('10.209.16.206','abc','def','snap_1'),
+                                call('10.209.16.212','abc','def','snap_1'),
+                                ]   
+        
+        js.login("snap_1")
+        mock_connect.assert_has_calls(expected_calls_made, any_order=True)
+
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.jsnapy.Device')
@@ -518,26 +538,29 @@ class TestSnapAdmin(unittest.TestCase):
                                  'configs', 'main2_with_port.yml')
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
-        js.login("snap_1")
+        
         hosts = ['10.209.16.203','10.209.16.204','10.209.16.205']
         expected_calls_made = [call('10.209.16.203','abc','def','snap_1',port=100),
                                 call('10.209.16.204','abc','def','snap_1',port=101), 
                                 call('10.209.16.205','abc','def','snap_1',port=102)] 
         
+        js.login("snap_1")
+        
         self.assertEqual(js.host_list, hosts)
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
         #    mock_connect.assert_called_with('10.216.193.114','abc','xyz','snap_1',port=44)
         
-        #adding another device in the config dictionary 
-        #and checking the precedence b/w cmd and config params
+        
+        #Adding the cmd-line port param and checking the precedence b/w cmd and config params
         js.args.port=55
-        
-        
         expected_calls_made = [call('10.209.16.203','abc','def','snap_1',port=55),
                                 call('10.209.16.204','abc','def','snap_1',port=55), 
                                 call('10.209.16.205','abc','def','snap_1',port=55)]   
         js.login("snap_1")
+
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
+
+    
         
            
         
