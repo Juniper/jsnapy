@@ -9,9 +9,9 @@ import os
 
 
 def get_path(section, value):
-    config = ConfigParser.ConfigParser({'config_file_path': '/etc/jsnapy', 'snapshot_path': '/etc/jsnapy/snapshots',
-                                        'test_file_path': '/etc/jsnapy/testfiles', 'log_file_path': '/etc/logs/jsnapy'})
-    config.read(os.path.join('/etc', 'jsnapy', 'jsnapy.cfg'))
+    config = ConfigParser.ConfigParser({'config_file_path': '/usr/local/share/', 'snapshot_path': '/usr/local/share/snapshots',
+                                        'test_file_path': '/usr/local/share/testfiles', 'log_file_path': '/var/log/jsnapy'})
+    config.read(os.path.join('/usr/local/share', 'jsnapy', 'jsnapy.cfg'))
     path = config.get(section, value)
     return path
 

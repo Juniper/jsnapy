@@ -9,13 +9,15 @@ import os
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 
+dir_path = '/usr/local/share/jsnapy'
 class OverrideInstall(install):
-
+    
     def run(self):
+        
         mode = 0o777
         install.run(self)
-        os.chmod('/etc/jsnapy', mode)
-        for root, dirs, files in os.walk('/etc/jsnapy'):
+        os.chmod(dir_path, mode)
+        for root, dirs, files in os.walk(dir_path):
             for directory in dirs:
                 os.chmod(os.path.join(root, directory), mode)
             for fname in files:
@@ -60,12 +62,12 @@ setup(name="jsnapy",
       scripts=['tools/jsnap2py'],
       zip_safe=False,
       install_requires=install_reqs,
-      data_files=[('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
-                  ('/etc/jsnapy/samples', example_files),
-                  ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
-                  ('/etc/jsnapy/testfiles',
+      data_files=[(dir_path, ['lib/jnpr/jsnapy/logging.yml']),
+                  (os.path.join(dir_path,'samples'), example_files),
+                  (dir_path, ['lib/jnpr/jsnapy/jsnapy.cfg']),
+                  (os.path.join(dir_path,'testfiles'),
                    ['testfiles/README']),
-                  ('/etc/jsnapy/snapshots',
+                  (os.path.join(dir_path,'snapshots'),
                    ['snapshots/README']),
                   ('/var/log/jsnapy', log_files)
                   ],
