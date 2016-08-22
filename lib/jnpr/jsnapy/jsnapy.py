@@ -5,26 +5,28 @@
 # All rights reserved.
 #
 
-import os
-import sys
-import yaml
-import Queue
+import argparse
 import getpass
 import logging
+import os
+import Queue
+import sys
 import textwrap
-import argparse
-import colorama
-import setup_logging
-from threading import Thread
 from copy import deepcopy
-from jnpr.jsnapy.snap import Parser
+from threading import Thread
+# from multiprocessing.dummy import Pool as ThreadPool
+
+import yaml
+from jnpr.jsnapy import get_path, version
 from jnpr.jsnapy.check import Comparator
 from jnpr.jsnapy.notify import Notification
-from jnpr.junos import Device
-from jnpr.jsnapy import version
-from jnpr.jsnapy import get_path
+from jnpr.jsnapy.snap import Parser
 from jnpr.jsnapy.testop import Operator
+from jnpr.junos import Device
 from jnpr.junos.exception import ConnectAuthError
+
+import colorama
+import setup_logging
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 colorama.init(autoreset=True)
@@ -403,6 +405,7 @@ class SnapAdmin:
                 del key_value[v]
         return key_value
 
+
     def login(self, output_file):
         """
         Extract device information from main config file. Stores device information and call connect function,
@@ -412,36 +415,38 @@ class SnapAdmin:
         """
         self.host_list = []
         if self.args.hostname is None:
+            host_dict={}
             try:
-                k = self.main_file['hosts'][0]
+                hosts_val = self.main_file['hosts']
             except KeyError as ex:
                 self.logger.error(colorama.Fore.RED +
-                                  "\nERROR occurred !! Hostname not given properly %s" %
-                                  str(ex),
-                                  extra=self.log_detail)
+                "\nERROR occurred !! Hostname not given properly %s" %
+                str(ex),
+                extra=self.log_detail)
                 #raise Exception(ex)
             except Exception as ex:
                 self.logger.error(colorama.Fore.RED +
-                                  "\nERROR occurred !! %s" %
-                                  str(ex),
-                                  extra=self.log_detail)
+                "\nERROR occurred !! %s" %
+                str(ex),
+                extra=self.log_detail)
                 #raise Exception(ex)
             else:
                 # when group of devices are given, searching for include keyword in
                 # hosts in main.yaml file
-                if k.__contains__('include'):
-                    file_tag = k['include']
-                    if os.path.isfile(file_tag):
-                        lfile = file_tag
+                first_entry = hosts_val[0]
+                if 'include' in first_entry:
+                    devices_file_name = first_entry['include']
+                    if os.path.isfile(devices_file_name):
+                        lfile = devices_file_name
                     else:
                         lfile = os.path.join(
-                            get_path(
-                                'DEFAULT',
-                                'test_file_path'),
-                            file_tag)
+                                    get_path(
+                                        'DEFAULT',
+                                        'test_file_path'),
+                                    devices_file_name)
                     login_file = open(lfile, 'r')
                     dev_file = yaml.load(login_file)
-                    gp = k.get('group', 'all')
+                    gp = first_entry.get('group', 'all')
 
                     dgroup = [i.strip().lower() for i in gp.split(',')]
                     for dgp in dev_file:
@@ -449,63 +454,57 @@ class SnapAdmin:
                             for val in dev_file[dgp]:
                                 hostname = val.keys()[0]
                                 self.log_detail = {'hostname': hostname}
-                                self.host_list.append(hostname)
-                                key_value = deepcopy(val.get(hostname))
-                                if val.get(hostname) is not None and 'username' in val.get(
-                                        hostname).keys():
-                                    username = val.get(
-                                        hostname).get('username')
-                                else:
-                                    username = self.args.login
-                                if val.get(hostname) is not None and 'passwd' in val.get(
-                                        hostname).keys():
-                                    password = val.get(hostname).get('passwd')
-                                else:
-                                    password = self.args.passwd
-                                    # if self.args.passwd is not None else
-                                    # getpass.getpass("\nEnter Password for
-                                    # username: %s " %username)
-                                key_value = self.get_values(key_value)
-                                t = Thread(
-                                    target=self.connect,
-                                    args=(
-                                        hostname,
-                                        username,
-                                        password,
-                                        output_file
-                                    ),
-                                    kwargs= key_value
-                                )
-                                t.start()
-                                t.join()
-            # login credentials are given in main config file, can connect to only
-            # one device
+                                if val.get(hostname) is not None and hostname not in host_dict:
+                                    host_dict[hostname] = deepcopy(val.get(hostname))
+                                    self.host_list.append(hostname)
+                # login credentials are given in main config file, can connect to multiple devices
                 else:
-                    key_value = deepcopy(k)
-
-                    try:
-                        hostname = k['device']
-                        self.log_detail = {'hostname': hostname}
-                    except KeyError as ex:
-                        self.logger.error(
+                    #key_value = deepcopy(k)
+                    for host in hosts_val:
+                        try:
+                            hostname = host['device']
+                            self.log_detail = {'hostname': hostname}
+                        except KeyError as ex:
+                            self.logger.error(
                             colorama.Fore.RED +
                             "ERROR!! KeyError 'device' key not found",
                             extra=self.log_detail)
-                        #raise Exception(ex)
-                    except Exception as ex:
-                        self.logger.error(
+                            #raise Exception(ex)
+                        except Exception as ex:
+                            self.logger.error(
                             colorama.Fore.RED +
                             "ERROR!! %s" %
                             ex,
                             extra=self.log_detail)
-                        #raise Exception(ex)
-                    else:
-                        username = k.get('username') or self.args.login
-                        password = k.get('passwd') or self.args.passwd
-                        self.host_list.append(hostname)
-                        key_value= self.get_values(key_value)
-                        self.connect(hostname, username, password, output_file, **key_value)
+                            #raise Exception(ex)
+                        else:
+                            if hostname not in host_dict:
+                                self.host_list.append(hostname)
+                                # host.pop('device')
+                                host_dict[hostname] = deepcopy(host)
 
+            for hostname, key_value in host_dict.iteritems():
+                #The file config takes precedence over cmd line params -- no changes made
+                username = key_value.get('username') or self.args.login
+                password = key_value.get('passwd') or self.args.passwd
+                #if --port arg is given on the cmd then that takes precedence                
+                port = self.args.port
+                if port is not None:
+                    key_value['port'] = port
+                key_value = self.get_values(key_value)
+                t = Thread(
+                    target=self.connect,
+                    args=(
+                        hostname,
+                        username,
+                        password,
+                        output_file
+                    ),
+                    kwargs= key_value
+                )
+                t.start()
+                t.join()
+                # self.connect(hostname,username, password,output_file, **key_value)
         # login credentials are given from command line
         else:
             hostname = self.args.hostname
