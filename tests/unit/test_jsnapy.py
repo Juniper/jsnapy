@@ -430,13 +430,13 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.pre_snapfile = "mock_snap"
         js.args.post_snapfile = "mock_snap2"
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        mock_compare.return_value = MagicMock(result = 'Failed')
+        mock_compare.return_value = MagicMock(result = 'Passed')
         
         js.get_hosts()
         self.assertFalse(mock_notify.called)
         self.assertFalse(mock_pass.called)
         self.assertTrue(mock_compare.called)
-        
+
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.SnapAdmin.login')
     def test_sqlite_parameters_1(self, mock_login, mock_arg):
