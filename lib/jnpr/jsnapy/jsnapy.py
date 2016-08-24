@@ -538,9 +538,31 @@ class SnapAdmin:
                 snap_file,
                 post_snap,
                 action)
-        if config_data.get("mail") and self.args.diff is not True:
-            mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), config_data.get('mail'))\
-                if os.path.isfile(config_data.get('mail')) is False else config_data.get('mail')
+
+        result_status = res.result
+        
+        mail_condition = 'all'
+        if result_status == 'Passed':
+            mail_condition = 'pass'
+        elif result_status == 'Failed':
+            mail_condition = 'fail'
+
+        mail_pref =  config_data.get("mail") 
+
+        #we don't want to send mail if only diff operation is run
+        if  mail_pref is not None and self.args.diff is False:
+            
+            if type(mail_pref) is str:
+                mail_file_path = mail_pref
+            elif type(mail_pref) is dict:
+                mail_file_path = mail_pref.get(mail_condition)
+            else:
+                self.logger.error(
+                    colorama.Fore.RED +
+                    "ERROR!! Type of mail preferences should be either dictionary or string", extra=self.log_detail)
+
+            mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), mail_file_path)\
+                    if os.path.isfile(mail_file_path) is False else mail_file_path
             if os.path.isfile(mfile):
                 mail_file = open(mfile, 'r')
                 mail_file = yaml.load(mail_file)
@@ -549,7 +571,7 @@ class SnapAdmin:
                         "Please enter ur email password ")
                 else:
                     passwd = mail_file['passwd']
-               
+            
                 send_mail = Notification()
                 send_mail.notify(mail_file, hostname, passwd, res)
             else:
