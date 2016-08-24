@@ -549,35 +549,41 @@ class SnapAdmin:
 
         mail_pref =  config_data.get("mail") 
 
-        #we don't want to send mail if only diff operation is run
+        #we don't want to send mail when diff operation is run
         if  mail_pref is not None and self.args.diff is False:
-            
+            mail_file_path = None
             if type(mail_pref) is str:
                 mail_file_path = mail_pref
-            elif type(mail_pref) is dict:
-                mail_file_path = mail_pref.get(mail_condition)
+            elif type(mail_pref) is dict: 
+                if mail_condition in mail_pref:
+                    mail_file_path = mail_pref.get(mail_condition)
+                else:
+                    self.logger.error(
+                        colorama.Fore.RED +
+                        "ERROR!! File not specified for %s scenario" % mail_condition, extra=self.log_detail)
             else:
                 self.logger.error(
                     colorama.Fore.RED +
                     "ERROR!! Type of mail preferences should be either dictionary or string", extra=self.log_detail)
-
-            mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), mail_file_path)\
-                    if os.path.isfile(mail_file_path) is False else mail_file_path
-            if os.path.isfile(mfile):
-                mail_file = open(mfile, 'r')
-                mail_file = yaml.load(mail_file)
-                if "passwd" not in mail_file:
-                    passwd = getpass.getpass(
-                        "Please enter ur email password ")
+                    
+            if mail_file_path is not None and mail_file_path != '' :
+                mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), mail_file_path)\
+                        if os.path.isfile(mail_file_path) is False else mail_file_path
+                if os.path.isfile(mfile):
+                    mail_file = open(mfile, 'r')
+                    mail_file = yaml.load(mail_file)
+                    if "passwd" not in mail_file:
+                        passwd = getpass.getpass(
+                            "Please enter ur email password ")
+                    else:
+                        passwd = mail_file['passwd']
+                
+                    send_mail = Notification()
+                    send_mail.notify(mail_file, hostname, passwd, res)
                 else:
-                    passwd = mail_file['passwd']
-            
-                send_mail = Notification()
-                send_mail.notify(mail_file, hostname, passwd, res)
-            else:
-                self.logger.error(
-                    colorama.Fore.RED +
-                    "ERROR!! Path of file containing mail content is not correct", extra=self.log_detail)
+                    self.logger.error(
+                        colorama.Fore.RED +
+                        "ERROR!! Path of file containing mail content is not correct", extra=self.log_detail)
         # else:
         #     res = self.compare_tests(
         #         hostname,
