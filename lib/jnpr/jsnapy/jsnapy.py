@@ -531,6 +531,13 @@ class SnapAdmin:
         :return: object of testop.Operator containing test details
         """
         res = Operator()
+
+        res = self.compare_tests(
+                hostname,
+                config_data,
+                snap_file,
+                post_snap,
+                action)
         if config_data.get("mail") and self.args.diff is not True:
             mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), config_data.get('mail'))\
                 if os.path.isfile(config_data.get('mail')) is False else config_data.get('mail')
@@ -542,25 +549,20 @@ class SnapAdmin:
                         "Please enter ur email password ")
                 else:
                     passwd = mail_file['passwd']
-                res = self.compare_tests(
-                    hostname,
-                    config_data,
-                    snap_file,
-                    post_snap,
-                    action)
+               
                 send_mail = Notification()
                 send_mail.notify(mail_file, hostname, passwd, res)
             else:
                 self.logger.error(
                     colorama.Fore.RED +
                     "ERROR!! Path of file containing mail content is not correct", extra=self.log_detail)
-        else:
-            res = self.compare_tests(
-                hostname,
-                config_data,
-                snap_file,
-                post_snap,
-                action)
+        # else:
+        #     res = self.compare_tests(
+        #         hostname,
+        #         config_data,
+        #         snap_file,
+        #         post_snap,
+        #         action)
 
         self.q.put(res)
         return res
