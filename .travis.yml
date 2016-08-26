@@ -15,6 +15,9 @@ install:
   - "pip install -r development.txt"
   - "sudo pip install ."
 
+before_script:
+  - export PYTHONPATH=/home/travis/virtualenv/python2.7.12/lib/python2.7/site-packages:$PYTHONPATH
+
 script: nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
 
 after_success:
