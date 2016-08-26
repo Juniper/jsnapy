@@ -22,10 +22,7 @@ before_script:
   - cd tests
 
 script: 
-  nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
-
-after_success:
-  coveralls
+  py.test
 
 notifications:
   email: false
