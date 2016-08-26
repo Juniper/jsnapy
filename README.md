@@ -1,3 +1,5 @@
+[![PyPi Version](https://img.shields.io/pypi/v/jsnapy.svg)](https://pypi.python.org/pypi/jsnapy/) [![Coverage Status](https://travis-ci.org/Juniper/jsnapy.svg?branch=master)](https://travis-ci.org/Juniper/jsnapy)
+
 # jsnapy
 Python version of Junos Snapshot Administrator
 
