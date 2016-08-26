@@ -11,6 +11,9 @@ addons:
     - libxml2-dev
     - libxslt1-dev
 
+virtualenv:
+  system_site_packages: true
+
 install:
   - "pip install -r development.txt"
   - "sudo pip install ."
