@@ -23,7 +23,7 @@ from jnpr.jsnapy.notify import Notification
 from jnpr.junos import Device
 from jnpr.jsnapy import version
 from jnpr.jsnapy import get_path
-from jnpr.jsnapy.testop import Operator
+from jnpr.jsnapy.operator import Operator
 from jnpr.junos.exception import ConnectAuthError
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
@@ -521,7 +521,7 @@ class SnapAdmin:
 
     def get_test(self, config_data, hostname, snap_file, post_snap, action):
         """
-        Analyse testfile and return object of testop.Operator containing test details
+        Analyse testfile and return object of operator.Operator containing test details
         called by connect() function and other functions of Jsnapy module functions
         :param config_data: data of main config file
         :param hostname: hostname
