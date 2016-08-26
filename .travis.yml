@@ -13,7 +13,7 @@ addons:
 
 install:
   - "pip install -r development.txt"
-  - "pip install ."
+  - "sudo pip install ."
 
 script: nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
 
