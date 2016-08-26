@@ -11,9 +11,6 @@ addons:
     - libxml2-dev
     - libxslt1-dev
 
-virtualenv:
-  system_site_packages: true
-
 install:
   - "pip install -r development.txt"
   - "sudo pip install ."
@@ -22,6 +19,7 @@ before_script:
   - export PYTHONPATH=$VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/site-packages
   - echo $PYTHONPATH
   - python -c 'from jnpr.junos import exception;print exception'
+  - cd tests
 
 script: 
   nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
