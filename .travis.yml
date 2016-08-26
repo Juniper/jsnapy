@@ -16,7 +16,10 @@ install:
   - "sudo pip install ."
 
 before_script:
-  export PYTHONPATH=$VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/site-packages
+  - export PYTHONPATH=$VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/site-packages
+  - echo $PYTHONPATH
+  - python -c 'from jnpr.junos import exception;print exception'
+
 script: 
   nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
 
