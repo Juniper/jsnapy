@@ -10,45 +10,19 @@ from setuptools import setup, find_packages
 from setuptools.command.install import install
 import ConfigParser
 
-# dir_path = '/etc/jsnapy'
-# dir_path = '/usr/local/share/jsnapy'
 class OverrideInstall(install):
-    # global dir_path
-    # dire = None
-    # user_options = install.user_options + [
-    #         ('dire=', 'd', 'Location for snapshots and testfiles directories'),
-    #     ] 
-    # def initialize_options(self):
-    #     install.initialize_options(self)
-    #     self.dire = None
-    #     # self.old_and_unmanageable = False
-    #     # self.single_version_externally_managed = False
-    # def finalize_options(self):
-    #     install.finalize_options(self)
-    #     dir_path = self.dire
-    #     print dir_path
+   
     def run(self):
         
-        # print sys.argv
-        # print self.install_data
         for arg in sys.argv:
             if '--install-data' in arg:
                 break
         else:
-            raise Exception("Must pass snapshot and testfile location in --install-data to setup.py")
-
-            # raise Exception
-            # dir_path = ''
-            # while dir_path =='':
-            #     dir_path= raw_input('Enter absolute directory path for testfiles and snapshots: ').strip()
-
-            # self.install_data = dir_path 
-            # # logging.error('Use --install-data to specify absolute directory path for snapshots and testfiles')
-            # exit()
+            self.install_data = '/etc/jsnapy'
+            
         dir_path = self.install_data
         mode = 0o777
         install.run(self)
-        # self.extra_dirs
         os.chmod(dir_path, mode)
         for root, dirs, files in os.walk(dir_path):
             for directory in dirs:
