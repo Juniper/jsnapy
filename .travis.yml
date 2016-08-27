@@ -12,7 +12,7 @@ addons:
     - libxslt1-dev
 
 install:
-  - "pip install -r development.txt -v"
+  - "pip install -r development.txt"
   - "sudo python setup.py install --prefix=$VIRTUAL_ENV"
 
 before_script:
