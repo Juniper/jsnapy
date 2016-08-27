@@ -13,7 +13,7 @@ addons:
 
 install:
   - "pip install -r development.txt -v"
-  - "sudo python setup.py install"
+  - "sudo python setup.py install --prefix=$VIRTUAL_ENV"
 
 before_script:
   - export PYTHONPATH=$VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/site-packages
