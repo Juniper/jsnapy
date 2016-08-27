@@ -12,8 +12,8 @@ addons:
     - libxslt1-dev
 
 install:
-  - "pip install -r development.txt"
-  - "sudo pip install ."
+  - "pip install -r development.txt -v"
+  - "sudo pip install . -v"
 
 before_script:
   - export PYTHONPATH=$VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/site-packages
