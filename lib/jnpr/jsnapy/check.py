@@ -12,7 +12,7 @@ import colorama
 import logging
 import yaml
 from lxml import etree
-from jnpr.jsnapy.testop import Operator
+from jnpr.jsnapy.operator import Operator
 from jnpr.jsnapy.sqlite_get import SqliteExtractXml
 from icdiff import diff, codec_print, get_options, ConsoleDiff
 from jnpr.jsnapy.xml_comparator import XmlComparator
@@ -105,7 +105,7 @@ class Comparator:
     def compare_reply(
             self, op, tests, teston, check, db, snap1, snap2=None, action=None):
         """
-        Analyse test files and call respective methods in testop file
+        Analyse test files and call respective methods in operator file
         like is_equal() or no_diff()
         call testop.Operator methods to compare snapshots based on given test cases
         Extract xpath and other values for comparing two snapshots and
