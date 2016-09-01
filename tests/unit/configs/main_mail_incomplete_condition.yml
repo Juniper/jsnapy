@@ -1,0 +1,18 @@
+# for one device, can be given like this:
+hosts:
+  - device: 10.216.193.114
+    username : abc
+    passwd: xyz
+tests:
+  - delta.yml
+sqlite:
+  - store_in_sqlite: no
+    check_from_sqlite: yes
+    database_name: jbb.db
+    compare: 0,1
+
+mail: 
+    pass: mail_pass.yml
+    all:  mail.yml
+
+
