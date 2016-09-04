@@ -219,7 +219,7 @@ class Operator:
         return predict, postdict
 
     def exists(self, x_path, ele_list, err_mssg, info_mssg,
-               teston, iter, id_list, xml1, xml2):
+               teston, iter, id_list, xml1, xml2, ignore_null=None):
         """
         Calculate if node value is present in given snapshot
         """
@@ -252,6 +252,16 @@ class Operator:
             # this function will find set of pre and post nodes for given Xpath
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                     "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
+                                     extra=self.log_detail)
+                        return
+                
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}> ".format(x_path), extra=self.log_detail)
                 res = False
@@ -334,7 +344,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def not_exists(self, x_path, ele_list, err_mssg, info_mssg,
-                   teston, iter, id_list, xml1, xml2):
+                   teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-exists")
         colorama.init(autoreset=True)
         res = True
@@ -363,6 +373,16 @@ class Operator:
             tresult['node_name'] = element
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                     "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
+                                     extra=self.log_detail)
+                        return
+                
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
@@ -437,7 +457,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def all_same(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("all-same")
         res = True
         iddict = {}
@@ -463,6 +483,16 @@ class Operator:
             tresult['node_name'] = element
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                     "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
+                                     extra=self.log_detail)
+                        return
+
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
@@ -553,7 +583,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_equal(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-equal")
         res = True
         predict = {}
@@ -583,6 +613,16 @@ class Operator:
             tresult['expected_node_value'] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                     "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
+                                     extra=self.log_detail)
+                        return
+                
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}>O".format(x_path), extra=self.log_detail)
                 res = False
@@ -652,6 +692,18 @@ class Operator:
                                     postdict,
                                     "info")
                     else:
+                        ##
+                        if ignore_null is not None:
+                            if (type(ignore_null) is bool and ignore_null is True) \
+                                or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                self.logger_testop.error(colorama.Fore.YELLOW +
+                                            "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                                element, 
+                                                x_path, 
+                                                id_val),
+                                            extra=self.log_detail)
+                                return
+
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path, id_val), extra=self.log_detail)
                         node_value_failed = {
@@ -676,7 +728,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def not_equal(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-equal")
         res = True
         predict = {}
@@ -705,6 +757,16 @@ class Operator:
             tresult['expected_node_value'] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                     "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
+                                     extra=self.log_detail)
+                        return
+
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
@@ -772,6 +834,19 @@ class Operator:
                                 count_fail = count_fail + 1
                     else:
                         # tresult['actual_node_value'].append(None)
+                        
+                        ##
+                        if ignore_null is not None:
+                            if (type(ignore_null) is bool and ignore_null is True) \
+                                or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                self.logger_testop.error(colorama.Fore.YELLOW +
+                                            "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                                element, 
+                                                x_path,
+                                                id_val),
+                                            extra=self.log_detail)
+                                return
+                        
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                     id_val), extra=self.log_detail)
                         res = False
@@ -797,7 +872,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def in_range(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("in-range")
         res = True
         iddict = {}
@@ -835,6 +910,16 @@ class Operator:
                 pre_nodes, post_nodes = self._find_xpath(
                     iter, x_path, xml1, xml2)
                 if not post_nodes:
+                    
+                    if ignore_null is not None:
+                            if (type(ignore_null) is bool and ignore_null is True) \
+                                or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                self.logger_testop.error(colorama.Fore.YELLOW +
+                                            "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                                x_path),
+                                            extra=self.log_detail)
+                                return
+
                     self.logger_testop.error(colorama.Fore.RED +
                                              "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                     res = False
@@ -904,6 +989,18 @@ class Operator:
                                         deepcopy(node_value_failed))
 
                         else:
+                            ##
+                            if ignore_null is not None:
+                                if (type(ignore_null) is bool and ignore_null is True) \
+                                    or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                    self.logger_testop.error(colorama.Fore.YELLOW +
+                                                "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                                    element, 
+                                                    x_path, 
+                                                    id_val),
+                                                extra=self.log_detail)
+                                    return
+                            
                             self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                         id_val), extra=self.log_detail)
                             res = False
@@ -928,7 +1025,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def not_range(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-range")
         res = True
         iddict = {}
@@ -966,6 +1063,16 @@ class Operator:
                 pre_nodes, post_nodes = self._find_xpath(
                     iter, x_path, xml1, xml2)
                 if not post_nodes:
+                    
+                    if ignore_null is not None:
+                        if (type(ignore_null) is bool and ignore_null is True) \
+                            or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                            self.logger_testop.error(colorama.Fore.YELLOW +
+                                        "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                            x_path),
+                                        extra=self.log_detail)
+                            return
+                    
                     self.logger_testop.error(colorama.Fore.RED +
                                              "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                     res = False
@@ -1034,6 +1141,19 @@ class Operator:
                                     tresult['failed'].append(
                                         deepcopy(node_value_failed))
                         else:
+                            ##
+                            if ignore_null is not None:
+                                if (type(ignore_null) is bool and ignore_null is True) \
+                                    or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                    self.logger_testop.error(colorama.Fore.YELLOW +
+                                                "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                                    element, 
+                                                    x_path, 
+                                                    id_val),
+                                                extra=self.log_detail)
+                                    return
+                            
+                            
                             self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                         id_val), extra=self.log_detail)
                             res = False
@@ -1059,7 +1179,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_gt(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, iter, id_list, xml1, xml2):
+              info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-gt")
         res = True
         iddict = {}
@@ -1088,6 +1208,16 @@ class Operator:
             tresult['expected_node_value'] = val1
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                    "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                        x_path),
+                                    extra=self.log_detail)
+                        return
+                
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
@@ -1155,6 +1285,18 @@ class Operator:
                                     deepcopy(node_value_failed))
 
                     else:
+                        ##
+                        if ignore_null is not None:
+                            if (type(ignore_null) is bool and ignore_null is True) \
+                                or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                self.logger_testop.error(colorama.Fore.YELLOW +
+                                            "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                                element,
+                                                x_path, 
+                                                id_val),
+                                            extra=self.log_detail)
+                                return
+
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                     id_val), extra=self.log_detail)
                         res = False
@@ -1180,7 +1322,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_lt(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, iter, id_list, xml1, xml2):
+              info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-lt")
         res = True
         iddict = {}
@@ -1210,6 +1352,16 @@ class Operator:
             tresult['expected_node_value'] = val1
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                    "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                        x_path),
+                                    extra=self.log_detail)
+                        return
+                
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
@@ -1275,6 +1427,18 @@ class Operator:
                                 tresult['failed'].append(
                                     deepcopy(node_value_failed))
                     else:
+                        ##
+                        if ignore_null is not None:
+                            if (type(ignore_null) is bool and ignore_null is True) \
+                                or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                self.logger_testop.error(colorama.Fore.YELLOW +
+                                            "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                                element, 
+                                                x_path, 
+                                                id_val),
+                                            extra=self.log_detail)
+                                return
+                        
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                     id_val), extra=self.log_detail)
                         res = False
@@ -1300,7 +1464,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def contains(self, x_path, ele_list, err_mssg, info_mssg,
-                 teston, iter, id_list, xml1, xml2):
+                 teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("contains")
         predict = {}
         postdict = {}
@@ -1331,8 +1495,18 @@ class Operator:
             tresult['expected_node_value'] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-                self.logger_testop.error(colorama.Fore.RED +
-                                         "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
+               
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                    "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                        x_path 
+                                        ),
+                                    extra=self.log_detail)
+                        return
+               
+                self.logger_testop.error(colorama.Fore.RED + "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
                 count_fail = count_fail + 1
                 node_value_failed = {
@@ -1397,6 +1571,20 @@ class Operator:
                                 tresult['passed'].append(
                                     deepcopy(node_value_passed))
                     else:
+                        
+                        ##
+                        if ignore_null is not None:
+                            if (type(ignore_null) is bool and ignore_null is True) \
+                                or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                self.logger_testop.error(colorama.Fore.YELLOW +
+                                            "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                                element, 
+                                                x_path, 
+                                                id_val
+                                                ),
+                                            extra=self.log_detail)
+                                return
+                        
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                     id_val), extra=self.log_detail)
                         res = False
@@ -1421,7 +1609,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_in(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, iter, id_list, xml1, xml2):
+              info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-in")
         res = True
         iddict = {}
@@ -1451,6 +1639,17 @@ class Operator:
             tresult['expected_node_value'] = value_list
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                    "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                        x_path
+                                        ),
+                                    extra=self.log_detail)
+                        return
+                
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
@@ -1518,6 +1717,20 @@ class Operator:
                                 tresult['failed'].append(
                                     deepcopy(node_value_failed))
                     else:
+                        
+                        ##
+                        if ignore_null is not None:
+                            if (type(ignore_null) is bool and ignore_null is True) \
+                                or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                self.logger_testop.error(colorama.Fore.YELLOW +
+                                            "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                                element, 
+                                                x_path, 
+                                                id_val
+                                                ),
+                                            extra=self.log_detail)
+                                return
+                            
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                     id_val), extra=self.log_detail)
                         res = False
@@ -1548,7 +1761,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def not_in(self, x_path, ele_list, err_mssg,
-               info_mssg, teston, iter, id_list, xml1, xml2):
+               info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-in")
         res = True
         iddict = {}
@@ -1578,6 +1791,17 @@ class Operator:
             tresult['expected_node_value'] = value_list
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                    "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                        x_path
+                                        ),
+                                    extra=self.log_detail)
+                        return
+                
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(x_path), extra=self.log_detail)
                 res = False
@@ -1644,6 +1868,19 @@ class Operator:
                                 tresult['failed'].append(
                                     deepcopy(node_value_failed))
                     else:
+                        
+                        ##
+                        if ignore_null is not None:
+                            if (type(ignore_null) is bool and ignore_null is True) \
+                                or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                self.logger_testop.error(colorama.Fore.YELLOW +
+                                           "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                               element, 
+                                               x_path, 
+                                               id_val
+                                               ),
+                                            extra=self.log_detail)
+                                return
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                     id_val), extra=self.log_detail)
                         res = False
@@ -1675,7 +1912,7 @@ class Operator:
 
     ################## operator requiring two snapshots, pre and post ########
     def no_diff(self, x_path, ele_list, err_mssg,
-                info_mssg, teston, iter, id_list, xml1, xml2):
+                info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("no-diff")
         res = True
         iddict = {}
@@ -1700,6 +1937,16 @@ class Operator:
                                      "ERROR!! 'no-diff' operator requires node value to test !!", extra=self.log_detail)
         else:
             if (not pre_nodes) or (not post_nodes):
+
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                     "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
+                                     extra=self.log_detail)
+                        return
+
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(
                                              x_path),
@@ -1831,7 +2078,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def list_not_less(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("list-not-less")
         res = True
         tresult = {
@@ -1853,6 +2100,16 @@ class Operator:
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         if not pre_nodes or not post_nodes:
+           
+            if ignore_null is not None:
+                if (type(ignore_null) is bool and ignore_null is True) \
+                    or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                    self.logger_testop.error(colorama.Fore.YELLOW +
+                                     "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
+                                     extra=self.log_detail)
+                    return
+            
             self.logger_testop.error(colorama.Fore.RED +
                                      "ERROR!! Nodes are not present in given Xpath: <{}>".format(
                                          x_path),
@@ -1986,7 +2243,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def list_not_more(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("list-not-more")
         res = True
         tresult = {
@@ -2007,6 +2264,17 @@ class Operator:
 
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
         if not pre_nodes or not post_nodes:
+            
+            if ignore_null is not None:
+                if (type(ignore_null) is bool and ignore_null is True) \
+                    or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                    self.logger_testop.error(colorama.Fore.YELLOW +
+                                     "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
+                                     extra=self.log_detail)
+                    return
+            
+            #if ignore_null is not true then report error
             self.logger_testop.error(colorama.Fore.RED +
                                      "ERROR!! Nodes are not present in given Xpath: <{}>".format(
                                          x_path),
@@ -2138,7 +2406,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def delta(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, iter, id_list, xml1, xml2):
+              info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("delta")
         res = True
         tresult = {
@@ -2169,6 +2437,16 @@ class Operator:
                                      "'delta' test operator require two parameters", extra=self.log_detail)
         else:
             if not pre_nodes or not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                     "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                         x_path),
+                                     extra=self.log_detail)
+                        return
+                
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in given Xpath: <{}>".format(
                                              x_path),
@@ -2451,6 +2729,17 @@ class Operator:
                                         tresult['passed'].append(
                                             deepcopy(node_value_passed))
                             else:
+                                
+                                if ignore_null is not None:
+                                    if (type(ignore_null) is bool and ignore_null is True) \
+                                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                                    "SKIPPING!! Node <{}> not found at xpath <{}> ".format(
+                                                        node_name,
+                                                        x_path),
+                                                    extra=self.log_detail)
+                                        return
+                                
                                 self.logger_testop.error(
                                     colorama.Fore.RED +
                                     "ERROR!! Node <{}> not found at xpath <{}> ".format(
@@ -2505,7 +2794,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def regex(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("regex")
         res = False
         predict = {}
@@ -2535,6 +2824,16 @@ class Operator:
             tresult['expected_node_value'] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
+                
+                if ignore_null is not None:
+                    if (type(ignore_null) is bool and ignore_null is True) \
+                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                        self.logger_testop.error(colorama.Fore.YELLOW +
+                                    "SKIPPING!! Nodes are not present in Xpath <%s> !!".format(
+                                        x_path),
+                                    extra=self.log_detail)
+                        return
+                
                 self.logger_testop.error(colorama.Fore.RED +
                                          "ERROR!! Nodes are not present in Xpath <%s> !!" % x_path, extra=self.log_detail)
                 count_fail = count_fail + 1
@@ -2607,6 +2906,18 @@ class Operator:
                                 tresult['failed'].append(
                                     deepcopy(node_value_failed))
                     else:
+                        
+                        if ignore_null is not None:
+                            if (type(ignore_null) is bool and ignore_null is True) \
+                                or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                self.logger_testop.error(colorama.Fore.YELLOW +
+                                            "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                                element, 
+                                                x_path, 
+                                                id_val),
+                                            extra=self.log_detail)
+                                return  
+                        
                         self.logger_testop.error(colorama.Fore.RED +
                                                  "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path, id_val), extra=self.log_detail)
                         res = False
