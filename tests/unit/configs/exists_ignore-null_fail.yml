@@ -1,0 +1,12 @@
+tests_include:
+  - check_chassis_alarms
+
+check_chassis_alarms:
+  - command: show chassis alarms
+  - iterate: 
+      xpath: //rm-information/alarm-summary
+      tests:
+        - exists: no-active-alarms
+          info: "Test Succeeded!! No chassis alarms"
+          err: "Test Failed!!! There are chassis alarms"
+
