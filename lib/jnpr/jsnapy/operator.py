@@ -761,7 +761,7 @@ class Operator:
         count_fail = 0
         try:
             element = ele_list[0]
-            value = ele_list[1]
+            value = ele_list[1].strip()
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
                                      "\nError occurred while accessing test element: %s" % e.message, extra=self.log_detail)
@@ -795,6 +795,7 @@ class Operator:
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
+                is_skipped = False
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
                     # sample xml element node
@@ -816,7 +817,7 @@ class Operator:
 
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
-                            if post_nodevalue != value.strip():
+                            if post_nodevalue != value:
                                 node_value_passed = {
                                     'id': id_val,
                                     'pre': predict,
@@ -860,7 +861,8 @@ class Operator:
                                                 x_path,
                                                 id_val),
                                             extra=self.log_detail)
-                                return
+                                is_skipped = True
+                                continue
                         
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                     id_val), extra=self.log_detail)
@@ -872,6 +874,9 @@ class Operator:
                             'post': postdict,
                             'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
+
+        if is_skipped and count_fail == 0 and count_pass == 0:
+            return
 
         if res is False:
             msg = 'All "%s" is equal to "%s" [ %d matched / %d failed ]' % (
