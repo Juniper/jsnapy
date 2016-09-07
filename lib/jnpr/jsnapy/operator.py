@@ -953,6 +953,7 @@ class Operator:
                     tresult['failed'].append(deepcopy(node_value_failed))
 
                 else:
+                    is_skipped = False
                     for i in range(len(post_nodes)):
                         # if length of pre node is less than post node, assign
                         # sample xml element node
@@ -1019,7 +1020,8 @@ class Operator:
                                                     x_path, 
                                                     id_val),
                                                 extra=self.log_detail)
-                                    return
+                                    is_skipped = True
+                                    continue
                             
                             self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                         id_val), extra=self.log_detail)
@@ -1032,6 +1034,10 @@ class Operator:
                                 'actual_node_value': None}
                             tresult['failed'].append(
                                 deepcopy(node_value_failed))
+        
+        if is_skipped and count_fail == 0 and count_pass == 0:
+            return
+
         if res is False:
             msg = 'All "%s" is not in range:  "%f - %f" [ %d matched / %d failed ]' % (
                 element, range1, range2, count_pass, count_fail)
