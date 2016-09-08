@@ -1996,7 +1996,7 @@ class Operator:
 
         if is_skipped and count_fail == 0 and count_pass == 0:
             return
-            
+
         if res is False:
             msg = '"{0}" is in list {1} [ {2} matched / {3} failed ]'.format(
                 element,
@@ -2514,6 +2514,7 @@ class Operator:
               info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("delta")
         res = True
+        is_skipped = False
         tresult = {
             'xpath': x_path,
             'testoperation': "delta",
@@ -2843,7 +2844,8 @@ class Operator:
                                                         node_name,
                                                         x_path),
                                                     extra=self.log_detail)
-                                        return
+                                        is_skipped = True
+                                        continue
                                 
                                 self.logger_testop.error(
                                     colorama.Fore.RED +
@@ -2854,6 +2856,7 @@ class Operator:
                                 res = False
                                 count_fail = count_fail + 1
                     else:
+                        
                         for length in range(len(k)):
                             id_val[id_list[length]] = k[length][0].strip()
 
@@ -2881,6 +2884,9 @@ class Operator:
                             "info")
                         res = False
                         count_fail = count_fail + 1
+        
+        if is_skipped and count_fail == 0 and count_pass == 0:
+            return
         if res is False:
             msg = 'All "{0}" is not with in delta difference of {1} [ {2} matched / {3} failed ]'.format(
                 node_name,
