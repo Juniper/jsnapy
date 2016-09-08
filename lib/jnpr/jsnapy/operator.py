@@ -596,6 +596,7 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-equal")
         res = True
+        is_skipped=False
         predict = {}
         postdict = {}
         iddict = {}
@@ -646,7 +647,6 @@ class Operator:
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
-                is_skipped=False
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
                     # sample xml element node
@@ -746,6 +746,7 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-equal")
         res = True
+        is_skipped = False
         predict = {}
         postdict = {}
         iddict = {}
@@ -795,7 +796,6 @@ class Operator:
                 tresult['failed'].append(deepcopy(node_value_failed))
 
             else:
-                is_skipped = False
                 for i in range(len(post_nodes)):
                     # if length of pre node is less than post node, assign
                     # sample xml element node
@@ -895,6 +895,7 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("in-range")
         res = True
+        is_skipped = False
         iddict = {}
         predict = {}
         postdict = {}
@@ -953,7 +954,6 @@ class Operator:
                     tresult['failed'].append(deepcopy(node_value_failed))
 
                 else:
-                    is_skipped = False
                     for i in range(len(post_nodes)):
                         # if length of pre node is less than post node, assign
                         # sample xml element node
@@ -1054,6 +1054,7 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-range")
         res = True
+        is_skipped = False
         iddict = {}
         predict = {}
         postdict = {}
@@ -1177,7 +1178,8 @@ class Operator:
                                                     x_path, 
                                                     id_val),
                                                 extra=self.log_detail)
-                                    return
+                                    is_skipped = True
+                                    continue
                             
                             
                             self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
@@ -1191,6 +1193,10 @@ class Operator:
                                 'actual_node_value': None}
                             tresult['failed'].append(
                                 deepcopy(node_value_failed))
+        
+        if is_skipped and count_fail == 0 and count_pass == 0:
+            return
+        
         if res is False:
             msg = 'All "%s" is in range:  "%f - %f" [ %d matched / %d failed ]' % (
                 element, range1, range2, count_pass, count_fail)
