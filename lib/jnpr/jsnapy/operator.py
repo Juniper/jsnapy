@@ -1707,6 +1707,7 @@ class Operator:
               info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-in")
         res = True
+        is_skipped = False
         iddict = {}
         predict = {}
         postdict = {}
@@ -1824,7 +1825,8 @@ class Operator:
                                                 id_val
                                                 ),
                                             extra=self.log_detail)
-                                return
+                                is_skipped = True
+                                continue
                             
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                     id_val), extra=self.log_detail)
@@ -1837,6 +1839,9 @@ class Operator:
                             'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
 
+        if is_skipped and count_fail == 0 and count_pass == 0:
+            return 
+            
         if res is False:
             msg = 'All "{0}" is not in list {1} [ {2} matched / {3} failed ]'.format(
                 element,
