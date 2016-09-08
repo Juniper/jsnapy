@@ -57,6 +57,87 @@ class TestStringOperators(unittest.TestCase):
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_contains_ignore_null_fail(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_contains_ignore-null_fail.yml')
+        config_file = open(conf_file, 'r')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_contains_pre")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
+
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_contains_ignore_null_fail_1(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_contains_ignore-null_fail_1.yml')
+        config_file = open(conf_file, 'r')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_contains_pre")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
+
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_contains_ignore_null_skip(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_contains_ignore-null_skip.yml')
+        config_file = open(conf_file, 'r')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_contains_pre")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 0)
+
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_contains_ignore_null_skip_1(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_contains_ignore-null_skip_1.yml')
+        config_file = open(conf_file, 'r')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_contains_pre")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 0)
+
     @patch('jnpr.jsnapy.check.get_path')
     def test_is_in(self, mock_path):
         self.chk = False
