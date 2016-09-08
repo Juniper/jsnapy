@@ -310,6 +310,93 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_delta_post")
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 0)
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_delta_ignore_null_fail(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_delta_ignore-null_fail.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_delta_pre",
+            self.action,
+            "snap_delta_post")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_delta_ignore_null_fail_1(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_delta_ignore-null_fail_1.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_delta_pre",
+            self.action,
+            "snap_delta_post")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_delta_ignore_null_skip(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_delta_ignore-null_skip.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_delta_pre",
+            self.action,
+            "snap_delta_post")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 0)
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_delta_ignore_null_skip_1(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_delta_ignore-null_skip_1.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_delta_pre",
+            self.action,
+            "snap_delta_post")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 0)
 
     @patch('jnpr.jsnapy.check.get_path')
     def test_delta_fail(self, mock_path):

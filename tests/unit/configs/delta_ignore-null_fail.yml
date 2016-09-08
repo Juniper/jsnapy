@@ -1,0 +1,14 @@
+tests_include:
+  - check_chassis_fpc
+
+check_chassis_fpc:
+  - command: show chassis fpc
+  - item: 
+      
+      xpath: //bogus-fpc
+      id: slot
+      tests:
+        - delta: memory-heap-utilization, 50%
+          info: "Test Succeeded!! Memory heap utilisation of the FPC {{id_0}} has changed less than 50%"
+          err: "Test Failed!!! Memory heap utilisation of the FPC {{id_0}} has changed less than 50%"
+
