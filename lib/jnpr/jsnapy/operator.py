@@ -460,6 +460,7 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("all-same")
         res = True
+        is_skipped= False
         iddict = {}
         predict = {}
         postdict = {}
@@ -517,68 +518,116 @@ class Operator:
                                     '/' +
                                     ele_list[0])
                     value = nodes_found[0].text.strip() if nodes_found else None
+                #if value is None, then no nodes were found. Illogical to continue when ignore_null is None
+                if value is None:
+                    if ignore_null is not None:
+                        if (type(ignore_null) is bool and ignore_null is True) \
+                            or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                            self.logger_testop.warning(colorama.Fore.YELLOW +
+                                        "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
+                                            x_path + '/' + ele_list[0]),
+                                        extra=self.log_detail)
+                            return
+                    
+                    self.logger_testop.error(colorama.Fore.RED +
+                            "ERROR!! Nodes are not present in given Xpath: <{}>".format(
+                                x_path +'/' +ele_list[0]), 
+                                extra=self.log_detail)
 
-                if value is None and ignore_null is not None:
-                    if (type(ignore_null) is bool and ignore_null is True) \
-                        or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
-                        self.logger_testop.warning(colorama.Fore.YELLOW +
-                                     "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
-                                         x_path + '/' + ele_list[0]),
-                                     extra=self.log_detail)
-                        return
-                tresult['expected_node_value'] = value
-                for i in range(len(post_nodes)):
-                    # if length of pre node is less than post node, assign
-                    # sample xml element node
-                    if i >= len(pre_nodes):
-                        pre_nodes.append(etree.XML('<sample></sample>'))
+                    res = False
+                    count_fail = count_fail + 1
+                    node_value_failed = {
+                        'id': iddict,
+                        'pre': predict,
+                        'post': postdict,
+                        'actual_node_value': None,
+                        'xpath_error': True}
+                    tresult['failed'].append(deepcopy(node_value_failed))
 
-                    iddict, prenode, postnode, id_val = self._find_element(
-                        id_list, iddict, element, pre_nodes[i], post_nodes[i])
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
-                    predict, postdict = self._get_nodevalue(
-                        predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
-                    if postnode:
-                        for k in range(len(postnode)):
-                            # if length of pre node is less than post node,
-                            # assign sample node
-                            if k >= len(prenode):
-                                prenode.append(etree.XML('<sample></sample>'))
+                else:
+                    
+                    tresult['expected_node_value'] = value
+                    for i in range(len(post_nodes)):
+                        # if length of pre node is less than post node, assign
+                        # sample xml element node
+                        if i >= len(pre_nodes):
+                            pre_nodes.append(etree.XML('<sample></sample>'))
 
-                            predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
-                                predict, postdict, element, postnode[k], prenode[k])
-                            if post_nodevalue != value:
-                                res = False
-                                count_fail = count_fail + 1
-                                self._print_message(
-                                    err_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "info")
-                                node_value_failed = {
-                                    'id': id_val,
-                                    'pre': predict,
-                                    'post': postdict,
-                                    'actual_node_value': post_nodevalue}
-                                tresult['failed'].append(
-                                    deepcopy(node_value_failed))
-                            else:
-                                count_pass = count_pass + 1
-                                self._print_message(
-                                    info_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "debug")
-                                node_value_passed = {
-                                    'id': id_val,
-                                    'pre': predict,
-                                    'post': postdict,
-                                    'actual_node_value': post_nodevalue}
-                                tresult['passed'].append(
-                                    deepcopy(node_value_passed))
+                        iddict, prenode, postnode, id_val = self._find_element(
+                            id_list, iddict, element, pre_nodes[i], post_nodes[i])
+                        predict, postdict = self._get_nodevalue(
+                            predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, err_mssg)
+                        predict, postdict = self._get_nodevalue(
+                            predict, postdict, pre_nodes[i], post_nodes[i], x_path, element, info_mssg)
+                        if postnode:
+                            for k in range(len(postnode)):
+                                # if length of pre node is less than post node,
+                                # assign sample node
+                                if k >= len(prenode):
+                                    prenode.append(etree.XML('<sample></sample>'))
+
+                                predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
+                                    predict, postdict, element, postnode[k], prenode[k])
+                                if post_nodevalue != value:
+                                    res = False
+                                    count_fail = count_fail + 1
+                                    self._print_message(
+                                        err_mssg,
+                                        iddict,
+                                        predict,
+                                        postdict,
+                                        "info")
+                                    node_value_failed = {
+                                        'id': id_val,
+                                        'pre': predict,
+                                        'post': postdict,
+                                        'actual_node_value': post_nodevalue}
+                                    tresult['failed'].append(
+                                        deepcopy(node_value_failed))
+                                else:
+                                    count_pass = count_pass + 1
+                                    self._print_message(
+                                        info_mssg,
+                                        iddict,
+                                        predict,
+                                        postdict,
+                                        "debug")
+                                    node_value_passed = {
+                                        'id': id_val,
+                                        'pre': predict,
+                                        'post': postdict,
+                                        'actual_node_value': post_nodevalue}
+                                    tresult['passed'].append(
+                                        deepcopy(node_value_passed))
+                        else:
+                            #this condition arises when certain parent nodes don't have the searched child node.
+                            #If ignore-null is True then we skip those cases else raise an error
+                            if ignore_null is not None:
+                                if (type(ignore_null) is bool and ignore_null is True) \
+                                    or  (type(ignore_null) is str and ignore_null.lower() == 'true'):
+                                    self.logger_testop.warning(colorama.Fore.YELLOW +
+                                                "SKIPPING!! Node <{}> not found at xpath <{}> for IDs: {}".format(
+                                                    element, 
+                                                    x_path, 
+                                                    id_val),
+                                                extra=self.log_detail)
+                                    is_skipped = True
+                                    continue
+                            
+                            self.logger_testop.error(colorama.Fore.RED +
+                                                    "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path, id_val), extra=self.log_detail)
+                            node_value_failed = {
+                                'id': id_val,
+                                'pre': predict,
+                                'post': postdict,
+                                'actual_node_value': None}
+                            tresult['failed'].append(deepcopy(node_value_failed))
+                            res = False
+                            count_fail = count_fail + 1
+
+
+        if is_skipped and count_fail == 0 and count_pass == 0:
+            return
 
         if res is False:
             msg = 'Value of all "%s" at xpath "%s" is not same [ %d matched / %d failed ]' % (

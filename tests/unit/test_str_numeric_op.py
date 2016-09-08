@@ -149,8 +149,8 @@ class TestStrNumericOperators(unittest.TestCase):
             self.db,
             self.snap_del,
             "snap_all-same-success_pre")
-        self.assertEqual(oper.no_passed, 1) #comparison between None values. All values are None.   
-        self.assertEqual(oper.no_failed, 0)
+        self.assertEqual(oper.no_passed, 0) #comparison between None values. All values are None.   
+        self.assertEqual(oper.no_failed, 1)
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
