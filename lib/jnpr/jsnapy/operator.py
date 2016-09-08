@@ -460,7 +460,7 @@ class Operator:
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("all-same")
         res = True
-        is_skipped= False
+        is_skipped = False
         iddict = {}
         predict = {}
         postdict = {}
@@ -1263,6 +1263,7 @@ class Operator:
               info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-gt")
         res = True
+        is_skipped = False
         iddict = {}
         predict = {}
         postdict = {}
@@ -1376,7 +1377,8 @@ class Operator:
                                                 x_path, 
                                                 id_val),
                                             extra=self.log_detail)
-                                return
+                                is_skipped = True
+                                continue
 
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                     id_val), extra=self.log_detail)
@@ -1389,6 +1391,9 @@ class Operator:
                             'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
 
+        if is_skipped and count_fail == 0 and count_pass == 0:
+            return
+            
         if res is False:
             msg = 'All "%s" is not greater than  "%d" [ %d matched / %d failed ]' % (
                 element, val1, count_pass, count_fail)
@@ -1406,6 +1411,7 @@ class Operator:
               info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-lt")
         res = True
+        is_skipped = False
         iddict = {}
         predict = {}
         postdict = {}
@@ -1518,7 +1524,8 @@ class Operator:
                                                 x_path, 
                                                 id_val),
                                             extra=self.log_detail)
-                                return
+                                is_skipped = True
+                                continue
                         
                         self.logger_testop.error(colorama.Fore.RED + "ERROR!! Node <{}> not found at xpath <{}> for IDs: {}".format(element, x_path,
                                                                                                                                     id_val), extra=self.log_detail)
@@ -1530,6 +1537,9 @@ class Operator:
                             'post': postdict,
                             'actual_node_value': None}
                         tresult['failed'].append(deepcopy(node_value_failed))
+
+        if is_skipped and count_fail == 0 and count_pass == 0:
+            return
 
         if res is False:
             msg = 'All "%s" is not less than %d" [ %d matched / %d failed ]' % (
