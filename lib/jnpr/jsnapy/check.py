@@ -157,6 +157,10 @@ class Comparator:
                 testcases = test['item']['tests']
                 iter = False
 
+            top_ignore_null = False
+            if 'ignore-null' in test:
+                top_ignore_null = test.get('ignore-null')
+            
             # analyze individual test case and extract element list, info and
             # err message ####
             for path in testcases:
@@ -178,7 +182,7 @@ class Comparator:
                 # default error and info message
                 err_mssg = self.get_err_mssg(path, ele_list)
                 info_mssg = self.get_info_mssg(path, ele_list)
-                ignore_null = path.get('ignore-null')
+                ignore_null = path.get('ignore-null') if 'ignore-null' in path else top_ignore_null
                 # check test operators, below mentioned four are allowed only
                 # with --check ####
                 if testop in [
