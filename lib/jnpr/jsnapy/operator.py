@@ -329,6 +329,8 @@ class Operator:
                 element, x_path, count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -432,6 +434,9 @@ class Operator:
             msg = 'All "%s" do not exists at xpath "%s" [ %d matched ]' % (
                 element, x_path, count_pass)
             self._print_result(msg, res)
+
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -548,6 +553,9 @@ class Operator:
             msg = 'Value of all "%s" at xpath "%s" is same [ %d matched ]' % (
                 element, x_path, count_pass)
             self._print_result(msg, res)
+
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -671,6 +679,8 @@ class Operator:
                 element, value, count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -792,6 +802,8 @@ class Operator:
                 element, value, count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -923,6 +935,9 @@ class Operator:
             msg = 'All "%s" is in range "%f - %f" [ %d matched ]' % (
                 element, range1, range2, count_pass)
             self._print_result(msg, res)
+
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1054,6 +1069,8 @@ class Operator:
                 element, range1, range2, count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1175,6 +1192,8 @@ class Operator:
                 element, val1, count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1295,6 +1314,8 @@ class Operator:
                 element, val1, count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1416,6 +1437,8 @@ class Operator:
                 element, value, count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1543,6 +1566,8 @@ class Operator:
                 count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1669,6 +1694,8 @@ class Operator:
                 count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1826,6 +1853,8 @@ class Operator:
                 count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1981,6 +2010,9 @@ class Operator:
                 tresult['node_name'],
                 count_pass)
             self._print_result(msg, res)
+
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -2133,6 +2165,8 @@ class Operator:
                 count_pass)
             self._print_result(msg, res)
 
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -2500,6 +2534,9 @@ class Operator:
                 delta_val,
                 count_pass)
             self._print_result(msg, res)
+
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -2626,6 +2663,9 @@ class Operator:
             msg = 'All "%s" matches with regex "%s" [ %d matched ]' % (
                 element, value, count_pass)
             self._print_result(msg, res)
+            
+        tresult['info'] = info_mssg
+        tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
