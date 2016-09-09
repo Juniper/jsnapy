@@ -44,8 +44,11 @@ class TestCheck(unittest.TestCase):
             self.assertNotEqual(c_list[0][0].find(err), -1)
 
     @patch('logging.Logger.info')
-    def test_incorrect_test_file(self, mock_info):
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_incorrect_test_file(self, mock_path, mock_info):
         self.chk = False
+        #mimicking the testfiles path found in the jsanpy.cfg
+        mock_path.return_value = os.path.join('/etc', 'jsnapy', 'testfiles')
         comp = Comparator()
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_incorrect_2.yml')
