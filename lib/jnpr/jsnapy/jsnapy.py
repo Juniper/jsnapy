@@ -641,7 +641,7 @@ class SnapAdmin:
     ############################### functions to support module ##############
 
     def multiple_device_details(
-            self, host, config_data, pre_name, action, post_name):
+            self, hosts, config_data, pre_name, action, post_name):
         """
         Called when multiple devices are given in config file
         :param host: hostname
@@ -738,9 +738,9 @@ class SnapAdmin:
                     None,
                     None,
                     action)
-            if host.__contains__('include'):
+            if host.__contains__('include') or len(config_data.get('hosts'))>1:
                 res_obj = self.multiple_device_details(
-                    host,
+                    config_data.get('hosts'),
                     config_data,
                     pre_name,
                     action,
