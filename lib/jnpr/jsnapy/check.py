@@ -18,17 +18,17 @@ from icdiff import diff, codec_print, get_options, ConsoleDiff
 from jnpr.jsnapy.xml_comparator import XmlComparator
 from jnpr.jsnapy import get_path
 
-colorama.init(autoreset=True)
+# colorama.init(autoreset=True)
 
 class Comparator:
 
     def __init__(self):
-        colorama.init(autoreset=True)
+        # colorama.init(autoreset=True)
         self.logger_check = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
 
-    def __del__(self):
-        colorama.init(autoreset=True)
+    # def __del__(self):
+    #     colorama.init(autoreset=True)
 
     def generate_snap_file(self, device, prefix, name, reply_format):
         """

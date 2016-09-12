@@ -15,7 +15,7 @@ from lxml import etree
 from copy import deepcopy
 import traceback
 
-colorama.init(autoreset=True)
+# colorama.init(autoreset=True)
 
 
 class Operator:
@@ -27,11 +27,11 @@ class Operator:
         self.device = None
         self.log_detail = {'hostname': None}
         self.test_details = defaultdict(list)
-        colorama.init(autoreset=True)
+        # colorama.init(autoreset=True)
         self.logger_testop = logging.getLogger(__name__)
 
-    def __del__(self):
-        colorama.init(autoreset=True)
+    # def __del__(self):
+        # colorama.init(autoreset=True)
 
     @property
     def test_results(self):
@@ -346,7 +346,7 @@ class Operator:
     def not_exists(self, x_path, ele_list, err_mssg, info_mssg,
                    teston, iter, id_list, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-exists")
-        colorama.init(autoreset=True)
+        # colorama.init(autoreset=True)
         res = True
         iddict = {}
         predict = {}
