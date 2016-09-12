@@ -4,7 +4,6 @@ from jnpr.jsnapy.check import Comparator
 from mock import patch
 import os
 from nose.plugins.attrib import attr
-
 @attr('unit')
 class TestStrNumericOperators(unittest.TestCase):
 
@@ -173,6 +172,28 @@ class TestStrNumericOperators(unittest.TestCase):
             "snap_all-same-success_pre")
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 0)
+    
+    @patch('logging.Logger.debug')
+    @patch('logging.Logger.info')
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_all_same_ignore_null_pass(self, mock_path, mock_debug, mock_info):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_all-same-ignore-null_pass.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_all-same-success_pre_ignore_null")
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 2)
 
     @patch('logging.Logger.debug')
     @patch('logging.Logger.info')
