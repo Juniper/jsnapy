@@ -485,8 +485,8 @@ class SnapAdmin:
 
             for hostname, key_value in host_dict.iteritems():
                 #The file config takes precedence over cmd line params -- no changes made
-                username = key_value.get('username') or self.args.login
-                password = key_value.get('passwd') or self.args.passwd
+                username = self.args.login or key_value.get('username') 
+                password = self.args.passwd or key_value.get('passwd') 
                 #if --port arg is given on the cmd then that takes precedence                
                 port = self.args.port
                 if port is not None:
@@ -504,7 +504,6 @@ class SnapAdmin:
                 )
                 t.start()
                 t.join()
-                # self.connect(hostname,username, password,output_file, **key_value)
         # login credentials are given from command line
         else:
             hostname = self.args.hostname
@@ -644,7 +643,7 @@ class SnapAdmin:
             self, hosts, config_data, pre_name, action, post_name):
         """
         Called when multiple devices are given in config file
-        :param host: hostname
+        :param hosts: List of devices or a includes a file
         :param config_data: data of main config file
         :param pre_name: pre snapshot filename or file tag
         :param action: action to be taken, snap, snapcheck, check
@@ -653,47 +652,78 @@ class SnapAdmin:
         """
         res_obj = []
         self.host_list = []
-        login_file = host['include']
-        login_file = login_file if os.path.isfile(
-            host.get('include')) else os.path.join(
-            get_path(
-                'DEFAULT',
-                'test_file_path'),
-            login_file)
-        login_file = open(login_file, 'r')
-        dev_file = yaml.load(login_file)
-        gp = host.get('group', 'all')
-        dgroup = [i.strip().lower() for i in gp.split(',')]
-        for dgp in dev_file:
-            if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
-                for val in dev_file[dgp]:
-                    hostname = val.keys()[0]
-                    self.host_list.append(hostname)
-                    self.log_detail['hostname'] = hostname
-                    username = val.get(hostname).get('username')
-                    password = val.get(hostname).get('passwd')
-                    key_value = val.get(hostname)
-                    key_value= self.get_values(key_value)
-                    t = Thread(
-                        target=self.connect,
-                        args=(
-                            hostname,
-                            username,
-                            password,
-                            pre_name,
-                            config_data,
-                            action,
-                            post_name),
-                        kwargs= key_value
-                    )
-                    t.start()
-                    if action == "snap":
-                        res_obj.append(self.snap_q.get())
-                    elif action in ["snapcheck", "check"]:
-                        res_obj.append(self.q.get())
-                    else:
-                        res_obj.append(None)
-                    t.join()
+        host_dict={}
+
+        first_entry = hosts[0]
+        if 'include' in first_entry:
+            devices_file_name = first_entry['include']
+            if os.path.isfile(devices_file_name):
+                lfile = devices_file_name
+            else:
+                lfile = os.path.join(
+                            get_path(
+                                'DEFAULT',
+                                'test_file_path'),
+                            devices_file_name)
+            login_file = open(lfile, 'r')
+            dev_file = yaml.load(login_file)
+            gp = first_entry.get('group', 'all')
+
+            dgroup = [i.strip().lower() for i in gp.split(',')]
+            for dgp in dev_file:
+                if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
+                    for val in dev_file[dgp]:
+                        hostname = val.keys()[0]
+                        self.log_detail = {'hostname': hostname}
+                        if val.get(hostname) is not None and hostname not in host_dict:
+                            host_dict[hostname] = deepcopy(val.get(hostname))
+                            self.host_list.append(hostname)
+        else:
+            for host in hosts:
+                try:
+                    hostname = host['device']
+                    self.log_detail = {'hostname': hostname}
+                except KeyError as ex:
+                    self.logger.error(
+                    colorama.Fore.RED +
+                    "ERROR!! KeyError 'device' key not found",
+                    extra=self.log_detail)
+                except Exception as ex:
+                    self.logger.error(
+                    colorama.Fore.RED +
+                    "ERROR!! %s" %
+                    ex,
+                    extra=self.log_detail)
+                else:
+                    if hostname not in host_dict:
+                        self.host_list.append(hostname)
+                        host_dict[hostname] = deepcopy(host)
+
+        for hostname, key_value in host_dict.iteritems():
+            username = key_value.get('username')
+            password = key_value.get('passwd')
+            key_value = self.get_values(key_value)
+            t = Thread(
+                target=self.connect,
+                args=(
+                    hostname,
+                    username,
+                    password,
+                    pre_name,
+                    config_data,
+                    action,
+                    post_name),
+                kwargs= key_value
+            )
+            t.start()
+            if action == "snap":
+                res_obj.append(self.snap_q.get())
+            elif action in ["snapcheck", "check"]:
+                res_obj.append(self.q.get())
+            else:
+                res_obj.append(None)
+            t.join()
+
         return res_obj
 
     def extract_data(
