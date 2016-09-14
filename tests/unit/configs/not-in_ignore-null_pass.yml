@@ -9,4 +9,5 @@ check_show_interfaces_terse:
         - not-in: oper-status, up, dow
           info: "Test Succeeded!! Physical operational status is valid"
           err: "Test Failed!!! Physical operational status is not valid, {{pre['oper-status']}}"
+          ignore-null: True
 
