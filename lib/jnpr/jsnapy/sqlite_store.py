@@ -26,7 +26,7 @@ class JsnapSqlite:
         try:
             with sqlite3.connect(self.db_filename) as conn:
                 # Creating schema if it does not exists
-                sqlstr = """create table if not exists %s (
+                sqlstr = """create table if not exists '%s' (
                     id           integer not null,
                     filename     text,
                     cli_command  text,
@@ -46,11 +46,11 @@ class JsnapSqlite:
         :param db: database name
         """
         with sqlite3.connect(self.db_filename) as con:
-            con.execute("""update %s set id = id + 1 where cli_command = :cli""" % self.table_name,
+            con.execute("""update '%s' set id = id + 1 where cli_command = :cli""" % self.table_name,
                         {'cli': db['cli_command']})
-            con.execute("""delete from %s where id>49 AND cli_command = :cli""" % self.table_name,
+            con.execute("""delete from '%s' where id>49 AND cli_command = :cli""" % self.table_name,
                         {'cli': db['cli_command']})
-            con.execute("""insert into %s (id, filename, cli_command, snap_name, data_format, data) values (0, :file,
+            con.execute("""insert into '%s' (id, filename, cli_command, snap_name, data_format, data) values (0, :file,
                          :cli, :snap, :format, :xml)""" % self.table_name, {'file': db['filename'],
                                                                             'cli': db['cli_command'], 'snap': db['snap_name'],
                                                                             'format': db['format'], 'xml': db['data']})
