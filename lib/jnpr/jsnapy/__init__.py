@@ -6,6 +6,8 @@
 from .version import __version__
 import ConfigParser
 import os
+import colorama
+colorama.init(autoreset=True)
 
 
 def get_path(section, value):
