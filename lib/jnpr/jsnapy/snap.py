@@ -16,14 +16,14 @@ from jnpr.junos.exception import RpcError
 from jnpr.jsnapy.sqlite_store import JsnapSqlite
 import lxml
 
-# colorama.init(autoreset=True)
+colorama.init(autoreset=True)
 
 class Parser:
 
     def __init__(self):
         self.logger_snap = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
-        # colorama.init(autoreset=True)
+        colorama.init(autoreset=True)
         self.reply = {}
 
     def _write_file(self, rpc_reply, format, output_file):
