@@ -27,7 +27,6 @@ from jnpr.jsnapy.operator import Operator
 from jnpr.junos.exception import ConnectAuthError
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
-# colorama.init(autoreset=True)
 
 class SnapAdmin:
 
@@ -38,7 +37,6 @@ class SnapAdmin:
         """
         taking parameters from command line
         """
-        # colorama.init(autoreset=True)
         self.q = Queue.Queue()
         self.snap_q = Queue.Queue()
         self.log_detail = {'hostname': None}
@@ -1011,4 +1009,6 @@ def main():
                                 "ERROR!! %s \nComplete Message:  %s" % (type(ex).__name__, str(ex)), extra=js.log_detail)
 
 if __name__ == '__main__':
+    for i in range(0,10):
+        print "line "+i
     main()
