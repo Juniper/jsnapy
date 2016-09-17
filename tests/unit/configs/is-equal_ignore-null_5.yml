@@ -1,0 +1,13 @@
+tests_include:
+  - test_interfaces_terse
+
+test_interfaces_terse:
+  - command: show interfaces terse ge-*
+  - iterate:
+      id: ./name
+      xpath: //physical-interface
+      tests:
+        - is-equal: oper-bogus-status, down
+          info: "Test Succeeded!! oper-status is {{pre['oper-status']}} for interface {{id_0}}"
+          err: "Test Failed!!! oper-status is {{post['oper-status']}} for interface {{id_0}}"
+          ignore-null: True

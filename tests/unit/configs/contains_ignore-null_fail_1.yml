@@ -1,0 +1,12 @@
+tests_include:
+  - test_version_check
+
+test_version_check:
+  - command: show version invoke-on all-routing-engines
+  - iterate:
+      xpath: '//software-information'
+      tests:
+        - contains: bogus-package-information[1]/comment, 14.2 
+          info: "Test Succeeded!! Checking Junos version for 14.2 release. Found version {{  pre['package-information[1]/comment'] }} with product model {{pre['product-model']}}"
+          err: "Test Failed!!! Found different Junos version."
+

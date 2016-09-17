@@ -1,0 +1,14 @@
+
+# for one device, can be given like this:
+hosts:
+  - device: 10.21.13.4
+    username : demo 
+    passwd: demo123
+tests:
+  - contains_ignore-null_fail.yml
+
+sqlite:
+  - store_in_sqlite: yes
+    check_from_sqlite: no
+    database_name: jbb.db
+
