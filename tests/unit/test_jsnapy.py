@@ -68,7 +68,7 @@ class TestSnapAdmin(unittest.TestCase):
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         js = SnapAdmin()
         conf_file = os.path.join(os.path.dirname(__file__),
-                                 'configs', 'main2.yml')
+                                 'configs', 'main1.yml')
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
         js.login("snap_1")
