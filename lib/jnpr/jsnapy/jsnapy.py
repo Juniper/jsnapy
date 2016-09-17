@@ -14,7 +14,6 @@ import sys
 import textwrap
 from copy import deepcopy
 from threading import Thread
-# from multiprocessing.dummy import Pool as ThreadPool
 
 import yaml
 from jnpr.jsnapy import get_path, version
