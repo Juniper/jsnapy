@@ -613,6 +613,9 @@ class SnapAdmin:
         if config_data is None:
             config_data = self.main_file
 
+        if 'local' in config_data:
+            self.args.local = config_data['local']
+
         if self.args.snap is True or ( self.args.snapcheck is True and self.args.local is None ) or action in [
                 "snap", "snapcheck"]:
             self.logger.info(
@@ -664,15 +667,35 @@ class SnapAdmin:
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in [
                 "check", "snapcheck"]:
             
-            if self.args.local is not None:
-                output_file = self.args.local  
+            flag = False
+            if self.args.local is not None and type(self.args.local) is list:
+                output_file = self.args.local
+                res = {}
+                for local_snap in output_file:
+                    ret_obj = self.get_test(
+                                config_data,
+                                hostname,
+                                local_snap,
+                                post_snap,
+                                action)
+                    res[local_snap] = ret_obj
+                flag = True
+            elif self.args.local is not None and type(self.args.local) is str:
+                output_file = self.args.local
+            elif self.args.local is not None:
+                self.logger.error(
+                    colorama.Fore.RED +
+                    "ERROR!! Unable to parse 'local' option", extra=self.log_detail)
+                return
 
-            res = self.get_test(
-                config_data,
-                hostname,
-                output_file,
-                post_snap,
-                action)
+        if not flag:
+           res = self.get_test(
+                    config_data,
+                    hostname,
+                    output_file,
+                    post_snap,
+                    action)     
+                
         return res
 
     ############################### functions to support module ##############
