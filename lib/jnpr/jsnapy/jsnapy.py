@@ -110,6 +110,10 @@ class SnapAdmin:
             "-f", "--file",
             help="config file to take snapshot",
             type=str)
+        self.parser.add_argument(
+            "--local",
+            help="stored snapshot name to run snapcheck on",
+            type=str)
         self.parser.add_argument("-t", "--hostname", help="hostname", type=str)
         self.parser.add_argument(
             "-p",
@@ -609,7 +613,7 @@ class SnapAdmin:
         if config_data is None:
             config_data = self.main_file
 
-        if self.args.snap is True or self.args.snapcheck is True or action in [
+        if self.args.snap is True or ( self.args.snapcheck is True and self.args.local is None ) or action in [
                 "snap", "snapcheck"]:
             self.logger.info(
                 colorama.Fore.BLUE +
@@ -659,6 +663,10 @@ class SnapAdmin:
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in [
                 "check", "snapcheck"]:
+            
+            if self.args.local is not None:
+                output_file = self.args.local  
+
             res = self.get_test(
                 config_data,
                 hostname,
