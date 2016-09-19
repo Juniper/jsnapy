@@ -688,13 +688,13 @@ class SnapAdmin:
                     "ERROR!! Unable to parse 'local' option", extra=self.log_detail)
                 return
 
-        if not flag:
-           res = self.get_test(
-                    config_data,
-                    hostname,
-                    output_file,
-                    post_snap,
-                    action)     
+            if not flag:
+                res = self.get_test(
+                            config_data,
+                            hostname,
+                            output_file,
+                            post_snap,
+                            action)     
                 
         return res
 
