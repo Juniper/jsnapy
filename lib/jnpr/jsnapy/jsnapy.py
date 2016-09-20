@@ -70,11 +70,12 @@ class SnapAdmin:
             '--check',
             action='store_true',
             help=" compare pre and post snapshots based on test operators specified in test file")
+        
         group.add_argument(
             '--snapcheck',
             action='store_true',
             help='check current snapshot based on test file')
-
+        
       #########
       # will supoort it later
       # for windows
@@ -112,8 +113,8 @@ class SnapAdmin:
             type=str)
         self.parser.add_argument(
             "--local",
-            help="stored snapshot name to run snapcheck on",
-            type=str)
+            action="store_true",
+            help="whether to run snapcheck on local snapshot")
         self.parser.add_argument("-t", "--hostname", help="hostname", type=str)
         self.parser.add_argument(
             "-p",
@@ -614,10 +615,9 @@ class SnapAdmin:
             config_data = self.main_file
 
         if 'local' in config_data:
-            self.args.local = config_data['local']
-
-        if self.args.snap is True or ( self.args.snapcheck is True and self.args.local is None ) or action in [
-                "snap", "snapcheck"]:
+            self.args.local = True
+        
+        if (self.args.snap is True or action is "snap") or ( (self.args.snapcheck is True or action is "snapcheck") and self.args.local is None ):
             self.logger.info(
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................", hostname, extra=self.log_detail)
@@ -667,9 +667,9 @@ class SnapAdmin:
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in [
                 "check", "snapcheck"]:
             
-            flag = False
-            if self.args.local is not None and type(self.args.local) is list:
-                output_file = self.args.local
+            
+            if self.args.local is True and 'local' in config_data:
+                output_file = config_data['local']
                 res = {}
                 for local_snap in output_file:
                     ret_obj = self.get_test(
@@ -679,16 +679,7 @@ class SnapAdmin:
                                 post_snap,
                                 action)
                     res[local_snap] = ret_obj
-                flag = True
-            elif self.args.local is not None and type(self.args.local) is str:
-                output_file = self.args.local
-            elif self.args.local is not None:
-                self.logger.error(
-                    colorama.Fore.RED +
-                    "ERROR!! Unable to parse 'local' option", extra=self.log_detail)
-                return
-
-            if not flag:
+            else:
                 res = self.get_test(
                             config_data,
                             hostname,
@@ -766,7 +757,7 @@ class SnapAdmin:
         :param pre_name: pre snapshot filename or file tag
         :param action: action to be taken, snap, snapcheck, check
         :param post_name: post snapshot filename or file tag
-        :return: return object of testop.Operator containing test details
+        :return: return list of object of testop.Operator containing test details or list of dictionary of object of testop.Operator containing test details for each stored snapshot
         """
         val =[]
         if os.path.isfile(config_data):
@@ -828,7 +819,7 @@ class SnapAdmin:
                 return val
 
     def extract_dev_data(
-            self, dev, config_data, pre_name=None, action=None, post_snap=None):
+            self, dev, config_data, pre_name=None, action=None, post_snap=None, local=False):
         """
         Used to parse details given in main config file, when device object is passed in function
         :param dev: Device object
@@ -836,7 +827,7 @@ class SnapAdmin:
         :param pre_name: pre snapshot filename or file tag
         :param action: action to be taken, snap, check or snapcheck
         :param post_snap: post snapshot filename or file tag
-        :return: return object of testop.Operator containing test details
+        :return: return list of object of testop.Operator containing test details or list of dictionary of object of testop.Operator containing test details for each stored snapshot
         """
         res = []
         if isinstance(config_data, dict):
@@ -871,8 +862,12 @@ class SnapAdmin:
                     None,
                     None,
                     action)
+            
+            
+            if 'local' in config_data:
+                local = True 
 
-            if action in ["snap", "snapcheck"]:
+            if action is "snap" or ( action is "snapcheck" and local is False ) :
                 try:
                     res.append(self.generate_rpc_reply(
                         dev,
@@ -887,14 +882,25 @@ class SnapAdmin:
                     res.append(None)
 
             if action in ["snapcheck", "check"]:
-                res = []
-                res.append(
-                    self.get_test(
-                        config_data,
-                        hostname,
-                        pre_name,
-                        post_snap,
-                        action))
+                if local and 'local' in config_data:
+                    res={}
+                    for local_snap in config_data['local']:
+                        res[local_snap] = self.get_test(
+                                                config_data,
+                                                hostname,
+                                                pre_name,
+                                                post_snap,
+                                                action)
+                    res = [res]
+                else:
+                    res = []
+                    res.append(
+                        self.get_test(
+                            config_data,
+                            hostname,
+                            pre_name,
+                            post_snap,
+                            action))
             return res
 
     def snap(self, data, file_name, dev=None):
@@ -910,7 +916,7 @@ class SnapAdmin:
             res = self.extract_data(data, file_name, "snap")
         return res
 
-    def snapcheck(self, data, file_name=None, dev=None):
+    def snapcheck(self, data, file_name=None, dev=None, local= False):
         """
         Function equivalent to --snapcheck operator, for module version
         :param data: either main config file or string containing details of main config file
@@ -922,7 +928,7 @@ class SnapAdmin:
             file_name = "snap_temp"
             self.snap_del = True
         if isinstance(dev, Device):
-            res = self.extract_dev_data(dev, data, file_name, "snapcheck")
+            res = self.extract_dev_data(dev, data, file_name, "snapcheck", local=local)
         else:
             res = self.extract_data(data, file_name, "snapcheck")
         return res
