@@ -617,7 +617,7 @@ class SnapAdmin:
         if 'local' in config_data:
             self.args.local = True
         
-        if (self.args.snap is True or action is "snap") or ( (self.args.snapcheck is True or action is "snapcheck") and self.args.local is None ):
+        if (self.args.snap is True or action is "snap") or ( (self.args.snapcheck is True or action is "snapcheck") and self.args.local is not True ):
             self.logger.info(
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................", hostname, extra=self.log_detail)

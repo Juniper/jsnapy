@@ -2,7 +2,7 @@ import unittest
 import yaml
 import os
 from jnpr.jsnapy.jsnapy import SnapAdmin
-from mock import patch, MagicMock
+from mock import patch, MagicMock, call
 from contextlib import nested
 from nose.plugins.attrib import attr
 import argparse
@@ -136,6 +136,59 @@ class TestSnapAdmin(unittest.TestCase):
             js.args.pre_snapfile,
             None,
             None)
+
+    @patch('jnpr.jsnapy.jsnapy.Device')
+    @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
+    @patch('jnpr.jsnapy.SnapAdmin.generate_rpc_reply')
+    @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
+    def test_connect_snapcheck_local_cmd(
+            self, mock_log, mock_snap, mock_check, mock_dev):
+
+        js = SnapAdmin()
+        js.args.snapcheck = True
+        js.args.local = True
+        js.args.file = os.path.join(os.path.dirname(__file__),
+                                    'configs', 'main_1.yml')
+        config_file = open(js.args.file, 'r')
+        config_data = yaml.load(config_file)
+        js.args.pre_snapfile = "mock_snap"
+        js.get_hosts()
+        self.assertFalse(mock_dev.called)
+        self.assertFalse(mock_snap.called)
+        #we check whether get_test was called, indirectly checking whether compare_tests was called.
+        mock_check.assert_called_once_with(
+            '10.216.193.114',
+            config_data,
+            "mock_snap",
+            None,
+            None) 
+    
+
+    @patch('jnpr.jsnapy.jsnapy.Device')
+    @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
+    @patch('jnpr.jsnapy.SnapAdmin.generate_rpc_reply')
+    @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
+    def test_connect_snapcheck_local_config(
+            self, mock_log, mock_snap, mock_check, mock_dev):
+
+        js = SnapAdmin()
+        js.args.snapcheck = True
+        js.args.file = os.path.join(os.path.dirname(__file__),
+                                    'configs', 'main_local_snapcheck.yml')
+        config_file = open(js.args.file, 'r')
+        config_data = yaml.load(config_file)
+        js.args.pre_snapfile = "mock_snap"
+        js.get_hosts()
+        self.assertTrue(js.args.local)
+        self.assertFalse(mock_dev.called)
+        self.assertFalse(mock_snap.called)
+        #we check whether get_test was called, indirectly checking whether compare_tests was called.
+        expected_calls_made = [call('10.216.193.114',config_data,'PRE',None, None),
+                                call('10.216.193.114',config_data,'PRE_42',None, None),
+                                call('10.216.193.114',config_data,'PRE_314',None, None)
+                                ]  
+        mock_check.assert_has_calls(expected_calls_made, any_order=True)
+
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
