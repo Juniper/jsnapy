@@ -922,7 +922,7 @@ class SnapAdmin:
         :param data: either main config file or string containing details of main config file
         :param pre_file: pre snap file, either complete filename or file tag
         :param dev: device object
-        :return: return object of testop.Operator containing test details
+        :return: return list of object of testop.Operator containing test details or list of dictionary of object of testop.Operator containing test details for each stored snapshot
         """
         if file_name is None:
             file_name = "snap_temp"
