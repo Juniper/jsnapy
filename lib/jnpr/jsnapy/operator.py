@@ -27,7 +27,7 @@ class Operator:
         self.log_detail = {'hostname': None}
         self.test_details = defaultdict(list)
         self.logger_testop = logging.getLogger(__name__)
-
+        self.result_dict = {} #unlike test_details this is keyed on test_name
 
     @property
     def test_results(self):
@@ -2676,6 +2676,22 @@ class Operator:
             msg + (80 - len(msg) - 2) / 2 * '-'
 
         self.logger_testop.info(colorama.Fore.BLUE + finalmssg, extra=logs)
+        for test_name in self.result_dict:
+            color = colorama.Fore.LIGHTYELLOW_EX
+            res = "Skipped"
+            if self.result_dict[test_name] is True:
+                color = colorama.Fore.GREEN
+                res = "Passed"
+            elif self.result_dict[test_name] is False:
+                color = colorama.Fore.RED
+                res = "Failed"
+            self.logger_testop.info(
+                color + 
+                "{} : {}".format(
+                    test_name,
+                    res
+                ), extra=logs
+            )
         self.logger_testop.info(
             colorama.Fore.GREEN +
             "Total No of tests passed: {}".format(
@@ -2684,7 +2700,14 @@ class Operator:
             colorama.Fore.RED +
             "Total No of tests failed: {} ".format(
                 self.no_failed), extra=logs)
-        if (self.no_failed):
+        
+        evaluated_result = True
+        for result in self.result_dict:
+            if not self.result_dict[result]:
+                evaluated_result = False
+                break
+        
+        if evaluated_result is False:
             self.logger_testop.info(
                 colorama.Fore.RED +
                 colorama.Style.BRIGHT +
@@ -2695,7 +2718,7 @@ class Operator:
                 colorama.Fore.RED +
                 colorama.Style.BRIGHT +
                 "None of the test cases executed !!! ", extra=logs)
-        else:
+        elif evaluated_result is True:
             self.logger_testop.info(
                 colorama.Fore.GREEN +
                 colorama.Style.BRIGHT +
