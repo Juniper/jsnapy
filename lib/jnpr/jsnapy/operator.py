@@ -20,7 +20,7 @@ import traceback
 class Operator:
 
     def __init__(self):
-        self.result = True
+        self.result = None
         self.no_failed = 0
         self.no_passed = 0
         self.device = None
@@ -2703,9 +2703,10 @@ class Operator:
         
         evaluated_result = True
         for result in self.result_dict:
-            if not self.result_dict[result]:
+            if self.result_dict[result] is False:
                 evaluated_result = False
                 break
+            
         
         if evaluated_result is False:
             self.logger_testop.info(

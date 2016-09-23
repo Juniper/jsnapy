@@ -27,12 +27,18 @@ class Comparator:
 
 
     def is_unary_op(self, op):
+        """
+        Checks if the given op is unary or not
+        """
         if op.lower() in ['not']:
             return True
         return False
 
 
     def is_binary_op(self, op):
+        """
+        Checks if the given op is binary or not
+        """
         if op.lower() in ['and','or']:
             return True
         return False
@@ -116,6 +122,22 @@ class Comparator:
 
     def expression_evaluator(self, elem_test, op, x_path, id_list, iter, teston,
                                 check, db, snap1, snap2=None, action=None):
+        """
+        Analyze the given elementary test case and call the appopriate operator
+        like is_equal() or no_diff()
+        call operator.Operator methods to compare snapshots based on given test cases
+        :param elem_test: elementary test operation dictionary 
+        :param op: operator.Operator object
+        :param x_path: xpath for the command/rpc 
+        :param id_list: id list of elements to use while matching up in different snapshots
+        :param iter: True if iterate is specified in the test file
+        :param teston: command/rpc to perform test
+        :param check: variable to check if --check is given
+        :param db: database handler
+        :param snap1: pre snapshot file name
+        :param snap2: post snapshot file name
+        :param action: action taken in JSNAPy module version
+        """
         # analyze individual test case and extract element list, info and
         # err message ####
         values = ['err', 'info']
@@ -186,15 +208,24 @@ class Comparator:
 
 
     def expression_builder(self, sub_expr, parent_op=None, **kwargs):
+        """
+        Recursively builds the boolean expression of the provided sub_expr for evaluation
+        :param sub_expr: dictionary object of the sub_expr that needs to be converted
+        :param parent_op: parent operator of the sub_expr
+        :param kwargs: dictionary of arguments required by function Comparator.expression_evaluator 
+        :return: str object of the boolean expression formed of the provided sub_expr
+        """
+        
         ret_expr = []
         if isinstance(sub_expr,list):
             #perform some validation
-            if parent_op is not None and (( len(sub_expr) > 1 and self.is_unary_op(parent_op) ) \
-                or ( len(sub_expr) < 2 and self.is_binary_op(parent_op))):
+            # if parent_op and (( len(sub_expr) > 1 and self.is_unary_op(parent_op) ) \
+            #     or ( len(sub_expr) < 2 and self.is_binary_op(parent_op))):
+            if parent_op and  len(sub_expr) > 1 and self.is_unary_op(parent_op):
                 self.logger_check.info(
                     colorama.Fore.RED +
                     "ERROR!!! Malformed test case", extra=self.log_detail)  
-                raise Exception              
+                return              
             #evalutate one by one and keeep adding the result to a new expr
             for elem_test in sub_expr:
                 self.expression_evaluator(elem_test,**kwargs)
@@ -209,10 +240,18 @@ class Comparator:
                 if not res and parent_op and parent_op.lower() == 'and':
                     break
         
-        if isinstance(sub_expr, dict):
+        elif isinstance(sub_expr, dict):
+            # if parent_op and ((self.is_binary_op(parent_op) and len(sub_expr.keys()) < 2) \
+            #             or (self.is_unary_op(parent_op) and len(sub_expr.keys()) > 1)):
+            if parent_op and self.is_unary_op(parent_op) and len(sub_expr.keys()) > 1:
+                self.logger_check.info(
+                        colorama.Fore.RED +
+                        "ERROR!!! Malformed test case", extra=self.log_detail)  
+                return
+
             for op in sub_expr:
-                sub_expr = sub_expr[op]
-                sub_expr_ret = self.expression_builder(sub_expr, op, **kwargs)
+                sub_expression = sub_expr[op]
+                sub_expr_ret = self.expression_builder(sub_expression, op, **kwargs)
                 ret_expr.append(str(sub_expr_ret))
         
         expr = ''
@@ -239,10 +278,10 @@ class Comparator:
         """
         Analyse test files and call respective methods in operator file
         like is_equal() or no_diff()
-        call testop.Operator methods to compare snapshots based on given test cases
+        call operator.Operator methods to compare snapshots based on given test cases
         Extract xpath and other values for comparing two snapshots and
-        testop.Operator methods to perform tests
-        :param op: testop.Operator object
+        operator.Operator methods to perform tests
+        :param op: operator.Operator object
         :param tests: test cases
         :param test_name: name of the test seequence as specified in the file
         :param teston: command/rpc to perform test
@@ -309,6 +348,8 @@ class Comparator:
                     #for cases where skip was encountered due to ignore-null 
                     continue
                 result = eval(final_boolean_expr)
+                if result is None:
+                    continue
                 if final_result is None:
                     final_result = True # making things normal
                 final_result = final_result and result
@@ -444,7 +485,7 @@ class Comparator:
         :param pre: file name of pre snapshot
         :param post: file name of post snapshot
         :param action: given by module version, either snap, snapcheck or check
-        :return: object of testop.Operator containing test details
+        :return: object of operator.Operator containing test details
         """
         op = Operator()
         op.device = device
