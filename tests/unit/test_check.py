@@ -212,27 +212,117 @@ class TestCheck(unittest.TestCase):
             self.db,
             self.snap_del,
             "snap_all-same-success_pre")
-        self.assertEqual(oper.no_passed, 3)
+        self.assertEqual(oper.no_passed, 3) #one not run due to short-cutting
         self.assertEqual(oper.no_failed, 0)
-        self.assertEqual(oper.result, "Passed")
-        # self.chk = False
-        # comp = Comparator()
-        # conf_file = os.path.join(os.path.dirname(__file__),
-        #                          'configs', 'main_conditional_op_fail.yml')
-        # mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        # config_file = open(conf_file, 'r')
-        # main_file = yaml.load(config_file)
-        # oper = comp.generate_test_files(
-        #     main_file,
-        #     self.hostname,
-        #     self.chk,
-        #     self.diff,
-        #     self.db,
-        #     self.snap_del,
-        #     "snap_all-same-success_pre")
-        # self.assertEqual(oper.no_passed, 1)
-        # self.assertEqual(oper.no_failed, 0)
+        self.assertEqual(oper.result, "Failed")
+    
 
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_conditional_operator_error_1(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_conditional_op_error_1.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_all-same-success_pre")
+        self.assertEqual(oper.no_passed, 4) #one not run due to short-cutting
+        self.assertEqual(oper.no_failed, 0)
+        self.assertEqual(oper.result, "Failed")
+
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_conditional_operator_error_2(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_conditional_op_error_2.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_all-same-success_pre")
+        self.assertEqual(oper.no_passed, 0) 
+        self.assertEqual(oper.no_failed, 0)
+        self.assertEqual(oper.result, None)
+    
+
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_conditional_operator_error_3(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_conditional_op_error_3.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_all-same-success_pre")
+        self.assertEqual(oper.no_passed, 3) 
+        self.assertEqual(oper.no_failed, 0)
+        self.assertEqual(oper.result, 'Passed')
+    
+
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_conditional_operator_error_4(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_conditional_op_error_4.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_all-same-success_pre")
+        self.assertEqual(oper.no_passed, 3) 
+        self.assertEqual(oper.no_failed, 0)
+        self.assertEqual(oper.result, 'Passed')
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_conditional_operator_pass(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_conditional_op_pass.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_all-same-success_pre")
+        self.assertEqual(oper.no_passed, 4) 
+        self.assertEqual(oper.no_failed, 0)
+        self.assertEqual(oper.result, 'Passed')
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(TestCheck)

@@ -24,6 +24,15 @@ class Comparator:
     def __init__(self):
         self.logger_check = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
+    
+
+    def is_op(self, op):
+        """
+        Checks if the passed op is an operator or not
+        """
+        if op.lower() in ['and','not','or']:
+            return True
+        return False
 
 
     def is_unary_op(self, op):
@@ -215,20 +224,28 @@ class Comparator:
         :param kwargs: dictionary of arguments required by function Comparator.expression_evaluator 
         :return: str object of the boolean expression formed of the provided sub_expr
         """
-        
         ret_expr = []
-        if isinstance(sub_expr,list):
-            #perform some validation
-            # if parent_op and (( len(sub_expr) > 1 and self.is_unary_op(parent_op) ) \
-            #     or ( len(sub_expr) < 2 and self.is_binary_op(parent_op))):
-            if parent_op and  len(sub_expr) > 1 and self.is_unary_op(parent_op):
-                self.logger_check.info(
+        #perform validation
+        if parent_op and (( len(sub_expr) > 1 and self.is_unary_op(parent_op) ) \
+                or ( len(sub_expr) < 2 and self.is_binary_op(parent_op))):
+            self.logger_check.info(
                     colorama.Fore.RED +
                     "ERROR!!! Malformed test case", extra=self.log_detail)  
-                return              
-            #evalutate one by one and keeep adding the result to a new expr
-            for elem_test in sub_expr:
-                self.expression_evaluator(elem_test,**kwargs)
+            return 
+        for elem in sub_expr:
+            keys = elem.keys()
+            #this list helps us differentiate b/w conditional and elementary operation
+            op_list = [k for k in keys if self.is_op(k)]
+            if len(op_list) == 1:
+                op = op_list[0]
+                sub_expression = elem[op]
+                sub_expr_ret = self.expression_builder(sub_expression, op, **kwargs)
+                if sub_expr_ret is None or sub_expr_ret == str(None):
+                    continue
+                ret_expr.append(str(sub_expr_ret))
+            elif len(op_list) == 0:
+                #supposed to be the elementary operation
+                self.expression_evaluator(elem,**kwargs)
                 res = None
                 #this should be guaranteed by the operator function, never use try-catch here
                 res = kwargs['op'].test_details[kwargs['teston']][-1]['result']
@@ -237,23 +254,14 @@ class Comparator:
                 ret_expr.append(str(res))
                 if res and parent_op and parent_op.lower() == 'or':
                     break
-                if not res and parent_op and parent_op.lower() == 'and':
+                if res is False and parent_op and parent_op.lower() == 'and':
                     break
-        
-        elif isinstance(sub_expr, dict):
-            # if parent_op and ((self.is_binary_op(parent_op) and len(sub_expr.keys()) < 2) \
-            #             or (self.is_unary_op(parent_op) and len(sub_expr.keys()) > 1)):
-            if parent_op and self.is_unary_op(parent_op) and len(sub_expr.keys()) > 1:
+            else:
                 self.logger_check.info(
-                        colorama.Fore.RED +
-                        "ERROR!!! Malformed test case", extra=self.log_detail)  
-                return
+                    colorama.Fore.RED +
+                    "ERROR!!! Malformed test case", extra=self.log_detail)  
+                continue  
 
-            for op in sub_expr:
-                sub_expression = sub_expr[op]
-                sub_expr_ret = self.expression_builder(sub_expression, op, **kwargs)
-                ret_expr.append(str(sub_expr_ret))
-        
         expr = ''
         if parent_op is None:
             if len(ret_expr) > 1:
@@ -344,9 +352,12 @@ class Comparator:
                           'action': action
                           }
                 final_boolean_expr = self.expression_builder(testcases, None, **kwargs)
-                if final_boolean_expr is '': 
-                    #for cases where skip was encountered due to ignore-null 
+                #for cases where skip was encountered due to ignore-null 
+                if final_boolean_expr is '' or final_boolean_expr is None or final_boolean_expr == str(None): 
                     continue
+                self.logger_check.info(
+                    colorama.Fore.RED +
+                    "Final expr %s"%final_boolean_expr, extra=self.log_detail)  
                 result = eval(final_boolean_expr)
                 if result is None:
                     continue

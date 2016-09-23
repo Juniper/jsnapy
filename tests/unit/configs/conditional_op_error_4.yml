@@ -9,11 +9,16 @@ test_command_version:
       id: peer-address
       tests:
           - OR:
+            - NOT:
+              - contains: //bgp-options, LogUpDown
             - all-same: flap-count
               err: "Test Failed!!! bgp-peer {{id_0}}!!! has mismatched flap count {{post['flap-count']}}"
               info: "Test Succeeded!! flap count is {{post['flap-count']}} for bgp-peer {{id_0}}!!!"
             - is-in: peer-state, Active, Inactive
           - AND:
-            - NOT:
-              - contains: //bgp-options, LogUpDown
-            - is-equal: local-address, unspecified
+              - NOT:
+                  - contains: //bgp-options, LogUpDown
+                  - contains: //bgp-options, LogUpDown
+          - is-equal: local-address, unspecified
+            
+              

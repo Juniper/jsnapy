@@ -8,12 +8,14 @@ test_command_version:
       xpath: '/bgp-information/bgp-peer'
       id: peer-address
       tests:
-          - OR:
+          - AND:
             - all-same: flap-count
               err: "Test Failed!!! bgp-peer {{id_0}}!!! has mismatched flap count {{post['flap-count']}}"
               info: "Test Succeeded!! flap count is {{post['flap-count']}} for bgp-peer {{id_0}}!!!"
             - is-in: peer-state, Active, Inactive
-          - AND:
-            - NOT:
-              - contains: //bgp-options, LogUpDown
-            - is-equal: local-address, unspecified
+          - OR:
+              - NOT:
+                  - contains: //bgp-options, LogUpDown
+              - is-equal: local-address, unspecified
+            
+              

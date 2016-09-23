@@ -2677,7 +2677,7 @@ class Operator:
 
         self.logger_testop.info(colorama.Fore.BLUE + finalmssg, extra=logs)
         for test_name in self.result_dict:
-            color = colorama.Fore.LIGHTYELLOW_EX
+            color = colorama.Fore.YELLOW
             res = "Skipped"
             if self.result_dict[test_name] is True:
                 color = colorama.Fore.GREEN
