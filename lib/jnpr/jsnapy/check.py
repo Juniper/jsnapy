@@ -355,9 +355,7 @@ class Comparator:
                 #for cases where skip was encountered due to ignore-null 
                 if final_boolean_expr is '' or final_boolean_expr is None or final_boolean_expr == str(None): 
                     continue
-                self.logger_check.info(
-                    colorama.Fore.RED +
-                    "Final expr %s"%final_boolean_expr, extra=self.log_detail)  
+
                 result = eval(final_boolean_expr)
                 if result is None:
                     continue
