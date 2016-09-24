@@ -115,6 +115,10 @@ class Comparator:
         :param action: action taken in JSNAPy module version
         """
 
+        top_ignore_null = False
+        ignore_null_list = [t for t in tests if 'ignore-null' in t]
+        if ignore_null_list:
+            top_ignore_null =  ignore_null_list[0].get('ignore-null')
         ####     extract all test cases in given test file     ####
         tests = [t for t in tests if ('iterate' in t or 'item' in t)]
         if not len(tests) and (check is True or action is "check"):
@@ -152,9 +156,7 @@ class Comparator:
                 testcases = test['item']['tests']
                 iter = False
 
-            top_ignore_null = False
-            if 'ignore-null' in test:
-                top_ignore_null = test.get('ignore-null')
+            
             
             # analyze individual test case and extract element list, info and
             # err message ####
