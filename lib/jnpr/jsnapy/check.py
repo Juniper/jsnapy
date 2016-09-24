@@ -24,6 +24,34 @@ class Comparator:
     def __init__(self):
         self.logger_check = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
+    
+
+    def is_op(self, op):
+        """
+        Checks if the passed op is an operator or not
+        """
+        if op.lower() in ['and','not','or']:
+            return True
+        return False
+
+
+    def is_unary_op(self, op):
+        """
+        Checks if the given op is unary or not
+        """
+        if op.lower() in ['not']:
+            return True
+        return False
+
+
+    def is_binary_op(self, op):
+        """
+        Checks if the given op is binary or not
+        """
+        if op.lower() in ['and','or']:
+            return True
+        return False
+
 
     def generate_snap_file(self, device, prefix, name, reply_format):
         """
@@ -42,6 +70,7 @@ class Comparator:
                 sfile)
             return snapfile
 
+
     def get_err_mssg(self, path, ele_list):
         """
         This function generates error message, if nothing is given then it will generate default error message
@@ -51,6 +80,7 @@ class Comparator:
                                 0] + " before was < {{pre['" + ele_list[0] + "']}} >"
                             " now it is < {{post['" + ele_list[0] + "']}} > ")
         return err_mssg
+
 
     def get_info_mssg(self, path, ele_list):
         """
@@ -63,6 +93,7 @@ class Comparator:
                              ele_list[0] +
                              "']}} > ")
         return info_mssg
+
 
     def get_xml_reply(self, db, snap):
         """
@@ -92,21 +123,180 @@ class Comparator:
         else:
             self.logger_check.error(
                 colorama.Fore.RED +
-                "ERROR, Snapshot file is not present in given path !!",
+                "ERROR, Snapshot file %s is not present in given path !!"%snap,
                 extra=self.log_detail)
             return
         return xml_value
 
+
+    def expression_evaluator(self, elem_test, op, x_path, id_list, iter, teston,
+                                check, db, snap1, snap2=None, action=None):
+        """
+        Analyze the given elementary test case and call the appopriate operator
+        like is_equal() or no_diff()
+        call operator.Operator methods to compare snapshots based on given test cases
+        :param elem_test: elementary test operation dictionary 
+        :param op: operator.Operator object
+        :param x_path: xpath for the command/rpc 
+        :param id_list: id list of elements to use while matching up in different snapshots
+        :param iter: True if iterate is specified in the test file
+        :param teston: command/rpc to perform test
+        :param check: variable to check if --check is given
+        :param db: database handler
+        :param snap1: pre snapshot file name
+        :param snap2: post snapshot file name
+        :param action: action taken in JSNAPy module version
+        """
+        # analyze individual test case and extract element list, info and
+        # err message ####
+        values = ['err', 'info']
+        testvalues = elem_test.keys()
+        testop1 = [
+            tvalue for tvalue in testvalues if tvalue not in values]
+        testop = testop1[0] if testop1 else "Define test operator"
+
+        ele = elem_test.get(testop)
+        if ele is not None:
+            ele_list = [elements.strip()
+                        for elements in ele.split(',')]
+        else:
+            ele_list = ['no node']
+
+        # extract err and info messages , if not given then set the
+        # default error and info message
+        err_mssg = self.get_err_mssg(elem_test, ele_list)
+        info_mssg = self.get_info_mssg(elem_test, ele_list)
+
+        # check test operators, below mentioned four are allowed only
+        # with --check ####
+        if testop in [
+                'no-diff', 'list-not-less', 'list-not-more', 'delta']:
+            if check is True or action is "check":
+                xml1 = self.get_xml_reply(db, snap1)
+                xml2 = self.get_xml_reply(db, snap2)
+                op.define_operator(
+                    self.log_detail,
+                    testop,
+                    x_path,
+                    ele_list,
+                    err_mssg,
+                    info_mssg,
+                    teston,
+                    iter,
+                    id_list,
+                    xml1,
+                    xml2)
+            else:
+                self.logger_check.error(
+                    colorama.Fore.RED +
+                    "Test Operator %s is allowed only with --check" % testop, extra=self.log_detail)
+
+        # if test operators are other than above mentioned four operators
+        else:
+            # if check is used with uni operand test operator then use
+            # second snapshot file
+            if check is True or action is "check":
+                pre_snap = self.get_xml_reply(db, snap1)
+                post_snap = self.get_xml_reply(db, snap2)
+            else:
+                pre_snap = None
+                post_snap = self.get_xml_reply(db, snap1)
+
+            op.define_operator(
+                self.log_detail,
+                testop,
+                x_path,
+                ele_list,
+                err_mssg,
+                info_mssg,
+                teston,
+                iter,
+                id_list,
+                pre_snap,
+                post_snap)
+
+
+    def expression_builder(self, sub_expr, parent_op=None, **kwargs):
+        """
+        Recursively builds the boolean expression of the provided sub_expr for evaluation
+        :param sub_expr: dictionary object of the sub_expr that needs to be converted
+        :param parent_op: parent operator of the sub_expr
+        :param kwargs: dictionary of arguments required by function Comparator.expression_evaluator 
+        :return: str object of the boolean expression formed of the provided sub_expr
+        """
+        ret_expr = []
+        #perform validation
+        if parent_op and (( len(sub_expr) > 1 and self.is_unary_op(parent_op) ) \
+                or ( len(sub_expr) < 2 and self.is_binary_op(parent_op))):
+            self.logger_check.info(
+                    colorama.Fore.RED +
+                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
+            return 
+        for elem in sub_expr:
+            keys = elem.keys()
+            #this list helps us differentiate b/w conditional and elementary operation
+            op_list = [k for k in keys if self.is_op(k)]
+            if len(op_list) == 1:
+                op = op_list[0]
+                sub_expression = elem[op]
+                sub_expr_ret = self.expression_builder(sub_expression, op, **kwargs)
+                if sub_expr_ret is None or sub_expr_ret == str(None):
+                    continue
+                ret_expr.append(str(sub_expr_ret))
+            elif len(op_list) == 0:
+                #supposed to be the elementary operation
+                self.expression_evaluator(elem,**kwargs)
+                res = None
+                #this should be guaranteed by the operator function, never use try-catch here
+                last_test_instance = kwargs['op'].test_details[kwargs['teston']][-1]
+                res = last_test_instance['result']
+                
+                #for skipping cases
+                if res is None or ( last_test_instance['count']['pass'] == 0 \
+                                   and last_test_instance['count']['fail'] == 0 ): 
+                    continue
+                    
+                ret_expr.append(str(res))
+                if res and parent_op and parent_op.lower() == 'or':
+                    break
+                if res is False and parent_op and parent_op.lower() == 'and':
+                    break
+            else:
+                self.logger_check.info(
+                    colorama.Fore.RED +
+                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
+                continue  
+
+        expr = ''
+        if parent_op is None:
+            if len(ret_expr) > 1:
+                expr = ' and '.join(ret_expr)
+            elif len(ret_expr) == 1 :
+                expr = ret_expr[0]
+        
+        else:
+            parent_op = str(parent_op).lower()
+
+            if len(ret_expr) == 1 and self.is_unary_op(parent_op):
+                expr = '{0} {1}'.format(parent_op,ret_expr[0])
+            elif len(ret_expr) >= 1 :
+                expr = ' {0} '.format(parent_op).join(ret_expr)
+            if expr is not '':    
+                expr  = '(' +expr+ ')'
+        return expr
+    
+
     def compare_reply(
-            self, op, tests, teston, check, db, snap1, snap2=None, action=None):
+            self, op, tests, test_name, teston, check, db, snap1, snap2=None, action=None):
         """
         Analyse test files and call respective methods in operator file
         like is_equal() or no_diff()
-        call testop.Operator methods to compare snapshots based on given test cases
+        call operator.Operator methods to compare snapshots based on given test cases
         Extract xpath and other values for comparing two snapshots and
-        testop.Operator methods to perform tests
-        :param op: testop.Operator object
+        operator.Operator methods to perform tests
+        :param op: operator.Operator object
         :param tests: test cases
+        :param test_name: name of the test seequence as specified in the file
         :param teston: command/rpc to perform test
         :param check: variable to check if --check is given
         :param db: database handler
@@ -123,103 +313,63 @@ class Comparator:
                 op.no_failed = op.no_failed + 1
             else:
                 op.no_passed = op.no_passed + 1
+        else:
+            #this result is going to be associated with the whole test case   
+            final_result = None
 
-        for test in tests:
-            if 'iterate' in test:
-                x_path = test.get('iterate').get('xpath', "no_xpath")
-                if 'id' in test.get('iterate'):
-                    ids = test.get('iterate').get('id')
-                    if isinstance(ids, list):
-                        id_list = ids
+            for test in tests:
+                if 'iterate' in test:
+                    x_path = test.get('iterate').get('xpath', "no_xpath")
+                    if 'id' in test.get('iterate'):
+                        ids = test.get('iterate').get('id')
+                        if isinstance(ids, list):
+                            id_list = ids
+                        else:
+                            id_list = [val.strip() for val in ids.split(',')]
                     else:
-                        id_list = [val.strip() for val in ids.split(',')]
-                else:
-                    id_list = []
-                testcases = test.get('iterate').get(
-                    'tests', [{'Define test operator': 'tests not defined'}])
-                iter = True
+                        id_list = []
+                    testcases = test.get('iterate').get(
+                        'tests', [{'Define test operator': 'tests not defined'}])
+                    iter = True
 
-            elif 'item' in test:
-                x_path = test.get('item').get('xpath', "no_xpath")
-                if 'id' in test.get('item'):
-                    ids = test.get('item').get('id')
-                    if isinstance(ids, list):
-                        id_list = ids
+                elif 'item' in test:
+                    x_path = test.get('item').get('xpath', "no_xpath")
+                    if 'id' in test.get('item'):
+                        ids = test.get('item').get('id')
+                        if isinstance(ids, list):
+                            id_list = ids
+                        else:
+                            id_list = [val.strip() for val in ids.split(',')]
                     else:
-                        id_list = [val.strip() for val in ids.split(',')]
-                else:
-                    id_list = []
-                testcases = test['item']['tests']
-                iter = False
+                        id_list = []
+                    testcases = test['item']['tests']
+                    iter = False
+      
+                kwargs = {'op': op,
+                          'x_path': x_path, 
+                          'id_list': id_list, 
+                          'iter': iter,
+                          'teston': teston,
+                          'check': check,
+                          'db': db,
+                          'snap1': snap1,
+                          'snap2': snap2,
+                          'action': action
+                          }
+                final_boolean_expr = self.expression_builder(testcases, None, **kwargs)
+                #for cases where skip was encountered due to ignore-null 
+                if final_boolean_expr is '' or final_boolean_expr is None or final_boolean_expr == str(None): 
+                    continue
 
-            # analyze individual test case and extract element list, info and
-            # err message ####
-            for path in testcases:
-                values = ['err', 'info']
-                testvalues = path.keys()
-                testop1 = [
-                    tvalue for tvalue in testvalues if tvalue not in values]
-                testop = testop1[0] if testop1 else "Define test operator"
+                result = eval(final_boolean_expr)
+                if result is None:
+                    continue
+                if final_result is None:
+                    final_result = True # making things normal
+                final_result = final_result and result
+            
+            op.result_dict[test_name] = final_result
 
-                ele = path.get(testop)
-                if ele is not None:
-                    ele_list = [elements.strip()
-                                for elements in ele.split(',')]
-                else:
-                    ele_list = ['no node']
-
-                # extract err and info messages , if not given then set the
-                # default error and info message
-                err_mssg = self.get_err_mssg(path, ele_list)
-                info_mssg = self.get_info_mssg(path, ele_list)
-
-                # check test operators, below mentioned four are allowed only
-                # with --check ####
-                if testop in [
-                        'no-diff', 'list-not-less', 'list-not-more', 'delta']:
-                    if check is True or action is "check":
-                        xml1 = self.get_xml_reply(db, snap1)
-                        xml2 = self.get_xml_reply(db, snap2)
-                        op.define_operator(
-                            self.log_detail,
-                            testop,
-                            x_path,
-                            ele_list,
-                            err_mssg,
-                            info_mssg,
-                            teston,
-                            iter,
-                            id_list,
-                            xml1,
-                            xml2)
-                    else:
-                        self.logger_check.error(
-                            colorama.Fore.RED +
-                            "Test Operator %s is allowed only with --check" % testop, extra=self.log_detail)
-
-            # if test operators are other than above mentioned four operators
-                else:
-                    # if check is used with uni operand test operator then use
-                    # second snapshot file
-                    if check is True or action is "check":
-                        pre_snap = self.get_xml_reply(db, snap1)
-                        post_snap = self.get_xml_reply(db, snap2)
-                    else:
-                        pre_snap = None
-                        post_snap = self.get_xml_reply(db, snap1)
-
-                    op.define_operator(
-                        self.log_detail,
-                        testop,
-                        x_path,
-                        ele_list,
-                        err_mssg,
-                        info_mssg,
-                        teston,
-                        iter,
-                        id_list,
-                        pre_snap,
-                        post_snap)
 
     def compare_diff(self, pre_snap_file, post_snap_file, check_from_sqlite):
         """
@@ -250,6 +400,7 @@ class Comparator:
                 self.logger_check.info(
                     colorama.Fore.RED +
                     "ERROR!!! Files are not present in given path", extra=self.log_detail)
+
 
     def compare_xml(self, op, db, teston, pre_snap_value, post_snap_value):
         """
@@ -331,6 +482,7 @@ class Comparator:
             op.test_details[teston].append(tres)
         return flag
 
+
     def generate_test_files(
             self, main_file, device, check, diff, db, snap_del, pre=None, action=None, post=None):
         """
@@ -347,7 +499,7 @@ class Comparator:
         :param pre: file name of pre snapshot
         :param post: file name of post snapshot
         :param action: given by module version, either snap, snapcheck or check
-        :return: object of testop.Operator containing test details
+        :return: object of operator.Operator containing test details
         """
         op = Operator()
         op.device = device
@@ -476,6 +628,7 @@ class Comparator:
                             self.compare_reply(
                                 op,
                                 tests[val],
+                                val,
                                 teston,
                                 check,
                                 db,
@@ -503,6 +656,7 @@ class Comparator:
                             self.compare_reply(
                                 op,
                                 tests[val],
+                                val,
                                 teston,
                                 check,
                                 db,
@@ -529,6 +683,7 @@ class Comparator:
                 op.final_result(self.log_detail)
 
         return op
+
 
     def _print_testmssg(self, msg, delimiter):
         """
