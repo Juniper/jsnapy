@@ -230,7 +230,7 @@ class Comparator:
                 or ( len(sub_expr) < 2 and self.is_binary_op(parent_op))):
             self.logger_check.info(
                     colorama.Fore.RED +
-                    "ERROR!!! Malformed test case", extra=self.log_detail)  
+                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
             return 
         for elem in sub_expr:
             keys = elem.keys()
@@ -259,7 +259,7 @@ class Comparator:
             else:
                 self.logger_check.info(
                     colorama.Fore.RED +
-                    "ERROR!!! Malformed test case", extra=self.log_detail)  
+                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
                 continue  
 
         expr = ''
