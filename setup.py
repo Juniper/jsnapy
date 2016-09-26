@@ -21,7 +21,7 @@ class OverrideInstall(install):
             self.install_data = '/etc/jsnapy'
             
         dir_path = self.install_data
-        mode = 0o700
+        mode = 0o777
         install.run(self)
         os.chmod(dir_path, mode)
         for root, dirs, files in os.walk(dir_path):
@@ -36,12 +36,10 @@ class OverrideInstall(install):
                 os.chmod(os.path.join(root, directory), mode)
             for fname in files:
                 os.chmod(os.path.join(root, fname), mode)
-        
-        os.environ['JSNAPY_HOME'] = '/etc/jsnapy'
-
+    
         if dir_path != '/etc/jsnapy':
             config = ConfigParser.ConfigParser()
-            config.set('DEFAULT','config_file_path','/etc/jsnapy')
+            config.set('DEFAULT','config_file_path',dir_path)
             config.set('DEFAULT','snapshot_path', os.path.join(dir_path,'snapshots'))
             config.set('DEFAULT','test_file_path',os.path.join(dir_path,'testfiles'))
             
@@ -94,7 +92,7 @@ setup(name="jsnapy",
       scripts=['tools/jsnap2py'],
       zip_safe=False,
       install_requires=install_reqs,
-      data_files=[("", ['lib/jnpr/jsnapy/logging.yml']),
+      data_files=[('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
                   ('samples', example_files),
                   ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
                   ('testfiles', ['testfiles/README']),

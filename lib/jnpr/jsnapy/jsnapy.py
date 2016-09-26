@@ -22,7 +22,7 @@ from jnpr.jsnapy.check import Comparator
 from jnpr.jsnapy.notify import Notification
 from jnpr.junos import Device
 from jnpr.jsnapy import version
-from jnpr.jsnapy import get_path
+from jnpr.jsnapy import get_path, get_config_location
 from jnpr.jsnapy.testop import Operator
 from jnpr.junos.exception import ConnectAuthError
 
@@ -284,6 +284,10 @@ class SnapAdmin:
         read device details and connect them. Also checks sqlite key to check if user wants to
         create database for snapshots
         """
+        self.logger.debug(colorama.Fore.BLUE +
+                "jsnapy.cfg file location used : %s" %
+                get_config_location(), extra=self.log_detail)
+                
         if self.args.pre_snapfile is not None:
             output_file = self.args.pre_snapfile
         elif self.args.snapcheck is True and self.args.pre_snapfile is None:

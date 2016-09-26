@@ -7,13 +7,8 @@ from .version import __version__
 import ConfigParser
 import os
 
-
-def get_path(section, value):
-    # config = ConfigParser.ConfigParser({'config_file_path': '/usr/local/share/', 'snapshot_path': '/usr/local/share/snapshots',
-    #                                     'test_file_path': '/usr/local/share/testfiles', 'log_file_path': '/var/log/jsnapy'})
-    config = ConfigParser.ConfigParser()
+def get_config_location():
     config_location = None
-    
     p_locations = []
     if 'JSNAPY_HOME' in os.environ:
         p_locations = [os.environ['JSNAPY_HOME']]   
@@ -22,11 +17,20 @@ def get_path(section, value):
     for loc in p_locations:
         possible_location =  os.path.join(loc,'jsnapy.cfg')
         if os.path.isfile(possible_location):
-            config_location = possible_location
+            config_location = loc
             break
+    return config_location
     
+
+def get_path(section, value):
+    # config = ConfigParser.ConfigParser({'config_file_path': '/usr/local/share/', 'snapshot_path': '/usr/local/share/snapshots',
+    #                                     'test_file_path': '/usr/local/share/testfiles', 'log_file_path': '/var/log/jsnapy'})
+    config = ConfigParser.ConfigParser()
+    
+    config_location = get_config_location()
     if config_location is None:
-        raise Exception('Config file not found at {0}'.format(repr(p_locations)))
+        raise Exception('Config file not found')
+    config_location = os.path.join(config_location,'jsnapy.cfg')
     config.read(config_location)
     # config.read(os.path.join('/usr/local/share', 'jsnapy', 'jsnapy.cfg'))
     path = config.get(section, value)
