@@ -115,6 +115,10 @@ class Comparator:
         :param action: action taken in JSNAPy module version
         """
 
+        top_ignore_null = False
+        ignore_null_list = [t for t in tests if 'ignore-null' in t]
+        if ignore_null_list:
+            top_ignore_null =  ignore_null_list[0].get('ignore-null')
         ####     extract all test cases in given test file     ####
         tests = [t for t in tests if ('iterate' in t or 'item' in t)]
         if not len(tests) and (check is True or action is "check"):
@@ -152,11 +156,14 @@ class Comparator:
                 testcases = test['item']['tests']
                 iter = False
 
+            
+            
             # analyze individual test case and extract element list, info and
             # err message ####
             for path in testcases:
-                values = ['err', 'info']
+                values = ['err', 'info','ignore-null']
                 testvalues = path.keys()
+                #as the name of testop is not known, we ignore all the other keys
                 testop1 = [
                     tvalue for tvalue in testvalues if tvalue not in values]
                 testop = testop1[0] if testop1 else "Define test operator"
@@ -172,7 +179,7 @@ class Comparator:
                 # default error and info message
                 err_mssg = self.get_err_mssg(path, ele_list)
                 info_mssg = self.get_info_mssg(path, ele_list)
-
+                ignore_null = path.get('ignore-null') if 'ignore-null' in path else top_ignore_null
                 # check test operators, below mentioned four are allowed only
                 # with --check ####
                 if testop in [
@@ -191,7 +198,8 @@ class Comparator:
                             iter,
                             id_list,
                             xml1,
-                            xml2)
+                            xml2,
+                            ignore_null)
                     else:
                         self.logger_check.error(
                             colorama.Fore.RED +
@@ -219,7 +227,8 @@ class Comparator:
                         iter,
                         id_list,
                         pre_snap,
-                        post_snap)
+                        post_snap,
+                        ignore_null)
 
     def compare_diff(self, pre_snap_file, post_snap_file, check_from_sqlite):
         """

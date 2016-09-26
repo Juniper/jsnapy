@@ -21,27 +21,7 @@ class TestComparisonOperator(unittest.TestCase):
         self.snap_del = False
         self.action = None
 
-    @patch('jnpr.jsnapy.check.get_path')
-    def test_no_diff(self, mock_path):
-        self.chk = True
-        comp = Comparator()
-        conf_file = os.path.join(os.path.dirname(__file__),
-                                 'configs', 'main_no-diff.yml')
-        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
-        oper = comp.generate_test_files(
-            main_file,
-            self.hostname,
-            self.chk,
-            self.diff,
-            self.db,
-            self.snap_del,
-            "snap_no-diff_pre",
-            self.action,
-            "snap_no-diff_post")
-        self.assertEqual(oper.no_passed, 2)
-        self.assertEqual(oper.no_failed, 4)
+    
 
     @patch('jnpr.jsnapy.check.get_path')
     def test_list_not_less_fail(self, mock_path):
@@ -64,13 +44,13 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_post")
         self.assertEqual(oper.no_passed, 1)
         self.assertEqual(oper.no_failed, 1)
-
+    
     @patch('jnpr.jsnapy.check.get_path')
-    def test_list_not_more_fail(self, mock_path):
+    def test_list_not_less_ignore_null_fail(self, mock_path):
         self.chk = True
         comp = Comparator()
         conf_file = os.path.join(os.path.dirname(__file__),
-                                 'configs', 'main_list-not-more.yml')
+                                 'configs', 'main_list-not-less_ignore-null_fail.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
         main_file = yaml.load(config_file)
@@ -84,9 +64,74 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_pre",
             self.action,
             "snap_no-diff_post")
-        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 2)
+
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_list_not_less_ignore_null_fail_1(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_list-not-less_ignore-null_fail_1.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_no-diff_pre",
+            self.action,
+            "snap_no-diff_post")
+        self.assertEqual(oper.no_passed, 1)#null case will pass
+        self.assertEqual(oper.no_failed, 1)
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_list_not_less_ignore_null_skip(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_list-not-less_ignore-null_skip.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_no-diff_pre",
+            self.action,
+            "snap_no-diff_post")
+        self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_list_not_less_ignore_null_skip_1(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_list-not-less_ignore-null_skip_1.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_no-diff_pre",
+            self.action,
+            "snap_no-diff_post")
+        self.assertEqual(oper.no_passed, 1)#even if no nodes is found, comparison between null and null passes
+        self.assertEqual(oper.no_failed, 1)
     @patch('jnpr.jsnapy.check.get_path')
     def test_list_not_less_pass(self, mock_path):
         self.chk = True
@@ -110,6 +155,30 @@ class TestComparisonOperator(unittest.TestCase):
         self.assertEqual(oper.no_failed, 0)
 
     @patch('jnpr.jsnapy.check.get_path')
+    def test_list_not_more_fail(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_list-not-more.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_no-diff_pre",
+            self.action,
+            "snap_no-diff_post")
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 1)
+
+    
+
+    @patch('jnpr.jsnapy.check.get_path')
     def test_list_not_more_pass(self, mock_path):
         self.chk = True
         comp = Comparator()
@@ -130,7 +199,96 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_3")
         self.assertEqual(oper.no_passed, 2)
         self.assertEqual(oper.no_failed, 0)
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_list_not_more_ignore_null_fail(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_list-not-more_ignore-null_fail.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_no-diff_pre",
+            self.action,
+            "snap_3")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 2)
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_list_not_more_ignore_null_fail_1(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_list-not-more_ignore-null_fail_1.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_no-diff_pre",
+            self.action,
+            "snap_3")
+        self.assertEqual(oper.no_passed, 2)#the name is kinda misleading but in line with the convention    
+        self.assertEqual(oper.no_failed, 0)
+ 
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_list_not_more_ignore_null_skip(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_list-not-more_ignore-null_skip.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_no-diff_pre",
+            self.action,
+            "snap_3")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 0)
 
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_list_not_more_ignore_null_skip_1(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_list-not-more_ignore-null_skip_1.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_no-diff_pre",
+            self.action,
+            "snap_3")
+        self.assertEqual(oper.no_passed, 2)
+        self.assertEqual(oper.no_failed, 0)
+    
+    
     @patch('jnpr.jsnapy.check.get_path')
     def test_delta(self, mock_path):
         self.chk = True
@@ -151,6 +309,93 @@ class TestComparisonOperator(unittest.TestCase):
             self.action,
             "snap_delta_post")
         self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_delta_ignore_null_fail(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_delta_ignore-null_fail.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_delta_pre",
+            self.action,
+            "snap_delta_post")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_delta_ignore_null_fail_1(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_delta_ignore-null_fail_1.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_delta_pre",
+            self.action,
+            "snap_delta_post")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 1)
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_delta_ignore_null_skip(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_delta_ignore-null_skip.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_delta_pre",
+            self.action,
+            "snap_delta_post")
+        self.assertEqual(oper.no_passed, 0)
+        self.assertEqual(oper.no_failed, 0)
+    
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_delta_ignore_null_skip_1(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_delta_ignore-null_skip_1.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_delta_pre",
+            self.action,
+            "snap_delta_post")
+        self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 0)
 
     @patch('jnpr.jsnapy.check.get_path')
@@ -175,6 +420,28 @@ class TestComparisonOperator(unittest.TestCase):
         self.assertEqual(oper.no_passed, 0)
         self.assertEqual(oper.no_failed, 1)
 
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_no_diff(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_no-diff.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_no-diff_pre",
+            self.action,
+            "snap_no-diff_post")
+        self.assertEqual(oper.no_passed, 2)
+        self.assertEqual(oper.no_failed, 4)
+    
     @patch('jnpr.jsnapy.check.get_path')
     def test_no_diff_2(self, mock_path):
         self.chk = True

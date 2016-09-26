@@ -1,0 +1,13 @@
+tests_include:
+  - test_interfaces_terse
+
+test_interfaces_terse:
+  - command: show interfaces terse ge-*
+  - item:
+      id: ./name
+      xpath: //physical-bogus-interface[normalize-space(name) = "ge-0/0/2"]
+      tests:
+        - not-equal: oper-status, down
+          info: "Test Succeeded!! oper-status is {{post['oper-status']}} for interface {{id_0}}"
+          err: "Test Failed!!! oper-status is {{post['oper-status']}} for interface {{id_0}}"
+
