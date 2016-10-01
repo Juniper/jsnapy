@@ -130,7 +130,7 @@ class Comparator:
 
 
     def expression_evaluator(self, elem_test, op, x_path, id_list, iter, teston,
-                                check, db, snap1, snap2=None, action=None):
+                                check, db, snap1, snap2=None, action=None, top_ignore_null=None):
         """
         Analyze the given elementary test case and call the appopriate operator
         like is_equal() or no_diff()
@@ -146,6 +146,7 @@ class Comparator:
         :param snap1: pre snapshot file name
         :param snap2: post snapshot file name
         :param action: action taken in JSNAPy module version
+        :param top_ignore_null: top level ignore-null value
         """
         # analyze individual test case and extract element list, info and
         # err message ####
@@ -166,7 +167,7 @@ class Comparator:
         # default error and info message
         err_mssg = self.get_err_mssg(elem_test, ele_list)
         info_mssg = self.get_info_mssg(elem_test, ele_list)
-
+        ignore_null = elem_test.get('ignore-null') or top_ignore_null
         # check test operators, below mentioned four are allowed only
         # with --check ####
         if testop in [
@@ -185,7 +186,8 @@ class Comparator:
                     iter,
                     id_list,
                     xml1,
-                    xml2)
+                    xml2,
+                    ignore_null)
             else:
                 self.logger_check.error(
                     colorama.Fore.RED +
@@ -213,7 +215,8 @@ class Comparator:
                 iter,
                 id_list,
                 pre_snap,
-                post_snap)
+                post_snap,
+                ignore_null)
 
 
     def expression_builder(self, sub_expr, parent_op=None, **kwargs):
@@ -358,7 +361,8 @@ class Comparator:
                           'db': db,
                           'snap1': snap1,
                           'snap2': snap2,
-                          'action': action
+                          'action': action,
+                          'top_ignore_null': top_ignore_null
                           }
                 final_boolean_expr = self.expression_builder(testcases, None, **kwargs)
                 #for cases where skip was encountered due to ignore-null 
