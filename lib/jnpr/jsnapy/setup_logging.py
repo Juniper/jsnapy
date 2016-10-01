@@ -13,7 +13,7 @@ from jnpr.jsnapy import get_config_location
 
 def setup_logging(
         default_path='logging.yml', default_level=logging.INFO, env_key='LOG_CFG'):
-    config_location = get_config_location()
+    config_location = get_config_location('logging.yml')
     path = os.path.join(config_location, default_path)
     value = os.getenv(env_key, None)
     if value:

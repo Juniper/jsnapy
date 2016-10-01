@@ -7,19 +7,17 @@ from .version import __version__
 import ConfigParser
 import os
 
-def get_config_location():
-    config_location = None
+def get_config_location(file='jsnapy.cfg'):
     p_locations = []
     if 'JSNAPY_HOME' in os.environ:
         p_locations = [os.environ['JSNAPY_HOME']]   
     p_locations.extend(['~/.jsnapy','/etc/jsnapy'])
     
     for loc in p_locations:
-        possible_location =  os.path.join(loc,'jsnapy.cfg')
+        possible_location =  os.path.join(loc,file)
         if os.path.isfile(possible_location):
-            config_location = loc
-            break
-    return config_location
+            return loc
+    return None
     
 
 def get_path(section, value):
@@ -32,7 +30,6 @@ def get_path(section, value):
         raise Exception('Config file not found')
     config_location = os.path.join(config_location,'jsnapy.cfg')
     config.read(config_location)
-    # config.read(os.path.join('/usr/local/share', 'jsnapy', 'jsnapy.cfg'))
     path = config.get(section, value)
     return path
 
