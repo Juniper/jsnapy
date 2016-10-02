@@ -6,6 +6,7 @@
 #
 
 import os,sys
+from os.path import expanduser
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 import ConfigParser
@@ -36,7 +37,13 @@ class OverrideInstall(install):
                 os.chmod(os.path.join(root, directory), mode)
             for fname in files:
                 os.chmod(os.path.join(root, fname), mode)
-    
+        HOME = expanduser("~") #correct cross platform way to do it
+        home_folder = os.path.join(HOME,'.jsnapy')
+        if not os.path.isdir(home_folder):
+            os.mkdir(home_folder)
+            os.chmod(home_folder,mode)
+
+
         if dir_path != '/etc/jsnapy':
             config = ConfigParser.ConfigParser()
             config.set('DEFAULT','config_file_path',dir_path)

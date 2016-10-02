@@ -11,7 +11,7 @@ def get_config_location(file='jsnapy.cfg'):
     p_locations = []
     if 'JSNAPY_HOME' in os.environ:
         p_locations = [os.environ['JSNAPY_HOME']]   
-    p_locations.extend(['~/.jsnapy','/etc/jsnapy'])
+    p_locations.extend([os.path.join(os.path.expanduser('~'),'.jsnapy'),'/etc/jsnapy'])
     
     for loc in p_locations:
         possible_location =  os.path.join(loc,file)
