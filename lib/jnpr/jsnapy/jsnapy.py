@@ -16,7 +16,7 @@ from copy import deepcopy
 from threading import Thread
 
 import yaml
-from jnpr.jsnapy import get_path, version, get_config_location
+from jnpr.jsnapy import get_path, version, get_config_location, DirStore
 from jnpr.jsnapy.check import Comparator
 from jnpr.jsnapy.notify import Notification
 from jnpr.junos import Device
@@ -117,6 +117,10 @@ class SnapAdmin:
             "--local",
             action="store_true",
             help="whether to run snapcheck on local snapshot")
+        self.parser.add_argument(
+            "--dir",
+            help="custom directory path for lookup",
+            type=str)
         self.parser.add_argument("-t", "--hostname", help="hostname", type=str)
         self.parser.add_argument(
             "-p",
@@ -166,6 +170,8 @@ class SnapAdmin:
         self.db['db_name'] = ""
         self.db['first_snap_id'] = None
         self.db['second_snap_id'] = None
+        
+        DirStore.custom_dir=self.args.dir
 
     def get_version(self):
         """
@@ -292,7 +298,10 @@ class SnapAdmin:
         self.logger.debug(colorama.Fore.BLUE +
                 "jsnapy.cfg file location used : %s" %
                 get_config_location(), extra=self.log_detail)
-                
+        self.logger.debug(colorama.Fore.BLUE +
+                "Configuration file location used : %s" %
+                get_path('DEFAULT', 'config_file_path'), extra=self.log_detail)
+                        
         if self.args.pre_snapfile is not None:
             output_file = self.args.pre_snapfile
         elif self.args.snapcheck is True and self.args.pre_snapfile is None:
