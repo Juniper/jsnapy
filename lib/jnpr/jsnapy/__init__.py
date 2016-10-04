@@ -24,7 +24,7 @@ def get_config_location(file='jsnapy.cfg'):
     return None
     
 
-def get_path(section, value, custom_dir=None):
+def get_path(section, value):
     # config = ConfigParser.ConfigParser({'config_file_path': '/usr/local/share/', 'snapshot_path': '/usr/local/share/snapshots',
     #                                     'test_file_path': '/usr/local/share/testfiles', 'log_file_path': '/var/log/jsnapy'})
     custom_dir = DirStore.custom_dir
