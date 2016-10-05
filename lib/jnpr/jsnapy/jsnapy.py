@@ -118,7 +118,7 @@ class SnapAdmin:
             action="store_true",
             help="whether to run snapcheck on local snapshot")
         self.parser.add_argument(
-            "--dir",
+            "--folder",
             help="custom directory path for lookup",
             type=str)
         self.parser.add_argument("-t", "--hostname", help="hostname", type=str)
@@ -171,7 +171,7 @@ class SnapAdmin:
         self.db['first_snap_id'] = None
         self.db['second_snap_id'] = None
         
-        DirStore.custom_dir=self.args.dir
+        DirStore.custom_dir=self.args.folder
 
     def get_version(self):
         """
@@ -945,31 +945,31 @@ class SnapAdmin:
                             action))
             return res
 
-    def snap(self, data, file_name, dev=None, custom_dir=None):
+    def snap(self, data, file_name, dev=None, folder=None):
         """
         Function equivalent to --snap operator, for module version
         :param data: either main config file or string containing details of main config file
         :param file_name: snap file, either complete filename or file tag
         :param dev: device object
-        :param custom_dir: custom directory path to use for lookup
+        :param folder: custom directory path to use for lookup
         """
-        DirStore.custom_dir = custom_dir
+        DirStore.custom_dir = folder
         if isinstance(dev, Device):
             res = self.extract_dev_data(dev, data, file_name, "snap")
         else:
             res = self.extract_data(data, file_name, "snap")
         return res
 
-    def snapcheck(self, data, file_name=None, dev=None, local= False, custom_dir=None):
+    def snapcheck(self, data, file_name=None, dev=None, local= False, folder=None):
         """
         Function equivalent to --snapcheck operator, for module version
         :param data: either main config file or string containing details of main config file
         :param pre_file: pre snap file, either complete filename or file tag
         :param dev: device object
-        :param custom_dir: custom directory path to use for lookup
+        :param folder: custom directory path to use for lookup
         :return: return list of object of testop.Operator containing test details or list of dictionary of object of testop.Operator containing test details for each stored snapshot
         """
-        DirStore.custom_dir = custom_dir
+        DirStore.custom_dir = folder
         if file_name is None:
             file_name = "snap_temp"
             self.snap_del = True
@@ -979,17 +979,17 @@ class SnapAdmin:
             res = self.extract_data(data, file_name, "snapcheck")
         return res
 
-    def check(self, data, pre_file=None, post_file=None, dev=None, custom_dir=None):
+    def check(self, data, pre_file=None, post_file=None, dev=None, folder=None):
         """
         Function equivalent to --check operator, for module version
         :param data: either main config file or string containing details of main config file
         :param pre_file: pre snap file, either complete filename or file tag
         :param post_file: post snap file, either complete filename or file tag
         :param dev: device object
-        :param custom_dir: custom directory path to use for lookup
+        :param folder: custom directory path to use for lookup
         :return: return object of testop.Operator containing test details
         """
-        DirStore.custom_dir = custom_dir
+        DirStore.custom_dir = folder
         if isinstance(dev, Device):
             res = self.extract_dev_data(
                 dev,
