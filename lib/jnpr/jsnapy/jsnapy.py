@@ -16,12 +16,11 @@ from copy import deepcopy
 from threading import Thread
 
 import yaml
-from jnpr.jsnapy import get_path, version
+from jnpr.jsnapy import get_path, version, get_config_location, DirStore
 from jnpr.jsnapy.check import Comparator
 from jnpr.jsnapy.notify import Notification
 from jnpr.junos import Device
 from jnpr.jsnapy import version
-from jnpr.jsnapy import get_path
 from jnpr.jsnapy.operator import Operator
 from jnpr.jsnapy.snap import Parser
 from jnpr.junos.exception import ConnectAuthError
@@ -118,6 +117,10 @@ class SnapAdmin:
             "--local",
             action="store_true",
             help="whether to run snapcheck on local snapshot")
+        self.parser.add_argument(
+            "--folder",
+            help="custom directory path for lookup",
+            type=str)
         self.parser.add_argument("-t", "--hostname", help="hostname", type=str)
         self.parser.add_argument(
             "-p",
@@ -167,6 +170,8 @@ class SnapAdmin:
         self.db['db_name'] = ""
         self.db['first_snap_id'] = None
         self.db['second_snap_id'] = None
+        
+        DirStore.custom_dir=self.args.folder
 
     def get_version(self):
         """
@@ -290,6 +295,13 @@ class SnapAdmin:
         read device details and connect them. Also checks sqlite key to check if user wants to
         create database for snapshots
         """
+        self.logger.debug(colorama.Fore.BLUE +
+                "jsnapy.cfg file location used : %s" %
+                get_config_location(), extra=self.log_detail)
+        self.logger.debug(colorama.Fore.BLUE +
+                "Configuration file location used : %s" %
+                get_path('DEFAULT', 'config_file_path'), extra=self.log_detail)
+                        
         if self.args.pre_snapfile is not None:
             output_file = self.args.pre_snapfile
         elif self.args.snapcheck is True and self.args.pre_snapfile is None:
@@ -933,27 +945,31 @@ class SnapAdmin:
                             action))
             return res
 
-    def snap(self, data, file_name, dev=None):
+    def snap(self, data, file_name, dev=None, folder=None):
         """
         Function equivalent to --snap operator, for module version
         :param data: either main config file or string containing details of main config file
         :param file_name: snap file, either complete filename or file tag
         :param dev: device object
+        :param folder: custom directory path to use for lookup
         """
+        DirStore.custom_dir = folder
         if isinstance(dev, Device):
             res = self.extract_dev_data(dev, data, file_name, "snap")
         else:
             res = self.extract_data(data, file_name, "snap")
         return res
 
-    def snapcheck(self, data, file_name=None, dev=None, local= False):
+    def snapcheck(self, data, file_name=None, dev=None, local= False, folder=None):
         """
         Function equivalent to --snapcheck operator, for module version
         :param data: either main config file or string containing details of main config file
         :param pre_file: pre snap file, either complete filename or file tag
         :param dev: device object
+        :param folder: custom directory path to use for lookup
         :return: return list of object of testop.Operator containing test details or list of dictionary of object of testop.Operator containing test details for each stored snapshot
         """
+        DirStore.custom_dir = folder
         if file_name is None:
             file_name = "snap_temp"
             self.snap_del = True
@@ -963,15 +979,17 @@ class SnapAdmin:
             res = self.extract_data(data, file_name, "snapcheck")
         return res
 
-    def check(self, data, pre_file=None, post_file=None, dev=None):
+    def check(self, data, pre_file=None, post_file=None, dev=None, folder=None):
         """
         Function equivalent to --check operator, for module version
         :param data: either main config file or string containing details of main config file
         :param pre_file: pre snap file, either complete filename or file tag
         :param post_file: post snap file, either complete filename or file tag
         :param dev: device object
+        :param folder: custom directory path to use for lookup
         :return: return object of testop.Operator containing test details
         """
+        DirStore.custom_dir = folder
         if isinstance(dev, Device):
             res = self.extract_dev_data(
                 dev,
