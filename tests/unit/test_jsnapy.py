@@ -728,10 +728,141 @@ class TestSnapAdmin(unittest.TestCase):
 
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
 
-    
+    @patch('argparse.ArgumentParser.exit')
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.SnapAdmin.login')
+    @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
+    def test_check_arguments_test_file_1(self, mock_log, mock_login, mock_sys, mock_arg):
+        argparse.ArgumentParser.parse_args = MagicMock()
+        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
+            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
+
+        js = SnapAdmin()
+        js.args.snap = False
+        js.args.file = None
+        js.args.test_file = os.path.join(os.path.dirname(__file__),
+                                    'configs', 'test_diff.yml')
+        js.args.check = True
+        js.args.snapcheck = False
+        js.args.diff = False
+        js.args.login = "regress"
+        js.args.hostname = "10.221.130.68"
+        js.args.passwd = "MaRtInI"
+        js.args.post_snapfile = "mock_snap2"
+        js.args.pre_snapfile = "mock_snap"
+        with patch('argparse.ArgumentParser.print_help') as mock_parser:
+            js.check_arguments()
+            js.get_hosts()
+            self.assertTrue(js.args.file)
         
-           
-        
+    @patch('argparse.ArgumentParser.exit')
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.SnapAdmin.login')
+    @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
+    def test_check_arguments_test_file_2(self, mock_log, mock_login, mock_sys, mock_arg):
+        argparse.ArgumentParser.parse_args = MagicMock()
+        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
+            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
+
+        js = SnapAdmin()
+        js.args.snap = True
+        js.args.file = None
+        js.args.test_file = os.path.join(os.path.dirname(__file__),
+                                    'configs', 'test_diff.yml')
+        js.args.check = False
+        js.args.snapcheck = False
+        js.args.diff = False
+        js.args.login = "regress"
+        js.args.hostname = "10.221.130.68"
+        js.args.passwd = "MaRtInI"
+        js.args.post_snapfile = None
+        js.args.pre_snapfile = "mock_snap"
+        with patch('argparse.ArgumentParser.print_help') as mock_parser:
+            js.check_arguments()
+            js.get_hosts()
+            self.assertTrue(js.args.file)
+
+    @patch('argparse.ArgumentParser.exit')
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.SnapAdmin.login')
+    @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
+    def test_check_arguments_test_file_3(self, mock_log, mock_login, mock_sys, mock_arg):
+        argparse.ArgumentParser.parse_args = MagicMock()
+        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
+            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
+
+        js = SnapAdmin()
+        js.args.snap = False
+        js.args.file = None
+        js.args.test_file = os.path.join(os.path.dirname(__file__),
+                                    'configs', 'test_diff.yml')
+        js.args.check = False
+        js.args.snapcheck = True
+        js.args.diff = False
+        js.args.login = "regress"
+        js.args.hostname = "10.221.130.68"
+        js.args.passwd = "MaRtInI"
+        js.args.post_snapfile = "mock_snap2"
+        js.args.pre_snapfile = "mock_snap"
+        with patch('argparse.ArgumentParser.print_help') as mock_parser:
+            js.check_arguments()
+            js.get_hosts()
+            self.assertTrue(js.args.file)        
+
+
+    @patch('argparse.ArgumentParser.exit')
+    @patch('jnpr.jsnapy.SnapAdmin.get_hosts')
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
+    def test_check_arguments_test_file_4(self, mock_log,mock_sys, mock_get_hosts, mock_arg):
+        argparse.ArgumentParser.parse_args = MagicMock()
+        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
+            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
+
+        js = SnapAdmin()
+        js.args.snap = False
+        js.args.file = None
+        js.args.test_file = os.path.join(os.path.dirname(__file__),
+                                    'configs', 'test_diff.yml')
+        js.args.check = False
+        js.args.snapcheck = False
+        js.args.diff = True
+        js.args.login = "regress"
+        js.args.hostname = "10.221.130.68"
+        js.args.passwd = "MaRtInI"
+        js.args.post_snapfile = "mock_snap2"
+        js.args.pre_snapfile = "mock_snap"
+        with patch('argparse.ArgumentParser.print_help') as mock_parser:
+            js.check_arguments()
+            self.assertFalse(mock_get_hosts.called)
+
+    @patch('argparse.ArgumentParser.exit')
+    @patch('jnpr.jsnapy.SnapAdmin.get_hosts')
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
+    def test_check_arguments_test_file_5(self, mock_log, mock_sys, mock_get_hosts, mock_arg):
+        argparse.ArgumentParser.parse_args = MagicMock()
+        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
+            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
+
+        js = SnapAdmin()
+        js.args.snap = False
+        js.args.file = None
+        js.args.test_file = os.path.join(os.path.dirname(__file__),
+                                    'configs', 'test_diff.yml')
+        js.args.check = True
+        js.args.snapcheck = False
+        js.args.diff = False
+        js.args.login = None
+        js.args.hostname = "10.221.130.68"
+        js.args.passwd = "MaRtInI"
+        js.args.post_snapfile = "mock_snap2"
+        js.args.pre_snapfile = "mock_snap"
+        with patch('argparse.ArgumentParser.print_help') as mock_parser:
+            js.check_arguments()
+            self.assertFalse(mock_get_hosts.called)
+            mock_sys.assert_called_with(1)
+            mock_parser.assert_called_with()
 
 with nested(
     patch('sys.exit'),
