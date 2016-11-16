@@ -4,8 +4,8 @@ hosts:
     username : demo 
     passwd: demo123
 tests:
- - test_no_diff.yml 
- - test_delta.yml
+ - /Users/awasthiy/Desktop/jsnap_temp/jsnapy/samples/test_is_gt.yml 
+ - /Users/awasthiy/Desktop/jsnap_temp/jsnapy/samples/test_delta.yml
 
 # can use sqlite to store data and compare them  
 #sqlite:

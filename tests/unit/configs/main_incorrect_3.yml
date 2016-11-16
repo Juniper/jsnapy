@@ -4,7 +4,7 @@ hosts:
     username : abc
     passwd: xyz
 tests:
-  - test_incorrect_1.yml
+  - /Users/awasthiy/Desktop/jsnap_temp/jsnapy/tests/unit/configs/test_incorrect_1.yml
 sqlite:
   - store_in_sqlite: no
     check_from_sqlite: no

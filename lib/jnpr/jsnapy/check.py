@@ -553,9 +553,10 @@ class Comparator:
                         (val),
                         extra=self.log_detail)
                     try:
-                        if tests[val][0].keys()[0] == 'command':
-                            command = tests[val][0].get('command').split('|')[0].strip()
-                            reply_format = tests[val][0].get('format', 'xml')
+                        if any('command' in d for d in tests[val]) :
+                            index = next((i for i,x in enumerate(tests[val]) if 'command' in x), 0)
+                            command = tests[val][index].get('command').split('|')[0].strip()
+                            reply_format = tests[val][index].get('format', 'xml')
                             message = self._print_testmssg("Command: "+command, "*")
                         
                             self.logger_check.info(
@@ -566,8 +567,9 @@ class Comparator:
                             name = '_'.join(command.split())
                             teston = command
                         else:
-                            rpc = tests[val][0]['rpc']
-                            reply_format = tests[val][0].get('format', 'xml')
+                            index = next((i for i,x in enumerate(tests[val]) if 'rpc' in x), 0)
+                            rpc = tests[val][index]['rpc']
+                            reply_format = tests[val][index].get('format', 'xml')
                             self.logger_check.info(colorama.Fore.BLUE + (25) * "*" + "RPC is " +
                                                    rpc + (25) * '*', extra=self.log_detail)
                             name = rpc
