@@ -377,7 +377,7 @@ class Parser:
 
         for t in self.test_included:
             if t in test_file:
-                if test_file.get(t) is not None :
+                if test_file.get(t) is not None and any('command' in d for d in test_file[t]) :
                     #command = test_file[t][0].get('command',"unknown command")
                     self.run_cmd(
                         test_file,
@@ -387,7 +387,7 @@ class Parser:
                         output_file,
                         hostname,
                         db)
-                elif test_file.get(t) is not None :
+                elif test_file.get(t) is not None and any('rpc' in d for d in test_file[t]):
                     self.run_rpc(
                         test_file,
                         t,

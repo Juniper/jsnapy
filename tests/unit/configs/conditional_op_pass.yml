@@ -3,7 +3,7 @@ tests_include:
 
 # for simple, one test using command
 test_command_version:
-  - command: show bgp neighbor
+
   - iterate:
       xpath: '/bgp-information/bgp-peer'
       id: peer-address
@@ -18,4 +18,4 @@ test_command_version:
                   - contains: //bgp-options, LogUpDown
               - is-equal: local-address, unspecified
             
-              
+  - command: show bgp neighbor              
