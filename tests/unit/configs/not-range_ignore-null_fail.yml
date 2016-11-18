@@ -7,6 +7,6 @@ check_chassis_fpc:
       xpath: //bogus-fpc[normalize-space(slot) = "0"]
       tests:
         - not-range: memory-heap-utilization, 0, 30
-          info: "Test Succeeded!! memory heap utilisation of the FPCs is within the range of $1-$2% and its value is {{post['memory-heap-utilization']}}"
-          err: "Test Failed!!! memory heap utilisation of the FPCs is is not within the range of $1-$2% and its value is {{post['memory-heap-utilization']}}"
+          info: "Test Succeeded!! memory heap utilisation of the FPCs is within the range of 0-30% and its value is {{post['memory-heap-utilization']}}"
+          err: "Test Failed!!! memory heap utilisation of the FPCs is out of range and its value is {{post['memory-heap-utilization']}}"
 

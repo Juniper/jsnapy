@@ -4,7 +4,7 @@ hosts:
     username: demo 
     passwd: demo123
 tests:
-  - /Users/awasthiy/Desktop/jsnap_temp/jsnapy/samples/test_not_in.yml 
+  - test_diff.yml 
 
 
 ###################################
