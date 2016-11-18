@@ -75,6 +75,27 @@ class Comparator:
         """
         This function generates error message, if nothing is given then it will generate default error message
         """
+        temp = ['err', 'info', 'ignore-null']
+        value_list = []
+        for key, value in path.items():
+            if key not in temp:
+                if ',' in value:
+                    value_list = [elements.strip() for elements in value.split(',')]
+        if len(value_list) > 0: 
+            temp_str = '$1'
+            if temp_str in path.get('err', "Test FAILED: " +
+                            ele_list[
+                                0] + " before was < {{pre['" + ele_list[0] + "']}} >"
+                            " now it is < {{post['" + ele_list[0] + "']}} > "):
+                val = path.get('err', "Test FAILED: " +
+                            ele_list[
+                                0] + " before was < {{pre['" + ele_list[0] + "']}} >"
+                            " now it is < {{post['" + ele_list[0] + "']}} > ")
+                val = val.replace(temp_str, value_list[1])
+                if len(value_list) > 2:
+                    temp_str_high = '$2'
+                    val = val.replace(temp_str_high, value_list[2])
+                path['err'] = val
         err_mssg = path.get('err', "Test FAILED: " +
                             ele_list[
                                 0] + " before was < {{pre['" + ele_list[0] + "']}} >"
@@ -86,6 +107,31 @@ class Comparator:
         """
         This function generates info message, if nothing is given then it will generate default info message
         """
+        temp = ['err', 'info', 'ignore-null']
+        value_list = []
+        for key, value in path.items():
+            if key not in temp:
+                if ',' in value:
+                    value_list = [elements.strip() for elements in value.split(',')]
+        if len(value_list) > 0: 
+            temp_str = '$1'
+            if temp_str in path.get('info', "Test PASSED: " + ele_list[0] +
+                             " before was < {{pre['" +
+                             ele_list[0] +
+                             "']}} > now it is < {{post['" +
+                             ele_list[0] +
+                             "']}} > "):
+                val = path.get('info', "Test PASSED: " + ele_list[0] +
+                             " before was < {{pre['" +
+                             ele_list[0] +
+                             "']}} > now it is < {{post['" +
+                             ele_list[0] +
+                             "']}} > ")
+                val = val.replace(temp_str, value_list[1])
+                if len(value_list) > 2:
+                    temp_str_high = '$2'
+                    val = val.replace(temp_str_high, value_list[1])
+                path['info'] = val
         info_mssg = path.get('info', "Test PASSED: " + ele_list[0] +
                              " before was < {{pre['" +
                              ele_list[0] +
