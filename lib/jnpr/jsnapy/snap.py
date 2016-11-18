@@ -218,12 +218,12 @@ class Parser:
                               "Taking snapshot of RPC: %s" %
                               rpc,
                               extra=self.log_detail)
-        if len(test_file[t]) >= 2 and 'kwargs' in test_file[t][1]:
+        if len(test_file[t]) >= 2 and 'args' in test_file[t][1]:
             kwargs = {
                 k.replace(
                     '-',
                     '_'): v for k,
-                v in test_file[t][1]['kwargs'].items()}
+                v in test_file[t][1]['args'].items()}
             if 'filter_xml' in kwargs:
                 from lxml.builder import E
                 filter_data = None

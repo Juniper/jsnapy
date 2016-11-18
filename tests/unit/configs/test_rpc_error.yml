@@ -4,7 +4,7 @@ tests_include:
 test_interface:
   - rpc: get-interface-information
     format: xml
-  - kwargs:
+  - args:
       filter_xml: configuration/system/login
       interface-name: em0
       media: True
