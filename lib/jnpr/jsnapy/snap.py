@@ -212,18 +212,20 @@ class Parser:
         reply_format = test_file[t][0].get('format', 'xml')
         reply_format = reply_format if reply_format in formats else 'xml'
         self.logger_snap.debug(colorama.Fore.BLUE +
-                              "Tests Included : %s " %t,
-                              extra=self.log_detail)
+                               "Tests Included : %s " %t,
+                               extra=self.log_detail)
         self.logger_snap.info(colorama.Fore.BLUE +
                               "Taking snapshot of RPC: %s" %
                               rpc,
                               extra=self.log_detail)
-        if len(test_file[t]) >= 2 and 'kwargs' in test_file[t][1]:
+        if len(test_file[t]) >= 2 and ('args' in test_file[t][1] or
+                                       'kwargs' in test_file[t][1]):
+            args_key = 'args' if 'args' in test_file[t][1] else 'kwargs'
             kwargs = {
                 k.replace(
                     '-',
                     '_'): v for k,
-                v in test_file[t][1]['kwargs'].items()}
+                v in test_file[t][1][args_key].items()}
             if 'filter_xml' in kwargs:
                 from lxml.builder import E
                 filter_data = None
