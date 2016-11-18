@@ -19,8 +19,8 @@ test_command_bgp:
       xpath: '//bgp-information/bgp-peer/bgp-option-information'
       tests:
         - is-gt: holdtime, 10       # element in which test is performed
-          err: "Test Failed!! holdtime is not greater than 10, it is: <{{post['holdtime']}}>"
-          info: "Test succeeded!! holdtime is greater than 10, it is: <{{post['holdtime']}}>"
+          err: "Test Failed!! holdtime is not greater than `holdtime`, it is: <{{post['holdtime']}}>"
+          info: "Test succeeded!! holdtime is greater than `holdtime`, it is: <{{post['holdtime']}}>"
 
         - is-lt: preference, 200      # element in which test is performed
           err: "Test Failed!! preference is not less than 10, <{{post['preference']}}>"

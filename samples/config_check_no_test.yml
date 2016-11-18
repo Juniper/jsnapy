@@ -4,11 +4,11 @@ hosts:
     username: demo 
     passwd: demo123
 tests:
-  - test_xml.yml 
+  - test_is_lt.yml 
 
 
 ###################################
-can send mail by specifying:
-mail: send_mail.yml
+#can send mail by specifying:
+#mail: send_mail.yml
 
 ####################################
