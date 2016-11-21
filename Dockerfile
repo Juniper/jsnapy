@@ -13,7 +13,7 @@ ADD testfiles /usr/local/tmp/jsnapy/testfiles
 ADD tools /usr/local/tmp/jsnapy/tools
 WORKDIR /usr/local/tmp/jsnapy
 RUN python setup.py sdist
-RUN pip install dist/jsnapy-1.0.1.tar.gz
+RUN pip install git+https://github.com/Juniper/jsnapy.git
 
 #2 install  netconify
 RUN pip install junos-netconify
