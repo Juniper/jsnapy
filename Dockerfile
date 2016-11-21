@@ -1,32 +1,20 @@
-FROM juniper/pyez
+FROM juniper/pyez:2.0.1
 
-#1 install jsnapy
-RUN mkdir -p /usr/local/tmp/jsnapy
-ADD lib /usr/local/tmp/jsnapy/lib
-ADD logs /usr/local/tmp/jsnapy/logs
-ADD MANIFEST.in /usr/local/tmp/jsnapy/MANIFEST.in
-ADD requirements.txt /usr/local/tmp/jsnapy/requirements.txt
-ADD samples /usr/local/tmp/jsnapy/samples
-ADD setup.py /usr/local/tmp/jsnapy/setup.py
-ADD snapshots /usr/local/tmp/jsnapy/snapshots
-ADD testfiles /usr/local/tmp/jsnapy/testfiles
-ADD tools /usr/local/tmp/jsnapy/tools
-WORKDIR /usr/local/tmp/jsnapy
-RUN python setup.py sdist
+#1 Install git and netconify, and install Ansible + Junos module
+RUN apk update \
+    && apk add git ansible \
+    && ansible-galaxy install Juniper.junos \
+    && pip install junos-netconify
+
+#2 install jsnapy from Github
+WORKDIR /tmp/jsnapy
 RUN pip install git+https://github.com/Juniper/jsnapy.git
 
-#2 install  netconify
-RUN pip install junos-netconify
-
-#3 - Install ansible and Junos Galaxy module
-RUN apk update \
-    && apk upgrade \
-    && apk add ansible \
-    && ansible-galaxy install Juniper.junos
-
 #4 - Clean up
-RUN rm -rf /var/cache/apk/*
+RUN rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/jsnapy
 
 #5 Optional - Copy example files
 #ADD ./example /tmp/example
 
+ENTRYPOINT "/bin/ash"
