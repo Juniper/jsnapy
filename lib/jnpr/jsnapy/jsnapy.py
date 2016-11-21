@@ -11,6 +11,7 @@ import logging
 import os
 import Queue
 import sys
+sys.path.insert(0,'/Users/awasthiy/Desktop/jsnap_temp/jsnapy/lib')
 import textwrap
 from copy import deepcopy
 from threading import Thread
@@ -373,8 +374,10 @@ class SnapAdmin:
                     tfile, extra=self.log_detail)
 
         g = Parser()
+        command_list = []
+        rpc_list = []
         for tests in test_files:
-            val = g.generate_reply(tests, dev, output_file, hostname, self.db)
+            val = g.generate_reply(tests, dev, output_file, hostname, self.db, command_list, rpc_list)
         return val
 
     def compare_tests(

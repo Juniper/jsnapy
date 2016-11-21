@@ -1,6 +1,7 @@
 tests_include:
   - test_bgp_neighbor
   - test_rpc_version
+  - test_bgp_neighbor
 
 # for simple, one test using command
 test_bgp_neighbor:
@@ -8,3 +9,6 @@ test_bgp_neighbor:
 
 test_rpc_version:
   - rpc: get-software-information
+
+test_bgp_neighbor:
+  - command: show bgp neighbor
