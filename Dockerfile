@@ -1,4 +1,4 @@
-FROM juniper/pyez
+FROM juniper/pyez:2.0.1
 
 #1 Install git and netconify, and install Ansible + Junos module
 RUN apk update \
@@ -8,7 +8,7 @@ RUN apk update \
 
 #2 install jsnapy release 1.0.0 from Github
 WORKDIR /tmp/jsnapy
-RUN pip install git+https://github.com/Juniper/jsnapy.git@v1.0.0
+RUN pip install git+https://github.com/Juniper/jsnapy.git
 
 #4 - Clean up
 RUN rm -rf /var/cache/apk/* \
