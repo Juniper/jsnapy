@@ -21,7 +21,6 @@ ADD snapshots snapshots
 RUN apk update \
     && apk add git ansible \
     && ansible-galaxy install Juniper.junos \
-    && pip install junos-netconify \
     && pip install -r requirements.txt \
     && pip install . \
     && rm -rf /var/cache/apk/* \
