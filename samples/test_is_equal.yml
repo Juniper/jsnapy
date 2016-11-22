@@ -7,6 +7,6 @@ test_interfaces_terse:
       id: ./name
       xpath: //physical-interface[normalize-space(name) = "lo0"]
       tests:
-        - is-equal: admin-status, up
+        - is-equal: admin-status, down
           info: "Test Succeeded !! admin-status is equal to <{{post['admin-status']}}> with oper-status <{{pre['oper-status']}}>"
           err: "Test Failed !! admin-status is not equal to down, it is <{{post['admin-status']}}> with oper-status <{{pre['oper-status']}}>"
