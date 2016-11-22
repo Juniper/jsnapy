@@ -23,7 +23,7 @@ RUN apk update \
     && ansible-galaxy install Juniper.junos \
     && pip install junos-netconify \
     && pip install -r requirements.txt \
-    && python setup.py install \
+    && pip install . \
     && rm -rf /var/cache/apk/* \
     && rm -rf /source
 
