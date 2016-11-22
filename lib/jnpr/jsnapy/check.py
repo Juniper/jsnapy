@@ -130,7 +130,7 @@ class Comparator:
                 val = val.replace(temp_str, value_list[1])
                 if len(value_list) > 2:
                     temp_str_high = '$2'
-                    val = val.replace(temp_str_high, value_list[1])
+                    val = val.replace(temp_str_high, value_list[2])
                 path['info'] = val
         info_mssg = path.get('info', "Test PASSED: " + ele_list[0] +
                              " before was < {{pre['" +
