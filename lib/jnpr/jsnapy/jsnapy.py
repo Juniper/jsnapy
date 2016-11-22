@@ -4,12 +4,11 @@
 #
 # All rights reserved.
 #
-import sys
-sys.path.insert(0,'/Users/awasthiy/Desktop/jsnap_temp/jsnapy/lib')
 import argparse
 import getpass
 import logging
 import os
+import sys
 import Queue
 import textwrap
 from copy import deepcopy
