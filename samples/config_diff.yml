@@ -1,10 +1,11 @@
 # for one device, can be given like this:
 hosts:
-  - device: 10.209.16.204
-    username: demo 
-    passwd: demo123
+  - device: 10.221.130.68
+    username: regress
+    passwd: MaRtInI
 tests:
   - /Users/awasthiy/Desktop/jsnap_temp/jsnapy/samples/test_is_equal.yml
+  - /Users/awasthiy/Desktop/jsnap_temp/jsnapy/tests/unit/configs/test_duplicate.yml
 
 
 ###################################
