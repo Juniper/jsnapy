@@ -216,7 +216,7 @@ class Parser:
         self.logger_snap.debug(colorama.Fore.BLUE +
                                "Tests Included : %s " %t,
                                extra=self.log_detail)
-       if rpc not in rpc_list:
+        if rpc not in rpc_list:
             self.logger_snap.info(colorama.Fore.BLUE +
                                     "Taking snapshot of RPC: %s" %
                                     rpc,
@@ -225,8 +225,6 @@ class Parser:
         if len(test_file[t]) >= 2 and ('args' in test_file[t][1] or
                                        'kwargs' in test_file[t][1]):
             args_key = 'args' if 'args' in test_file[t][1] else 'kwargs'
-                              "Tests Included : %s " %t,
-                              extra=self.log_detail)
             kwargs = {
                 k.replace(
                     '-',
