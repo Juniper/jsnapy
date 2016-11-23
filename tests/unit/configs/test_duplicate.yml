@@ -1,0 +1,57 @@
+check_chassis_fpc_1:
+  - command: show chassis fpc
+  - iterate:
+      id: ./memory-dram-size
+      xpath: //fpc[normalize-space(slot) = "0"]
+      tests:
+        - is-lt: cpu-total, 100
+          info: "Test Succeeded!!, cpu-total is less than 100, it is  <{{post['cpu-total']}}> with id {{id_0}} and memory-heap-utilization: <{{post['memory-heap-utilization']}}>"
+          err: "Test Failed!!!, cpu-total is not less than 100, it is <{{post['cpu-total']}}> with id {{id_0}} and memory-heap-utilization: <{{post['memory-heap-utilization']}}> "
+check_chassis_fpc:
+  - command: show chassis fpc
+  - iterate:
+      id: ./memory-dram-size
+      xpath: //fpc[normalize-space(slot) = "0"]
+      tests:
+        - is-gt: cpu-total, 2
+          info: "Test Succeeded!!, cpu-total is greater than 2, it is  <{{post['cpu-total']}}> with id {{id_0}} and memory-heap-utilization: <{{post['memory-heap-utilization']}}>"
+          err: "Test Failed!!!, cpu-total is not greater than 2, it is <{{post['cpu-total']}}> with id {{id_0}} and memory-heap-utilization: <{{post['memory-heap-utilization']}}> "
+
+test_rpc_version:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system/login
+  - item:
+      xpath: //configuration
+      tests:
+        - is-equal: //minimum-time, 60
+          info: "Test Succeeded!!, minimum-time now is equal to <{{post['//minimum-time']}}>"
+          err: "Test Failed!!!, minimum-time is not equal to 60, it is <{{post['//minimum-time']}}>"
+
+test_interface:
+  - rpc: get-interface-information
+    #format: text
+  - kwargs:
+      interface-name: em0
+      media: True
+      detail: True
+  - item:
+      xpath: //physical-interface
+      tests:
+        - is-gt: snmp-index, 2
+          info: "Test Succeeded!!, snmp-index is greater than 2, it is <{{post['snmp-index']}}>"
+          err: "Test Failed!!!, snmp-index is not greater than 2, it is <{{post['snmp-index']}}>"
+
+test_interface_1:
+  - rpc: get-interface-information
+    format: xml
+  - kwargs:
+      interface-name: em0
+      media: True
+      detail: True
+  - item:
+      xpath: //physical-interface
+      tests:
+        - is-gt: snmp-index, 2
+          info: "Test Succeeded!!, snmp-index now it is <{{post['snmp-index']}}>"
+          err: "Test Failed!!!, snmp-index is <{{post['snmp-index']}}>"
