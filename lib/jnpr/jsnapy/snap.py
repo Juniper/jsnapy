@@ -121,7 +121,7 @@ class Parser:
             db_dict['data'] = rpc_reply
         sqlite_jsnap.insert_data(db_dict)
 
-    def run_cmd(self, test_file, t, formats, dev, output_file, hostname, db):
+    def run_cmd(self, test_file, t, formats, dev, output_file, hostname, db, command_list=[]):
         """
         This function takes snapshot for given command and write it in
         snapshot file or database
@@ -135,11 +135,13 @@ class Parser:
         self.logger_snap.debug(colorama.Fore.BLUE +
                                "Tests Included: %s " %t,
                                extra=self.log_detail)
-        self.logger_snap.info(
-            colorama.Fore.BLUE +
-            "Taking snapshot of COMMAND: %s " %
-            command,
-            extra=self.log_detail)
+        if command not in command_list:
+            self.logger_snap.info(
+                    colorama.Fore.BLUE +
+                    "Taking snapshot of COMMAND: %s " %
+                    command,
+                    extra=self.log_detail)
+            command_list.append(command)
         try:
             # self.logger_snap.info(
             #     colorama.Fore.BLUE +
@@ -147,7 +149,7 @@ class Parser:
             #     command,
             #     extra=self.log_detail)
             ##### for commands containing "| display xml" only text format works in PyEz
-            if re.search('\|\s+display\s+xml',command):
+            if re.search('\|\s+display\s+xml', command):
                 rpc_reply_command = dev.rpc.cli(command, format='text')
             else:
                 rpc_reply_command = dev.rpc.cli(command, format=cmd_format)
@@ -202,7 +204,7 @@ class Parser:
                     output_file)
 
 
-    def run_rpc(self, test_file, t, formats, dev, output_file, hostname, db):
+    def run_rpc(self, test_file, t, formats, dev, output_file, hostname, db, rpc_list=[]):
         """
         This function takes snapshot for given RPC and write it in
         snapshot file or database
@@ -214,13 +216,17 @@ class Parser:
         self.logger_snap.debug(colorama.Fore.BLUE +
                                "Tests Included : %s " %t,
                                extra=self.log_detail)
-        self.logger_snap.info(colorama.Fore.BLUE +
-                              "Taking snapshot of RPC: %s" %
-                              rpc,
-                              extra=self.log_detail)
+       if rpc not in rpc_list:
+            self.logger_snap.info(colorama.Fore.BLUE +
+                                    "Taking snapshot of RPC: %s" %
+                                    rpc,
+                                    extra=self.log_detail)
+            rpc_list.append(rpc)
         if len(test_file[t]) >= 2 and ('args' in test_file[t][1] or
                                        'kwargs' in test_file[t][1]):
             args_key = 'args' if 'args' in test_file[t][1] else 'kwargs'
+                              "Tests Included : %s " %t,
+                              extra=self.log_detail)
             kwargs = {
                 k.replace(
                     '-',
@@ -358,7 +364,7 @@ class Parser:
                 rpc_reply,
                 output_file)
 
-    def generate_reply(self, test_file, dev, output_file, hostname, db):
+    def generate_reply(self, test_file, dev, output_file, hostname, db, command_list=[], rpc_list=[]):
         """
         Analyse test file and call respective functions to generate rpc reply
         for commands and RPC in test file.
@@ -374,7 +380,6 @@ class Parser:
         else:
             for t in test_file:
                 self.test_included.append(t)
-
         for t in self.test_included:
             if t in test_file:
                 if test_file.get(t) is not None and (
@@ -387,7 +392,8 @@ class Parser:
                         dev,
                         output_file,
                         hostname,
-                        db)
+                        db,
+                        command_list)
                 elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
                     self.run_rpc(
                         test_file,
@@ -396,7 +402,8 @@ class Parser:
                         dev,
                         output_file,
                         hostname,
-                        db)
+                        db,
+                        rpc_list)
                 else:
                     self.logger_snap.error(
                         colorama.Fore.RED +

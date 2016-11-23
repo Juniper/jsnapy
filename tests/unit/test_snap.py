@@ -299,6 +299,64 @@ class TestSnap(unittest.TestCase):
             c = mock_log.call_args_list[0]
             self.assertNotEqual(c[0][0].find("ERROR occurred"), -1)
 
+
+    @patch('jnpr.junos.device.Device')
+    @patch('jnpr.jsnapy.snap.etree')
+    def test_rpc_7(self, mock_etree, mock_dev):
+        prs = Parser()
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'tests_new.yml')
+        test_file = open(test_file, 'r')
+        test_file = yaml.load(test_file)
+        dev = jnpr.junos.device.Device(
+            host="10.216.193.114",
+            user="user_mock",
+            passwd="xyz")
+        dev.open()
+        m_op = mock_open()
+        command_list = []
+        rpc_list = []
+        with patch('jnpr.jsnapy.snap.open', m_op, create=True) as m_open:
+            prs.generate_reply(
+                test_file,
+                dev,
+                "10.216.193.114_snap_mock",
+                "10.216.193.114",
+                self.db,
+                command_list,
+                rpc_list)
+            self.assertEqual(command_list,['show bgp neighbor'])
+            self.assertEqual(rpc_list,['get-bgp-neighbor-information'])
+        dev.close()
+    @patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__')
+    @patch('jnpr.junos.device.Device')
+    @patch('jnpr.jsnapy.snap.etree')
+    def test_8(self, mock_etree, mock_dev, mock_rpc):
+        prs = Parser()
+        test_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'test_duplicate.yml')
+        test_file = open(test_file, 'r')
+        test_file = yaml.load(test_file)
+        dev = jnpr.junos.device.Device(
+            host="10.216.193.114",
+            user="user_mock",
+            passwd="xyz")
+        dev.open()
+        m_op = mock_open()
+        command_list = []
+        rpc_list = []
+        with patch('jnpr.jsnapy.snap.open', m_op, create=True) as m_open:
+            prs.generate_reply(
+                test_file,
+                dev,
+                "10.216.193.114_snap_mock",
+                "10.216.193.114",
+                self.db,
+                command_list,
+                rpc_list)
+            self.assertEqual(command_list,['show chassis fpc'])
+            self.assertEqual(rpc_list,['get-interface-information','get-config'])
+        dev.close()
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnapy.snap.etree')
     @patch('jnpr.jsnapy.snap.JsnapSqlite')
