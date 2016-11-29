@@ -4,7 +4,9 @@ hosts:
     username : demo
     passwd: demo123
 tests:
-  - /Users/awasthiy/Desktop/jsnap_temp/jsnapy/tests/unit/configs/test_duplicate.yml
+  - test_exists.yml 
+  - test_contains.yml
+  - test_is_gt.yml
 
 # use sqlite to store data 
 sqlite:

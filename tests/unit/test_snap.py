@@ -1,5 +1,3 @@
-import sys
-sys.path.insert(0,'/Users/awasthiy/Desktop/jsnap_temp/jsnapy/lib')
 import unittest
 import yaml
 import os
