@@ -324,6 +324,22 @@ class TestCheck(unittest.TestCase):
         self.assertEqual(oper.no_failed, 0)
         self.assertEqual(oper.result, 'Passed')
 
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_dynamic_info_err_msg(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_is-gt_ignore-null_fail.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        path = {'info': "Test Succeeded!! cpu total is greater than $1 and its value is {{post['cpu-total']}}", 'is-gt': 'cpu-total, 1', 'err': "Test Failed!!! cpu total is less than $1 and its value is {{post['cpu-total']}}"}
+        ele_list = ['cpu-total', '1']
+        info = comp.get_info_mssg(path,ele_list)
+        err = comp.get_err_mssg(path,ele_list)
+        self.assertEqual(info,"Test Succeeded!! cpu total is greater than 1 and its value is {{post['cpu-total']}}")
+        self.assertEqual(err,"Test Failed!!! cpu total is less than 1 and its value is {{post['cpu-total']}}")
+
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(TestCheck)
     unittest.TextTestRunner(verbosity=2).run(suite)
