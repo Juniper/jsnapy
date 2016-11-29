@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0,'/Users/awasthiy/Desktop/jsnap_temp/jsnapy/lib')
 import unittest
 import yaml
 import os
@@ -98,7 +100,8 @@ class TestSnap(unittest.TestCase):
                 dev,
                 "10.216.193.114_snap_mock",
                 "10.216.193.114",
-                self.db)
+                self.db,
+                command_list=[])
             mock_cli.assert_called_once_with('show chassis fpc', format='xml')
 
     @patch('jnpr.jsnapy.snap.Parser._write_file')
@@ -119,7 +122,8 @@ class TestSnap(unittest.TestCase):
                 dev,
                 "10.216.193.114_snap_mock",
                 "10.216.193.114",
-                self.db)
+                self.db,
+                command_list=[])
             mock_cli.assert_called_once_with('show chassis fpc', format='text')
 
     @patch('jnpr.jsnapy.snap.Parser._write_file')
@@ -140,7 +144,8 @@ class TestSnap(unittest.TestCase):
                 dev,
                 "10.216.193.114_snap_mock",
                 "10.216.193.114",
-                self.db)
+                self.db,
+                rpc_list=[])
             c = mock_log.call_args_list[0]
             self.assertNotEqual(c[0][0].find("ERROR occurred"), -1)
 
@@ -196,7 +201,8 @@ class TestSnap(unittest.TestCase):
                 dev,
                 "10.216.193.114_snap_mock",
                 "10.216.193.114",
-                self.db)
+                self.db,
+                rpc_list=[])
             mock_rpc.assert_called_once_with('get_interface_information')
             mock_config.assert_called_once_with(
                 options={
@@ -223,7 +229,8 @@ class TestSnap(unittest.TestCase):
                 dev,
                 "10.216.193.114_snap_mock",
                 "10.216.193.114",
-                self.db)
+                self.db,
+                rpc_list=[])
             c = mock_log.call_args_list[0]
             self.assertNotEqual(
                 c[0][0].find("ERROR!!, filtering rpc works only for 'get-config' rpc"), -1)
@@ -250,7 +257,8 @@ class TestSnap(unittest.TestCase):
                 dev,
                 "10.216.193.114_snap_mock",
                 "10.216.193.114",
-                self.db)
+                self.db,
+                rpc_list=[])
             mock_rpc.assert_called_once_with('get_interface_information')
             mock_config.assert_called_once_with(options={'format': 'xml'})
 
@@ -331,7 +339,7 @@ class TestSnap(unittest.TestCase):
     @patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__')
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnapy.snap.etree')
-    def test_8(self, mock_etree, mock_dev, mock_rpc):
+    def test_duplicate_command_1(self, mock_etree, mock_dev, mock_rpc):
         prs = Parser()
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'test_duplicate.yml')
@@ -380,7 +388,8 @@ class TestSnap(unittest.TestCase):
                 dev,
                 "10.216.193.114_snap_mock",
                 "10.216.193.114",
-                self.db)
+                self.db,
+                command_list=[])
             mock_sqlite.assert_called_once_with('10.216.193.114', 'abc.db')
         dev.close()
 
@@ -407,7 +416,8 @@ class TestSnap(unittest.TestCase):
                 dev,
                 "10.216.193.114_snap_mock",
                 "01.216.193.114",
-                self.db)
+                self.db,
+                rpc_list=[])
             self.assertFalse(mock_insert.called)
             self.assertFalse(mock_init.called)
         dev.close()
@@ -439,7 +449,8 @@ class TestSnap(unittest.TestCase):
                 dev,
                 "snap_mock",
                 "10.216.193.114",
-                self.db)
+                self.db,
+                command_list=[])
 
             db_dict = dict()
             db_dict['cli_command'] = 'show_chassis_fpc'
@@ -478,8 +489,9 @@ class TestSnap(unittest.TestCase):
                 test_file,
                 dev,
                 "snap_mock",
-                "10.216.193.114",
-                self.db)
+                "10.216.193.114",                
+                 self.db,
+                 rpc_list=[])
             db_dict = dict()
             db_dict['cli_command'] = 'get-config'
             db_dict['snap_name'] = "snap_mock"
@@ -496,6 +508,36 @@ class TestSnap(unittest.TestCase):
             mock_insert.assert_has_calls(calls)
         dev.close()
 
+    @patch('sys.exit')
+    @patch('argparse.ArgumentParser.print_help')
+    @patch('jnpr.junos.device.Device')
+    @patch('jnpr.jsnapy.snap.etree')
+    @patch('jnpr.jsnapy.snap.logging.getLogger')
+    def test_duplicate_command_2(self, mock_log, mock_etree, mock_dev, mock_parser, mock_exit):
+        js = SnapAdmin()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_duplicate.yml')
+        config_file = open(conf_file, 'r')
+        js.main_file = yaml.load(config_file)
+        dev = jnpr.junos.device.Device(
+            host="10.216.193.114",
+            user="user",
+            passwd="xyz")
+        dev.open()
+        m_op = mock_open()
+        with nested (
+                patch('jnpr.jsnapy.snap.open', m_op, create=True),
+                patch('jnpr.jsnapy.jsnapy.get_path')
+        )as (m_open, mock_path):
+            mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+            op = js.generate_rpc_reply(
+                dev,
+                self.output_file,
+                "10.216.193.114",
+                js.main_file)
+            self.assertEqual(js.command_list,['show chassis fpc'])
+            self.assertEqual(js.rpc_list,['get-interface-information', 'get-config'])
+        dev.close()
 with nested(
         patch('jnpr.jsnapy.snap.logging.getLogger'),
         patch('logging.Logger'),

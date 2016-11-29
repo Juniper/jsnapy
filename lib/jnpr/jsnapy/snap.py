@@ -142,8 +142,9 @@ class Parser:
                     "Taking snapshot of COMMAND: %s " %
                     command,
                     extra=self.log_detail)
-            flag = 1
             command_list.append(command)
+        else:
+            return
         try:
             # self.logger_snap.info(
             #     colorama.Fore.BLUE +
@@ -190,21 +191,20 @@ class Parser:
             # sys.exc_clear()
             return
         else:
-            if flag == 0:
-                snap_file = self.generate_snap_file(
-                    output_file,
+            snap_file = self.generate_snap_file(
+                output_file,
+                hostname,
+                cmd_name,
+                cmd_format)
+            self._write_file(rpc_reply_command, cmd_format, snap_file)
+            if db['store_in_sqlite'] is True:
+                self.store_in_sqlite(
+                    db,
                     hostname,
                     cmd_name,
-                    cmd_format)
-                self._write_file(rpc_reply_command, cmd_format, snap_file)
-                if db['store_in_sqlite'] is True:
-                    self.store_in_sqlite(
-                        db,
-                        hostname,
-                        cmd_name,
-                        cmd_format,
-                        rpc_reply_command,
-                        output_file)
+                    cmd_format,
+                    rpc_reply_command,
+                    output_file)
 
 
     def run_rpc(self, test_file, t, formats, dev, output_file, hostname, db, rpc_list=[]):
@@ -212,7 +212,6 @@ class Parser:
         This function takes snapshot for given RPC and write it in
         snapshot file or database
         """
-        flag = 0
         rpc = test_file[t][0].get('rpc', "unknown rpc")
         self.rpc_list.append(rpc)
         reply_format = test_file[t][0].get('format', 'xml')
@@ -226,7 +225,8 @@ class Parser:
                                     rpc,
                                     extra=self.log_detail)
             rpc_list.append(rpc)
-            flag = 1
+        else:
+            return
         if len(test_file[t]) >= 2 and ('args' in test_file[t][1] or
                                        'kwargs' in test_file[t][1]):
             args_key = 'args' if 'args' in test_file[t][1] else 'kwargs'
@@ -348,24 +348,23 @@ class Parser:
                                        "\n**********Complete error message***********\n%s" %
                                        str(sys.exc_info()), extra=self.log_detail)
                 return
-        if flag == 0 :
-            if 'rpc_reply' in locals():
-                snap_file = self.generate_snap_file(
-                    output_file,
-                    hostname,
-                    rpc,
-                    reply_format)
-                self._write_file(rpc_reply, reply_format, snap_file)
-                self.reply[rpc] = rpc_reply
+        if 'rpc_reply' in locals():
+            snap_file = self.generate_snap_file(
+                output_file,
+                hostname,
+                rpc,
+                reply_format)
+            self._write_file(rpc_reply, reply_format, snap_file)
+            self.reply[rpc] = rpc_reply
 
-            if db['store_in_sqlite'] is True:
-                self.store_in_sqlite(
-                    db,
-                    hostname,
-                    rpc,
-                    reply_format,
-                    rpc_reply,
-                    output_file)
+        if db['store_in_sqlite'] is True:
+            self.store_in_sqlite(
+                db,
+                hostname,
+                rpc,
+                reply_format,
+                rpc_reply,
+                output_file)
 
     def generate_reply(self, test_file, dev, output_file, hostname, db, command_list=[], rpc_list=[]):
         """
