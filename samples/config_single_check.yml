@@ -4,7 +4,7 @@ hosts:
     username : demo 
     passwd: demo123
 tests:
- - test_is_gt.yml 
+ - test_no_diff.yml 
  - test_delta.yml
 
 # can use sqlite to store data and compare them  
