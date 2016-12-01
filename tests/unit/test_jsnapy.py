@@ -733,10 +733,6 @@ class TestSnapAdmin(unittest.TestCase):
     @patch('jnpr.jsnapy.SnapAdmin.login')
     @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
     def test_check_arguments_test_file_1(self, mock_log, mock_login, mock_sys, mock_arg):
-        argparse.ArgumentParser.parse_args = MagicMock()
-        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
-            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
-
         js = SnapAdmin()
         js.args.snap = False
         js.args.file = None
@@ -753,17 +749,17 @@ class TestSnapAdmin(unittest.TestCase):
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
             js.check_arguments()
             js.get_hosts()
-            self.assertTrue(js.args.file)
+            self.assertTrue(js.main_file)
+            self.assertEqual(js.main_file['hosts'][0]['device'],"10.221.130.68")
+            self.assertEqual(js.main_file['hosts'][0]['username'],"regress")
+            self.assertEqual(js.main_file['hosts'][0]['passwd'],"MaRtInI")
+            self.assertEqual(js.main_file['tests'][0],js.args.test_file)
         
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.jsnapy.sys.exit')
     @patch('jnpr.jsnapy.SnapAdmin.login')
     @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
     def test_check_arguments_test_file_2(self, mock_log, mock_login, mock_sys, mock_arg):
-        argparse.ArgumentParser.parse_args = MagicMock()
-        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
-            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
-
         js = SnapAdmin()
         js.args.snap = True
         js.args.file = None
@@ -780,17 +776,17 @@ class TestSnapAdmin(unittest.TestCase):
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
             js.check_arguments()
             js.get_hosts()
-            self.assertTrue(js.args.file)
+            self.assertTrue(js.main_file)
+            self.assertEqual(js.main_file['hosts'][0]['device'],"10.221.130.68")
+            self.assertEqual(js.main_file['hosts'][0]['username'],"regress")
+            self.assertEqual(js.main_file['hosts'][0]['passwd'],"MaRtInI")
+            self.assertEqual(js.main_file['tests'][0],js.args.test_file)            
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.jsnapy.sys.exit')
     @patch('jnpr.jsnapy.SnapAdmin.login')
     @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
     def test_check_arguments_test_file_3(self, mock_log, mock_login, mock_sys, mock_arg):
-        argparse.ArgumentParser.parse_args = MagicMock()
-        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
-            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
-
         js = SnapAdmin()
         js.args.snap = False
         js.args.file = None
@@ -807,18 +803,17 @@ class TestSnapAdmin(unittest.TestCase):
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
             js.check_arguments()
             js.get_hosts()
-            self.assertTrue(js.args.file)        
-
+            self.assertTrue(js.main_file)
+            self.assertEqual(js.main_file['hosts'][0]['device'],"10.221.130.68")
+            self.assertEqual(js.main_file['hosts'][0]['username'],"regress")
+            self.assertEqual(js.main_file['hosts'][0]['passwd'],"MaRtInI")        
+            self.assertEqual(js.main_file['tests'][0],js.args.test_file)
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.SnapAdmin.get_hosts')
     @patch('jnpr.jsnapy.jsnapy.sys.exit')
     @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
     def test_check_arguments_test_file_4(self, mock_log,mock_sys, mock_get_hosts, mock_arg):
-        argparse.ArgumentParser.parse_args = MagicMock()
-        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
-            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
-
         js = SnapAdmin()
         js.args.snap = False
         js.args.file = None
@@ -841,10 +836,6 @@ class TestSnapAdmin(unittest.TestCase):
     @patch('jnpr.jsnapy.jsnapy.sys.exit')
     @patch('jnpr.jsnapy.jsnapy.logging.getLogger')
     def test_check_arguments_test_file_5(self, mock_log, mock_sys, mock_get_hosts, mock_arg):
-        argparse.ArgumentParser.parse_args = MagicMock()
-        argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
-            diff=False, file=None, hostname=None, login=None, passwd=None, port=None, post_snapfile=None, pre_snapfile=None, snap=False, snapcheck=False, verbosity=None, version=False)
-
         js = SnapAdmin()
         js.args.snap = False
         js.args.file = None

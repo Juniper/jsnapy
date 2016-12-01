@@ -4,6 +4,7 @@
 #
 # All rights reserved.
 #
+
 import argparse
 import getpass
 import logging
@@ -23,7 +24,6 @@ from jnpr.jsnapy import version
 from jnpr.jsnapy.operator import Operator
 from jnpr.jsnapy.snap import Parser
 from jnpr.junos.exception import ConnectAuthError
-from jnpr.jsnapy.MyDumper import MyDumper
 
 import colorama
 import setup_logging
@@ -332,11 +332,7 @@ class SnapAdmin:
                 temp_dict['hosts'][0]['username'] = self.args.login
                 temp_dict['hosts'][0]['passwd'] = self.args.passwd
                 temp_dict['tests'].append(self.args.test_file)
-                with open('result.yml', 'w') as yaml_file:
-                    yaml.dump(temp_dict, yaml_file, Dumper=MyDumper, default_flow_style=False)
-                config_file = open('result.yml', 'r')
-                self.main_file = yaml.load(config_file)
-                self.args.file = config_file
+                self.main_file = temp_dict
             else:
                 self.logger.error(
                     colorama.Fore.RED +
