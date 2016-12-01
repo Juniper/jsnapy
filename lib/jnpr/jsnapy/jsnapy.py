@@ -11,7 +11,6 @@ import logging
 import os
 import Queue
 import sys
-sys.path.insert(0,'/Users/awasthiy/Desktop/jsnap_temp/jsnapy/lib')
 import textwrap
 from copy import deepcopy
 from threading import Thread
