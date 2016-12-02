@@ -325,7 +325,7 @@ class TestCheck(unittest.TestCase):
         self.assertEqual(oper.result, 'Passed')
 
     @patch('jnpr.jsnapy.check.get_path')
-    def test_dynamic_info_err_msg(self, mock_path):
+    def test_dynamic_info_err_msg_1(self, mock_path):
         self.chk = False
         comp = Comparator()
         conf_file = os.path.join(os.path.dirname(__file__),
@@ -339,6 +339,22 @@ class TestCheck(unittest.TestCase):
         err = comp.get_err_mssg(path,ele_list)
         self.assertEqual(info,"Test Succeeded!! cpu total is greater than 1 and its value is {{post['cpu-total']}}")
         self.assertEqual(err,"Test Failed!!! cpu total is less than 1 and its value is {{post['cpu-total']}}")
+
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_dynamic_info_err_msg_2(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_not-range_ignore-null_fail.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        path = {'info': "Test Succeeded!! memory heap utilisation of the FPCs is within the range of $1-$2% and its value is {{post['memory-heap-utilization']}}", 'not-range': 'memory-heap-utilization, 0, 30', 'err': "Test Failed!!! memory heap utilisation of the FPCs is not within the range of $1-$2% and its value is {{post['memory-heap-utilization']}}"}
+        ele_list = ['cpu-total', '1']
+        info = comp.get_info_mssg(path,ele_list)
+        err = comp.get_err_mssg(path,ele_list)
+        self.assertEqual(info,"Test Succeeded!! memory heap utilisation of the FPCs is within the range of 0-30% and its value is {{post['memory-heap-utilization']}}")
+        self.assertEqual(err,"Test Failed!!! memory heap utilisation of the FPCs is not within the range of 0-30% and its value is {{post['memory-heap-utilization']}}")
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(TestCheck)

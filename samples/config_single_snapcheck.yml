@@ -4,8 +4,9 @@ hosts:
     username : demo
     passwd: demo123
 tests:
-  - /Users/awasthiy/Desktop/jsnap_temp/jsnapy/tests/unit/configs/is-gt_ignore-null_fail.yml
-  - /Users/awasthiy/Desktop/jsnap_temp/jsnapy/tests/unit/configs/not-range_ignore-null_fail.yml
+  - test_exists.yml 
+  - test_contains.yml
+  - test_is_gt.yml
 
 # use sqlite to store data 
 sqlite:
