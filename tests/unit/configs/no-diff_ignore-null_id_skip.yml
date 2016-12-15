@@ -1,0 +1,14 @@
+# use '/' in your test cases apart from xpath if u want to search all elements irrespective of hierarchy, ex: in id if u use /name instead of name
+# then it will search in all the names in given xpath irrespective of their position
+# for simple, one test using command
+
+test_command_version:
+  - command: show interfaces terse ge-*
+  - ignore-null: True
+  - iterate:
+      xpath: physical-interface
+      id: bogus-name
+      tests:
+        - no-diff: oper-status       # element in which test is performed
+          err: "Test Failed!! oper-status  got changed, before it was {{pre['oper-status']}}, now it is {{post['oper-status']}} for interface {{id_0}}"
+          info: "oper-status is saame with value {{post['oper-status']}} for interface {{id_0}}"

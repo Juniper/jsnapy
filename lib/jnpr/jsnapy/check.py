@@ -253,10 +253,19 @@ class Comparator:
                 #this should be guaranteed by the operator function, never use try-catch here
                 last_test_instance = kwargs['op'].test_details[kwargs['teston']][-1]
                 res = last_test_instance['result']
-                
+
+                values = ['err', 'info']
+                testvalues = elem.keys()
+                testop1 = [
+                    tvalue for tvalue in testvalues if tvalue not in values]
+                testop = testop1[0] if testop1 else "Define test operator"
                 #for skipping cases
-                if res is None or ( last_test_instance['count']['pass'] == 0 \
-                                   and last_test_instance['count']['fail'] == 0 ): 
+                if res is None or (last_test_instance['count']['pass'] == 0 and
+                                   last_test_instance['count']['fail'] == 0 and
+                                   testop not in ['no-diff',
+                                                  'list-not-less',
+                                                  'list-not-more'
+                                                  ]):
                     continue
                     
                 ret_expr.append(str(res))
