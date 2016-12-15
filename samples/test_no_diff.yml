@@ -8,7 +8,7 @@ tests_include:
 test_command_version:
   - command: show interfaces terse lo* 
   - iterate:
-      xpath: physical-interface/logical-interface
+      xpath: physical-interface
       id: './name'
       tests:
         - no-diff: oper-status       # element in which test is performed
