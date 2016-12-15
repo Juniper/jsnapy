@@ -1,14 +1,14 @@
 # for one device, can be given like this:
 hosts:
-  - device: 10.209.16.204
-    username: demo 
-    passwd: demo123
+  - device: 10.221.130.68 
+    username: regress 
+    passwd: MaRtInI
 tests:
-  - test_xml.yml 
+  - /Users/ishaank/Desktop/work-jsanpy/jsnapy/samples/test_no_diff.yml 
 
 
 ###################################
-can send mail by specifying:
-mail: send_mail.yml
+# can send mail by specifying:
+# mail: send_mail.yml
 
 ####################################

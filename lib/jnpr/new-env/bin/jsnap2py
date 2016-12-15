@@ -1,0 +1,138 @@
+#!/Users/ishaank/Desktop/work-jsanpy/jsnapy/lib/jnpr/new-env/bin/python
+__author__ = "Nitin Kumar"
+
+import argparse
+import yaml
+import re
+from pyparsing import *
+
+parser = argparse.ArgumentParser(
+    description='Converts JSNAP test to JSNAPy yml file.')
+parser.add_argument("-i", "--input", help="JSNAP test file", type=str)
+parser.add_argument("-o", "--output", help="JSNAPy test file", type=str)
+args = parser.parse_args()
+
+
+def msg_change(x):
+    data = re.findall(
+        '(PRE|POST)(/?\.?/\s?[\w-]+/?[\w-]*)',
+        x.replace(' ', ''),
+        re.I) or re.findall(
+        '(ID)\.(\d)', x, re.I) or re.findall('\s?\.{0,2}/?\.{0,2}/?[\w-]+/?[\w-]*/?[\w-]*',
+                                             x,
+                                             re.I)
+    if data:
+        data = data[0]
+        if data[0] in ['id', 'ID']:
+            msg = "{{%s_%s}}" % (data)
+        elif data[0] in ['PRE', 'POST']:
+            msg = '{{%s["%s"]}}' % (data)
+        else:
+            msg = '{{POST["%s"]}}' % data.strip()
+        return msg.lower()
+
+if args.input is None:
+    parser.print_help()
+else:
+    with open(args.input) as fp:
+        if args.output is None:
+            args.output = fp.name.split('.')[0] + '.yml'
+        content = fp.read()
+
+        tcs = Suppress(
+            'do' + Literal("{")) + Group(OneOrMore(Word(alphanums + '_' + '-') + Suppress(Literal(";")))) + Suppress(Literal("}"))
+        tc_name = Word(alphanums + '-' + '_') + Suppress(Literal("{"))
+        cmd = Group('command' + SkipTo(';')) + Suppress(Literal(";"))
+        loop = Group(
+            oneOf('item iterate') +
+            SkipTo(
+                oneOf('{ ;')) +
+            Suppress(
+                oneOf('{ ;')))
+        tc_id = Group(
+            ZeroOrMore(
+                Group(
+                    'id' +
+                    SkipTo(';') +
+                    Suppress(
+                        Literal(";")))))
+        oper = Group(
+            Word(
+                alphanums +
+                '-') +
+            Optional((
+                ZeroOrMore('.') +
+                ZeroOrMore('/') +
+                ZeroOrMore('.') +
+                ZeroOrMore('/') +
+                Word(
+                    alphanums +
+                    '-' +
+                    '/' + '[' + ']')).setParseAction(lambda tokens: "".join(tokens)) +
+                ZeroOrMore(
+                    Suppress(
+                        Literal(",")) +
+                    Word(
+                        alphanums +
+                        '-' + '(' + ')'
+                        '%' +
+                        '"' +
+                        ' ' + '.'))))
+        msg = nestedExpr(opener='{', closer='}')
+        comment = Keyword('#') + SkipTo(LineEnd())
+        test_case = Suppress(ZeroOrMore(comment)) + tcs + OneOrMore(Group(tc_name + cmd + ZeroOrMore(Group(loop + tc_id + Group(OneOrMore(Group(oper + msg)))) +
+                                                                                                     Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(Literal("}")))) + Suppress(ZeroOrMore(comment)))
+        data = test_case.parseString(content, parseAll=True).asList()
+        push = {'tests_include': data[0]}
+        for cases in data[1:]:
+            iter_list = []
+            for case in cases[2:]:
+                iter_item = {'xpath': (case[0][1]).strip()}
+                if case[1] != []:
+                    # handle ids
+                    ids = [i[1] for i in case[1]]
+                    # handle multiple ids
+                    iter_item['id'] = ', '.join(ids)
+                tests = []
+                for tc in case[2]:
+                    # settting operators
+                    if len(tc[0]) == 1:
+                        test = {tc[0][0]: None}
+                    else:
+                        test = {
+                            tc[0][0]: (
+                                ', '.join(
+                                    tc[0][
+                                        1:])).strip().replace(
+                                '"',
+                                '')}
+                    msg = [i.strip() for i in ' '.join(tc[-1]).split(';')]
+                    for i in msg:
+                        obj = re.search('(info|err) (.*)', i)
+                        if obj:
+                            data = re.search('"(.*?)"(.*)', obj.group(2))
+                            inputs = []
+                            if data is not None and data.group(2) != '':
+                                inputs = re.findall(
+                                    '\$id\.\d|\$pre\s?/?\.?/\s?[\w-]+/?[\w-]*|\$post\s?/?\.?/\s?[\w-]+/?[\w-]*|,\s?\.{0,2}/?\.{0,2}/?[\w-]+/?[\w-]*/?[\w-]*',
+                                    data.group(2),
+                                    re.I)
+                                inputs = map(msg_change, inputs)
+                            to_format = re.search('"(.*?)"', obj.group(2))
+                            if len(inputs) > 0:
+                                if to_format:
+                                    test[
+                                        obj.group(1)] = to_format.group(1) % tuple(inputs)
+                            else:
+                                if to_format:
+                                    test[obj.group(1)] = to_format.group(1)
+                                else:
+                                    test[obj.group(1)] = obj.group(2)
+                    tests.append(test)
+                iter_item['tests'] = tests
+                iter_list.append({case[0][0]: iter_item})
+            push[cases[0]] = [{cases[1][0]:cases[1][1]}]
+            push[cases[0]].extend(iter_list)
+
+        with open(args.output, 'w') as fout:
+            yaml.dump(push, fout, default_flow_style=False, indent=2)

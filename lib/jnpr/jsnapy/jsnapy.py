@@ -5,12 +5,13 @@
 # All rights reserved.
 #
 
+import sys
+sys.path.insert(0,'/Users/ishaank/Desktop/work-jsanpy/jsnapy/lib')
 import argparse
 import getpass
 import logging
 import os
 import Queue
-import sys
 import textwrap
 from copy import deepcopy
 from threading import Thread

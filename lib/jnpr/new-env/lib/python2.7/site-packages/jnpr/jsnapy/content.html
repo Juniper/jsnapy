@@ -1,0 +1,122 @@
+<!doctype html>
+<! -- Copyright (c) 1999-2016, Juniper Networks Inc. -->
+<! -- All rights reserved. -->
+<html lang="en">
+
+<head>
+
+</head>
+
+<body>
+<p><font face="calibri" size="3">Hi {{ name }},</font> </p>
+
+<div><font face="calibri" size="3"></font>
+    <p><font color="blue" ><bi> Test Performed on Device: {{device}}</bi></font> </p>
+</div>
+
+<div><font face="calibri" size="3">
+    <p> <font color="blue" ><bi> Overall Result:</bi></font>
+   <br> ===================
+        {% if fresult == "Passed" %}
+            <br> <font color="green"><b>Final Result: TEST PASSED !!</b></font>
+        {% endif %}
+        {% if fresult == "Failed" %}
+            <br> <font color="red"><b> Final Result: TEST FAILED !! </b></font>
+        {% endif %}
+    <br>Total Tests Passed: {{tpassed}}
+    <br> Total Tests Failed: {{tfailed}}
+
+    </p>
+   </font>
+</div>
+
+<div id="content">
+    <font face="calibiri" size="3">
+  <p> <bi><font color="blue" size="3">Test details dated {{ date }} is as follows:</font></bi></p>
+  <ul>
+  {% for item in tests %}
+   <p><li><b>Test result for {{ item }}:</b>
+    <br>===========================================================
+      <ol>
+       {% for values in tests[item] %}
+            {% if values['result'] == True %}
+                <li>
+                <p><font color="green"><b> Test Operation: </b> {{values['testoperation']}}: PASSED</font>
+                <br>Test case passed for
+                {% if values['testoperation'] == "simple-diff" %}
+                    <br><i>Passed all parameters, diff is: </i> {{values}}
+                {% else %}
+
+                    <br> <i>xpath: </i> {{values['xpath']}}
+                    <br> <i> Node Name: </i> {{values['node_name']}}
+                    {% if values['testoperation'] in ["no-diff", "list-not-less", "list-not-more", "delta"] %}
+                        <br> <i> Count: </i> {{values['count']}}
+                        <br> <i>Passed: </i> {{values['passed']}}
+                        <br> <i> Failed: </i> {{values['failed']}}
+                    {% else %}
+                        <br> <i> Expected Node Value: </i> {{values['expected_node_value']}}
+                        <br> <i> Count: </i> {{values['count']}}
+                        <br> <i>Passed: </i> {{values['passed']}}
+                        <br> <i> Failed: </i> {{values['failed']}}
+                    {% endif %}
+                {% endif %}
+            </p>
+            </li>
+            {% endif %}
+
+            {% if values['result'] == False %}
+                <li>
+                <p> <font color="red"><b> Test Operation: </b>{{values['testoperation']}}: FAILED </font>
+                <br>Test case failed for
+                    {% if values['testoperation'] == "simple-diff" %}
+                        {% for diff in values['diff_on'] %}
+                            <br> <i>Diff for: </i>{{diff['testop']}}
+                            <br> <i>Element: </i> {{diff['element']}}
+                            <br> <i>Pre Node Value: </i> {{diff['pre_node_value']}}
+                            <br> <i>Post Node Value: </i>{{diff['post_node_value']}}
+                            <br> <i>Result: </i>{{diff['result']}}
+                            <br> <i>Parent Node: </i>{{diff['parent_node']}}
+                            <br> <i>Pre Node Tag</i> {{diff['pre_node_tag']}}
+                            <br> <i>Post Node Tag</i> {{diff['post_node_tag']}}
+                            <br> <i>Pre Node No</i> {{diff['pre_node_no']}}
+                            <br> <i>Post Node No</i> {{diff['post_node_no']}}
+                        {% endfor %}
+                    {% else %}
+                        <br> <i> xpath: </i> {{values['xpath']}}
+                        <br> <i> Node Name: </i> {{values['node_name']}}
+                        {% if values['testoperation'] in ["no-diff", "list-not-less", "list-not-more", "delta"] %}
+                            <br> <i> Count: </i> {{values['count']}}
+                            <br> <i>Passed: </i> {{values['passed']}}
+                            <br> <i> Failed: </i> {{values['failed']}}
+                        {% else %}
+                            <br> <i> Expected Node Value: </i> {{values['expected_node_value']}}
+                            <br> <i> Count: </i> {{values['count']}}
+                            <br> <i>Passed: </i> {{values['passed']}}
+                            <br> <i> Failed: </i> {{values['failed']}}
+                        {% endif %}
+                    {% endif %}
+                </p>
+                </li>
+
+            {% endif %}
+       {% endfor %}
+       </ol>
+      </li>
+      </p>
+   {% endfor %}
+
+  </ul>
+        </font>
+</div>
+
+
+<div>
+    <font face="calibri" size="3">
+    <p>Regards
+    <br>{{sname}}
+    </p>
+        </font>
+</div>
+</body>
+
+</html>

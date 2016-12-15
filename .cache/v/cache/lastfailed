@@ -1,0 +1,17 @@
+{
+  "tests/unit/test_jsnapy.py::TestSnapAdmin::test_conditional_mail_1": true, 
+  "tests/unit/test_jsnapy.py::TestSnapAdmin::test_conditional_mail_3": true, 
+  "tests/unit/test_jsnapy.py::TestSnapAdmin::test_conditional_mail_4": true, 
+  "tests/unit/test_jsnapy.py::TestSnapAdmin::test_conditional_mail_5": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_all_same_ignore_null_2": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_all_same_ignore_null_3": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_all_same_ignore_null_4": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_exists_ignore_null_skip": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_is_equal_fail_ignore_null_2": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_is_equal_fail_ignore_null_4": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_is_equal_success_ignore_null_1": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_not_equal_ignore_null_2": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_not_equal_ignore_null_4": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_not_equal_ignore_null_5": true, 
+  "tests/unit/test_str_numeric_op.py::TestStrNumericOperators::test_not_exists_ignore_null_skip": true
+}

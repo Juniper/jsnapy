@@ -1,0 +1,64 @@
+version: 1
+
+disable_existing_loggers: True 
+
+## use formatters to cutomize your output
+## add of remove parameters accordingly
+##
+
+formatters:
+    custom_format:
+        format: "%(asctime)s - %(name)s - %(levelname)s - %(hostname)s ............. \n %(message)s"
+    simple:
+        format: "%(hostname)s-- %(message)s"
+    default:
+        format: "%(message)s"
+    default_file:
+        format:  "%(asctime)s - %(name)s - %(levelname)s - \n %(message)s"
+handlers:
+    console:
+        class: logging.StreamHandler
+        level: INFO 
+        formatter: default
+        stream: ext://sys.stdout
+
+    info_file_handler:
+        class: logging.handlers.RotatingFileHandler
+        level: INFO
+        formatter: default_file
+        filename: /var/log/jsnapy/jsnapy.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+
+    error_file_handler:
+        class: logging.handlers.RotatingFileHandler
+        level: ERROR
+        formatter: default_file
+        filename: /var/log/jsnapy/jsnapy.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+
+    critical_file_handler:
+        class: logging.handlers.RotatingFileHandler
+        level: CRITICAL
+        formatter: default_file
+        filename: /var/log/jsnapy/jsnapy.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+
+    debug_file_handler:
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        formatter: default_file
+        filename: /var/log/jsnapy/jsnapy.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+
+root:
+    level: DEBUG 
+    handlers: [console, debug_file_handler]
+

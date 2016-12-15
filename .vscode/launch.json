@@ -1,0 +1,130 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "test",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "pythonPath": "${config.python.pythonPath}",
+            "program": "${file}",
+             "args": [
+                "install",
+                // ,"PRE",
+                // "-f","/Users/ishaank/Desktop/work-jsanpy/jsnapy/samples/config_check_no_test.yml",
+                "--dire","/Users/ishaank/Desktop/test_inst"
+            ],
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput"
+            ]
+
+        },
+        {
+            "name": "Jlaunch",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "pythonPath": "${config.python.pythonPath}",
+            "program": "${file}",
+            
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput"
+            ]
+        },
+         {
+            "name": "CMD-Launch",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "pythonPath": "${config.python.pythonPath}",
+            "program": "${workspaceRoot}/lib/jnpr/jsnapy/jsnapy.py",
+            "args": [
+            // "-v",
+            // "--check","PRE","POST",
+            "--check","check1","check2",
+            // "--snapcheck","check11",
+            // "--local",
+            // "--snap","check2",
+            // "--snap","check1",
+            "-f","/Users/ishaank/Desktop/work-jsanpy/jsnapy/samples/config_check_no_test.yml"
+            // "-f","/Users/ishaank/Desktop/work-jsanpy/jsnapy/samples/config_check_no_test.yml",
+            // "--folder","~/Desktop/testfdasfa_inst","-v"
+            // "-f","/Users/ishaank/Desktop/work-jsanpy/jsnapy/tests/unit/configs/main_incorrect_2.yml"
+            // "--port","22"
+            
+            ],
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput"
+            ]
+        },
+        {
+            "name": "Python Console App",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "pythonPath": "${config.python.pythonPath}",
+            "program": "${file}",
+            "args": [
+                "--snap","PRE",
+                "-f","/Users/ishaank/Desktop/work-jsanpy/jsnapy/samples/config_check_no_test.yml"
+             ],
+            "externalConsole": true,
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit"
+            ]
+        },
+        {
+            "name": "Django",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "pythonPath": "${config.python.pythonPath}",
+            "program": "${workspaceRoot}/manage.py",
+            "args": [
+                "runserver",
+                "--noreload"
+            ],
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput",
+                "DjangoDebugging"
+            ]
+        },
+        {
+            "name": "Watson",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "pythonPath": "${config.python.pythonPath}",
+            "program": "${workspaceRoot}/console.py",
+            "args": [
+                "dev",
+                "runserver",
+                "--noreload=True"
+            ],
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput"
+            ]
+        },
+        {
+            "name": "Attach",
+            "type": "python",
+            "request": "attach",
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": "${workspaceRoot}",
+            "port": 3000,
+            "secret": "my_secret",
+            "host": "localhost"
+        }
+    ]
+}

@@ -2203,8 +2203,11 @@ class Operator:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
             # making dictionary for id and its corresponding xpath
 
-            predata = self._get_data(id_list, pre_nodes)
-            postdata = self._get_data(id_list, post_nodes)
+            predata = self._get_data(id_list, pre_nodes, ignore_null)
+            postdata = self._get_data(id_list, post_nodes, ignore_null)
+
+            if not predata:
+                res = None
 
             for k in predata:
                 for length in range(len(k)):
@@ -2367,9 +2370,12 @@ class Operator:
         else:
             # assuming one iterator has unique set of ids, i.e only one node matching to id
             # making dictionary for id and its corresponding xpath
-            predata = self._get_data(id_list, pre_nodes)
-            postdata = self._get_data(id_list, post_nodes)
+            predata = self._get_data(id_list, pre_nodes, ignore_null)
+            postdata = self._get_data(id_list, post_nodes, ignore_null)
 
+            if not predata:
+                res = None
+            
             for k in postdata:
                 for length in range(len(k)):
                     #iddict['id_' + str(length)] = k[length].strip()
@@ -2541,13 +2547,17 @@ class Operator:
                 # assuming one iterator has unique set of ids, i.e only one node matching to id
                 # making dictionary for id and its corresponding xpath
 
-                predata = self._get_data(id_list, pre_nodes)
-                postdata = self._get_data(id_list, post_nodes)
+                predata = self._get_data(id_list, pre_nodes, ignore_null)
+                postdata = self._get_data(id_list, post_nodes, ignore_null)
 
                 predata_keys = set(predata.keys())
                 postdata_keys = set(postdata.keys())
                 keys_union = predata_keys.union(postdata_keys)
 
+                if not keys_union:
+                    res = None
+                    is_skipped = True
+                    
                 for k in keys_union:
                     # checking if id in first data set is present in second data
                     # set or not
