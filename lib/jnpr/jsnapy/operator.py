@@ -2046,6 +2046,10 @@ class Operator:
                 keys_union = data1_key.union(data2_key)
 
                 if not keys_union:
+                    self.logger_testop.debug(colorama.Fore.YELLOW +
+                                    "SKIPPING!! Nodes are not present for given IDs: {}".format(
+                                        id_list),
+                                    extra=self.log_detail)
                     res = None
                 # iterating through ids which are present either in pre
                 # snapshot or post snapshot or both
@@ -2207,6 +2211,10 @@ class Operator:
             postdata = self._get_data(id_list, post_nodes, ignore_null)
 
             if not predata:
+                self.logger_testop.debug(colorama.Fore.YELLOW +
+                                    "SKIPPING!! Nodes are not present for given IDs: {}".format(
+                                        id_list),
+                                    extra=self.log_detail)
                 res = None
 
             for k in predata:
@@ -2374,6 +2382,10 @@ class Operator:
             postdata = self._get_data(id_list, post_nodes, ignore_null)
 
             if not predata:
+                self.logger_testop.debug(colorama.Fore.YELLOW +
+                                    "SKIPPING!! Nodes are not present for given IDs: {}".format(
+                                        id_list),
+                                    extra=self.log_detail)
                 res = None
             
             for k in postdata:
@@ -2555,9 +2567,13 @@ class Operator:
                 keys_union = predata_keys.union(postdata_keys)
 
                 if not keys_union:
+                    self.logger_testop.debug(colorama.Fore.YELLOW +
+                                    "SKIPPING!! Nodes are not present for given IDs: {}".format(
+                                        id_list),
+                                    extra=self.log_detail)
                     res = None
                     is_skipped = True
-                    
+
                 for k in keys_union:
                     # checking if id in first data set is present in second data
                     # set or not
