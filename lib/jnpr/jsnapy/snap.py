@@ -126,7 +126,6 @@ class Parser:
         This function takes snapshot for given command and write it in
         snapshot file or database
         """
-        flag = 0
         command = test_file[t][0].get('command', "unknown command")
         cmd_format = test_file[t][0].get('format', 'xml')
         cmd_format = cmd_format if cmd_format in formats else 'xml'
