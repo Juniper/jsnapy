@@ -1,10 +1,6 @@
-tests_include:
-  - check_chassis_fpc
-
 check_chassis_fpc:
   - command: show chassis fpc
   - item: 
-      
       xpath: //fpc
       id: bogus-slot
       tests:
