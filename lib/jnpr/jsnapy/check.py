@@ -251,6 +251,8 @@ class Comparator:
                 self.expression_evaluator(elem,**kwargs)
                 res = None
                 #this should be guaranteed by the operator function, never use try-catch here
+                if not kwargs['op'].test_details[kwargs['teston']]:
+                    continue
                 last_test_instance = kwargs['op'].test_details[kwargs['teston']][-1]
                 res = last_test_instance['result']
 
