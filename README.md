@@ -1,6 +1,6 @@
 [![PyPi Version](https://img.shields.io/pypi/v/jsnapy.svg)](https://pypi.python.org/pypi/jsnapy/) [![Coverage Status](https://travis-ci.org/Juniper/jsnapy.svg?branch=master)](https://travis-ci.org/Juniper/jsnapy)
 
-# jsnapy
+# JSNAPy
 Python version of Junos Snapshot Administrator
 
 Inspired by https://github.com/Juniper/junos-snapshot-administrator
@@ -20,7 +20,7 @@ Installation requires Python 2.7 and associated pip tool
           sudo pip install jsnapy
     2. Install using pip command from github
           sudo pip install git+https://github.com/Juniper/jsnapy.git 
-    3. Updating using pip command
+    3. Updating using pip command (from github)
           sudo pip install -U git+https://github.com/Juniper/jsnapy.git 
     4. Download or clone the source code from this git repository
           git clone https://github.com/Juniper/jsnapy
@@ -62,7 +62,8 @@ To run this test execute following command:
 ```
 1. jsnapy --snap pre -f config_check.yml (for taking pre snapshot)
 2. jsnapy --snap post -f config_check.yml (for taking post snapshot after some modification)
-3. jsnapy --check pre post -f config_check.yml
+3. jsnapy --check pre post -f config_check.yml (compares pre post snapshot as per test cases)
+4. jsnapy --diff -f config_check.yml (compares pre post snapshot files, shows the diff in 2 Columns)
 ```
 
 Output will look something like this:
@@ -118,7 +119,6 @@ CONTRIBUTORS
 Juniper Networks is actively contributing to and maintaining this repo. Please contact jnpr-community-netdev@juniper.net for any queries.
 
 Contributors:  
-[Priyal Jain] (https://github.com/jainpriyal)  
-[Nitin Kumar] (https://github.com/vnitinv/)  
 
-
+* v1.0.0: [Priyal Jain](https://github.com/jainpriyal), [Nitin Kumar](https://github.com/vnitinv)
+* v1.1.0: [Ishaan Kumar](https://github.com/eeishaan)

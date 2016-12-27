@@ -347,8 +347,8 @@ class Operator:
                 element, x_path, count_pass)
             self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -460,8 +460,8 @@ class Operator:
                 element, x_path, count_pass)
             self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -640,8 +640,8 @@ class Operator:
                     element, x_path, count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -787,8 +787,8 @@ class Operator:
                     element, value, count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -932,8 +932,8 @@ class Operator:
                     element, value, count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1087,8 +1087,8 @@ class Operator:
                     element, range1, range2, count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1243,8 +1243,8 @@ class Operator:
                     element, range1, range2, count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1386,8 +1386,8 @@ class Operator:
                     element, val1, count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1529,8 +1529,8 @@ class Operator:
                     element, val1, count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1674,8 +1674,8 @@ class Operator:
                     element, value, count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1827,8 +1827,8 @@ class Operator:
                     count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -1979,8 +1979,8 @@ class Operator:
                     count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -2153,8 +2153,8 @@ class Operator:
                 count_pass)
             self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -2326,8 +2326,8 @@ class Operator:
                 count_pass)
             self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -2495,8 +2495,8 @@ class Operator:
                 count_pass)
             self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -2895,8 +2895,8 @@ class Operator:
                     count_pass)
                 self._print_result(msg, res)
 
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
@@ -3045,8 +3045,8 @@ class Operator:
                     element, value, count_pass)
                 self._print_result(msg, res)
             
-        tresult['info'] = info_mssg
-        tresult['err'] = err_mssg
+        #tresult['info'] = info_mssg
+        #tresult['err'] = err_mssg
         tresult['result'] = res
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
