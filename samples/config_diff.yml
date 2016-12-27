@@ -4,7 +4,7 @@ hosts:
     username: demo 
     passwd: demo123
 tests:
-  - test_diff.yml 
+  - test_diff.yml
 
 
 ###################################
