@@ -100,14 +100,15 @@ class Operator:
             extra=self.log_detail)
 
     def _print_message(self, mssg, iddict, predict, postdict, mode="info"):
+        printed_str = jinja2.Template(mssg).render(iddict,
+                                                   pre=predict,
+                                                   post=postdict)
         getattr(
             self.logger_testop,
             mode)(
-            jinja2.Template(mssg).render(
-                iddict,
-                pre=predict,
-                post=postdict),
+            printed_str,
             extra=self.log_detail)
+        return (mode, printed_str)
 
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
@@ -243,6 +244,7 @@ class Operator:
             'testoperation': 'exists',
             'passed': [],
             'failed': [],
+            'messages': []
         #     'pre_xml': xml1,
         #     'post_xml': xml2
         }
@@ -316,21 +318,21 @@ class Operator:
                                 'actual_node_value': post_nodevalue}
                             tresult['passed'].append(
                                 deepcopy(node_value_passed))
-                            self._print_message(
-                                info_mssg,
-                                iddict,
-                                predict,
-                                postdict,
-                                "debug")
+                            tresult['messages'].append(self._print_message(
+                                                       info_mssg,
+                                                       iddict,
+                                                       predict,
+                                                       postdict,
+                                                       "debug"))
                             count_pass = count_pass + 1
                     else:
                         res = False
-                        self._print_message(
-                            err_mssg,
-                            iddict,
-                            predict,
-                            postdict,
-                            "info")
+                        tresult['messages'].append(self._print_message(
+                                                   err_mssg,
+                                                   iddict,
+                                                   predict,
+                                                   postdict,
+                                                   "info"))
                         count_fail = count_fail + 1
                         node_value_failed = {
                             'id': id_val,
@@ -365,6 +367,7 @@ class Operator:
             'testoperation': "not-exists",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -424,12 +427,12 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             res = False
-                            self._print_message(
-                                err_mssg,
-                                iddict,
-                                predict,
-                                postdict,
-                                "info")
+                            tresult['messages'].append(self._print_message(
+                                                       err_mssg,
+                                                       iddict,
+                                                       predict,
+                                                       postdict,
+                                                       "info"))
                             count_fail = count_fail + 1
                             node_value_failed = {
                                 'id': id_val,
@@ -439,12 +442,12 @@ class Operator:
                             tresult['failed'].append(
                                 deepcopy(node_value_failed))
                     else:
-                        self._print_message(
-                            info_mssg,
-                            iddict,
-                            predict,
-                            postdict,
-                            "debug")
+                        tresult['messages'].append(self._print_message(
+                                                   info_mssg,
+                                                   iddict,
+                                                   predict,
+                                                   postdict,
+                                                   "debug"))
                         count_pass = count_pass + 1
                         node_value_passed = {
                             'id': id_val,
@@ -479,6 +482,7 @@ class Operator:
             'testoperation': "all-same",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -577,12 +581,12 @@ class Operator:
                                 if post_nodevalue != value:
                                     res = False
                                     count_fail = count_fail + 1
-                                    self._print_message(
-                                        err_mssg,
-                                        iddict,
-                                        predict,
-                                        postdict,
-                                        "info")
+                                    tresult['messages'].append(self._print_message(
+                                                               err_mssg,
+                                                               iddict,
+                                                               predict,
+                                                               postdict,
+                                                               "info"))
                                     node_value_failed = {
                                         'id': id_val,
                                         'pre': predict,
@@ -592,12 +596,12 @@ class Operator:
                                         deepcopy(node_value_failed))
                                 else:
                                     count_pass = count_pass + 1
-                                    self._print_message(
-                                        info_mssg,
-                                        iddict,
-                                        predict,
-                                        postdict,
-                                        "debug")
+                                    tresult['messages'].append(self._print_message(
+                                                               info_mssg,
+                                                               iddict,
+                                                               predict,
+                                                               postdict,
+                                                               "debug"))
                                     node_value_passed = {
                                         'id': id_val,
                                         'pre': predict,
@@ -661,6 +665,7 @@ class Operator:
             'testoperation': "is-equal",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -732,12 +737,12 @@ class Operator:
                                 tresult['passed'].append(
                                     deepcopy(node_value_passed))
                                 count_pass = count_pass + 1
-                                self._print_message(
-                                    info_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "debug")
+                                tresult['messages'].append(self._print_message(
+                                                            info_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "debug"))
                             else:
                                 node_value_failed = {
                                     'id': id_val,
@@ -748,12 +753,12 @@ class Operator:
                                     deepcopy(node_value_failed))
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(
-                                    err_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "info")
+                                tresult['messages'].append(self._print_message(
+                                                            err_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "info"))
                     else:
                         ##
                         if self._is_ignore_null(ignore_null):
@@ -806,6 +811,7 @@ class Operator:
             'testoperation': "not-equal",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -874,12 +880,12 @@ class Operator:
                                     'actual_node_value': post_nodevalue}
                                 tresult['passed'].append(
                                     deepcopy(node_value_passed))
-                                self._print_message(
-                                    info_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "debug")
+                                tresult['messages'].append(self._print_message(
+                                                            info_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "debug"))
                                 count_pass = count_pass + 1
                             else:
                                 node_value_failed = {
@@ -890,12 +896,12 @@ class Operator:
                                 tresult['failed'].append(
                                     deepcopy(node_value_failed))
                                 res = False
-                                self._print_message(
-                                    err_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "info")
+                                tresult['messages'].append(self._print_message(
+                                                            err_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "info"))
                                 count_fail = count_fail + 1
                     else:
                         # tresult['actual_node_value'].append(None)
@@ -951,6 +957,7 @@ class Operator:
             'testoperation': "in-range",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1022,12 +1029,12 @@ class Operator:
                                     predict, postdict, element, postnode[k], prenode[k])
                                 if (float(post_nodevalue) >= range1
                                         and float(post_nodevalue) <= range2):
-                                    self._print_message(
-                                        info_mssg,
-                                        iddict,
-                                        predict,
-                                        postdict,
-                                        "debug")
+                                    tresult['messages'].append(self._print_message(
+                                                                info_mssg,
+                                                                iddict,
+                                                                predict,
+                                                                postdict,
+                                                                "debug"))
                                     count_pass = count_pass + 1
                                     node_value_passed = {
                                         'id': id_val,
@@ -1038,12 +1045,12 @@ class Operator:
                                         deepcopy(node_value_passed))
                                 else:
                                     res = False
-                                    self._print_message(
-                                        err_mssg,
-                                        iddict,
-                                        predict,
-                                        postdict,
-                                        "info")
+                                    tresult['messages'].append(self._print_message(
+                                                                err_mssg,
+                                                                iddict,
+                                                                predict,
+                                                                postdict,
+                                                                "info"))
                                     count_fail = count_fail + 1
                                     node_value_failed = {
                                         'id': id_val,
@@ -1106,6 +1113,7 @@ class Operator:
             'testoperation': "not-range",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1179,12 +1187,12 @@ class Operator:
                                 if float(post_nodevalue) <= range1 or float(
                                         post_nodevalue) >= range2:
                                     count_pass = count_pass + 1
-                                    self._print_message(
-                                        info_mssg,
-                                        iddict,
-                                        predict,
-                                        postdict,
-                                        "debug")
+                                    tresult['messages'].append(self._print_message(
+                                                                info_mssg,
+                                                                iddict,
+                                                                predict,
+                                                                postdict,
+                                                                "debug"))
                                     node_value_passed = {
                                         'id': id_val,
                                         'pre': predict,
@@ -1195,12 +1203,12 @@ class Operator:
                                 else:
                                     res = False
                                     count_fail = count_fail + 1
-                                    self._print_message(
-                                        err_mssg,
-                                        iddict,
-                                        predict,
-                                        postdict,
-                                        "info")
+                                    tresult['messages'].append(self._print_message(
+                                                                err_mssg,
+                                                                iddict,
+                                                                predict,
+                                                                postdict,
+                                                                "info"))
                                     node_value_failed = {
                                         'id': id_val,
                                         'pre': predict,
@@ -1262,6 +1270,7 @@ class Operator:
             'testoperation': "is-gt",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1322,12 +1331,12 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[j], prenode[j])
                             if (float(post_nodevalue) > val1):
-                                self._print_message(
-                                    info_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "debug")
+                                tresult['messages'].append(self._print_message(
+                                                            info_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "debug"))
                                 count_pass = count_pass + 1
                                 node_value_passed = {
                                     'id': id_val,
@@ -1338,12 +1347,12 @@ class Operator:
                                     deepcopy(node_value_passed))
                             else:
                                 res = False
-                                self._print_message(
-                                    err_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "info")
+                                tresult['messages'].append(self._print_message(
+                                                            err_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "info"))
                                 count_fail = count_fail + 1
                                 node_value_failed = {
                                     'id': id_val,
@@ -1405,6 +1414,7 @@ class Operator:
             'testoperation': "is-lt",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1466,12 +1476,12 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (float(post_nodevalue) < val1):
-                                self._print_message(
-                                    info_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "debug")
+                                tresult['messages'].append(self._print_message(
+                                                            info_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "debug"))
                                 count_pass = count_pass + 1
                                 node_value_passed = {
                                     'id': id_val,
@@ -1482,12 +1492,12 @@ class Operator:
                                     deepcopy(node_value_passed))
                             else:
                                 res = False
-                                self._print_message(
-                                    err_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "info")
+                                tresult['messages'].append(self._print_message(
+                                                            err_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "info"))
                                 count_fail = count_fail + 1
                                 node_value_failed = {
                                     'id': id_val,
@@ -1548,6 +1558,7 @@ class Operator:
             'testoperation': "contains",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1611,12 +1622,12 @@ class Operator:
                             if (postnode[k].text.find(value) == -1):
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(
-                                    err_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "info")
+                                tresult['messages'].append(self._print_message(
+                                                            err_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "info"))
                                 node_value_failed = {
                                     'id': id_val,
                                     'pre': predict,
@@ -1626,12 +1637,12 @@ class Operator:
                                     deepcopy(node_value_failed))
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(
-                                    info_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "debug")
+                                tresult['messages'].append(self._print_message(
+                                                            info_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "debug"))
                                 node_value_passed = {
                                     'id': id_val,
                                     'pre': predict,
@@ -1693,6 +1704,7 @@ class Operator:
             'testoperation': "is-in",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1757,12 +1769,12 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (post_nodevalue in value_list):
-                                self._print_message(
-                                    info_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "debug")
+                                tresult['messages'].append(self._print_message(
+                                                            info_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "debug"))
                                 count_pass = count_pass + 1
                                 node_value_passed = {
                                     'id': id_val,
@@ -1774,12 +1786,12 @@ class Operator:
                             else:
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(
-                                    err_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "info")
+                                tresult['messages'].append(self._print_message(
+                                                            err_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "info"))
                                 node_value_failed = {
                                     'id': id_val,
                                     'pre': predict,
@@ -1846,6 +1858,7 @@ class Operator:
             'testoperation': "not-in",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1910,12 +1923,12 @@ class Operator:
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
                             if (post_nodevalue not in value_list):
-                                self._print_message(
-                                    info_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "debug")
+                                tresult['messages'].append(self._print_message(
+                                                            info_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "debug"))
                                 count_pass = count_pass + 1
                                 node_value_passed = {
                                     'id': id_val,
@@ -1927,12 +1940,12 @@ class Operator:
                             else:
                                 res = False
                                 count_fail = count_fail + 1
-                                self._print_message(
-                                    err_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "info")
+                                tresult['messages'].append(self._print_message(
+                                                            err_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "info"))
                                 node_value_failed = {
                                     'id': id_val,
                                     'pre': predict,
@@ -1999,6 +2012,7 @@ class Operator:
             'node_name': ele_list[0],
             'failed': [],
             'passed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2082,12 +2096,12 @@ class Operator:
                         if val_list1 != val_list2:
                             res = False
                             count_fail = count_fail + 1
-                            self._print_message(
-                                err_mssg,
-                                iddict,
-                                predict,
-                                postdict,
-                                "info")
+                            tresult['messages'].append(self._print_message(
+                                                        err_mssg,
+                                                        iddict,
+                                                        predict,
+                                                        postdict,
+                                                        "info"))
                             node_value_failed = {
                                 'id': id_val,
                                 'pre': predict,
@@ -2099,12 +2113,12 @@ class Operator:
 
                         else:
                             count_pass = count_pass + 1
-                            self._print_message(
-                                info_mssg,
-                                iddict,
-                                predict,
-                                postdict,
-                                "debug")
+                            tresult['messages'].append(self._print_message(
+                                                        info_mssg,
+                                                        iddict,
+                                                        predict,
+                                                        postdict,
+                                                        "debug"))
                             node_value_passed = {
                                 'id': id_val,
                                 'pre': predict,
@@ -2169,6 +2183,7 @@ class Operator:
             'node_name': ele_list[0],
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2252,12 +2267,12 @@ class Operator:
                                 count_fail = count_fail + 1
                                 self.logger_testop.info("Missing node : %s for element tag %s and parent element %s" % (val1, ele_xpath1[0].tag,
                                                                                                                         ele_xpath1[0].getparent().tag), extra=self.log_detail)
-                                self._print_message(
-                                    err_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "info")
+                                tresult['messages'].append(self._print_message(
+                                                            err_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "info"))
                                 node_value_failed = {
                                     'id': id_val,
                                     'pre': predict,
@@ -2269,12 +2284,12 @@ class Operator:
 
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(
-                                    info_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "debug")
+                                tresult['messages'].append(self._print_message(
+                                                            info_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "debug"))
                                 node_value_passed = {
                                     'id': id_val,
                                     'pre': predict,
@@ -2285,11 +2300,11 @@ class Operator:
                                     deepcopy(node_value_passed))
                     else:
                         count_pass = count_pass + 1
-                        self._print_message(
-                            info_mssg,
-                            iddict,
-                            predict,
-                            postdict)
+                        tresult['messages'].append(self._print_message(
+                                                    info_mssg,
+                                                    iddict,
+                                                    predict,
+                                                    postdict))
                         node_value_passed = {
                             'id': id_val,
                             'pre': predict,
@@ -2306,12 +2321,12 @@ class Operator:
                     # tresult['id_miss_match'].append(iddict.copy())
                     tresult['failed'].append(
                         {'id_missing_post': deepcopy(id_val)})
-                    self._print_message(
-                        err_mssg,
-                        iddict,
-                        predict,
-                        postdict,
-                        "info")
+                    tresult['messages'].append(self._print_message(
+                                                err_mssg,
+                                                iddict,
+                                                predict,
+                                                postdict,
+                                                "info"))
                     res = False
                     count_fail = count_fail + 1
         if res is False:
@@ -2342,6 +2357,7 @@ class Operator:
             'node_name': ele_list[0],
             'failed': [],
             'passed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2428,20 +2444,20 @@ class Operator:
                                     deepcopy(node_value_failed))
                                 self.logger_testop.error("Missing node: %s for element tag: %s and parent element %s" % (val2, ele_xpath2[0].tag,
                                                                                                                          ele_xpath2[0].getparent().tag), extra=self.log_detail)
-                                self._print_message(
-                                    err_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "info")
+                                tresult['messages'].append(self._print_message(
+                                                            err_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "info"))
                             else:
                                 count_pass = count_pass + 1
-                                self._print_message(
-                                    info_mssg,
-                                    iddict,
-                                    predict,
-                                    postdict,
-                                    "debug")
+                                tresult['messages'].append(self._print_message(
+                                                            info_mssg,
+                                                            iddict,
+                                                            predict,
+                                                            postdict,
+                                                            "debug"))
                                 node_value_passed = {
                                     'id': id_val,
                                     'pre': predict,
@@ -2452,12 +2468,12 @@ class Operator:
                                     deepcopy(node_value_passed))
                     else:
                         count_pass = count_pass + 1
-                        self._print_message(
-                            info_mssg,
-                            iddict,
-                            predict,
-                            postdict,
-                            "debug")
+                        tresult['messages'].append(self._print_message(
+                                                    info_mssg,
+                                                    iddict,
+                                                    predict,
+                                                    postdict,
+                                                    "debug"))
                         node_value_passed = {
                             'id': id_val,
                             'pre': predict,
@@ -2474,12 +2490,12 @@ class Operator:
                     tresult['failed'].append(
                         {'id_missing_pre': deepcopy(id_val)})
                     # tresult['id_miss_match'].append(iddict.copy())
-                    self._print_message(
-                        err_mssg,
-                        iddict,
-                        predict,
-                        postdict,
-                        "info")
+                    tresult['messages'].append(self._print_message(
+                                                err_mssg,
+                                                iddict,
+                                                predict,
+                                                postdict,
+                                                "info"))
                     res = False
                     count_fail = count_fail + 1
 
@@ -2512,6 +2528,7 @@ class Operator:
             'passed': [],
             'failed': [],
             'node_name': ele_list[0],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2610,12 +2627,12 @@ class Operator:
                                     if (val2 > val1 or val2 < mvalue):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(
-                                            err_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "info")
+                                        tresult['messages'].append(self._print_message(
+                                                                    err_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "info"))
                                         node_value_failed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2626,12 +2643,12 @@ class Operator:
                                             deepcopy(node_value_failed))
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(
-                                            info_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "debug")
+                                        tresult['messages'].append(self._print_message(
+                                                                    info_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "debug"))
                                         node_value_passed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2648,12 +2665,12 @@ class Operator:
                                     if (val2 < val1 or val2 > mvalue):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(
-                                            err_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "info")
+                                        tresult['messages'].append(self._print_message(
+                                                                    err_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "info"))
                                         node_value_failed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2665,12 +2682,12 @@ class Operator:
 
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(
-                                            info_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "debug")
+                                        tresult['messages'].append(self._print_message(
+                                                                    info_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "debug"))
                                         node_value_passed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2688,12 +2705,12 @@ class Operator:
                                     if (val2 < mvalue1 or val2 > mvalue2):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(
-                                            err_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "info")
+                                        tresult['messages'].append(self._print_message(
+                                                                    err_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "info"))
                                         node_value_failed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2704,12 +2721,12 @@ class Operator:
                                             deepcopy(node_value_failed))
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(
-                                            info_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "debug")
+                                        tresult['messages'].append(self._print_message(
+                                                                    info_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "debug"))
                                         node_value_passed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2726,12 +2743,12 @@ class Operator:
                                     if (val2 < mvalue or val2 > val1):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(
-                                            err_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "info")
+                                        tresult['messages'].append(self._print_message(
+                                                                    err_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "info"))
                                         node_value_failed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2742,12 +2759,12 @@ class Operator:
                                             deepcopy(node_value_failed))
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(
-                                            info_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "debug")
+                                        tresult['messages'].append(self._print_message(
+                                                                    info_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "debug"))
                                         node_value_passed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2764,12 +2781,12 @@ class Operator:
                                     if (val2 >= mvalue or val2 <= val1):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(
-                                            err_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "info")
+                                        tresult['messages'].append(self._print_message(
+                                                                    err_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "info"))
                                         node_value_failed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2780,12 +2797,12 @@ class Operator:
                                             deepcopy(node_value_failed))
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(
-                                            info_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "debug")
+                                        tresult['messages'].append(self._print_message(
+                                                                    info_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "debug"))
                                         node_value_passed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2801,12 +2818,12 @@ class Operator:
                                     if (val2 < mvalue1 or val2 > mvalue2):
                                         res = False
                                         count_fail = count_fail + 1
-                                        self._print_message(
-                                            err_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "info")
+                                        tresult['messages'].append(self._print_message(
+                                                                    err_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "info"))
                                         node_value_failed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2817,12 +2834,12 @@ class Operator:
                                             deepcopy(node_value_failed))
                                     else:
                                         count_pass = count_pass + 1
-                                        self._print_message(
-                                            info_mssg,
-                                            iddict,
-                                            predict,
-                                            postdict,
-                                            "debug")
+                                        tresult['messages'].append(self._print_message(
+                                                                    info_mssg,
+                                                                    iddict,
+                                                                    predict,
+                                                                    postdict,
+                                                                    "debug"))
                                         node_value_passed = {
                                             'id': id_val,
                                             'pre': predict,
@@ -2871,12 +2888,12 @@ class Operator:
                                 iddict, extra=self.log_detail)
                             tresult['failed'].append(
                                 {'id_missing_pre': deepcopy(id_val)})
-                        self._print_message(
-                            err_mssg,
-                            iddict,
-                            predict,
-                            postdict,
-                            "info")
+                        tresult['messages'].append(self._print_message(
+                                                    err_mssg,
+                                                    iddict,
+                                                    predict,
+                                                    postdict,
+                                                    "info"))
                         res = False
                         count_fail = count_fail + 1
         
@@ -2914,6 +2931,7 @@ class Operator:
             'testoperation': "regex",
             'passed': [],
             'failed': [],
+            'messages': []
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
