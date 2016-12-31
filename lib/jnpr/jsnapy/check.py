@@ -175,6 +175,10 @@ class Comparator:
             if check is True or action is "check":
                 xml1 = self.get_xml_reply(db, snap1)
                 xml2 = self.get_xml_reply(db, snap2)
+                if xml2 is None:
+                    # xml1 is not checked as in _find_xpath we extract nodes
+                    # from xml2 in its absence
+                    exit(1)
                 op.define_operator(
                     self.log_detail,
                     testop,
@@ -203,7 +207,10 @@ class Comparator:
             else:
                 pre_snap = None
                 post_snap = self.get_xml_reply(db, snap1)
-
+            if post_snap is None:
+                # xml1 is not checked as in _find_xpath we extract nodes
+                # from xml2 in its absence
+                exit(1)
             op.define_operator(
                 self.log_detail,
                 testop,
