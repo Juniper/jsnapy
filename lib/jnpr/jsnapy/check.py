@@ -170,33 +170,33 @@ class Comparator:
         ignore_null = elem_test.get('ignore-null') or top_ignore_null
         # check test operators, below mentioned four are allowed only
         # with --check ####
+        is_skipped = False
         if testop in [
                 'no-diff', 'list-not-less', 'list-not-more', 'delta']:
             if check is True or action is "check":
                 xml1 = self.get_xml_reply(db, snap1)
                 xml2 = self.get_xml_reply(db, snap2)
                 if xml2 is None:
-                    # xml1 is not checked as in _find_xpath we extract nodes
-                    # from xml2 in its absence
-                    exit(1)
-                op.define_operator(
-                    self.log_detail,
-                    testop,
-                    x_path,
-                    ele_list,
-                    err_mssg,
-                    info_mssg,
-                    teston,
-                    iter,
-                    id_list,
-                    xml1,
-                    xml2,
-                    ignore_null)
+                    is_skipped = True
+                else:
+                    op.define_operator(
+                        self.log_detail,
+                        testop,
+                        x_path,
+                        ele_list,
+                        err_mssg,
+                        info_mssg,
+                        teston,
+                        iter,
+                        id_list,
+                        xml1,
+                        xml2,
+                        ignore_null)
             else:
                 self.logger_check.error(
                     colorama.Fore.RED +
                     "Test Operator %s is allowed only with --check" % testop, extra=self.log_detail)
-
+                is_skipped = True
         # if test operators are other than above mentioned four operators
         else:
             # if check is used with uni operand test operator then use
@@ -207,23 +207,25 @@ class Comparator:
             else:
                 pre_snap = None
                 post_snap = self.get_xml_reply(db, snap1)
+
             if post_snap is None:
-                # xml1 is not checked as in _find_xpath we extract nodes
-                # from xml2 in its absence
-                exit(1)
-            op.define_operator(
-                self.log_detail,
-                testop,
-                x_path,
-                ele_list,
-                err_mssg,
-                info_mssg,
-                teston,
-                iter,
-                id_list,
-                pre_snap,
-                post_snap,
-                ignore_null)
+                is_skipped = True
+            else:
+                op.define_operator(
+                    self.log_detail,
+                    testop,
+                    x_path,
+                    ele_list,
+                    err_mssg,
+                    info_mssg,
+                    teston,
+                    iter,
+                    id_list,
+                    pre_snap,
+                    post_snap,
+                    ignore_null)
+        if is_skipped:
+            op.test_details[teston].append({'result': None})
 
 
     def expression_builder(self, sub_expr, parent_op=None, **kwargs):
