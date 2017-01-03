@@ -170,29 +170,33 @@ class Comparator:
         ignore_null = elem_test.get('ignore-null') or top_ignore_null
         # check test operators, below mentioned four are allowed only
         # with --check ####
+        is_skipped = False
         if testop in [
                 'no-diff', 'list-not-less', 'list-not-more', 'delta']:
             if check is True or action is "check":
                 xml1 = self.get_xml_reply(db, snap1)
                 xml2 = self.get_xml_reply(db, snap2)
-                op.define_operator(
-                    self.log_detail,
-                    testop,
-                    x_path,
-                    ele_list,
-                    err_mssg,
-                    info_mssg,
-                    teston,
-                    iter,
-                    id_list,
-                    xml1,
-                    xml2,
-                    ignore_null)
+                if xml2 is None:
+                    is_skipped = True
+                else:
+                    op.define_operator(
+                        self.log_detail,
+                        testop,
+                        x_path,
+                        ele_list,
+                        err_mssg,
+                        info_mssg,
+                        teston,
+                        iter,
+                        id_list,
+                        xml1,
+                        xml2,
+                        ignore_null)
             else:
                 self.logger_check.error(
                     colorama.Fore.RED +
                     "Test Operator %s is allowed only with --check" % testop, extra=self.log_detail)
-
+                is_skipped = True
         # if test operators are other than above mentioned four operators
         else:
             # if check is used with uni operand test operator then use
@@ -204,19 +208,24 @@ class Comparator:
                 pre_snap = None
                 post_snap = self.get_xml_reply(db, snap1)
 
-            op.define_operator(
-                self.log_detail,
-                testop,
-                x_path,
-                ele_list,
-                err_mssg,
-                info_mssg,
-                teston,
-                iter,
-                id_list,
-                pre_snap,
-                post_snap,
-                ignore_null)
+            if post_snap is None:
+                is_skipped = True
+            else:
+                op.define_operator(
+                    self.log_detail,
+                    testop,
+                    x_path,
+                    ele_list,
+                    err_mssg,
+                    info_mssg,
+                    teston,
+                    iter,
+                    id_list,
+                    pre_snap,
+                    post_snap,
+                    ignore_null)
+        if is_skipped:
+            op.test_details[teston].append({'result': None})
 
 
     def expression_builder(self, sub_expr, parent_op=None, **kwargs):
@@ -251,8 +260,6 @@ class Comparator:
                 self.expression_evaluator(elem,**kwargs)
                 res = None
                 #this should be guaranteed by the operator function, never use try-catch here
-                if not kwargs['op'].test_details[kwargs['teston']]:
-                    continue
                 last_test_instance = kwargs['op'].test_details[kwargs['teston']][-1]
                 res = last_test_instance['result']
 
