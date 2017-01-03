@@ -571,10 +571,6 @@ class SnapAdmin:
             elif type(mail_pref) is dict: 
                 if mail_condition in mail_pref:
                     mail_file_path = mail_pref.get(mail_condition)
-                else:
-                    self.logger.error(
-                        colorama.Fore.RED +
-                        "ERROR!! File not specified for %s scenario" % mail_condition, extra=self.log_detail)
             else:
                 self.logger.error(
                     colorama.Fore.RED +
