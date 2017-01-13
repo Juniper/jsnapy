@@ -650,7 +650,8 @@ class SnapAdmin:
                         output_file,
                         config_data,
                         action,
-                        post_snap)
+                        post_snap,
+                        **kwargs)
                 else:
                     self.logger.error(colorama.Fore.RED +
                                       "\nERROR occurred %s" %
