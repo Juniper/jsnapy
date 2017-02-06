@@ -326,7 +326,7 @@ class SnapAdmin:
                 config_file = open(os.path.join(fpath, conf_file), 'r')
                 self.main_file = yaml.load(config_file)
         else:
-            if self.args.hostname and self.args.login and self.args.passwd:
+            if self.args.hostname and self.args.test_file:
                 temp_dict = {'hosts':[{'device':'', 'username':'', 'passwd':''}], 'tests':[]}
                 temp_dict['hosts'][0]['device'] = self.args.hostname
                 temp_dict['hosts'][0]['username'] = self.args.login
@@ -1065,7 +1065,8 @@ class SnapAdmin:
 
         if(((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.snapcheck is True and self.args.file is None) or
-            (self.args.check is True and self.args.file is None)) and (self.args.test_file is None or self.args.hostname is None or self.args.login is None or self.args.passwd is None)
+            (self.args.check is True and self.args.file is None)) and 
+            (self.args.test_file is None or self.args.hostname is None or self.args.login is None or self.args.passwd is None)
            ):
             self.logger.error(colorama.Fore.RED +
                               "Arguments not given correctly, Please refer help message", extra=self.log_detail)
@@ -1081,7 +1082,8 @@ class SnapAdmin:
                     None)
                 sys.exit(1)
             else:
-                if self.args.file is None and (self.args.test_file is None or self.args.hostname is None or self.args.login is None or self.args.passwd is None):
+                if (self.args.file is None) and (
+                    self.args.test_file is None or self.args.hostname is None or self.args.login is None or self.args.passwd is None):
                     self.parser.print_help()
                     sys.exit(1)
 
