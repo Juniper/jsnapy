@@ -741,18 +741,18 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.check = True
         js.args.snapcheck = False
         js.args.diff = False
-        js.args.login = "regress"
-        js.args.hostname = "10.221.130.68"
-        js.args.passwd = "MaRtInI"
+        js.args.login = "abc"
+        js.args.hostname = "10.216.193.114"
+        js.args.passwd = "xyz"
         js.args.post_snapfile = "mock_snap2"
         js.args.pre_snapfile = "mock_snap"
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
             js.check_arguments()
             js.get_hosts()
             self.assertTrue(js.main_file)
-            self.assertEqual(js.main_file['hosts'][0]['device'],"10.221.130.68")
-            self.assertEqual(js.main_file['hosts'][0]['username'],"regress")
-            self.assertEqual(js.main_file['hosts'][0]['passwd'],"MaRtInI")
+            self.assertEqual(js.main_file['hosts'][0]['device'],"10.216.193.114")
+            self.assertEqual(js.main_file['hosts'][0]['username'],"abc")
+            self.assertEqual(js.main_file['hosts'][0]['passwd'],"xyz")
             self.assertEqual(js.main_file['tests'][0],js.args.test_file)
         
     @patch('argparse.ArgumentParser.exit')
@@ -768,18 +768,18 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.check = False
         js.args.snapcheck = False
         js.args.diff = False
-        js.args.login = "regress"
-        js.args.hostname = "10.221.130.68"
-        js.args.passwd = "MaRtInI"
+        js.args.login = "abc"
+        js.args.hostname = "10.216.193.114"
+        js.args.passwd = "xyz"
         js.args.post_snapfile = None
         js.args.pre_snapfile = "mock_snap"
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
             js.check_arguments()
             js.get_hosts()
             self.assertTrue(js.main_file)
-            self.assertEqual(js.main_file['hosts'][0]['device'],"10.221.130.68")
-            self.assertEqual(js.main_file['hosts'][0]['username'],"regress")
-            self.assertEqual(js.main_file['hosts'][0]['passwd'],"MaRtInI")
+            self.assertEqual(js.main_file['hosts'][0]['device'],"10.216.193.114")
+            self.assertEqual(js.main_file['hosts'][0]['username'],"abc")
+            self.assertEqual(js.main_file['hosts'][0]['passwd'],"xyz")
             self.assertEqual(js.main_file['tests'][0],js.args.test_file)            
 
     @patch('argparse.ArgumentParser.exit')
@@ -795,18 +795,18 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.check = False
         js.args.snapcheck = True
         js.args.diff = False
-        js.args.login = "regress"
-        js.args.hostname = "10.221.130.68"
-        js.args.passwd = "MaRtInI"
+        js.args.login = "abc"
+        js.args.hostname = "10.216.193.114"
+        js.args.passwd = "xyz"
         js.args.post_snapfile = "mock_snap2"
         js.args.pre_snapfile = "mock_snap"
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
             js.check_arguments()
             js.get_hosts()
             self.assertTrue(js.main_file)
-            self.assertEqual(js.main_file['hosts'][0]['device'],"10.221.130.68")
-            self.assertEqual(js.main_file['hosts'][0]['username'],"regress")
-            self.assertEqual(js.main_file['hosts'][0]['passwd'],"MaRtInI")        
+            self.assertEqual(js.main_file['hosts'][0]['device'],"10.216.193.114")
+            self.assertEqual(js.main_file['hosts'][0]['username'],"abc")
+            self.assertEqual(js.main_file['hosts'][0]['passwd'],"xyz")        
             self.assertEqual(js.main_file['tests'][0],js.args.test_file)
 
     @patch('argparse.ArgumentParser.exit')
@@ -822,9 +822,9 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.check = False
         js.args.snapcheck = False
         js.args.diff = True
-        js.args.login = "regress"
-        js.args.hostname = "10.221.130.68"
-        js.args.passwd = "MaRtInI"
+        js.args.login = "abc"
+        js.args.hostname = "10.216.193.114"
+        js.args.passwd = "xyz"
         js.args.post_snapfile = "mock_snap2"
         js.args.pre_snapfile = "mock_snap"
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
@@ -845,8 +845,8 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.snapcheck = False
         js.args.diff = False
         js.args.login = None
-        js.args.hostname = "10.221.130.68"
-        js.args.passwd = "MaRtInI"
+        js.args.hostname = "10.216.193.114"
+        js.args.passwd = "xyz"
         js.args.post_snapfile = "mock_snap2"
         js.args.pre_snapfile = "mock_snap"
         with patch('argparse.ArgumentParser.print_help') as mock_parser:
