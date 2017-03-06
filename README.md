@@ -63,7 +63,7 @@ To run this test execute following command:
 1. jsnapy --snap pre -f config_check.yml (for taking pre snapshot)
 2. jsnapy --snap post -f config_check.yml (for taking post snapshot after some modification)
 3. jsnapy --check pre post -f config_check.yml (compares pre post snapshot as per test cases)
-4. jsnapy --diff -f config_check.yml (compares pre post snapshot files, shows the diff in 2 Columns)
+4. jsnapy --diff pre post -f config_check.yml (compares pre post snapshot files, shows the diff in 2 Columns)
 ```
 
 Output will look something like this:
