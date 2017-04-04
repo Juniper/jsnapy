@@ -2871,12 +2871,6 @@ class Operator:
                                 iddict, extra=self.log_detail)
                             tresult['failed'].append(
                                 {'id_missing_pre': deepcopy(id_val)})
-                        self._print_message(
-                            err_mssg,
-                            iddict,
-                            predict,
-                            postdict,
-                            "info")
                         res = False
                         count_fail = count_fail + 1
         
