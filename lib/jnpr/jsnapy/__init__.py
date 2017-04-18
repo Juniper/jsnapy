@@ -5,7 +5,7 @@
 
 from .version import __version__
 import ConfigParser
-import os
+import os, sys
 import colorama
 colorama.init(autoreset=True)
 
@@ -15,14 +15,22 @@ class DirStore:
 def get_config_location(file='jsnapy.cfg'):
     p_locations = []
     if 'JSNAPY_HOME' in os.environ:
-        p_locations = [os.environ['JSNAPY_HOME']]   
-    p_locations.extend([os.path.join(os.path.expanduser('~'),'.jsnapy'),'/etc/jsnapy'])
+        p_locations = [os.environ['JSNAPY_HOME']]
+
+    if hasattr(sys, 'real_prefix'):
+        p_locations.extend([os.path.join(os.path.expanduser('~'), '.jsnapy'),
+                            os.path.join(os.environ.get('VIRTUAL_ENV'), 'jsnapy')])
+    elif 'win' in sys.platform:
+        p_locations.extend(
+            [os.path.join(os.path.expanduser('~'), '.jsnapy'), os.path.join(os.path.expanduser('~'), 'jsnapy')])
+    else:
+        p_locations.extend([os.path.join(os.path.expanduser('~'), '.jsnapy'), '/etc/jsnapy'])
     for loc in p_locations:
-        possible_location =  os.path.join(loc,file)
+        possible_location = os.path.join(loc, file)
         if os.path.isfile(possible_location):
             return loc
     return None
-    
+
 
 def get_path(section, value):
     # config = ConfigParser.ConfigParser({'config_file_path': '/usr/local/share/', 'snapshot_path': '/usr/local/share/snapshots',
