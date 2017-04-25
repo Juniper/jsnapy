@@ -5,7 +5,8 @@
 
 from .version import __version__
 import ConfigParser
-import os, sys
+import os
+import sys
 import colorama
 
 colorama.init(autoreset=True)
@@ -22,12 +23,15 @@ def get_config_location(file='jsnapy.cfg'):
 
     if hasattr(sys, 'real_prefix'):
         p_locations.extend([os.path.join(os.path.expanduser('~'), '.jsnapy'),
-                            os.path.join(os.environ.get('VIRTUAL_ENV'), 'jsnapy')])
+                            os.path.join(os.environ.get('VIRTUAL_ENV'),
+                            'jsnapy')])
     elif 'win' in sys.platform:
         p_locations.extend(
-            [os.path.join(os.path.expanduser('~'), '.jsnapy'), os.path.join(os.path.expanduser('~'), 'jsnapy')])
+            [os.path.join(os.path.expanduser('~'), '.jsnapy'),
+             os.path.join(os.path.expanduser('~'), 'jsnapy')])
     else:
-        p_locations.extend([os.path.join(os.path.expanduser('~'), '.jsnapy'), '/etc/jsnapy'])
+        p_locations.extend([os.path.join(os.path.expanduser('~'), '.jsnapy'),
+                            '/etc/jsnapy'])
     for loc in p_locations:
         possible_location = os.path.join(loc, file)
         if os.path.isfile(possible_location):
@@ -36,8 +40,11 @@ def get_config_location(file='jsnapy.cfg'):
 
 
 def get_path(section, value):
-    # config = ConfigParser.ConfigParser({'config_file_path': '/usr/local/share/', 'snapshot_path': '/usr/local/share/snapshots',
-    #                                     'test_file_path': '/usr/local/share/testfiles', 'log_file_path': '/var/log/jsnapy'})
+    # config = ConfigParser.ConfigParser(
+    #          {'config_file_path': '/usr/local/share/',
+    #           'snapshot_path': '/usr/local/share/snapshots',
+    #           'test_file_path': '/usr/local/share/testfiles',
+    #           'log_file_path': '/var/log/jsnapy'})
     custom_dir = DirStore.custom_dir
     if custom_dir:
         paths = {'config_file_path': '',

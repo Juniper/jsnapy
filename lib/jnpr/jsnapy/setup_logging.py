@@ -5,14 +5,16 @@
 # All rights reserved.
 #
 
-import os, sys
+import os
+import sys
 import yaml
 import logging.config
 from jnpr.jsnapy import get_config_location
 
 
 def setup_logging(
-        default_path='logging.yml', default_level=logging.INFO, env_key='LOG_CFG'):
+        default_path='logging.yml', default_level=logging.INFO,
+        env_key='LOG_CFG'):
     config_location = get_config_location('logging.yml')
     path = os.path.join(config_location, default_path)
     value = os.getenv(env_key, None)
@@ -25,11 +27,14 @@ def setup_logging(
                 if handler == 'console':
                     pass
                 else:
-                    if hasattr(sys,'real_prefix'):
-                        value['filename'] = (os.path.join(os.environ.get('VIRTUAL_ENV'),'logs/jsnapy/jsnapy.log'))
+                    if hasattr(sys, 'real_prefix'):
+                        value['filename'] = (os.path.join
+                                             (os.environ.get('VIRTUAL_ENV'),
+                                              'logs/jsnapy/jsnapy.log'))
                     elif 'win' in sys.platform:
-                        value['filename'] = (os.path.join(os.path.expanduser('~'),
-                                       'logs\jsnapy\jsnapy.log'))
+                        value['filename'] = (os.path.join
+                                             (os.path.expanduser('~'),
+                                              'logs\jsnapy\jsnapy.log'))
 
                 with open(path, "w") as f:
                     yaml.dump(config, f, default_flow_style=False)

@@ -5,7 +5,8 @@
 # All rights reserved.
 #
 
-import os, sys
+import os
+import sys
 from os.path import expanduser
 from setuptools import setup, find_packages
 from setuptools.command.install import install
@@ -20,9 +21,11 @@ class OverrideInstall(install):
                 break
         else:
             if hasattr(sys, 'real_prefix'):
-                self.install_data = os.path.join(os.environ.get('VIRTUAL_ENV'), 'jsnapy')
+                self.install_data = os.path.join(os.environ.get('VIRTUAL_ENV'),
+                                                 'jsnapy')
             elif 'win' in sys.platform:
-                self.install_data = os.path.join(os.path.expanduser('~'), 'jsnapy')
+                self.install_data = os.path.join(os.path.expanduser('~'),
+                                                 'jsnapy')
             else:
                 self.install_data = '/etc/jsnapy'
 
@@ -53,15 +56,24 @@ class OverrideInstall(install):
 
         if dir_path != '/etc/jsnapy':
             config = ConfigParser.ConfigParser()
-            config.set('DEFAULT', 'config_file_path', dir_path)
-            config.set('DEFAULT', 'snapshot_path', os.path.join(dir_path, 'snapshots'))
-            config.set('DEFAULT', 'test_file_path', os.path.join(dir_path, 'testfiles'))
+            config.set('DEFAULT', 'config_file_path',
+                       dir_path)
+            config.set('DEFAULT', 'snapshot_path',
+                       os.path.join(dir_path, 'snapshots'))
+            config.set('DEFAULT', 'test_file_path',
+                       os.path.join(dir_path, 'testfiles'))
 
             if hasattr(sys, 'real_prefix'):
-                default_config_location = [os.path.join(HOME, 'jsnapy\jsnapy.cfg'), "/etc/jsnapy/jsnapy.cfg",
-                                           os.path.join(os.environ.get('VIRTUAL_ENV'), 'jsnapy/jsnapy.cfg')]
+                default_config_location = [os.path.join
+                                           (HOME, 'jsnapy\jsnapy.cfg'),
+                                           "/etc/jsnapy/jsnapy.cfg",
+                                           os.path.join(os.environ.get
+                                                        ('VIRTUAL_ENV'),
+                                                        'jsnapy/jsnapy.cfg')]
             else:
-                default_config_location = [os.path.join(HOME, 'jsnapy\jsnapy.cfg'), "/etc/jsnapy/jsnapy.cfg"]
+                default_config_location = [os.path.join(HOME,
+                                           'jsnapy\jsnapy.cfg'),
+                                           "/etc/jsnapy/jsnapy.cfg"]
 
             flag = False
             for possible_location in default_config_location:
@@ -70,16 +82,18 @@ class OverrideInstall(install):
                         comment = ('# This file can be overwritten\n'
                                    '# It contains default path for\n'
                                    '# config file, snapshots and testfiles\n'
-                                   '# If required, overwrite the path with your path\n'
-                                   '# config_file_path: path of main config file\n'
+                                   '# If required, overwrite the path with'
+                                   '# your path\n'
+                                   '# config_file_path: path of main'
+                                   '# config file\n'
                                    '# snapshot_path : path of snapshot file\n'
                                    '# test_file_path: path of test file\n\n'
                                    )
                         cfgfile.write(comment)
                         config.write(cfgfile)
                         flag = True
-            if flag == False:
-                raise Exception('jsnapy.cfg not found at any possible location')
+            if flag is False:
+                raise Exception('jsnapy.cfg not found at possible location')
 
 
 req_lines = [line.strip() for line in open(
@@ -97,10 +111,12 @@ os_data_file = []
 
 if hasattr(sys, 'real_prefix'):
     HOME = os.environ.get('VIRTUAL_ENV')
-    os_data_file = [(os.path.join(HOME, 'jsnapy'), ['lib/jnpr/jsnapy/logging.yml']),
+    os_data_file = [(os.path.join(HOME, 'jsnapy'),
+                    ['lib/jnpr/jsnapy/logging.yml']),
                     (os.path.join(HOME, 'logs/jsnapy'), log_files),
                     ('samples', example_files),
-                    (os.path.join(HOME, 'jsnapy'), ['lib/jnpr/jsnapy/jsnapy.cfg']),
+                    (os.path.join(HOME, 'jsnapy'),
+                    ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
                     ]
@@ -108,10 +124,12 @@ if hasattr(sys, 'real_prefix'):
 
 elif 'win' in sys.platform:
     HOME = expanduser("~")
-    os_data_file = [(os.path.join(HOME, 'jsnapy'), ['lib/jnpr/jsnapy/logging.yml']),
+    os_data_file = [(os.path.join(HOME, 'jsnapy'),
+                    ['lib/jnpr/jsnapy/logging.yml']),
                     (os.path.join(HOME, 'logs\jsnapy'), log_files),
                     ('samples', example_files),
-                    (os.path.join(HOME, 'jsnapy'), ['lib/jnpr/jsnapy/jsnapy.cfg']),
+                    (os.path.join(HOME, 'jsnapy'),
+                    ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
                     ]
