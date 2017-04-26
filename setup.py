@@ -65,14 +65,14 @@ class OverrideInstall(install):
 
             if hasattr(sys, 'real_prefix'):
                 default_config_location = [os.path.join
-                                           (HOME, 'jsnapy\jsnapy.cfg'),
+                                           (HOME, 'jsnapy', 'jsnapy.cfg'),
                                            "/etc/jsnapy/jsnapy.cfg",
                                            os.path.join(os.environ.get
                                                         ('VIRTUAL_ENV'),
-                                                        'jsnapy/jsnapy.cfg')]
+                                                        'jsnapy', 'jsnapy.cfg')]
             else:
                 default_config_location = [os.path.join(HOME,
-                                           'jsnapy\jsnapy.cfg'),
+                                           'jsnapy', 'jsnapy.cfg'),
                                            "/etc/jsnapy/jsnapy.cfg"]
 
             flag = False
