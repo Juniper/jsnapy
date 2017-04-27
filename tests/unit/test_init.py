@@ -26,14 +26,10 @@ class TestCheck(unittest.TestCase):
         
     @patch('os.path.isfile')
     def test_config_location_env(self, mock_is_file):
-        os.environ['JSNAPY_HOME'] = '/bogus/path'
-        print os.environ.get('JSNAPY_HOME')
-        if 'win' in sys.platform:
-            mock_is_file.side_effect = lambda arg: arg == '/bogus/path\\jsnapy.cfg'
-        else:
-            mock_is_file.side_effect = lambda arg: arg == '/bogus/path/jsnapy.cfg'
+        os.environ['JSNAPY_HOME'] = os.path.join('bogus','path')
+        mock_is_file.side_effect = lambda arg: arg == os.path.join('bogus','path','jsnapy.cfg')
         loc = get_config_location()
-        self.assertEqual(loc,'/bogus/path')
+        self.assertEqual(loc,os.path.join('bogus','path'))
     
     @patch('os.path.isfile')
     def test_config_location_home(self, mock_is_file):
