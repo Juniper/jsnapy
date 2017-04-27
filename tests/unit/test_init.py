@@ -1,6 +1,7 @@
 import unittest
 import os
 import yaml
+import sys
 from mock import patch, MagicMock
 from nose.plugins.attrib import attr
 from jnpr.jsnapy import get_config_location, get_path, DirStore
@@ -26,7 +27,11 @@ class TestCheck(unittest.TestCase):
     @patch('os.path.isfile')
     def test_config_location_env(self, mock_is_file):
         os.environ['JSNAPY_HOME'] = '/bogus/path'
-        mock_is_file.side_effect = lambda arg: arg == '/bogus/path/jsnapy.cfg'
+        print os.environ.get('JSNAPY_HOME')
+        if 'win' in sys.platform:
+            mock_is_file.side_effect = lambda arg: arg == '/bogus/path\\jsnapy.cfg'
+        else:
+            mock_is_file.side_effect = lambda arg: arg == '/bogus/path/jsnapy.cfg'
         loc = get_config_location()
         self.assertEqual(loc,'/bogus/path')
     
@@ -38,10 +43,20 @@ class TestCheck(unittest.TestCase):
     
     @patch('os.path.isfile')
     def test_config_location_etc(self, mock_is_file):
-        mock_is_file.side_effect = lambda arg: arg in ['/etc/jsnapy/jsnapy.cfg']
-        loc = get_config_location()
-        self.assertEqual(loc,'/etc/jsnapy')
-    
+        if hasattr(sys, 'real_prefix'):
+            mock_is_file.side_effect = lambda arg: arg in [os.path.join(os.environ.get('VIRTUAL_ENV'),
+                                                     'jsnapy', 'jsnapy.cfg')]
+            loc = get_config_location()
+            self.assertEqual(loc,os.path.join(os.environ.get('VIRTUAL_ENV'),'jsnapy'))
+        elif 'win' in sys.platform:
+            mock_is_file.side_effect = lambda arg: arg in [os.path.join(os.path.expanduser('~'),
+                                                                        'jsnapy', 'jsnapy.cfg')]
+            loc = get_config_location()
+            self.assertEqual(loc, os.path.join(os.path.expanduser('~'),'jsnapy'))
+        else:
+            mock_is_file.side_effect = lambda arg: arg in ['/etc/jsnapy/jsnapy.cfg']
+            loc = get_config_location()
+            self.assertEqual(loc, '/etc/jsnapy')
 
     @patch('jnpr.jsnapy.get_config_location')
     def test_get_path_normal(self, mock_config_location):
@@ -54,7 +69,10 @@ class TestCheck(unittest.TestCase):
     @patch('jnpr.jsnapy.get_config_location')
     def test_get_path_custom(self, mock_config_loc):
         DirStore.custom_dir = '~/bogus'
-        HOME = os.path.join(os.path.expanduser('~'),'bogus/')        
+        if 'win' in sys.platform:
+            HOME = os.path.join(os.path.expanduser('~'),'bogus\\')
+        else:
+            HOME = os.path.join(os.path.expanduser('~'), 'bogus/')
         conf_loc = get_path('DEFAULT','config_file_path')
         snap_loc = get_path('DEFAULT','snapshot_path')
         test_loc = get_path('DEFAULT','test_file_path')
