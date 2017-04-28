@@ -17,9 +17,9 @@ install:
 
 before_script:
   - export PYTHONPATH=$VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/site-packages
+  - cd tests/unit
 
 script:
-  cd tests/unit
   nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
 
 after_success:
