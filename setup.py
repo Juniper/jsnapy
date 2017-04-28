@@ -5,11 +5,13 @@
 # All rights reserved.
 #
 
-import os,sys
+import os
+import sys
+import ConfigParser
 from os.path import expanduser
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-import ConfigParser
+
 
 class OverrideInstall(install):
    
@@ -50,9 +52,9 @@ class OverrideInstall(install):
             config.set('DEFAULT','snapshot_path', os.path.join(dir_path,'snapshots'))
             config.set('DEFAULT','test_file_path',os.path.join(dir_path,'testfiles'))
             
-            default_config_location = "/etc/jsnapy/jsnapy.cfg"
-            if os.path.isfile(default_config_location):
-                with open(default_config_location,'w') as cfgfile:
+            config_location = os.path.join(cfg_location,"jsnapy.cfg")
+            if os.path.isfile(config_location):
+                with open(config_location,'w') as cfgfile:
                     comment = ( '# This file can be overwritten\n'
                                 '# It contains default path for\n'
                                 '# config file, snapshots and testfiles\n'
@@ -64,7 +66,7 @@ class OverrideInstall(install):
                     cfgfile.write(comment)
                     config.write(cfgfile)
             else:
-                raise Exception('jsnapy.cfg not found at /etc/jsnapy')
+                raise Exception('jsnapy.cfg not found at {}'.format(cfg_location))
         
 
 req_lines = [line.strip() for line in open(
@@ -77,6 +79,13 @@ example_files = [
 log_files = [os.path.join('logs', j)
              for j in os.listdir('logs')]
 exec(open('lib/jnpr/jsnapy/version.py').read())
+cfg_location = None
+jsnapy_env_var = 'JSNAPY_HOME'
+if jsnapy_env_var in os.environ:
+    cfg_location = os.environ[jsnapy_env_var]
+else:
+    # modify for windows modification
+    cfg_location = '/etc/jsnapy'
 
 setup(name="jsnapy",
       version=__version__,
@@ -99,9 +108,9 @@ setup(name="jsnapy",
       scripts=['tools/jsnap2py'],
       zip_safe=False,
       install_requires=install_reqs,
-      data_files=[('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
+      data_files=[(cfg_location, ['lib/jnpr/jsnapy/logging.yml']),
                   ('samples', example_files),
-                  ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
+                  (cfg_location, ['lib/jnpr/jsnapy/jsnapy.cfg']),
                   ('testfiles', ['testfiles/README']),
                   ('snapshots', ['snapshots/README']),
                   ('/var/log/jsnapy', log_files)
