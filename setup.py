@@ -19,33 +19,24 @@ class OverrideInstall(install):
             if '--install-data' in arg:
                 break
         else:
-            if hasattr(sys, 'real_prefix'):
-                self.install_data = os.path.join(os.environ.get('VIRTUAL_ENV'),'jsnapy')
-            elif 'win' in sys.platform:
-                self.install_data = os.path.join(os.path.expanduser('~'),'jsnapy')
-            else:
-                self.install_data = '/etc/jsnapy'
+            self.install_data = '/etc/jsnapy'
 
         dir_path = self.install_data
         mode = 0o777
         install.run(self)
+        os.chmod(dir_path, mode)
+        for root, dirs, files in os.walk(dir_path):
+            for directory in dirs:
+                os.chmod(os.path.join(root, directory), mode)
+            for fname in files:
+                os.chmod(os.path.join(root, fname), mode)
 
-        if 'win' not in sys.platform and not hasattr(sys, 'real_prefix'):
-            os.chmod(dir_path, mode)
-            for root, dirs, files in os.walk(dir_path):
-                for directory in dirs:
-                    os.chmod(os.path.join(root, directory), mode)
-                for fname in files:
-                    os.chmod(os.path.join(root, fname), mode)
-
-            os.chmod('/var/log/jsnapy', mode)
-            for root, dirs, files in os.walk('/var/log/jsnapy'):
-                for directory in dirs:
-                    os.chmod(os.path.join(root, directory), mode)
-                for fname in files:
-                    os.chmod(os.path.join(root, fname), mode)
-
-	
+        os.chmod('/var/log/jsnapy', mode)
+        for root, dirs, files in os.walk('/var/log/jsnapy'):
+            for directory in dirs:
+                os.chmod(os.path.join(root, directory), mode)
+            for fname in files:
+                os.chmod(os.path.join(root, fname), mode)
         HOME = expanduser("~")  # correct cross platform way to do it
         home_folder = os.path.join(HOME, '.jsnapy')
         if not os.path.isdir(home_folder):
@@ -58,29 +49,21 @@ class OverrideInstall(install):
             config.set('DEFAULT', 'snapshot_path', os.path.join(dir_path, 'snapshots'))
             config.set('DEFAULT', 'test_file_path', os.path.join(dir_path, 'testfiles'))
 
-            if hasattr(sys, 'real_prefix'):
-                default_config_location = [os.path.join(HOME,'jsnapy\jsnapy.cfg'), "/etc/jsnapy/jsnapy.cfg",
-				           os.path.join(os.environ.get('VIRTUAL_ENV'),'jsnapy/jsnapy.cfg')]
+            default_config_location = "/etc/jsnapy/jsnapy.cfg"
+            if os.path.isfile(default_config_location):
+                with open(default_config_location, 'w') as cfgfile:
+                    comment = ('# This file can be overwritten\n'
+                               '# It contains default path for\n'
+                               '# config file, snapshots and testfiles\n'
+                               '# If required, overwrite the path with your path\n'
+                               '# config_file_path: path of main config file\n'
+                               '# snapshot_path : path of snapshot file\n'
+                               '# test_file_path: path of test file\n\n'
+                               )
+                    cfgfile.write(comment)
+                    config.write(cfgfile)
             else:
-                default_config_location = [os.path.join(HOME, 'jsnapy\jsnapy.cfg'), "/etc/jsnapy/jsnapy.cfg"]
-
-            flag = False
-            for possible_location in default_config_location:
-                if os.path.isfile(possible_location):
-                    with open(possible_location, 'w') as cfgfile:
-                        comment = ('# This file can be overwritten\n'
-                                   '# It contains default path for\n'
-                                   '# config file, snapshots and testfiles\n'
-                                   '# If required, overwrite the path with your path\n'
-                                   '# config_file_path: path of main config file\n'
-                                   '# snapshot_path : path of snapshot file\n'
-                                   '# test_file_path: path of test file\n\n'
-                                   )
-                        cfgfile.write(comment)
-                        config.write(cfgfile)
-                        flag = True
-            if flag == False:
-                raise Exception('jsnapy.cfg not found at any possible location')
+                raise Exception('jsnapy.cfg not found at /etc/jsnapy')
 
 
 req_lines = [line.strip() for line in open(
@@ -93,39 +76,6 @@ example_files = [
 log_files = [os.path.join('logs', j)
              for j in os.listdir('logs')]
 exec (open('lib/jnpr/jsnapy/version.py').read())
-
-
-os_data_file = []
-
-if hasattr(sys,'real_prefix'):
-    HOME = os.environ.get('VIRTUAL_ENV')
-    os_data_file = [(os.path.join(HOME,'jsnapy'),['lib/jnpr/jsnapy/logging.yml']),
-                    (os.path.join(HOME,'logs/jsnapy'),log_files),
-                    ('samples',example_files),
-                    (os.path.join(HOME,'jsnapy'), ['lib/jnpr/jsnapy/jsnapy.cfg']),
-                    ('testfiles', ['testfiles/README']),
-                    ('snapshots', ['snapshots/README'])
-                    ]
-
-
-elif 'win' in sys.platform:
-    HOME = expanduser("~")
-    os_data_file = [(os.path.join(HOME,'jsnapy'),['lib/jnpr/jsnapy/logging.yml']),
-                    (os.path.join(HOME,'logs\jsnapy'),log_files),
-		    ('samples',example_files),
-                    (os.path.join(HOME,'jsnapy'), ['lib/jnpr/jsnapy/jsnapy.cfg']),
-                    ('testfiles', ['testfiles/README']),
-                    ('snapshots', ['snapshots/README'])
-                    ]
-
-else:
-    os_data_file = [('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
-                    ('samples', example_files),
-                    ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
-                    ('testfiles', ['testfiles/README']),
-                    ('snapshots', ['snapshots/README']),
-                    ('/var/log/jsnapy', log_files)
-                   ]
 
 setup(name="jsnapy",
       version=__version__,
@@ -148,7 +98,13 @@ setup(name="jsnapy",
       scripts=['tools/jsnap2py'],
       zip_safe=False,
       install_requires=install_reqs,
-      data_files=os_data_file,
+      data_files=[('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
+                  ('samples', example_files),
+                  ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
+                  ('testfiles', ['testfiles/README']),
+                  ('snapshots', ['snapshots/README']),
+                  ('/var/log/jsnapy', log_files)
+                  ],
       cmdclass={'install': OverrideInstall},
       classifiers=[
           'Environment :: Console',
