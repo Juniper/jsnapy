@@ -2761,7 +2761,7 @@ class Operator:
                                 elif re.search('\+', del_val):
                                     dvalue = float(delta_val.strip('%'))
                                     mvalue = val1 + dvalue
-                                    if (val2 >= mvalue or val2 <= val1):
+                                    if (val2 > mvalue or val2 < val1):
                                         res = False
                                         count_fail = count_fail + 1
                                         self._print_message(
