@@ -10,7 +10,7 @@ import sys
 import yaml
 import logging.config
 from jnpr.jsnapy import get_config_location
-
+from six import iteritems
 
 def setup_logging(
         default_path='logging.yml', default_level=logging.INFO,
@@ -23,7 +23,7 @@ def setup_logging(
     if os.path.exists(path):
         with open(path, 'rt') as f:
             config = yaml.load(f.read())
-            for handler, value in config['handlers'].iteritems():
+            for (handler, value) in iteritems(config['handlers']):
                 if handler == 'console':
                     pass
                 else:

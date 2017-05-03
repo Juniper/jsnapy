@@ -9,7 +9,7 @@ import argparse
 import getpass
 import logging
 import os
-import Queue
+import queue
 import sys
 import textwrap
 from copy import deepcopy
@@ -40,8 +40,8 @@ class SnapAdmin:
         """
         taking parameters from command line
         """
-        self.q = Queue.Queue()
-        self.snap_q = Queue.Queue()
+        self.q = queue.Queue()
+        self.snap_q = queue.Queue()
         self.log_detail = {'hostname': None}
         self.snap_del = False
         self.logger = logging.getLogger(__name__)
