@@ -10,7 +10,7 @@ import sys
 from os.path import expanduser
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-import ConfigParser
+import configparser
 
 
 class OverrideInstall(install):
@@ -55,7 +55,7 @@ class OverrideInstall(install):
             os.chmod(home_folder, mode)
 
         if dir_path != '/etc/jsnapy':
-            config = ConfigParser.ConfigParser()
+            config = configparser.ConfigParser()
             config.set('DEFAULT', 'config_file_path',
                        dir_path)
             config.set('DEFAULT', 'snapshot_path',
@@ -177,6 +177,7 @@ setup(name="jsnapy",
           'Programming Language :: Python',
           'Programming Language :: Python :: 2.6',
           'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.4',
           'Topic :: Software Development :: Libraries',
           'Topic :: Software Development :: Libraries :: Application Frameworks',
           'Topic :: Software Development :: Libraries :: Python Modules',

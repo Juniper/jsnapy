@@ -4,7 +4,7 @@
 #
 
 from .version import __version__
-import ConfigParser
+import configparser
 import os
 import sys
 import colorama
@@ -40,7 +40,7 @@ def get_config_location(file='jsnapy.cfg'):
 
 
 def get_path(section, value):
-    # config = ConfigParser.ConfigParser(
+    # config = configparser.ConfigParser(
     #          {'config_file_path': '/usr/local/share/',
     #           'snapshot_path': '/usr/local/share/snapshots',
     #           'test_file_path': '/usr/local/share/testfiles',
@@ -57,7 +57,7 @@ def get_path(section, value):
             complete_paths[p] = os.path.join(custom_dir, paths[p])
         path = complete_paths.get(value)
     else:
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config_location = get_config_location()
         if config_location is None:
             raise Exception('Config file not found')
