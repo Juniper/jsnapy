@@ -150,11 +150,9 @@ class Comparator:
         """
         # analyze individual test case and extract element list, info and
         # err message ####
-        values = ['err', 'info']
-        testvalues = elem_test.keys()
-        testop1 = [
-            tvalue for tvalue in testvalues if tvalue not in values]
-        testop = testop1[0] if testop1 else "Define test operator"
+        exclusion_list = ['err', 'info', 'ignore-null']
+        testop = [key.lower() for key in elem_test if key.lower() not in exclusion_list]
+        testop = testop[0] if testop else "Define test operator"
 
         ele = elem_test.get(testop)
         if ele is not None:
