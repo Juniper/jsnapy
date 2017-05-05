@@ -150,11 +150,9 @@ class Comparator:
         """
         # analyze individual test case and extract element list, info and
         # err message ####
-        values = ['err', 'info']
-        testvalues = list(elem_test)
-        testop1 = [
-            tvalue for tvalue in testvalues if tvalue not in values]
-        testop = testop1[0] if testop1 else "Define test operator"
+        exclusion_list = ['err', 'info', 'ignore-null']
+        testop = [key.lower() for key in elem_test if key.lower() not in exclusion_list]
+        testop = testop[0] if testop else "Define test operator"
 
         ele = elem_test.get(testop)
         if ele is not None:
@@ -245,7 +243,7 @@ class Comparator:
                     "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
             return 
         for elem in sub_expr:
-            keys = list(elem)
+            keys = list(elem.keys())
             #this list helps us differentiate b/w conditional and elementary operation
             op_list = [k for k in keys if self.is_op(k)]
             if len(op_list) == 1:
@@ -263,11 +261,9 @@ class Comparator:
                 last_test_instance = kwargs['op'].test_details[kwargs['teston']][-1]
                 res = last_test_instance['result']
 
-                values = ['err', 'info']
-                testvalues = list(elem)
-                testop1 = [
-                    tvalue for tvalue in testvalues if tvalue not in values]
-                testop = testop1[0] if testop1 else "Define test operator"
+                exclusion_list = ['err', 'info', 'ignore-null']
+                testop = [key.lower() for key in elem if key.lower() not in exclusion_list]
+                testop = testop[0] if testop else "Define test operator"
                 #for skipping cases
                 if res is None or (last_test_instance['count']['pass'] == 0 and
                                    last_test_instance['count']['fail'] == 0 and
@@ -571,7 +567,7 @@ class Comparator:
                         (val),
                         extra=self.log_detail)
                     try:
-                        if list(tests[val][0])[0] == 'command':
+                        if 'command' in list(tests[val][0].keys()):
                             command = tests[val][0].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
                             message = self._print_testmssg("Command: "+command, "*")
