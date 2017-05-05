@@ -261,11 +261,9 @@ class Comparator:
                 last_test_instance = kwargs['op'].test_details[kwargs['teston']][-1]
                 res = last_test_instance['result']
 
-                values = ['err', 'info']
-                testvalues = elem.keys()
-                testop1 = [
-                    tvalue for tvalue in testvalues if tvalue not in values]
-                testop = testop1[0] if testop1 else "Define test operator"
+                exclusion_list = ['err', 'info', 'ignore-null']
+                testop = [key.lower() for key in elem if key.lower() not in exclusion_list]
+                testop = testop[0] if testop else "Define test operator"
                 #for skipping cases
                 if res is None or (last_test_instance['count']['pass'] == 0 and
                                    last_test_instance['count']['fail'] == 0 and
@@ -569,7 +567,7 @@ class Comparator:
                         (val),
                         extra=self.log_detail)
                     try:
-                        if tests[val][0].keys()[0] == 'command':
+                        if 'command' in (tests[val][0].keys())[0]:
                             command = tests[val][0].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
                             message = self._print_testmssg("Command: "+command, "*")
