@@ -5,6 +5,7 @@
 # All rights reserved.
 #
 
+from six import iteritems
 import argparse
 import getpass
 import logging
@@ -253,7 +254,7 @@ class SnapAdmin:
                     extra=self.log_detail)
                 exit(1)
             if check is True or self.args.diff is True or action is "check":
-                if 'compare' in d.keys() and d['compare'] is not None:
+                if 'compare' in list(d) and d['compare'] is not None:
                     strr = d['compare']
                     if not isinstance(strr, str):
                         self.logger.error(colorama.Fore.RED + "Properly specify ids of first and "
@@ -418,7 +419,7 @@ class SnapAdmin:
     def get_values(self, key_value):
         del_value = ['device', 'username', 'passwd' ]
         for v in del_value:
-            if key_value.has_key(v):
+            if v in list(key_value):
                 del key_value[v]
         return key_value
 
@@ -469,7 +470,7 @@ class SnapAdmin:
                     for dgp in dev_file:
                         if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                             for val in dev_file[dgp]:
-                                hostname = val.keys()[0]
+                                hostname = list(val)[0]
                                 self.log_detail = {'hostname': hostname}
                                 if val.get(hostname) is not None and hostname not in host_dict:
                                     host_dict[hostname] = deepcopy(val.get(hostname))
@@ -500,7 +501,7 @@ class SnapAdmin:
                                 # host.pop('device')
                                 host_dict[hostname] = deepcopy(host)
 
-            for hostname, key_value in host_dict.iteritems():
+            for (hostname, key_value) in iteritems(host_dict):
                 #The file config takes precedence over cmd line params -- no changes made
                 username = self.args.login or key_value.get('username') 
                 password = self.args.passwd or key_value.get('passwd') 
@@ -734,7 +735,7 @@ class SnapAdmin:
             for dgp in dev_file:
                 if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                     for val in dev_file[dgp]:
-                        hostname = val.keys()[0]
+                        hostname = list(val)[0]
                         self.log_detail = {'hostname': hostname}
                         if val.get(hostname) is not None and hostname not in host_dict:
                             host_dict[hostname] = deepcopy(val.get(hostname))
@@ -760,7 +761,7 @@ class SnapAdmin:
                         self.host_list.append(hostname)
                         host_dict[hostname] = deepcopy(host)
 
-        for hostname, key_value in host_dict.iteritems():
+        for (hostname, key_value) in iteritems(host_dict):
             username = key_value.get('username')
             password = key_value.get('passwd')
             key_value = self.get_values(key_value)
