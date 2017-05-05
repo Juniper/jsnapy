@@ -39,18 +39,18 @@ class Parser:
 
 
         if rpc_reply is True :
-            with open(output_file, 'w') as f:
+            with open(output_file, 'wb') as f:
                 f.write("")
             self.logger_snap.info(
                 colorama.Fore.BLUE +
                 "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
         else:
-            with open(output_file, 'w') as f:
+            with open(output_file, 'wb') as f:
                 f.write(etree.tostring(rpc_reply))
 
     def _write_warning(
             self, reply, db, snap_file, hostname, cmd_name, cmd_format, output_file):
-        with open(snap_file, 'w') as f:
+        with open(snap_file, 'wb') as f:
             f.write(reply)
         if db['store_in_sqlite'] is True:
             self.store_in_sqlite(
