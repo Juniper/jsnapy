@@ -65,10 +65,10 @@ class Operator:
                 *args)
         except AttributeError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "ERROR!! AttributeError \nComplete Message: %s" % e.message, extra=self.log_detail)
+                                     "ERROR!! AttributeError \nComplete Message: %s" % e, extra=self.log_detail)
             self.no_failed = self.no_failed + 1
         except etree.XPathEvalError as ex:
-            self.logger_testop.error(colorama.Fore.RED + "Error in evaluating XPATH, \nComplete Message: %s" % ex.message, extra=self.log_detail )
+            self.logger_testop.error(colorama.Fore.RED + "Error in evaluating XPATH, \nComplete Message: %s" % ex, extra=self.log_detail )
             self.no_failed = self.no_failed + 1
         except Exception as ex:
             self.logger_testop.error(colorama.Fore.RED +
@@ -252,7 +252,7 @@ class Operator:
             element = ele_list[0]
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "\n Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+                                     "\n Error occurred while accessing test element: %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n Element is not specified for testing",
                                      extra=self.log_detail)
@@ -374,7 +374,7 @@ class Operator:
             element = ele_list[0]
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "\n Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+                                     "\n Error occurred while accessing test element: %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n Element is not specified for testing", extra=self.log_detail)
             raise
@@ -488,7 +488,7 @@ class Operator:
             element = ele_list[0]
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "\nError occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+                                     "\nError occurred while accessing test element: %s" % e, extra=self.log_detail)
             raise
         else:
             tresult['node_name'] = element
@@ -669,7 +669,7 @@ class Operator:
             value = ele_list[1].strip()
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "\nError occurred while accessing test element %s" % e.message, extra=self.log_detail)
+                                     "\nError occurred while accessing test element %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n'is-equal' test operator requires two parameter", extra=self.log_detail)
             raise
@@ -816,7 +816,7 @@ class Operator:
             value = ele_list[1].strip()
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "\nError occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+                                     "\nError occurred while accessing test element: %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n'not-equal' test operator requires two parameter", extra=self.log_detail)
         else:
@@ -962,7 +962,7 @@ class Operator:
             range2 = float(ele_list[2])
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "\nError occurred while accessing test element %s\n" % e.message, extra=self.log_detail)
+                                     "\nError occurred while accessing test element %s\n" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n'in-range' test operator requires two parameter", extra=self.log_detail)
         else:
@@ -1117,7 +1117,7 @@ class Operator:
             range2 = float(ele_list[2])
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "\n Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
+                                     "\n Error occurred while accessing test element %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n not-range test operator require two parameters", extra=self.log_detail)
         else:
@@ -1272,7 +1272,7 @@ class Operator:
             val1 = float(ele_list[1])
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+                                     "Error occurred while accessing test element: %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "'is-gt' test operator require two parameters", extra=self.log_detail)
         else:
@@ -1416,7 +1416,7 @@ class Operator:
             val1 = float(ele_list[1])
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
+                                     "Error occurred while accessing test element %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "'is-lt' test operator require two parameters", extra=self.log_detail)
         else:
@@ -1559,7 +1559,7 @@ class Operator:
             value = ele_list[1]
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
+                                     "Error occurred while accessing test element %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n'contains' require two parameters",
                                      extra=self.log_detail)
@@ -1704,7 +1704,7 @@ class Operator:
             value_list = ele_list[1:]
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "\nError occurred while accessing test element %s" % e.message, extra=self.log_detail)
+                                     "\nError occurred while accessing test element %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n'is-in' test operator require two parameters", extra=self.log_detail)
         else:
@@ -1857,7 +1857,7 @@ class Operator:
             value_list = ele_list[1:]
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "Error occurred while accessing test element %s" % e.message, extra=self.log_detail)
+                                     "Error occurred while accessing test element %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "'not-in' test operator require two parameters", extra=self.log_detail)
         else:
@@ -2529,7 +2529,7 @@ class Operator:
             delta_val = ele_list[1]
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "Error occurred while accessing test element: %s" % e.message, extra=self.log_detail)
+                                     "Error occurred while accessing test element: %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "'delta' test operator require two parameters", extra=self.log_detail)
         else:
@@ -2918,7 +2918,7 @@ class Operator:
             value = ele_list[1]
         except IndexError as e:
             self.logger_testop.error(colorama.Fore.RED +
-                                     "\nError occurred while accessing test element %s" % e.message, extra=self.log_detail)
+                                     "\nError occurred while accessing test element %s" % e, extra=self.log_detail)
             self.logger_testop.error(colorama.Fore.RED +
                                      "\n'regex' test operator requires two parameter", extra=self.log_detail)
             raise

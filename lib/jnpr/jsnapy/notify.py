@@ -67,6 +67,6 @@ class Notification:
             self.logger_notify.error(
                 colorama.Fore.RED +
                 "ERROR!!  in sending mail: %s" %
-                ex.message,
+                ex,
                 extra=self.log_details)
         server.quit()

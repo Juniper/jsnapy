@@ -631,7 +631,7 @@ class SnapAdmin:
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................", hostname, extra=self.log_detail)
             if username is None:
-                username = raw_input("\nEnter User name: ")
+                username = input("\nEnter User name: ")
             dev = Device(
                 host=hostname,
                 user=username,
