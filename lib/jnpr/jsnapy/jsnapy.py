@@ -5,11 +5,12 @@
 # All rights reserved.
 #
 
+from six import iteritems
 import argparse
 import getpass
 import logging
 import os
-import Queue
+import queue
 import sys
 import textwrap
 from copy import deepcopy
@@ -26,7 +27,8 @@ from jnpr.jsnapy.snap import Parser
 from jnpr.junos.exception import ConnectAuthError
 
 import colorama
-import setup_logging
+from . import setup_logging
+
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
@@ -39,8 +41,8 @@ class SnapAdmin:
         """
         taking parameters from command line
         """
-        self.q = Queue.Queue()
-        self.snap_q = Queue.Queue()
+        self.q = queue.Queue()
+        self.snap_q = queue.Queue()
         self.log_detail = {'hostname': None}
         self.snap_del = False
         self.logger = logging.getLogger(__name__)
@@ -252,7 +254,7 @@ class SnapAdmin:
                     extra=self.log_detail)
                 exit(1)
             if check is True or self.args.diff is True or action is "check":
-                if 'compare' in d.keys() and d['compare'] is not None:
+                if 'compare' in list(d) and d['compare'] is not None:
                     strr = d['compare']
                     if not isinstance(strr, str):
                         self.logger.error(colorama.Fore.RED + "Properly specify ids of first and "
@@ -417,7 +419,7 @@ class SnapAdmin:
     def get_values(self, key_value):
         del_value = ['device', 'username', 'passwd' ]
         for v in del_value:
-            if key_value.has_key(v):
+            if v in list(key_value):
                 del key_value[v]
         return key_value
 
@@ -468,7 +470,7 @@ class SnapAdmin:
                     for dgp in dev_file:
                         if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                             for val in dev_file[dgp]:
-                                hostname = val.keys()[0]
+                                hostname = list(val)[0]
                                 self.log_detail = {'hostname': hostname}
                                 if val.get(hostname) is not None and hostname not in host_dict:
                                     host_dict[hostname] = deepcopy(val.get(hostname))
@@ -499,7 +501,7 @@ class SnapAdmin:
                                 # host.pop('device')
                                 host_dict[hostname] = deepcopy(host)
 
-            for hostname, key_value in host_dict.iteritems():
+            for (hostname, key_value) in iteritems(host_dict):
                 #The file config takes precedence over cmd line params -- no changes made
                 username = self.args.login or key_value.get('username') 
                 password = self.args.passwd or key_value.get('passwd') 
@@ -733,7 +735,7 @@ class SnapAdmin:
             for dgp in dev_file:
                 if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                     for val in dev_file[dgp]:
-                        hostname = val.keys()[0]
+                        hostname = list(val)[0]
                         self.log_detail = {'hostname': hostname}
                         if val.get(hostname) is not None and hostname not in host_dict:
                             host_dict[hostname] = deepcopy(val.get(hostname))
@@ -759,7 +761,7 @@ class SnapAdmin:
                         self.host_list.append(hostname)
                         host_dict[hostname] = deepcopy(host)
 
-        for hostname, key_value in host_dict.iteritems():
+        for (hostname, key_value) in iteritems(host_dict):
             username = key_value.get('username')
             password = key_value.get('passwd')
             key_value = self.get_values(key_value)
@@ -1080,7 +1082,7 @@ def main():
     else:
         js.check_arguments()
         if js.args.version is True:
-            print "JSNAPy version:", version.__version__
+            print ("JSNAPy version:", version.__version__)
         else:
             if js.args.verbosity:
                 js.set_verbosity(10*js.args.verbosity)

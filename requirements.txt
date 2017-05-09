@@ -1,5 +1,6 @@
 junos-eznc
 colorama
-ConfigParser
+configparser
 pyparsing
 icdiff
+future

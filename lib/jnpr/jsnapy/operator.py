@@ -92,8 +92,8 @@ class Operator:
         :param testname: test operation like "no-diff", "is-equal"
         """
         msg = "Performing %s Test Operation" % testname
-        testmssg = (80 - len(msg) - 2) / 2 * '-' + \
-            msg + (80 - len(msg) - 2) / 2 * '-'
+        testmssg = int((80 - len(msg) - 2) / 2) * '-' + \
+            msg + int((80 - len(msg) - 2) / 2) * '-'
         self.logger_testop.debug(
             colorama.Fore.BLUE +
             testmssg,
@@ -3052,8 +3052,8 @@ class Operator:
         :return:
         """
         msg = " Final Result!! "
-        finalmssg = (80 - len(msg) - 2) / 2 * '-' + \
-            msg + (80 - len(msg) - 2) / 2 * '-'
+        finalmssg = int((80 - len(msg) - 2) / 2) * '-' + \
+            msg + int((80 - len(msg) - 2) / 2) * '-'
 
         self.logger_testop.info(colorama.Fore.BLUE + finalmssg, extra=logs)
         for test_name in self.result_dict:

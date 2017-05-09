@@ -151,7 +151,7 @@ class Comparator:
         # analyze individual test case and extract element list, info and
         # err message ####
         values = ['err', 'info']
-        testvalues = elem_test.keys()
+        testvalues = list(elem_test)
         testop1 = [
             tvalue for tvalue in testvalues if tvalue not in values]
         testop = testop1[0] if testop1 else "Define test operator"
@@ -245,7 +245,7 @@ class Comparator:
                     "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
             return 
         for elem in sub_expr:
-            keys = elem.keys()
+            keys = list(elem)
             #this list helps us differentiate b/w conditional and elementary operation
             op_list = [k for k in keys if self.is_op(k)]
             if len(op_list) == 1:
@@ -264,7 +264,7 @@ class Comparator:
                 res = last_test_instance['result']
 
                 values = ['err', 'info']
-                testvalues = elem.keys()
+                testvalues = list(elem)
                 testop1 = [
                     tvalue for tvalue in testvalues if tvalue not in values]
                 testop = testop1[0] if testop1 else "Define test operator"
@@ -571,7 +571,7 @@ class Comparator:
                         (val),
                         extra=self.log_detail)
                     try:
-                        if tests[val][0].keys()[0] == 'command':
+                        if list(tests[val][0])[0] == 'command':
                             command = tests[val][0].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
                             message = self._print_testmssg("Command: "+command, "*")
@@ -716,6 +716,6 @@ class Comparator:
         :param testname: test operation like "no-diff", "is-equal"
         """
         msg = ' '+msg+' '
-        ln = (80 - len(msg) - 2) / 2
+        ln = int((80 - len(msg) - 2) / 2)
         testmssg = (ln * delimiter) + msg + (ln * delimiter)
         return testmssg
