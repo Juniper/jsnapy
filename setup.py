@@ -21,7 +21,7 @@ class OverrideInstall(install):
                 break
         else:
             if hasattr(sys, 'real_prefix'):
-                self.install_data = os.path.join(os.environ.get('VIRTUAL_ENV'),
+                self.install_data = os.path.join(expanduser("~"),'.jsnapy',
                                                  'jsnapy')
             elif 'win' in sys.platform:
                 self.install_data = os.path.join(os.path.expanduser('~'),
@@ -48,11 +48,11 @@ class OverrideInstall(install):
                 for fname in files:
                     os.chmod(os.path.join(root, fname), mode)
 
-        HOME = expanduser("~")  # correct cross platform way to do it
-        home_folder = os.path.join(HOME, '.jsnapy')
-        if not os.path.isdir(home_folder):
-            os.mkdir(home_folder)
-            os.chmod(home_folder, mode)
+        # HOME = expanduser("~")  # correct cross platform way to do it
+        # home_folder = os.path.join(HOME, '.jsnapy')
+        # if not os.path.isdir(home_folder):
+        #     os.mkdir(home_folder)
+        #     os.chmod(home_folder, mode)
 
         if dir_path != '/etc/jsnapy':
             config = configparser.ConfigParser()
@@ -67,8 +67,8 @@ class OverrideInstall(install):
                 default_config_location = [os.path.join
                                            (HOME, 'jsnapy', 'jsnapy.cfg'),
                                            "/etc/jsnapy/jsnapy.cfg",
-                                           os.path.join(os.environ.get
-                                                        ('VIRTUAL_ENV'),
+                                           os.path.join(expanduser("~"),
+                                                        '.jsnapy',
                                                         'jsnapy', 'jsnapy.cfg')]
             else:
                 default_config_location = [os.path.join(HOME,
@@ -110,7 +110,7 @@ exec (open('lib/jnpr/jsnapy/version.py').read())
 os_data_file = []
 
 if hasattr(sys, 'real_prefix'):
-    HOME = os.environ.get('VIRTUAL_ENV')
+    HOME = os.path.join(expanduser("~"),'.jsnapy')
     os_data_file = [(os.path.join(HOME, 'jsnapy'),
                     ['lib/jnpr/jsnapy/logging.yml']),
                     (os.path.join(HOME, 'logs/jsnapy'), log_files),
