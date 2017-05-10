@@ -52,9 +52,9 @@ class XmlComparator:
                 self.tresult['diff_on'].append(res)
                 self.tresult['result'] = flag
 
-        for name in x1.attrib.keys():
+        for name in list(x1.attrib.keys()):
             res = {}
-            if name not in x2.attrib.keys():
+            if name not in list(x2.attrib.keys()):
                 flag = False
                 res['testop'] = "attribute_missing"
                 res['pre_node_tag'] = x1.tag
@@ -81,9 +81,9 @@ class XmlComparator:
                 buffer("Attributes do not match:\n %s=%r, %s=%r for tag values <%s>"
                        % (name, value, name, x1.attrib.get(name), x2.tag))
 
-        for name in x2.attrib.keys():
+        for name in list(x2.attrib.keys()):
             res = {}
-            if name not in x1.attrib.keys():
+            if name not in list(x1.attrib.keys()):
                 flag = False
                 res['pre_node_tag'] = x1.tag
                 res['post_node_tag'] = x2.tag
