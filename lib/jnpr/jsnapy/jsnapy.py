@@ -631,7 +631,11 @@ class SnapAdmin:
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................", hostname, extra=self.log_detail)
             if username is None:
-                username = input("\nEnter User name: ")
+                if username is None:
+                    if sys.version < '3':
+                        username = raw_input("\nEnter User name: ")
+                    else:
+                        username = input("\nEnter User name: ")
             dev = Device(
                 host=hostname,
                 user=username,
