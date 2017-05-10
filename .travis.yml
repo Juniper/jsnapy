@@ -13,11 +13,11 @@ addons:
 
 install:
   - "pip install -r development.txt"
-  - "sudo python setup.py install --prefix=$VIRTUAL_ENV"
+  - "python setup.py install --prefix=$VIRTUAL_ENV"
 
 before_script:
   - export PYTHONPATH=$VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/site-packages
-
+  - cd tests/unit
 script: 
   nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
 
