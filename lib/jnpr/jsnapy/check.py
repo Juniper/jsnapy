@@ -128,6 +128,11 @@ class Comparator:
             return
         return xml_value
 
+    def _get_testop(self, elem_list):
+        exclusion_list = ['err', 'info', 'ignore-null']
+        testop = [key.lower() for key in elem_list if key.lower() not in exclusion_list]
+        testop = testop[0] if testop else "Define test operator"
+        return testop
 
     def expression_evaluator(self, elem_test, op, x_path, id_list, iter, teston,
                                 check, db, snap1, snap2=None, action=None, top_ignore_null=None):
@@ -150,9 +155,8 @@ class Comparator:
         """
         # analyze individual test case and extract element list, info and
         # err message ####
-        exclusion_list = ['err', 'info', 'ignore-null']
-        testop = [key.lower() for key in elem_test if key.lower() not in exclusion_list]
-        testop = testop[0] if testop else "Define test operator"
+
+        testop = self._get_testop(elem_test)
 
         ele = elem_test.get(testop)
         if ele is not None:
@@ -261,9 +265,8 @@ class Comparator:
                 last_test_instance = kwargs['op'].test_details[kwargs['teston']][-1]
                 res = last_test_instance['result']
 
-                exclusion_list = ['err', 'info', 'ignore-null']
-                testop = [key.lower() for key in elem if key.lower() not in exclusion_list]
-                testop = testop[0] if testop else "Define test operator"
+                testop = self._get_testop(elem)
+                
                 #for skipping cases
                 if res is None or (last_test_instance['count']['pass'] == 0 and
                                    last_test_instance['count']['fail'] == 0 and
