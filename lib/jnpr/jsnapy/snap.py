@@ -129,8 +129,9 @@ class Parser:
         This function takes snapshot for given command and write it in
         snapshot file or database
         """
-        command = test_file[t][0].get('command', "unknown command")
-        cmd_format = test_file[t][0].get('format', 'xml')
+        index = next((i for i,x in enumerate(test_file[t]) if 'command' in x), 0)
+        command = test_file[t][index].get('command', "unknown command")
+        cmd_format = test_file[t][index].get('format', 'xml')
         cmd_format = cmd_format if cmd_format in formats else 'xml'
         self.command_list.append(command)
         cmd_name = command.split('|')[0].strip()
@@ -210,9 +211,10 @@ class Parser:
         This function takes snapshot for given RPC and write it in
         snapshot file or database
         """
-        rpc = test_file[t][0].get('rpc', "unknown rpc")
+        index = next((i for i,x in enumerate(test_file[t]) if 'rpc' in x), 0)
+        rpc = test_file[t][index].get('rpc', "unknown rpc")
         self.rpc_list.append(rpc)
-        reply_format = test_file[t][0].get('format', 'xml')
+        reply_format = test_file[t][index].get('format', 'xml')
         reply_format = reply_format if reply_format in formats else 'xml'
         self.logger_snap.debug(colorama.Fore.BLUE +
                                "Tests Included : %s " %t,
@@ -381,8 +383,7 @@ class Parser:
 
         for t in test_included:
             if t in test_file:
-                if test_file.get(t) is not None and (
-                        'command' in test_file[t][0]):
+                if test_file.get(t) is not None and any('command' in d for d in test_file[t]) :
                     #command = test_file[t][0].get('command',"unknown command")
                     self.run_cmd(
                         test_file,
@@ -392,7 +393,7 @@ class Parser:
                         output_file,
                         hostname,
                         db)
-                elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
+                elif test_file.get(t) is not None and any('rpc' in d for d in test_file[t]):
                     self.run_rpc(
                         test_file,
                         t,
