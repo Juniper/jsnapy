@@ -736,7 +736,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.snap = False
         js.args.file = None
-        js.args.test_file = os.path.join(os.path.dirname(__file__),
+        js.args.testfiles = os.path.join(os.path.dirname(__file__),
                                     'configs', 'test_diff.yml')
         js.args.check = True
         js.args.snapcheck = False
@@ -753,7 +753,7 @@ class TestSnapAdmin(unittest.TestCase):
             self.assertEqual(js.main_file['hosts'][0]['device'],"10.216.193.114")
             self.assertEqual(js.main_file['hosts'][0]['username'],"abc")
             self.assertEqual(js.main_file['hosts'][0]['passwd'],"xyz")
-            self.assertEqual(js.main_file['tests'][0],js.args.test_file)
+            self.assertEqual(js.main_file['tests'][0],js.args.testfiles[0])
         
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.jsnapy.sys.exit')
@@ -763,7 +763,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.snap = True
         js.args.file = None
-        js.args.test_file = os.path.join(os.path.dirname(__file__),
+        js.args.testfiles = os.path.join(os.path.dirname(__file__),
                                     'configs', 'test_diff.yml')
         js.args.check = False
         js.args.snapcheck = False
@@ -780,7 +780,7 @@ class TestSnapAdmin(unittest.TestCase):
             self.assertEqual(js.main_file['hosts'][0]['device'],"10.216.193.114")
             self.assertEqual(js.main_file['hosts'][0]['username'],"abc")
             self.assertEqual(js.main_file['hosts'][0]['passwd'],"xyz")
-            self.assertEqual(js.main_file['tests'][0],js.args.test_file)            
+            self.assertEqual(js.main_file['tests'][0],js.args.testfiles[0])            
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.jsnapy.sys.exit')
@@ -790,8 +790,9 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.snap = False
         js.args.file = None
-        js.args.test_file = os.path.join(os.path.dirname(__file__),
-                                    'configs', 'test_diff.yml')
+        js.args.testfiles = [os.path.join(os.path.dirname(__file__),
+                                    'configs', 'test_diff.yml'),os.path.join(os.path.dirname(__file__),
+                                    'configs', 'tests.yml')]
         js.args.check = False
         js.args.snapcheck = True
         js.args.diff = False
@@ -807,7 +808,8 @@ class TestSnapAdmin(unittest.TestCase):
             self.assertEqual(js.main_file['hosts'][0]['device'],"10.216.193.114")
             self.assertEqual(js.main_file['hosts'][0]['username'],"abc")
             self.assertEqual(js.main_file['hosts'][0]['passwd'],"xyz")        
-            self.assertEqual(js.main_file['tests'][0],js.args.test_file)
+            self.assertEqual(js.main_file['tests'][0],js.args.testfiles[0])
+            self.assertEqual(js.main_file['tests'][1],js.args.testfiles[1])
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.SnapAdmin.get_hosts')
@@ -817,7 +819,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.snap = False
         js.args.file = None
-        js.args.test_file = os.path.join(os.path.dirname(__file__),
+        js.args.testfiles = os.path.join(os.path.dirname(__file__),
                                     'configs', 'test_diff.yml')
         js.args.check = False
         js.args.snapcheck = False
@@ -839,7 +841,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.snap = False
         js.args.file = None
-        js.args.test_file = os.path.join(os.path.dirname(__file__),
+        js.args.testfiles = os.path.join(os.path.dirname(__file__),
                                     'configs', 'test_diff.yml')
         js.args.check = True
         js.args.snapcheck = False
