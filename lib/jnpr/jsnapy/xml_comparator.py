@@ -38,7 +38,7 @@ class XmlComparator:
             self.tresult['diff_on'].append(res)
             self.tresult['result'] = flag
 
-        for name, value in x1.attrib.items():
+        for name, value in list(x1.attrib.items()):
             res = {}
             if x2.attrib.get(name) != value:
                 flag = False
@@ -66,7 +66,7 @@ class XmlComparator:
                 self.tresult['diff_on'].append(res)
                 self.tresult['result'] = flag
 
-        for name, value in x2.attrib.items():
+        for name, value in list(x2.attrib.items()):
             res = {}
             if x1.attrib.get(name) != value:
                 flag = False

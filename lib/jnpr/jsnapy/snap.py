@@ -228,7 +228,7 @@ class Parser:
                 k.replace(
                     '-',
                     '_'): v for k,
-                v in test_file[t][1][args_key].items()}
+                v in list(test_file[t][1][args_key].items())}
             if 'filter_xml' in kwargs:
                 from lxml.builder import E
                 filter_data = None
