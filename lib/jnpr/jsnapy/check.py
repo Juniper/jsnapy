@@ -570,7 +570,7 @@ class Comparator:
                         (val),
                         extra=self.log_detail)
                     try:
-                        if 'command' in (tests[val][0].keys())[0]:
+                        if 'command' in list(tests[val][0].keys()):
                             command = tests[val][0].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
                             message = self._print_testmssg("Command: "+command, "*")
