@@ -69,12 +69,29 @@ class Comparator:
                     'snapshot_path'),
                 sfile)
             return snapfile
-
+    
+    def splitter(self,value):
+        f = lambda x: x.split(']')[1].count(',') if '[' in x and ']' in x else x.count(',')
+        value_list = [x[::-1].strip() for x in value[::-1].split(",",f(value))][::-1]
+        return value_list
 
     def get_err_mssg(self, path, ele_list):
         """
         This function generates error message, if nothing is given then it will generate default error message
         """
+        path_keys = ['err', 'info', 'ignore-null']
+        value_list = []
+        for key, value in path.items():
+            if key not in path_keys:
+                value_list = self.splitter(value)
+        val = path.get('err')
+        regex = r"\$(\d+)"
+        i = 0
+        if len(value_list) > 1 and val :
+            for i in range(1,len(value_list)):
+                val = re.sub(regex,value_list[i],val,count=1)
+                i = i + 1
+            path['err'] = val
         err_mssg = path.get('err', "Test FAILED: " +
                             ele_list[
                                 0] + " before was < {{pre['" + ele_list[0] + "']}} >"
@@ -86,6 +103,19 @@ class Comparator:
         """
         This function generates info message, if nothing is given then it will generate default info message
         """
+        path_keys = ['err', 'info', 'ignore-null']
+        value_list = []
+        for key, value in path.items():
+            if key not in path_keys:
+                value_list = self.splitter(value)
+        val = path.get('info')
+        regex = r"\$(\d+)"
+        i = 0
+        if len(value_list) > 1 and val :
+            for i in range(1,len(value_list)):
+                val = re.sub(regex,value_list[i],val,count=1)
+                i = i + 1
+            path['info'] = val
         info_mssg = path.get('info', "Test PASSED: " + ele_list[0] +
                              " before was < {{pre['" +
                              ele_list[0] +
