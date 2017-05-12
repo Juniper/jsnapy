@@ -11,6 +11,7 @@ import jinja2
 import logging
 import colorama
 import time
+import posixpath
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -32,10 +33,12 @@ class Notification:
             colorama.Fore.BLUE +
             "Sending mail............", extra=self.log_details)
         testdetails = test_obj.test_details
-        templateLoader = jinja2.FileSystemLoader(searchpath="/")
+        drive, tail = os.path.splitdrive(__file__)
+        templateLoader = jinja2.FileSystemLoader(searchpath=[drive + "\\", "/"])
         templateEnv = jinja2.Environment(loader=templateLoader)
-        TEMPLATE_FILE = os.path.join(os.path.dirname(__file__), 'content.html')
-        template = templateEnv.get_template(TEMPLATE_FILE)
+        template_file = posixpath.join(os.path.dirname(__file__), 'content.html')
+        template_file = posixpath.join(*template_file.split('\\'))
+        template = templateEnv.get_template(template_file)
         outputText = template.render(device=hostname, name=mail_file['recipient_name'], tests=testdetails, 
                                      date=time.ctime(),
                                      tpassed=test_obj.no_passed, tfailed=test_obj.no_failed,
