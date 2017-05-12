@@ -110,6 +110,10 @@ class SnapAdmin:
             help="post snapshot filename",
             type=str)       # make it optional
         self.parser.add_argument(
+            "-T", "--testfiles",
+            nargs="+",
+            help="test file paths")  # Take test file/files as an argument 
+        self.parser.add_argument(
             "-f", "--file",
             help="config file to take snapshot",
             type=str)
@@ -312,19 +316,29 @@ class SnapAdmin:
         conf_file = self.args.file
         check = self.args.check
         snap = self.args.snap
-        if os.path.isfile(conf_file):
-            config_file = open(conf_file, 'r')
-            self.main_file = yaml.load(config_file)
-        elif os.path.isfile(os.path.join(get_path('DEFAULT', 'config_file_path'), conf_file)):
-            fpath = get_path('DEFAULT', 'config_file_path')
-            config_file = open(os.path.join(fpath, conf_file), 'r')
-            self.main_file = yaml.load(config_file)
+        if conf_file is not None:
+            if os.path.isfile(conf_file):
+                config_file = open(conf_file, 'r')
+                self.main_file = yaml.load(config_file)
+            elif os.path.isfile(os.path.join(get_path('DEFAULT', 'config_file_path'), conf_file)):
+                fpath = get_path('DEFAULT', 'config_file_path')
+                config_file = open(os.path.join(fpath, conf_file), 'r')
+                self.main_file = yaml.load(config_file)
         else:
-            self.logger.error(
-                colorama.Fore.RED +
-                "ERROR!! Config file '%s' is not present " %
-                conf_file, extra=self.log_detail)
-            sys.exit(1)
+            if self.args.hostname and self.args.testfiles:
+                temp_dict = {'hosts':[{'device':'', 'username':'', 'passwd':''}], 'tests':[]}
+                temp_dict['hosts'][0]['device'] = self.args.hostname
+                temp_dict['hosts'][0]['username'] = self.args.login
+                temp_dict['hosts'][0]['passwd'] = self.args.passwd
+                for tfile in self.args.testfiles:
+                    temp_dict['tests'].append(tfile)
+                self.main_file = temp_dict
+            else:
+                self.logger.error(
+                    colorama.Fore.RED +
+                    "ERROR!! Config file '%s' is not present " %
+                    conf_file, extra=self.log_detail)
+                sys.exit(1)
 
         #### if --check option is given for sqlite, then snap file name is not compulsory  ####
         #### else exit the function saying arguments not correct  ####
@@ -1049,9 +1063,10 @@ class SnapAdmin:
             self.parser.print_help()
             sys.exit(1)
 
-        if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
+        if(((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.snapcheck is True and self.args.file is None) or
-            (self.args.check is True and self.args.file is None)
+            (self.args.check is True and self.args.file is None)) and 
+            (self.args.testfiles is None or self.args.hostname is None)
            ):
             self.logger.error(colorama.Fore.RED +
                               "Arguments not given correctly, Please refer help message", extra=self.log_detail)
@@ -1067,7 +1082,8 @@ class SnapAdmin:
                     None)
                 sys.exit(1)
             else:
-                if self.args.file is None:
+                if (self.args.file is None) and (
+                    self.args.testfiles is None or self.args.hostname is None):
                     self.parser.print_help()
                     sys.exit(1)
 
