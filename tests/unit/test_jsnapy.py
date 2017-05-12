@@ -841,8 +841,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.snap = False
         js.args.file = None
-        js.args.testfiles = os.path.join(os.path.dirname(__file__),
-                                    'configs', 'test_diff.yml')
+        js.args.testfiles = None
         js.args.check = True
         js.args.snapcheck = False
         js.args.diff = False

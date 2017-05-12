@@ -1066,7 +1066,7 @@ class SnapAdmin:
         if(((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.snapcheck is True and self.args.file is None) or
             (self.args.check is True and self.args.file is None)) and 
-            (self.args.testfiles is None or self.args.hostname is None or self.args.login is None or self.args.passwd is None)
+            (self.args.testfiles is None or self.args.hostname is None)
            ):
             self.logger.error(colorama.Fore.RED +
                               "Arguments not given correctly, Please refer help message", extra=self.log_detail)
@@ -1083,7 +1083,7 @@ class SnapAdmin:
                 sys.exit(1)
             else:
                 if (self.args.file is None) and (
-                    self.args.testfiles is None or self.args.hostname is None or self.args.login is None or self.args.passwd is None):
+                    self.args.testfiles is None or self.args.hostname is None):
                     self.parser.print_help()
                     sys.exit(1)
 
