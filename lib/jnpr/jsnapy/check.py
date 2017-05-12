@@ -82,7 +82,7 @@ class Comparator:
         path_keys = ['err', 'info', 'ignore-null']
         value_list = []
         for key, value in path.items():
-            if key not in path_keys:
+            if key not in path_keys and value:
                 value_list = self.splitter(value)
         val = path.get('err')
         regex = r"\$(\d+)"
@@ -106,7 +106,7 @@ class Comparator:
         path_keys = ['err', 'info', 'ignore-null']
         value_list = []
         for key, value in path.items():
-            if key not in path_keys:
+            if key not in path_keys and value:
                 value_list = self.splitter(value)
         val = path.get('info')
         regex = r"\$(\d+)"
