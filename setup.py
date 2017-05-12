@@ -112,12 +112,12 @@ exec(open('lib/jnpr/jsnapy/version.py').read())
 os_data_file = []
 
 if hasattr(sys, 'real_prefix'):
-    HOME = os.path.join(expanduser("~"),'.jsnapy')
-    os_data_file = [(os.path.join(HOME, 'jsnapy'),
+    home = os.path.join(expanduser("~"),'.jsnapy')
+    os_data_file = [(os.path.join(home, 'jsnapy'),
                     ['lib/jnpr/jsnapy/logging.yml']),
-                    (os.path.join(HOME, 'logs/jsnapy'), log_files),
+                    (os.path.join(home, 'logs/jsnapy'), log_files),
                     ('samples', example_files),
-                    (os.path.join(HOME, 'jsnapy'),
+                    (os.path.join(home, 'jsnapy'),
                     ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
@@ -125,12 +125,12 @@ if hasattr(sys, 'real_prefix'):
 
 
 elif 'win' in sys.platform:
-    HOME = expanduser("~")
-    os_data_file = [(os.path.join(HOME, 'jsnapy'),
+    home = expanduser("~")
+    os_data_file = [(os.path.join(home, 'jsnapy'),
                     ['lib/jnpr/jsnapy/logging.yml']),
-                    (os.path.join(HOME, 'logs\jsnapy'), log_files),
+                    (os.path.join(home, 'logs\jsnapy'), log_files),
                     ('samples', example_files),
-                    (os.path.join(HOME, 'jsnapy'),
+                    (os.path.join(home, 'jsnapy'),
                     ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
