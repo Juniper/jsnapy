@@ -82,7 +82,7 @@ class Comparator:
         path_keys = ['err', 'info', 'ignore-null']
         value_list = []
         for key, value in path.items():
-            if key not in path_keys:
+            if key not in path_keys and value:
                 value_list = self.splitter(value)
         val = path.get('err')
         regex = r"\$(\d+)"
@@ -106,7 +106,7 @@ class Comparator:
         path_keys = ['err', 'info', 'ignore-null']
         value_list = []
         for key, value in path.items():
-            if key not in path_keys:
+            if key not in path_keys and value:
                 value_list = self.splitter(value)
         val = path.get('info')
         regex = r"\$(\d+)"
@@ -158,6 +158,11 @@ class Comparator:
             return
         return xml_value
 
+    def _get_testop(self, elem_list):
+        exclusion_list = ['err', 'info', 'ignore-null']
+        testop = [key.lower() for key in elem_list if key.lower() not in exclusion_list]
+        testop = testop[0] if testop else "Define test operator"
+        return testop
 
     def expression_evaluator(self, elem_test, op, x_path, id_list, iter, teston,
                                 check, db, snap1, snap2=None, action=None, top_ignore_null=None):
@@ -180,11 +185,8 @@ class Comparator:
         """
         # analyze individual test case and extract element list, info and
         # err message ####
-        values = ['err', 'info']
-        testvalues = elem_test.keys()
-        testop1 = [
-            tvalue for tvalue in testvalues if tvalue not in values]
-        testop = testop1[0] if testop1 else "Define test operator"
+
+        testop = self._get_testop(elem_test)
 
         ele = elem_test.get(testop)
         if ele is not None:
@@ -293,11 +295,8 @@ class Comparator:
                 last_test_instance = kwargs['op'].test_details[kwargs['teston']][-1]
                 res = last_test_instance['result']
 
-                values = ['err', 'info']
-                testvalues = elem.keys()
-                testop1 = [
-                    tvalue for tvalue in testvalues if tvalue not in values]
-                testop = testop1[0] if testop1 else "Define test operator"
+                testop = self._get_testop(elem)
+                
                 #for skipping cases
                 if res is None or (last_test_instance['count']['pass'] == 0 and
                                    last_test_instance['count']['fail'] == 0 and
@@ -601,7 +600,7 @@ class Comparator:
                         (val),
                         extra=self.log_detail)
                     try:
-                        if tests[val][0].keys()[0] == 'command':
+                        if 'command' in list(tests[val][0].keys()):
                             command = tests[val][0].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
                             message = self._print_testmssg("Command: "+command, "*")
