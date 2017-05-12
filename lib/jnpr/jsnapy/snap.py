@@ -75,7 +75,7 @@ class Parser:
                 "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
             return ""
         else:
-             return etree.tostring(rpc_reply)
+            return etree.tostring(rpc_reply, encoding="unicode")
 
 
     def generate_snap_file(self, output_file, hostname, name, cmd_format):
@@ -164,7 +164,7 @@ class Parser:
                 cmd_format)
             self._write_warning(
                 etree.tostring(
-                    err.rsp),
+                    err.rsp, encoding="unicode"),
                 db,
                 snap_file,
                 hostname,
@@ -272,7 +272,7 @@ class Parser:
                         reply_format)
                     self._write_warning(
                         etree.tostring(
-                            err.rsp),
+                            err.rsp, encoding="unicode"),
                         db,
                         snap_file,
                         hostname,
@@ -320,7 +320,7 @@ class Parser:
                     reply_format)
                 self._write_warning(
                     etree.tostring(
-                        err.rsp),
+                        err.rsp, encoding="unicode"),
                     db,
                     snap_file,
                     hostname,
