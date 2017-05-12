@@ -585,10 +585,6 @@ class SnapAdmin:
             elif type(mail_pref) is dict: 
                 if mail_condition in mail_pref:
                     mail_file_path = mail_pref.get(mail_condition)
-                else:
-                    self.logger.error(
-                        colorama.Fore.RED +
-                        "ERROR!! File not specified for %s scenario" % mail_condition, extra=self.log_detail)
             else:
                 self.logger.error(
                     colorama.Fore.RED +
@@ -668,7 +664,8 @@ class SnapAdmin:
                         output_file,
                         config_data,
                         action,
-                        post_snap)
+                        post_snap,
+                        **kwargs)
                 else:
                     self.logger.error(colorama.Fore.RED +
                                       "\nERROR occurred %s" %
@@ -804,7 +801,7 @@ class SnapAdmin:
         return res_obj
 
     def extract_data(
-            self, config_data, pre_name=None, action=None, post_name=None):
+            self, config_data, pre_name=None, action=None, post_name=None, local=False):
         """
         Called when dev= None, i.e. device details are passed inside config file
         It parse details of main config file and call functions to connect to device
@@ -813,6 +810,7 @@ class SnapAdmin:
         :param pre_name: pre snapshot filename or file tag
         :param action: action to be taken, snap, snapcheck, check
         :param post_name: post snapshot filename or file tag
+        :param local: reuse exisiting snapshot when true. Defaults to False        
         :return: return list of object of testop.Operator containing test details or list of dictionary of object of testop.Operator containing test details for each stored snapshot
         """
         val =[]
@@ -836,6 +834,7 @@ class SnapAdmin:
                 extra=self.log_detail)
             raise Exception("config file is not present ", ex)
         else:
+            self.args.local = local
             if config_data.__contains__(
                     'sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
                 self.chk_database(
@@ -883,6 +882,7 @@ class SnapAdmin:
         :param pre_name: pre snapshot filename or file tag
         :param action: action to be taken, snap, check or snapcheck
         :param post_snap: post snapshot filename or file tag
+        :param local: reuse exisiting snapshot when true. Defaults to False
         :return: return list of object of testop.Operator containing test details or list of dictionary of object of testop.Operator containing test details for each stored snapshot
         """
         res = []
@@ -990,7 +990,7 @@ class SnapAdmin:
         if isinstance(dev, Device):
             res = self.extract_dev_data(dev, data, file_name, "snapcheck", local=local)
         else:
-            res = self.extract_data(data, file_name, "snapcheck")
+            res = self.extract_data(data, file_name, "snapcheck", local=local)
         return res
 
     def check(self, data, pre_file=None, post_file=None, dev=None, folder=None):

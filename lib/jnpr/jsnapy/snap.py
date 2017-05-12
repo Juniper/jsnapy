@@ -23,6 +23,9 @@ class Parser:
         self.logger_snap = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
         self.reply = {}
+        self.command_list = []
+        self.rpc_list = []
+        self.test_included = []
 
     def _write_file(self, rpc_reply, format, output_file):
         """
@@ -212,18 +215,20 @@ class Parser:
         reply_format = test_file[t][0].get('format', 'xml')
         reply_format = reply_format if reply_format in formats else 'xml'
         self.logger_snap.debug(colorama.Fore.BLUE +
-                              "Tests Included : %s " %t,
-                              extra=self.log_detail)
+                               "Tests Included : %s " %t,
+                               extra=self.log_detail)
         self.logger_snap.info(colorama.Fore.BLUE +
                               "Taking snapshot of RPC: %s" %
                               rpc,
                               extra=self.log_detail)
-        if len(test_file[t]) >= 2 and 'kwargs' in test_file[t][1]:
+        if len(test_file[t]) >= 2 and ('args' in test_file[t][1] or
+                                       'kwargs' in test_file[t][1]):
+            args_key = 'args' if 'args' in test_file[t][1] else 'kwargs'
             kwargs = {
                 k.replace(
                     '-',
                     '_'): v for k,
-                v in test_file[t][1]['kwargs'].items()}
+                v in test_file[t][1][args_key].items()}
             if 'filter_xml' in kwargs:
                 from lxml.builder import E
                 filter_data = None
@@ -361,19 +366,20 @@ class Parser:
         Analyse test file and call respective functions to generate rpc reply
         for commands and RPC in test file.
         """
-        self.command_list = []
-        self.rpc_list = []
-        self.test_included = []
+        test_included = []
         formats = ['xml', 'text']
         self.log_detail['hostname'] = hostname
 
         if 'tests_include' in test_file:
-            self.test_included = test_file.get('tests_include')
+            test_included = test_file.get('tests_include')
         else:
             for t in test_file:
-                self.test_included.append(t)
+                test_included.append(t)
 
-        for t in self.test_included:
+        # adding test_included into global list
+        self.test_included.extend(test_included)
+
+        for t in test_included:
             if t in test_file:
                 if test_file.get(t) is not None and (
                         'command' in test_file[t][0]):
