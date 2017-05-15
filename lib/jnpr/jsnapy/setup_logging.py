@@ -29,7 +29,8 @@ def setup_logging(
                 else:
                     if hasattr(sys, 'real_prefix'):
                         value['filename'] = (os.path.join
-                                             (os.environ.get('VIRTUAL_ENV'),
+                                             (os.path.expanduser("~"),
+                                              '.jsnapy',
                                               'logs/jsnapy/jsnapy.log'))
                     elif 'win' in sys.platform:
                         value['filename'] = (os.path.join

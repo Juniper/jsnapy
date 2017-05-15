@@ -2642,7 +2642,7 @@ class Operator:
                                             deepcopy(node_value_passed))
 
                                 # for positive percent change
-                                elif re.search('%', del_val) and (re.search('/+', del_val)):
+                                elif re.search('%', del_val) and (re.search('\+', del_val)):
                                     dvalue = float(delta_val.strip('%'))
                                     mvalue = val1 + ((val1 * dvalue) / 100)
                                     if (val2 < val1 or val2 > mvalue):
@@ -2761,7 +2761,7 @@ class Operator:
                                 elif re.search('\+', del_val):
                                     dvalue = float(delta_val.strip('%'))
                                     mvalue = val1 + dvalue
-                                    if (val2 >= mvalue or val2 <= val1):
+                                    if (val2 > mvalue or val2 < val1):
                                         res = False
                                         count_fail = count_fail + 1
                                         self._print_message(
