@@ -2,7 +2,7 @@ language: python
 sudo: true
 
 python:
-  - "2.7"
+  - "3.4"
 
 addons:
   apt:
