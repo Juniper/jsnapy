@@ -69,12 +69,29 @@ class Comparator:
                     'snapshot_path'),
                 sfile)
             return snapfile
-
+    
+    def splitter(self,value):
+        f = lambda x: x.split(']')[1].count(',') if '[' in x and ']' in x else x.count(',')
+        value_list = [x[::-1].strip() for x in value[::-1].split(",",f(value))][::-1]
+        return value_list
 
     def get_err_mssg(self, path, ele_list):
         """
         This function generates error message, if nothing is given then it will generate default error message
         """
+        path_keys = ['err', 'info', 'ignore-null']
+        value_list = []
+        for key, value in path.items():
+            if key not in path_keys:
+                value_list = self.splitter(value)
+        val = path.get('err')
+        regex = r"\$(\d+)"
+        i = 0
+        if len(value_list) > 1 and val :
+            for i in range(1,len(value_list)):
+                val = re.sub(regex,value_list[i],val,count=1)
+                i = i + 1
+            path['err'] = val
         err_mssg = path.get('err', "Test FAILED: " +
                             ele_list[
                                 0] + " before was < {{pre['" + ele_list[0] + "']}} >"
@@ -86,6 +103,19 @@ class Comparator:
         """
         This function generates info message, if nothing is given then it will generate default info message
         """
+        path_keys = ['err', 'info', 'ignore-null']
+        value_list = []
+        for key, value in path.items():
+            if key not in path_keys:
+                value_list = self.splitter(value)
+        val = path.get('info')
+        regex = r"\$(\d+)"
+        i = 0
+        if len(value_list) > 1 and val :
+            for i in range(1,len(value_list)):
+                val = re.sub(regex,value_list[i],val,count=1)
+                i = i + 1
+            path['info'] = val
         info_mssg = path.get('info', "Test PASSED: " + ele_list[0] +
                              " before was < {{pre['" +
                              ele_list[0] +
@@ -128,6 +158,11 @@ class Comparator:
             return
         return xml_value
 
+    def _get_testop(self, elem_list):
+        exclusion_list = ['err', 'info', 'ignore-null']
+        testop = [key.lower() for key in elem_list if key.lower() not in exclusion_list]
+        testop = testop[0] if testop else "Define test operator"
+        return testop
 
     def expression_evaluator(self, elem_test, op, x_path, id_list, iter, teston,
                                 check, db, snap1, snap2=None, action=None, top_ignore_null=None):
@@ -150,11 +185,8 @@ class Comparator:
         """
         # analyze individual test case and extract element list, info and
         # err message ####
-        values = ['err', 'info']
-        testvalues = elem_test.keys()
-        testop1 = [
-            tvalue for tvalue in testvalues if tvalue not in values]
-        testop = testop1[0] if testop1 else "Define test operator"
+
+        testop = self._get_testop(elem_test)
 
         ele = elem_test.get(testop)
         if ele is not None:
@@ -170,29 +202,33 @@ class Comparator:
         ignore_null = elem_test.get('ignore-null') or top_ignore_null
         # check test operators, below mentioned four are allowed only
         # with --check ####
+        is_skipped = False
         if testop in [
                 'no-diff', 'list-not-less', 'list-not-more', 'delta']:
             if check is True or action is "check":
                 xml1 = self.get_xml_reply(db, snap1)
                 xml2 = self.get_xml_reply(db, snap2)
-                op.define_operator(
-                    self.log_detail,
-                    testop,
-                    x_path,
-                    ele_list,
-                    err_mssg,
-                    info_mssg,
-                    teston,
-                    iter,
-                    id_list,
-                    xml1,
-                    xml2,
-                    ignore_null)
+                if xml2 is None:
+                    is_skipped = True
+                else:
+                    op.define_operator(
+                        self.log_detail,
+                        testop,
+                        x_path,
+                        ele_list,
+                        err_mssg,
+                        info_mssg,
+                        teston,
+                        iter,
+                        id_list,
+                        xml1,
+                        xml2,
+                        ignore_null)
             else:
                 self.logger_check.error(
                     colorama.Fore.RED +
                     "Test Operator %s is allowed only with --check" % testop, extra=self.log_detail)
-
+                is_skipped = True
         # if test operators are other than above mentioned four operators
         else:
             # if check is used with uni operand test operator then use
@@ -204,19 +240,24 @@ class Comparator:
                 pre_snap = None
                 post_snap = self.get_xml_reply(db, snap1)
 
-            op.define_operator(
-                self.log_detail,
-                testop,
-                x_path,
-                ele_list,
-                err_mssg,
-                info_mssg,
-                teston,
-                iter,
-                id_list,
-                pre_snap,
-                post_snap,
-                ignore_null)
+            if post_snap is None:
+                is_skipped = True
+            else:
+                op.define_operator(
+                    self.log_detail,
+                    testop,
+                    x_path,
+                    ele_list,
+                    err_mssg,
+                    info_mssg,
+                    teston,
+                    iter,
+                    id_list,
+                    pre_snap,
+                    post_snap,
+                    ignore_null)
+        if is_skipped:
+            op.test_details[teston].append({'result': None})
 
 
     def expression_builder(self, sub_expr, parent_op=None, **kwargs):
@@ -253,10 +294,16 @@ class Comparator:
                 #this should be guaranteed by the operator function, never use try-catch here
                 last_test_instance = kwargs['op'].test_details[kwargs['teston']][-1]
                 res = last_test_instance['result']
+
+                testop = self._get_testop(elem)
                 
                 #for skipping cases
-                if res is None or ( last_test_instance['count']['pass'] == 0 \
-                                   and last_test_instance['count']['fail'] == 0 ): 
+                if res is None or (last_test_instance['count']['pass'] == 0 and
+                                   last_test_instance['count']['fail'] == 0 and
+                                   testop not in ['no-diff',
+                                                  'list-not-less',
+                                                  'list-not-more'
+                                                  ]):
                     continue
                     
                 ret_expr.append(str(res))
@@ -553,7 +600,7 @@ class Comparator:
                         (val),
                         extra=self.log_detail)
                     try:
-                        if tests[val][0].keys()[0] == 'command':
+                        if 'command' in list(tests[val][0].keys()):
                             command = tests[val][0].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
                             message = self._print_testmssg("Command: "+command, "*")

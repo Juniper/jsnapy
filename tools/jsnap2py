@@ -23,8 +23,11 @@ def msg_change(x):
                                              re.I)
     if data:
         data = data[0]
+        if(data[1].startswith('/')):
+            data = (data[0],data[1][1:])
         if data[0] in ['id', 'ID']:
-            msg = "{{%s_%s}}" % (data)
+            data = (data[0], int(data[1])-1)
+	    msg = "{{%s_%s}}" % (data)
         elif data[0] in ['PRE', 'POST']:
             msg = '{{%s["%s"]}}' % (data)
         else:
