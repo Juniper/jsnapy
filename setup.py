@@ -57,7 +57,7 @@ class OverrideInstall(install):
 
 
         if dir_path != '/etc/jsnapy':
-            config = ConfigParser.ConfigParser()
+            config = configparser.ConfigParser()
             config.set('DEFAULT','config_file_path',
                        dir_path)
             config.set('DEFAULT','snapshot_path',
