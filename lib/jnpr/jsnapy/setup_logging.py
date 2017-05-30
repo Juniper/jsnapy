@@ -28,13 +28,12 @@ def setup_logging(
                 else:
                     if hasattr(sys, 'real_prefix'):
                         value['filename'] = (os.path.join
-                                             (sys.prefix, 'etc'
-                                              'jsnapy',
-                                              'logs', 'jsnapy','jsnapy.log'))
+                                             (sys.prefix,
+                                              'var/logs/jsnapy/jsnapy.log'))
                     elif 'win' in sys.platform:
                         value['filename'] = (os.path.join
                                              (os.path.expanduser('~'),
-                                              'logs', 'jsnapy', 'jsnapy.log'))
+                                              'logs\jsnapy\jsnapy.log'))
 
                 with open(path, "w") as f:
                     yaml.dump(config, f, default_flow_style=False)

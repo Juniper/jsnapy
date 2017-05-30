@@ -66,13 +66,14 @@ class OverrideInstall(install):
                        os.path.join(dir_path,'testfiles'))
 
             if hasattr(sys, 'real_prefix'):
-                default_config_location = [os.path.join
+                default_config_location = [os.path.join(sys.prefix,
+                                                        'etc',
+                                                        'jsnapy', 'jsnapy.cfg'),
+                                            os.path.join
                                            (expanduser("~"),
                                             'jsnapy', 'jsnapy.cfg'),
-                                           "/etc/jsnapy/jsnapy.cfg",
-                                           os.path.join(expanduser("~"),
-                                                        '.jsnapy',
-                                                        'jsnapy', 'jsnapy.cfg')]
+                                           "/etc/jsnapy/jsnapy.cfg"
+                                          ]
             else:
                 default_config_location = [os.path.join(expanduser("~"),
                                                         'jsnapy', 'jsnapy.cfg'),
@@ -115,7 +116,7 @@ if hasattr(sys, 'real_prefix'):
     home = os.path.join(sys.prefix,'etc')
     os_data_file = [(os.path.join(home, 'jsnapy'),
                     ['lib/jnpr/jsnapy/logging.yml']),
-                    (os.path.join(home, 'var', 'logs', 'jsnapy'),
+                    (os.path.join(sys.prefix, 'var', 'logs', 'jsnapy'),
                      log_files),
                     ('samples', example_files),
                     (os.path.join(home, 'jsnapy'),
