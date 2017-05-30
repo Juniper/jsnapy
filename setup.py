@@ -22,7 +22,7 @@ class OverrideInstall(install):
                 break
         else:
             if hasattr(sys, 'real_prefix'):
-                self.install_data = os.path.join(expanduser("~"), '.jsnapy',
+                self.install_data = os.path.join(sys.prefix, 'etc',
                                                  'jsnapy')
             elif 'win' in sys.platform:
                 self.install_data = os.path.join(os.path.expanduser('~'),
@@ -49,11 +49,11 @@ class OverrideInstall(install):
                 for fname in files:
                     os.chmod(os.path.join(root, fname), mode)
 
-        # HOME = expanduser("~") #correct cross platform way to do it
-        # home_folder = os.path.join(HOME,'.jsnapy')
-        # if not os.path.isdir(home_folder):
-        #     os.mkdir(home_folder)
-        #     os.chmod(home_folder,mode)
+        HOME = expanduser("~") #correct cross platform way to do it
+        home_folder = os.path.join(HOME,'.jsnapy')
+        if not os.path.isdir(home_folder):
+            os.mkdir(home_folder)
+            os.chmod(home_folder,mode)
 
 
         if dir_path != '/etc/jsnapy':
@@ -112,10 +112,11 @@ exec(open('lib/jnpr/jsnapy/version.py').read())
 os_data_file = []
 
 if hasattr(sys, 'real_prefix'):
-    home = os.path.join(expanduser("~"),'.jsnapy')
+    home = os.path.join(sys.prefix,'etc')
     os_data_file = [(os.path.join(home, 'jsnapy'),
                     ['lib/jnpr/jsnapy/logging.yml']),
-                    (os.path.join(home, 'logs/jsnapy'), log_files),
+                    (os.path.join(home, 'var', 'logs', 'jsnapy'),
+                     log_files),
                     ('samples', example_files),
                     (os.path.join(home, 'jsnapy'),
                     ['lib/jnpr/jsnapy/jsnapy.cfg']),
