@@ -89,9 +89,8 @@ class OverrideInstall(install):
                                )
                     cfgfile.write(comment)
                     config.write(cfgfile)
-                    flag = True
             else:
-                raise Exception('jsnapy.cfg not found at %s',default_config_location)
+                raise Exception('jsnapy.cfg not found at '+ default_config_location)
         
 
 req_lines = [line.strip() for line in open(
