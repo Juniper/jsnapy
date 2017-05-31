@@ -66,38 +66,32 @@ class OverrideInstall(install):
                        os.path.join(dir_path,'testfiles'))
 
             if hasattr(sys, 'real_prefix'):
-                default_config_location = [os.path.join(sys.prefix,
+                default_config_location = os.path.join(sys.prefix,
                                                         'etc',
-                                                        'jsnapy', 'jsnapy.cfg'),
-                                            os.path.join
-                                           (expanduser("~"),
-                                            'jsnapy', 'jsnapy.cfg'),
-                                           "/etc/jsnapy/jsnapy.cfg"
-                                          ]
+                                                        'jsnapy', 'jsnapy.cfg')
+            elif 'win' in sys.platform:
+                default_config_location = os.path.join(expanduser("~"),
+                                            'jsnapy', 'jsnapy.cfg')
             else:
-                default_config_location = [os.path.join(expanduser("~"),
-                                                        'jsnapy', 'jsnapy.cfg'),
-                                           "/etc/jsnapy/jsnapy.cfg"]
+                default_config_location = "/etc/jsnapy/jsnapy.cfg"
 
-            flag = False
-            for possible_location in default_config_location:
-                if os.path.isfile(possible_location):
-                    with open(possible_location, 'w') as cfgfile:
-                        comment = ('# This file can be overwritten\n'
-                                   '# It contains default path for\n'
-                                   '# config file, snapshots and testfiles\n'
-                                   '# If required, overwrite the path with'
-                                   '# your path\n'
-                                   '# config_file_path: path of main'
-                                   '# config file\n'
-                                   '# snapshot_path : path of snapshot file\n'
-                                   '# test_file_path: path of test file\n\n'
-                                   )
-                        cfgfile.write(comment)
-                        config.write(cfgfile)
-                        flag = True
-            if flag is False:
-                raise Exception('jsnapy.cfg not found at possible location')
+            if os.path.isfile(default_config_location):
+                with open(default_config_location, 'w') as cfgfile:
+                    comment = ('# This file can be overwritten\n'
+                               '# It contains default path for\n'
+                               '# config file, snapshots and testfiles\n'
+                               '# If required, overwrite the path with'
+                               '# your path\n'
+                               '# config_file_path: path of main'
+                               '# config file\n'
+                               '# snapshot_path : path of snapshot file\n'
+                               '# test_file_path: path of test file\n\n'
+                               )
+                    cfgfile.write(comment)
+                    config.write(cfgfile)
+                    flag = True
+            else:
+                raise Exception('jsnapy.cfg not found at %s',default_config_location)
         
 
 req_lines = [line.strip() for line in open(
