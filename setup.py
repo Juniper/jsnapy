@@ -1,4 +1,3 @@
-
 #!/usr/bin/python
 
 # Copyright (c) 1999-2016, Juniper Networks Inc.
@@ -13,23 +12,28 @@ from setuptools import setup, find_packages
 from setuptools.command.install import install
 import ConfigParser
 
+
 class OverrideInstall(install):
-   
+
     def run(self):
-        
+
         for arg in sys.argv:
             if '--install-data' in arg:
                 break
         else:
+            #--------------------------------
+            # hasattr(sys,'real_prefix') checks whether the
+            # user is working in python virtual environment
+            #--------------------------------
             if hasattr(sys, 'real_prefix'):
-                self.install_data = os.path.join(expanduser("~"), '.jsnapy',
+                self.install_data = os.path.join(sys.prefix, 'etc',
                                                  'jsnapy')
             elif 'win' in sys.platform:
                 self.install_data = os.path.join(os.path.expanduser('~'),
                                                  'jsnapy')
             else:
                 self.install_data = '/etc/jsnapy'
-            
+
         dir_path = self.install_data
         mode = 0o777
         install.run(self)
@@ -49,55 +53,49 @@ class OverrideInstall(install):
                 for fname in files:
                     os.chmod(os.path.join(root, fname), mode)
 
-        # HOME = expanduser("~") #correct cross platform way to do it
-        # home_folder = os.path.join(HOME,'.jsnapy')
-        # if not os.path.isdir(home_folder):
-        #     os.mkdir(home_folder)
-        #     os.chmod(home_folder,mode)
-
+        HOME = expanduser("~")  # correct cross platform way to do it
+        home_folder = os.path.join(HOME, '.jsnapy')
+        if not os.path.isdir(home_folder):
+            os.mkdir(home_folder)
+            os.chmod(home_folder, mode)
 
         if dir_path != '/etc/jsnapy':
             config = ConfigParser.ConfigParser()
-            config.set('DEFAULT','config_file_path',
+            config.set('DEFAULT', 'config_file_path',
                        dir_path)
-            config.set('DEFAULT','snapshot_path',
-                       os.path.join(dir_path,'snapshots'))
-            config.set('DEFAULT','test_file_path',
-                       os.path.join(dir_path,'testfiles'))
+            config.set('DEFAULT', 'snapshot_path',
+                       os.path.join(dir_path, 'snapshots'))
+            config.set('DEFAULT', 'test_file_path',
+                       os.path.join(dir_path, 'testfiles'))
 
             if hasattr(sys, 'real_prefix'):
-                default_config_location = [os.path.join
-                                           (expanduser("~"),
-                                            'jsnapy', 'jsnapy.cfg'),
-                                           "/etc/jsnapy/jsnapy.cfg",
-                                           os.path.join(expanduser("~"),
-                                                        '.jsnapy',
-                                                        'jsnapy', 'jsnapy.cfg')]
+                default_config_location = os.path.join(sys.prefix,
+                                                       'etc',
+                                                       'jsnapy', 'jsnapy.cfg')
+            elif 'win' in sys.platform:
+                default_config_location = os.path.join(expanduser("~"),
+                                                       'jsnapy', 'jsnapy.cfg')
             else:
-                default_config_location = [os.path.join(expanduser("~"),
-                                                        'jsnapy', 'jsnapy.cfg'),
-                                           "/etc/jsnapy/jsnapy.cfg"]
+                default_config_location = "/etc/jsnapy/jsnapy.cfg"
 
-            flag = False
-            for possible_location in default_config_location:
-                if os.path.isfile(possible_location):
-                    with open(possible_location, 'w') as cfgfile:
-                        comment = ('# This file can be overwritten\n'
-                                   '# It contains default path for\n'
-                                   '# config file, snapshots and testfiles\n'
-                                   '# If required, overwrite the path with'
-                                   '# your path\n'
-                                   '# config_file_path: path of main'
-                                   '# config file\n'
-                                   '# snapshot_path : path of snapshot file\n'
-                                   '# test_file_path: path of test file\n\n'
-                                   )
-                        cfgfile.write(comment)
-                        config.write(cfgfile)
-                        flag = True
-            if flag is False:
-                raise Exception('jsnapy.cfg not found at possible location')
-        
+            if os.path.isfile(default_config_location):
+                with open(default_config_location, 'w') as cfgfile:
+                    comment = ('# This file can be overwritten\n'
+                               '# It contains default path for\n'
+                               '# config file, snapshots and testfiles\n'
+                               '# If required, overwrite the path with'
+                               '# your path\n'
+                               '# config_file_path: path of main'
+                               '# config file\n'
+                               '# snapshot_path : path of snapshot file\n'
+                               '# test_file_path: path of test file\n\n'
+                               )
+                    cfgfile.write(comment)
+                    config.write(cfgfile)
+            else:
+                raise Exception('jsnapy.cfg not found at ' +
+                                default_config_location)
+
 
 req_lines = [line.strip() for line in open(
     'requirements.txt').readlines()]
@@ -112,13 +110,14 @@ exec(open('lib/jnpr/jsnapy/version.py').read())
 os_data_file = []
 
 if hasattr(sys, 'real_prefix'):
-    home = os.path.join(expanduser("~"),'.jsnapy')
+    home = os.path.join(sys.prefix, 'etc')
     os_data_file = [(os.path.join(home, 'jsnapy'),
-                    ['lib/jnpr/jsnapy/logging.yml']),
-                    (os.path.join(home, 'logs/jsnapy'), log_files),
+                     ['lib/jnpr/jsnapy/logging.yml']),
+                    (os.path.join(sys.prefix, 'var', 'logs', 'jsnapy'),
+                     log_files),
                     ('samples', example_files),
                     (os.path.join(home, 'jsnapy'),
-                    ['lib/jnpr/jsnapy/jsnapy.cfg']),
+                     ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
                     ]
@@ -127,11 +126,11 @@ if hasattr(sys, 'real_prefix'):
 elif 'win' in sys.platform:
     home = expanduser("~")
     os_data_file = [(os.path.join(home, 'jsnapy'),
-                    ['lib/jnpr/jsnapy/logging.yml']),
+                     ['lib/jnpr/jsnapy/logging.yml']),
                     (os.path.join(home, 'logs\jsnapy'), log_files),
                     ('samples', example_files),
                     (os.path.join(home, 'jsnapy'),
-                    ['lib/jnpr/jsnapy/jsnapy.cfg']),
+                     ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
                     ]
@@ -169,20 +168,20 @@ setup(name="jsnapy",
       data_files=os_data_file,
       cmdclass={'install': OverrideInstall},
       classifiers=[
-          'Environment :: Console',
-          'Intended Audience :: Developers',
-          'Intended Audience :: Information Technology',
-          'Intended Audience :: System Administrators',
-          'Intended Audience :: Telecommunications Industry',
-          'License :: OSI Approved :: Apache Software License',
-          'Operating System :: OS Independent',
-          'Programming Language :: Python',
-          'Programming Language :: Python :: 2.6',
-          'Programming Language :: Python :: 2.7',
-          'Topic :: Software Development :: Libraries',
-          'Topic :: Software Development :: Libraries :: Application Frameworks',
-          'Topic :: Software Development :: Libraries :: Python Modules',
-          'Topic :: System :: Networking',
-          'Topic :: Text Processing :: Markup :: XML'
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Information Technology',
+        'Intended Audience :: System Administrators',
+        'Intended Audience :: Telecommunications Industry',
+        'License :: OSI Approved :: Apache Software License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: System :: Networking',
+        'Topic :: Text Processing :: Markup :: XML'
       ],
       )
