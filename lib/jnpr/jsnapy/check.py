@@ -165,7 +165,7 @@ class Comparator:
         return testop
 
     def expression_evaluator(self, elem_test, op, x_path, id_list, iter, teston,
-                                check, db, snap1, snap2=None, action=None, top_ignore_null=None):
+                                check, db, test_name, snap1, snap2=None, action=None, top_ignore_null=None):
         """
         Analyze the given elementary test case and call the appopriate operator
         like is_equal() or no_diff()
@@ -221,6 +221,7 @@ class Comparator:
                         teston,
                         iter,
                         id_list,
+                        test_name,
                         xml1,
                         xml2,
                         ignore_null)
@@ -253,6 +254,7 @@ class Comparator:
                     teston,
                     iter,
                     id_list,
+                    test_name,
                     pre_snap,
                     post_snap,
                     ignore_null)
@@ -406,6 +408,7 @@ class Comparator:
                           'teston': teston,
                           'check': check,
                           'db': db,
+                          'test_name': test_name,
                           'snap1': snap1,
                           'snap2': snap2,
                           'action': action,

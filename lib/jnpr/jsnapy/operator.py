@@ -31,8 +31,20 @@ class Operator:
     def test_results(self):
         return dict(self.test_details)
 
+    @property
+    def testname_results(self):
+        testname_result_dict = {}
+        results = self.test_details
+        for cmd, data in results.items():
+            for test in data:
+                test['command'] = cmd
+                testname_result_dict.setdefault(test['test_name'], [])
+                testname_result_dict[test['test_name']].append(test)
+                del(test['test_name'])
+        return testname_result_dict
+
     def define_operator(
-            self, logdetail, testop, x_path, ele_list, err_mssg, info_mssg, teston, iter, id, *args):
+            self, logdetail, testop, x_path, ele_list, err_mssg, info_mssg, teston, iter, id, test_name, *args):
         """
         It will call functions according to test operator
         eg if testop is: is-equal, then it will call is_equal function
@@ -62,6 +74,7 @@ class Operator:
                 teston,
                 iter,
                 id,
+                test_name,
                 *args)
         except AttributeError as e:
             self.logger_testop.error(colorama.Fore.RED +
@@ -229,7 +242,7 @@ class Operator:
 
 
     def exists(self, x_path, ele_list, err_mssg, info_mssg,
-               teston, iter, id_list, xml1, xml2, ignore_null=None):
+               teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         """
         Calculate if node value is present in given snapshot
         """
@@ -243,6 +256,7 @@ class Operator:
             'testoperation': 'exists',
             'passed': [],
             'failed': [],
+            'test_name': test_name
         #     'pre_xml': xml1,
         #     'post_xml': xml2
         }
@@ -354,7 +368,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def not_exists(self, x_path, ele_list, err_mssg, info_mssg,
-                   teston, iter, id_list, xml1, xml2, ignore_null=None):
+                   teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-exists")
         res = True
         iddict = {}
@@ -365,6 +379,7 @@ class Operator:
             'testoperation': "not-exists",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -467,7 +482,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def all_same(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("all-same")
         res = True
         is_skipped = False
@@ -479,6 +494,7 @@ class Operator:
             'testoperation': "all-same",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -647,7 +663,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_equal(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-equal")
         res = True
         is_skipped=False
@@ -661,6 +677,7 @@ class Operator:
             'testoperation': "is-equal",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -794,7 +811,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def not_equal(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-equal")
         res = True
         is_skipped = False
@@ -806,6 +823,7 @@ class Operator:
             'testoperation': "not-equal",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -939,7 +957,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def in_range(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("in-range")
         res = True
         is_skipped = False
@@ -951,6 +969,7 @@ class Operator:
             'testoperation': "in-range",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1094,7 +1113,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def not_range(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-range")
         res = True
         is_skipped = False
@@ -1106,6 +1125,7 @@ class Operator:
             'testoperation': "not-range",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1250,7 +1270,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_gt(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+              info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-gt")
         res = True
         is_skipped = False
@@ -1262,6 +1282,7 @@ class Operator:
             'testoperation': "is-gt",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1393,7 +1414,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_lt(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+              info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-lt")
         res = True
         is_skipped = False
@@ -1405,6 +1426,7 @@ class Operator:
             'testoperation': "is-lt",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1536,7 +1558,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def contains(self, x_path, ele_list, err_mssg, info_mssg,
-                 teston, iter, id_list, xml1, xml2, ignore_null=None):
+                 teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("contains")
         predict = {}
         postdict = {}
@@ -1548,6 +1570,7 @@ class Operator:
             'testoperation': "contains",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1681,7 +1704,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def is_in(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+              info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("is-in")
         res = True
         is_skipped = False
@@ -1692,7 +1715,7 @@ class Operator:
             'xpath': x_path,
             'testoperation': "is-in",
             'passed': [],
-            'failed': [],
+            'failed': [], 'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1834,7 +1857,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def not_in(self, x_path, ele_list, err_mssg,
-               info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+               info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("not-in")
         res = True
         is_skipped = False
@@ -1846,6 +1869,7 @@ class Operator:
             'testoperation': "not-in",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1987,7 +2011,7 @@ class Operator:
 
     ################## operator requiring two snapshots, pre and post ########
     def no_diff(self, x_path, ele_list, err_mssg,
-                info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+                info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("no-diff")
         res = True
         iddict = {}
@@ -1999,6 +2023,7 @@ class Operator:
             'node_name': ele_list[0],
             'failed': [],
             'passed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2160,7 +2185,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def list_not_less(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("list-not-less")
         res = True
         tresult = {
@@ -2169,6 +2194,7 @@ class Operator:
             'node_name': ele_list[0],
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2333,7 +2359,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def list_not_more(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("list-not-more")
         res = True
         tresult = {
@@ -2341,6 +2367,7 @@ class Operator:
             'testoperation': "list-not-more",
             'node_name': ele_list[0],
             'failed': [],
+            'test_name': test_name,
             'passed': [],
             # 'pre_xml': xml1,
             # 'post_xml': xml2
@@ -2502,7 +2529,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def delta(self, x_path, ele_list, err_mssg,
-              info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+              info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("delta")
         res = True
         is_skipped = False
@@ -2511,6 +2538,7 @@ class Operator:
             'testoperation': "delta",
             'passed': [],
             'failed': [],
+            'test_name': test_name,
             'node_name': ele_list[0],
             # 'pre_xml': xml1,
             # 'post_xml': xml2
@@ -2896,7 +2924,7 @@ class Operator:
         self.test_details[teston].append(tresult)
 
     def regex(
-            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, xml1, xml2, ignore_null=None):
+            self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
         self.print_testmssg("regex")
         res = False
         is_skipped = False
@@ -2908,6 +2936,7 @@ class Operator:
             'testoperation': "regex",
             'passed': [],
             'failed': [],
+            'test_name': test_name
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
