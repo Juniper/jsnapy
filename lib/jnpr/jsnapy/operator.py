@@ -34,14 +34,11 @@ class Operator:
     @property
     def testname_results(self):
         testname_result_dict = {}
-        # test_name_list = []
         results = dict(self.test_details)
         for cmd, data in results.items():
             for test in data:
                 test['command'] = cmd
-                # test_name_list.append(test['test_name'])
-                testname_result_dict[test['test_name']] = []
-            for test in data:
+                testname_result_dict.setdefault(test['test_name'], [])
                 testname_result_dict[test['test_name']].append(test)
                 del (test['test_name'])
         return testname_result_dict
