@@ -254,6 +254,7 @@ class Comparator:
                     teston,
                     iter,
                     id_list,
+                    test_name,
                     pre_snap,
                     post_snap,
                     ignore_null)
