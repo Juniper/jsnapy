@@ -121,7 +121,7 @@ class Operator:
             self.logger_testop,
             mode)(msg_with_val,
                   extra=self.log_detail)
-        return msg_with_val
+        return str(msg_with_val)
 
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
@@ -3063,7 +3063,7 @@ class Operator:
                                     'pre': predict,
                                     'post': postdict,
                                     'actual_node_value': post_nodevalue,
-                                    'message': message}
+                                    'message': str(message)}
                                 tresult['passed'].append(
                                     deepcopy(node_value_passed))
 
@@ -3085,7 +3085,7 @@ class Operator:
                                     'pre': predict,
                                     'post': postdict,
                                     'actual_node_value': post_nodevalue,
-                                    'message': message}
+                                    'message': str(message)}
                                 tresult['failed'].append(
                                     deepcopy(node_value_failed))
                     else:
