@@ -113,15 +113,15 @@ class Operator:
             extra=self.log_detail)
 
     def _print_message(self, mssg, iddict, predict, postdict, mode="info"):
-        msg_with_val = (jinja2.Template(mssg).render(
+        message = (jinja2.Template(mssg).render(
             iddict,
             pre=predict,
             post=postdict))
         getattr(
             self.logger_testop,
-            mode)(msg_with_val,
+            mode)(message,
                   extra=self.log_detail)
-        return str(msg_with_val)
+        return str(message)
 
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
