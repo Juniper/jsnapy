@@ -797,13 +797,15 @@ class SnapAdmin:
                 kwargs= key_value
             )
             t.start()
+            t.join()
             if action == "snap":
-                res_obj.append(self.snap_q.get())
+                if not self.snap_q.empty():
+                    res_obj.append(self.snap_q.get())
             elif action in ["snapcheck", "check"]:
-                res_obj.append(self.q.get())
+                if not self.q.empty():
+                    res_obj.append(self.q.get())
             else:
                 res_obj.append(None)
-            t.join()
 
         return res_obj
 
