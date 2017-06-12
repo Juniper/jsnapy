@@ -185,7 +185,6 @@ class Comparator:
         """
         # analyze individual test case and extract element list, info and
         # err message ####
-
         testop = self._get_testop(elem_test)
 
         ele = elem_test.get(testop)
@@ -279,7 +278,7 @@ class Comparator:
                     "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
             return 
         for elem in sub_expr:
-            keys = elem.keys()
+            keys = list(elem.keys())
             #this list helps us differentiate b/w conditional and elementary operation
             op_list = [k for k in keys if self.is_op(k)]
             if len(op_list) == 1:
@@ -298,7 +297,6 @@ class Comparator:
                 res = last_test_instance['result']
 
                 testop = self._get_testop(elem)
-                
                 #for skipping cases
                 if res is None or (last_test_instance['count']['pass'] == 0 and
                                    last_test_instance['count']['fail'] == 0 and
@@ -748,6 +746,6 @@ class Comparator:
         :param testname: test operation like "no-diff", "is-equal"
         """
         msg = ' '+msg+' '
-        ln = (80 - len(msg) - 2) / 2
+        ln = int((80 - len(msg) - 2) / 2)
         testmssg = (ln * delimiter) + msg + (ln * delimiter)
         return testmssg

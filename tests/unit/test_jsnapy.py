@@ -3,7 +3,7 @@ import yaml
 import os
 from jnpr.jsnapy.jsnapy import SnapAdmin
 from mock import patch, MagicMock, call
-from contextlib import nested
+#from contextlib import nested
 from nose.plugins.attrib import attr
 import argparse
 
@@ -856,11 +856,11 @@ class TestSnapAdmin(unittest.TestCase):
             mock_sys.assert_called_with(1)
             mock_parser.assert_called_with()
 
-with nested(
-    patch('sys.exit'),
-    patch('argparse.ArgumentParser.print_help'),
-    patch('logging.Logger'),
-) as (mock_sys, mock_parser, mock_logger):
-    if __name__ == "__main__":
-        suite = unittest.TestLoader().loadTestsFromTestCase(TestSnapAdmin)
-        unittest.TextTestRunner(verbosity=2).run(suite)
+#with nested(
+#    patch('sys.exit'),
+#    patch('argparse.ArgumentParser.print_help'),
+#    patch('logging.Logger'),
+#) as (mock_sys, mock_parser, mock_logger):
+#    if __name__ == "__main__":
+#        suite = unittest.TestLoader().loadTestsFromTestCase(TestSnapAdmin)
+#        unittest.TextTestRunner(verbosity=2).run(suite)

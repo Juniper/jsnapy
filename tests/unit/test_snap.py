@@ -5,7 +5,7 @@ from jnpr.jsnapy.snap import Parser
 from jnpr.jsnapy import SnapAdmin
 import jnpr.junos.device
 from mock import patch, mock_open, ANY, call, MagicMock
-from contextlib import nested
+#from contextlib import nested
 from nose.plugins.attrib import attr
 
 @attr('unit')
@@ -50,12 +50,13 @@ class TestSnap(unittest.TestCase):
             self.assertEqual(prs.test_included, ['check_chassis_fpc'])
         dev.close()
 
+    @patch('jnpr.jsnapy.jsnapy.get_path')
     @patch('sys.exit')
     @patch('argparse.ArgumentParser.print_help')
     @patch('jnpr.junos.device.Device')
     @patch('jnpr.jsnapy.snap.etree')
     @patch('jnpr.jsnapy.snap.logging.getLogger')
-    def test_snap_2(self, mock_log, mock_etree, mock_dev, mock_parser, mock_exit):
+    def test_snap_2(self, mock_log, mock_etree, mock_dev, mock_parser, mock_exit, mock_path):
         js = SnapAdmin()
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main.yml')
@@ -67,10 +68,7 @@ class TestSnap(unittest.TestCase):
             passwd="xyz")
         dev.open()
         m_op = mock_open()
-        with nested (
-                patch('jnpr.jsnapy.snap.open', m_op, create=True),
-                patch('jnpr.jsnapy.jsnapy.get_path')
-        )as (m_open, mock_path):
+        with patch('jnpr.jsnapy.snap.open', m_op, create=True) as (m_open):
             mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
             js.generate_rpc_reply(
                 dev,
@@ -175,9 +173,10 @@ class TestSnap(unittest.TestCase):
                     'test_rpc_version', 'test_interface'])
         dev.close()
 
+    @patch('jnpr.junos.rpcmeta._RpcMetaExec.get_config')
     @patch('jnpr.jsnapy.snap.Parser._write_file')
     @patch('jnpr.jsnapy.snap.etree')
-    def test_rpc_2(self, mock_etree, mock_parse):
+    def test_rpc_2(self, mock_etree, mock_parse, mock_config):
         prs = Parser()
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'test_rpc.yml')
@@ -187,10 +186,7 @@ class TestSnap(unittest.TestCase):
             host="10.216.193.114",
             user="xyz",
             passwd="abc")
-        with nested(
-                patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__'),
-                patch('jnpr.junos.rpcmeta._RpcMetaExec.get_config')
-        ) as (mock_rpc, mock_config):
+        with patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__') as (mock_rpc):
             prs.generate_reply(
                 test_file,
                 dev,
@@ -229,9 +225,10 @@ class TestSnap(unittest.TestCase):
                 c[0][0].find("ERROR!!, filtering rpc works only for 'get-config' rpc"), -1)
         dev.close()
 
+    @patch('jnpr.junos.rpcmeta._RpcMetaExec.get_config')
     @patch('jnpr.jsnapy.snap.Parser._write_file')
     @patch('jnpr.jsnapy.snap.etree')
-    def test_rpc_4(self, mock_etree, mock_parse):
+    def test_rpc_4(self, mock_etree, mock_parse, mock_config):
         prs = Parser()
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'test_rpc_2.yml')
@@ -241,10 +238,7 @@ class TestSnap(unittest.TestCase):
             host="10.216.193.114",
             user="xyz",
             passwd="abc")
-        with nested(
-                patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__'),
-                patch('jnpr.junos.rpcmeta._RpcMetaExec.get_config')
-        ) as (mock_rpc, mock_config):
+        with patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__') as (mock_rpc):
             prs.generate_reply(
                 test_file,
                 dev,
@@ -438,11 +432,11 @@ class TestSnap(unittest.TestCase):
             mock_insert.assert_has_calls(calls)
         dev.close()
 
-with nested(
-        patch('jnpr.jsnapy.snap.logging.getLogger'),
-        patch('logging.Logger'),
-        patch('jnpr.jsnapy.snap.logging.getLogger')
-)as (mock_logger, mock_log, mock_log1):
-    if __name__ == "__main__":
-        suite = unittest.TestLoader().loadTestsFromTestCase(TestSnap)
-        unittest.TextTestRunner(verbosity=2).run(suite)
+#with nested(
+#        patch('jnpr.jsnapy.snap.logging.getLogger'),
+#        patch('logging.Logger'),
+#        patch('jnpr.jsnapy.snap.logging.getLogger')
+#)as (mock_logger, mock_log, mock_log1):
+#    if __name__ == "__main__":
+#        suite = unittest.TestLoader().loadTestsFromTestCase(TestSnap)
+#        unittest.TextTestRunner(verbosity=2).run(suite)

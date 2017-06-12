@@ -39,19 +39,19 @@ class Parser:
 
 
         if rpc_reply is True :
-            with open(output_file, 'w') as f:
-                f.write("")
+            with open(output_file, 'wb') as f:
+                f.write("".encode('utf-8'))
             self.logger_snap.info(
                 colorama.Fore.BLUE +
                 "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
         else:
-            with open(output_file, 'w') as f:
+            with open(output_file, 'wb') as f:
                 f.write(etree.tostring(rpc_reply))
 
     def _write_warning(
             self, reply, db, snap_file, hostname, cmd_name, cmd_format, output_file):
-        with open(snap_file, 'w') as f:
-            f.write(reply)
+        with open(snap_file, 'wb') as f:
+            f.write(reply.encode('utf-8'))
         if db['store_in_sqlite'] is True:
             self.store_in_sqlite(
                 db,
@@ -75,7 +75,7 @@ class Parser:
                 "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
             return ""
         else:
-             return etree.tostring(rpc_reply)
+            return etree.tostring(rpc_reply, encoding="unicode")
 
 
     def generate_snap_file(self, output_file, hostname, name, cmd_format):
@@ -164,7 +164,7 @@ class Parser:
                 cmd_format)
             self._write_warning(
                 etree.tostring(
-                    err.rsp),
+                    err.rsp, encoding="unicode"),
                 db,
                 snap_file,
                 hostname,
@@ -228,7 +228,7 @@ class Parser:
                 k.replace(
                     '-',
                     '_'): v for k,
-                v in test_file[t][1][args_key].items()}
+                v in list(test_file[t][1][args_key].items())}
             if 'filter_xml' in kwargs:
                 from lxml.builder import E
                 filter_data = None
@@ -272,7 +272,7 @@ class Parser:
                         reply_format)
                     self._write_warning(
                         etree.tostring(
-                            err.rsp),
+                            err.rsp, encoding="unicode"),
                         db,
                         snap_file,
                         hostname,
@@ -320,7 +320,7 @@ class Parser:
                     reply_format)
                 self._write_warning(
                     etree.tostring(
-                        err.rsp),
+                        err.rsp, encoding="unicode"),
                     db,
                     snap_file,
                     hostname,

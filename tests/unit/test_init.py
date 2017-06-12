@@ -2,6 +2,7 @@ import unittest
 import os
 import sys
 import yaml
+import sys
 from mock import patch, MagicMock
 from nose.plugins.attrib import attr
 from jnpr.jsnapy import get_config_location, get_path, DirStore
@@ -54,7 +55,6 @@ class TestCheck(unittest.TestCase):
             loc = get_config_location()
             self.assertEqual(loc, '/etc/jsnapy')
     
-
     @patch('jnpr.jsnapy.get_config_location')
     def test_get_path_normal(self, mock_config_location):
         DirStore.custom_dir = None

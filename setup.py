@@ -10,7 +10,8 @@ import sys
 from os.path import expanduser
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-import ConfigParser
+import configparser
+
 
 
 class OverrideInstall(install):
@@ -60,8 +61,8 @@ class OverrideInstall(install):
             os.chmod(home_folder, mode)
 
         if dir_path != '/etc/jsnapy':
-            config = ConfigParser.ConfigParser()
-            config.set('DEFAULT', 'config_file_path',
+            config = configparser.ConfigParser()
+            config.set('DEFAULT','config_file_path',
                        dir_path)
             config.set('DEFAULT', 'snapshot_path',
                        os.path.join(dir_path, 'snapshots'))
@@ -155,7 +156,7 @@ setup(name="jsnapy",
       package_dir={'': 'lib'},
       packages=find_packages('lib'),
       package_data={
-           'jnpr.jsnapy': ['jsnapy.cfg', 'logging.yml', 'content.html'],
+          'jnpr.jsnapy': ['jsnapy.cfg', 'logging.yml', 'content.html'],
       },
       entry_points={
           'console_scripts': [

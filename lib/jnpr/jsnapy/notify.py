@@ -14,6 +14,7 @@ import time
 import posixpath
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import posixpath
 
 
 class Notification:
@@ -70,6 +71,6 @@ class Notification:
             self.logger_notify.error(
                 colorama.Fore.RED +
                 "ERROR!!  in sending mail: %s" %
-                ex.message,
+                ex,
                 extra=self.log_details)
         server.quit()
