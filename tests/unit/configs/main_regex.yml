@@ -1,0 +1,6 @@
+hosts:
+  - device: 1.1.1.1
+    username : abc
+    passwd: xyz
+tests:
+  - test_regex.yml
