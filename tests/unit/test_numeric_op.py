@@ -11,7 +11,7 @@ class TestNumericOperators(unittest.TestCase):
     def setUp(self):
 
         self.diff = False
-        self.hostname = "10.216.193.114"
+        self.hostname = "1.1.1.1"
         self.db = dict()
         self.db['store_in_sqlite'] = False
         self.db['check_from_sqlite'] = False

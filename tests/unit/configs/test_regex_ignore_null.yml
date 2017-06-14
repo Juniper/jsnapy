@@ -1,0 +1,13 @@
+tests_include:
+  - check_route_summary
+
+check_route_summary:
+- command: show route summary
+- ignore-null: True
+- iterate:
+    xpath: //route-summary-information/route-table
+    id: ./table-name
+    tests:
+      - regex: active-route-count,139
+        info: "Active routes on: <{{post['table-name']}}> has not changed by more than 3%. Pre: <{{pre['active-route-count']}}>, Post: <{{post['active-route-count']}}> "
+        err: "WARNING!!: <{{post['table-name']}}> has changed by more than 3% delta. Pre: <{{pre['active-route-count']}}>, Post: <{{post['active-route-count']}}> "
