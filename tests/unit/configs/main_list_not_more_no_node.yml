@@ -1,0 +1,6 @@
+hosts:
+  - device: 10.216.193.114
+    username : abc
+    passwd: xyz
+tests:
+  - test_list_no_more_no_node.yml

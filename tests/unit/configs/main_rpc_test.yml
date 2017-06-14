@@ -1,0 +1,12 @@
+hosts:
+  - device: 10.216.193.114
+    username : abc
+    passwd: xyz
+tests:
+  - test_rpc_2.yml 
+sqlite:
+  - store_in_sqlite: no
+    check_from_sqlite: True
+    database_name: jbb.db
+    compare: 0,1
+

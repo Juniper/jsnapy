@@ -4,6 +4,7 @@ import os
 from jnpr.jsnapy.snap import Parser
 from jnpr.jsnapy import SnapAdmin
 import jnpr.junos.device
+from jnpr.junos.device import Device
 from mock import patch, mock_open, ANY, call, MagicMock
 #from contextlib import nested
 from nose.plugins.attrib import attr
@@ -68,7 +69,7 @@ class TestSnap(unittest.TestCase):
             passwd="xyz")
         dev.open()
         m_op = mock_open()
-        with patch('jnpr.jsnapy.snap.open', m_op, create=True) as (m_open):
+        with (patch('jnpr.jsnapy.snap.open', m_op, create=True))as (m_open):
             mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
             js.generate_rpc_reply(
                 dev,
@@ -186,7 +187,10 @@ class TestSnap(unittest.TestCase):
             host="10.216.193.114",
             user="xyz",
             passwd="abc")
-        with patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__') as (mock_rpc):
+        with (
+                patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__')
+
+        ) as (mock_rpc):
             prs.generate_reply(
                 test_file,
                 dev,
@@ -238,7 +242,10 @@ class TestSnap(unittest.TestCase):
             host="10.216.193.114",
             user="xyz",
             passwd="abc")
-        with patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__') as (mock_rpc):
+        with (
+                patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__')
+
+        ) as (mock_rpc):
             prs.generate_reply(
                 test_file,
                 dev,
@@ -432,11 +439,117 @@ class TestSnap(unittest.TestCase):
             mock_insert.assert_has_calls(calls)
         dev.close()
 
-#with nested(
-#        patch('jnpr.jsnapy.snap.logging.getLogger'),
-#        patch('logging.Logger'),
-#        patch('jnpr.jsnapy.snap.logging.getLogger')
-#)as (mock_logger, mock_log, mock_log1):
-#    if __name__ == "__main__":
-#        suite = unittest.TestLoader().loadTestsFromTestCase(TestSnap)
-#        unittest.TextTestRunner(verbosity=2).run(suite)
+        @patch('logging.Logger.info')
+        def test_write_file(self, mock_info):
+            par = Parser()
+            res = par._check_reply(True, 'xml')
+            self.assertEqual(res, '')
+            mock_info.assert_called()
+
+        @patch('logging.Logger.error')
+        @patch('ncclient.manager.connect')
+        def test_generate_reply_error_1(self, mock_dev, mock_err):
+            par = Parser()
+            test_file = os.path.join(os.path.dirname(__file__),
+                                     'configs', 'bogus_testfile_1.yml')
+            test_file = open(test_file, 'r')
+            test_file = yaml.load(test_file)
+            dev = Device(user='10.216.193.114', host='abc', passwd='xyz')
+            dev.open()
+            par.generate_reply(test_file, dev, '10.216.193.114_snap_mock', self.hostname, self.db)
+            mock_err.assert_called()
+
+        @patch('logging.Logger.error')
+        @patch('ncclient.manager.connect')
+        def test_generate_reply_error_2(self, mock_dev, mock_err):
+            par = Parser()
+            test_file = os.path.join(os.path.dirname(__file__),
+                                     'configs', 'bogus_testfile_2.yml')
+            test_file = open(test_file, 'r')
+            test_file = yaml.load(test_file)
+            dev = Device(user='10.216.193.114', host='abc', passwd='xyz')
+            dev.open()
+            par.generate_reply(test_file, dev, '10.216.193.114_snap_mock', self.hostname, self.db)
+            mock_err.assert_called()
+
+        @patch('jnpr.jsnapy.snap.Parser._write_warning')
+        @patch('jnpr.junos.rpcmeta._RpcMetaExec.cli')
+        @patch('logging.Logger.error')
+        @patch('lxml.etree.tostring')
+        @patch('ncclient.manager.connect')
+        def test_generate_reply_error_3(self, mock_dev, mock_tostring, mock_err, mock_cli, mock_write_warn):
+            from jnpr.junos.exception import RpcError
+            mock_cli.side_effect = RpcError
+            par = Parser()
+            test_file = os.path.join(os.path.dirname(__file__),
+                                     'configs', 'bogus_testfile_3.yml')
+            test_file = open(test_file, 'r')
+            test_file = yaml.load(test_file)
+            dev = Device(host='10.221.136.250', user='abc', passwd='xyz')
+            dev.open()
+            par.generate_reply(test_file, dev, 'mock.xml', self.hostname, self.db)
+            mock_err.assert_called()
+            mock_write_warn.assert_called()
+
+        @patch('jnpr.jsnapy.snap.Parser._write_warning')
+        @patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__')
+        @patch('logging.Logger.error')
+        @patch('lxml.etree.tostring')
+        @patch('ncclient.manager.connect')
+        def test_generate_reply_rpc_error_4(self, mock_dev, mock_tostring, mock_err, mock_rpc, mock_write_warn):
+            from jnpr.junos.exception import RpcError
+            mock_rpc.side_effect = RpcError
+            par = Parser()
+            test_file = os.path.join(os.path.dirname(__file__),
+                                     'configs', 'bogus_testfile_4.yml')
+            test_file = open(test_file, 'r')
+            test_file = yaml.load(test_file)
+            dev = Device(host='10.221.136.250', user='abc', passwd='xyz')
+            dev.open()
+            par.generate_reply(test_file, dev, 'mock.xml', self.hostname, self.db)
+            mock_err.assert_called()
+            mock_write_warn.assert_called()
+
+        @patch('jnpr.jsnapy.snap.Parser._write_warning')
+        @patch('jnpr.junos.rpcmeta._RpcMetaExec.__getattr__')
+        @patch('logging.Logger.error')
+        @patch('lxml.etree.tostring')
+        @patch('ncclient.manager.connect')
+        def test_generate_reply_rpc_error_5(self, mock_dev, mock_tostring, mock_err, mock_rpc, mock_write_warn):
+            from jnpr.junos.exception import RpcError
+            mock_rpc.side_effect = RpcError
+            par = Parser()
+            test_file = os.path.join(os.path.dirname(__file__),
+                                     'configs', 'bogus_testfile_5.yml')
+            test_file = open(test_file, 'r')
+            test_file = yaml.load(test_file)
+            dev = Device(host='10.221.136.250', user='abc', passwd='xyz')
+            dev.open()
+            par.generate_reply(test_file, dev, 'mock.xml', self.hostname, self.db)
+            mock_err.assert_called()
+            mock_write_warn.assert_called()
+
+        @patch('logging.Logger.info')
+        def test_write_file_rpc_reply_true(self, mock_log):
+            par = Parser()
+            par._write_file(True, 'xml', 'mock.xml')
+            c = mock_log.call_args_list[0]
+            self.assertNotEqual(
+                c[0][0].find("Output of requested Command/RPC is empty"), -1)
+
+        @patch('jnpr.jsnapy.snap.Parser.store_in_sqlite')
+        def test_write_warning(self, mock_store_data):
+            self.db['store_in_sqlite'] = True
+            par = Parser()
+            par._write_warning("mock_reply", self.db, 'mock.xml', self.hostname
+                               , 'mock_cmd', 'text', 'mock_output')
+            mock_store_data.assert_called()
+
+# with nested(
+#         patch('jnpr.jsnapy.snap.logging.getLogger'),
+#         patch('logging.Logger'),
+#         patch('jnpr.jsnapy.snap.logging.getLogger')
+# )as (mock_logger, mock_log, mock_log1):
+#     if __name__ == "__main__":
+#         suite = unittest.TestLoader().loadTestsFromTestCase(TestSnap)
+#         unittest.TextTestRunner(verbosity=2).run(suite)

@@ -1,0 +1,7 @@
+hosts:
+  - device: 10.216.193.114
+    username : abc
+    passwd: xyz
+tests:
+  - test_regex_1.yml
+  - test_regex_ignore_null.yml

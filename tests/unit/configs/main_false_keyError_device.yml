@@ -1,0 +1,4 @@
+hosts:
+  - device_name: 10.216.193.114
+    username : abc
+    passwd: xyz

@@ -7,8 +7,9 @@ from nose.plugins.attrib import attr
 
 @attr('unit')
 class TestSqlite(unittest.TestCase):
-
-    def setUp(self):
+   
+    @classmethod
+    def setUpClass(self):
         self.diff = False
         self.hostname = "10.216.193.114"
         self.db = "mock_test.db"
@@ -18,8 +19,9 @@ class TestSqlite(unittest.TestCase):
         self.db_dict2['filename'] = "file_mock"
         self.db_dict2['format'] = "text"
         self.db_dict2['data'] = "mock_data"
-
-    def tearDown(self):
+    
+    @classmethod
+    def tearDownClass(self):
         db_filename = os.path.join(os.path.dirname(__file__), 'configs', 'mock_test.db')
         os.remove(db_filename)
 
@@ -114,7 +116,26 @@ class TestSqlite(unittest.TestCase):
             c_list = mock_log.call_args_list[0]
             self.assertNotEqual(c_list[0][0].find(err), -1)
 
+    @patch('sys.exit')    
+    @patch('logging.Logger.error')
+    @patch('sqlite3.connect')
+    @patch('jnpr.jsnapy.sqlite_store.get_path')
+    def test_sqlite_store_db_not_exist(self, mock_path, mock_connect, mock_log, mock_sys):
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        mock_connect.side_effect = Exception("Connection not possible")
+        sq = JsnapSqlite('10.216.193.114', self.db)
+        c_list = mock_log.call_args_list[0]
+        err = ['ERROR occurred in database']
+        self.assertIn((err[0]), c_list[0][0])
 
+    @patch('jnpr.jsnapy.sqlite_get.get_path')
+    @patch('os.path.isfile')
+    def test_sqlite_extractxml_db_absent(self, mock_isfile, mock_path):
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        mock_isfile.return_value = False
+        with patch('sys.exit') as mock_exit:
+            extr = SqliteExtractXml(self.db)
+            mock_exit.assert_called_with(1)
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(TestSqlite)
     unittest.TextTestRunner(verbosity=2).run(suite)
