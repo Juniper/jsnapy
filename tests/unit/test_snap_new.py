@@ -13,7 +13,7 @@ class TestSnap(unittest.TestCase):
 
     def setUp(self):
         self.diff = False
-        self.hostname = "10.216.193.114"
+        self.hostname = "1.1.1.1"
         self.db = dict()
         self.db['store_in_sqlite'] = False
         self.db['check_from_sqlite'] = False
@@ -38,9 +38,9 @@ class TestSnap(unittest.TestCase):
                                  'configs', 'bogus_testfile_1.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
-        dev = Device(user='10.216.193.114', host='abc', passwd='xyz')
+        dev = Device(user='1.1.1.1', host='abc', passwd='xyz')
         dev.open()
-        par.generate_reply(test_file, dev, '10.216.193.114_snap_mock' ,self.hostname, self.db )
+        par.generate_reply(test_file, dev, '1.1.1.1_snap_mock' ,self.hostname, self.db )
         mock_err.assert_called()
 
     @patch('logging.Logger.error')
@@ -51,9 +51,9 @@ class TestSnap(unittest.TestCase):
                                  'configs', 'bogus_testfile_2.yml')
         test_file = open(test_file, 'r')
         test_file = yaml.load(test_file)
-        dev = Device(user='10.216.193.114', host='abc', passwd='xyz')
+        dev = Device(user='1.1.1.1', host='abc', passwd='xyz')
         dev.open()
-        par.generate_reply(test_file, dev, '10.216.193.114_snap_mock', self.hostname, self.db)
+        par.generate_reply(test_file, dev, '1.1.1.1_snap_mock', self.hostname, self.db)
         mock_err.assert_called()
 
     @patch('jnpr.jsnapy.snap.Parser._write_warning')

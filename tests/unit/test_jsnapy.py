@@ -23,7 +23,7 @@ class TestSnapAdmin(unittest.TestCase):
 
     def setUp(self):
         self.diff = False
-        self.hostname = "10.216.193.114"
+        self.hostname = "1.1.1.1"
         self.db = dict()
         self.db['store_in_sqlite'] = False
         self.db['check_from_sqlite'] = False
@@ -43,7 +43,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.generate_rpc_reply(
             None,
             "snap_mock",
-            "10.216.193.114",
+            "1.1.1.1",
             js.main_file)
         self.assertTrue(mock_parse.called)
 
@@ -58,12 +58,12 @@ class TestSnapAdmin(unittest.TestCase):
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
         js.login("snap_1")
-        expected_calls_made = [call('10.216.193.114','abc','xyz','snap_1'),
-                                call('10.216.193.115','abc','xyz','snap_1'), 
-                                call('10.216.193.116','abc','xyz','snap_1'),
+        expected_calls_made = [call('1.1.1.1','abc','xyz','snap_1'),
+                                call('1.1.1.15','abc','xyz','snap_1'),
+                                call('1.1.1.16','abc','xyz','snap_1'),
                                 ]  
         
-        hosts = ['10.216.193.114','10.216.193.115','10.216.193.116']
+        hosts = ['1.1.1.1','1.1.1.15','1.1.1.16']
         self.assertEqual(js.host_list, hosts)
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
         
@@ -83,16 +83,16 @@ class TestSnapAdmin(unittest.TestCase):
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
         js.login("snap_1")
-        hosts = ['10.209.16.203', '10.209.16.204', '10.209.16.205']
+        hosts = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
         self.assertEqual(js.host_list, hosts)
 
         #extending the test to check for device overlap among groups
         js.main_file['hosts'][0]['group']='MX, EX'
-        expected_calls_made = [call('10.209.16.203','abc','def','snap_1'),
-                                call('10.209.16.204','abc','def','snap_1'), 
-                                call('10.209.16.205','abc','def','snap_1'),
-                                call('10.209.16.206','abc','def','snap_1'),
-                                call('10.209.16.212','abc','def','snap_1'),
+        expected_calls_made = [call('1.1.1.3','abc','def','snap_1'),
+                                call('1.1.1.4','abc','def','snap_1'),
+                                call('1.1.1.5','abc','def','snap_1'),
+                                call('1.1.1.6','abc','def','snap_1'),
+                                call('1.1.1.12','abc','def','snap_1'),
                                 ]   
         
         js.login("snap_1")
@@ -159,17 +159,17 @@ class TestSnapAdmin(unittest.TestCase):
         config_file = open('main1.yml', 'r')
         js.main_file = yaml.load(config_file)
         js.login("snap_1")
-        hosts = ['10.209.16.203', '10.209.16.204', '10.209.16.205']
+        hosts = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
         self.assertEqual(js.host_list, hosts)
 
     @patch('jnpr.jsnapy.SnapAdmin.connect')         #new
     def test_hostname_hostname_argument(self,mock_connect):
         js = SnapAdmin()
-        js.args.hostname='10.209.16.203'
+        js.args.hostname='1.1.1.3'
         js.args.login='abc'
         js.args.passwd='xyz'
         js.login("snap_1")
-        host=['10.209.16.203']
+        host=['1.1.1.3']
         self.assertEqual(js.host_list,host)
         self.assertTrue(mock_connect.called)
 
@@ -190,7 +190,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.post_snapfile = "mock_snap2"
         js.get_hosts()
         mock_compare.assert_called_once_with(
-            '10.216.193.114',
+            '1.1.1.1',
             config_data,
             js.args.pre_snapfile,
             None,
@@ -218,7 +218,7 @@ class TestSnapAdmin(unittest.TestCase):
         self.assertTrue(mock_snap.called)
         self.assertTrue(mock_dev.called)
         mock_check.assert_called_once_with(
-            '10.216.193.114',
+            '1.1.1.1',
             config_data,
             js.args.pre_snapfile,
             None,
@@ -244,7 +244,7 @@ class TestSnapAdmin(unittest.TestCase):
         self.assertFalse(mock_snap.called)
         #we check whether get_test was called, indirectly checking whether compare_tests was called.
         mock_check.assert_called_once_with(
-            '10.216.193.114',
+            '1.1.1.1',
             config_data,
             "mock_snap",
             None,
@@ -270,9 +270,9 @@ class TestSnapAdmin(unittest.TestCase):
         self.assertFalse(mock_dev.called)
         self.assertFalse(mock_snap.called)
         #we check whether get_test was called, indirectly checking whether compare_tests was called.
-        expected_calls_made = [call('10.216.193.114',config_data,'PRE',None, None),
-                                call('10.216.193.114',config_data,'PRE_42',None, None),
-                                call('10.216.193.114',config_data,'PRE_314',None, None)
+        expected_calls_made = [call('1.1.1.1',config_data,'PRE',None, None),
+                                call('1.1.1.1',config_data,'PRE_42',None, None),
+                                call('1.1.1.1',config_data,'PRE_314',None, None)
                                 ]  
         mock_check.assert_has_calls(expected_calls_made, any_order=True)
 
@@ -294,7 +294,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.post_snapfile = "mock_snap2"
         js.get_hosts()
         mock_compare.assert_called_once_with(
-            '10.216.193.114',
+            '1.1.1.1',
             config_data,
             js.args.pre_snapfile,
             None,
@@ -449,10 +449,10 @@ class TestSnapAdmin(unittest.TestCase):
         config_file = open(js.args.file, 'r')
         config_data = yaml.load(config_file)
         with patch(builtin_string + 'input', return_value='abc'):
-            js.connect('10.216.193.114', None, 'xyz', 'snap_1',config_data)
+            js.connect('1.1.1.1', None, 'xyz', 'snap_1',config_data)
             #username='abc'
             mock_log.assert_called()
-            mock_dev.assert_called_with(host='10.216.193.114',user='abc',passwd='xyz',gather_facts=False)
+            mock_dev.assert_called_with(host='1.1.1.1',user='abc',passwd='xyz',gather_facts=False)
 
 
     @patch('jnpr.jsnapy.jsnapy.Device')                            #new
@@ -466,9 +466,9 @@ class TestSnapAdmin(unittest.TestCase):
                                     'configs', 'main_1.yml')
         config_file = open(js.args.file, 'r')
         config_data = yaml.load(config_file)
-        js.connect('10.216.193.114', 'abc', 'xyz', 'snap_1',config_data)
+        js.connect('1.1.1.1', 'abc', 'xyz', 'snap_1',config_data)
         mock_log.assert_called()
-        mock_dev.assert_called_with(host='10.216.193.114',user='abc',passwd='xyz',gather_facts=False)
+        mock_dev.assert_called_with(host='1.1.1.1',user='abc',passwd='xyz',gather_facts=False)
 
     @patch('logging.Logger.info')                 		#new
     def test_check_arguments_11(self, mock_log):
@@ -481,7 +481,7 @@ class TestSnapAdmin(unittest.TestCase):
                                     'configs', 'main_1.yml')
             config_file = open(js.args.file, 'r')
             config_data = yaml.load(config_file)
-            js.connect('10.216.193.114', 'abc', None, 'snap_1', config_data)
+            js.connect('1.1.1.1', 'abc', None, 'snap_1', config_data)
 
     @patch('os.path.isfile')             		#new
     def test_multiple_devices_1(self, mock_isfile):
@@ -492,7 +492,7 @@ class TestSnapAdmin(unittest.TestCase):
         config_data = yaml.load(config_file)
         hosts = config_data.get('hosts')
         js.multiple_device_details(hosts, config_data,'mock_pre',None,'mock_post')
-        hosts_required = ['10.209.16.203', '10.209.16.204', '10.209.16.205']
+        hosts_required = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
         self.assertEqual(js.host_list, hosts_required)
 
     @patch('jnpr.jsnapy.jsnapy.get_path')		#new
@@ -507,7 +507,7 @@ class TestSnapAdmin(unittest.TestCase):
         config_data = yaml.load(config_file)
         hosts = config_data.get('hosts')
         js.multiple_device_details(hosts, config_data, 'mock_pre', None, 'mock_post')
-        hosts_required = ['10.209.16.203', '10.209.16.204', '10.209.16.205']
+        hosts_required = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
         self.assertEqual(js.host_list, hosts_required)
 
     def test_multiple_devices_3(self):			#new
@@ -517,7 +517,7 @@ class TestSnapAdmin(unittest.TestCase):
         config_data = yaml.load(config_file)
         hosts = config_data.get('hosts')
         js.multiple_device_details(hosts, config_data, 'mock_pre', None, 'mock_post')
-        hosts_required = ['10.216.193.114','10.216.193.115','10.216.193.116']
+        hosts_required = ['1.1.1.1','1.1.1.15','1.1.1.16']
         self.assertEqual(js.host_list, hosts_required)
 
     @patch('logging.Logger.error')			#new
@@ -1211,21 +1211,21 @@ class TestSnapAdmin(unittest.TestCase):
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
         js.login("snap_1")
-        hosts = ['10.216.193.114']
+        hosts = ['1.1.1.1']
         self.assertEqual(js.host_list, hosts)
-        mock_connect.assert_called_with('10.216.193.114','abc','xyz','snap_1',port=44)
+        mock_connect.assert_called_with('1.1.1.1','abc','xyz','snap_1',port=44)
         
         #adding another device in the config dictionary 
         #and checking the precedence b/w cmd and config params
-        js.main_file['hosts'].append({'device':'10.216.193.115',
+        js.main_file['hosts'].append({'device':'1.1.1.15',
                                     'username':'abc',
                                     'passwd':'xyz',
                                     'port':45})
         js.args.port=100
         
         
-        expected_calls_made = [call('10.216.193.114','abc','xyz','snap_1',port=100),
-                                call('10.216.193.115','abc','xyz','snap_1',port=100)]   
+        expected_calls_made = [call('1.1.1.1','abc','xyz','snap_1',port=100),
+                                call('1.1.1.15','abc','xyz','snap_1',port=100)]
         js.login("snap_1")
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
         
@@ -1238,8 +1238,8 @@ class TestSnapAdmin(unittest.TestCase):
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
         
         #deleting the cmd line port param
-        expected_calls_made = [call('10.216.193.114','abc','xyz','snap_1'),
-                                call('10.216.193.115','abc','xyz','snap_1')]   
+        expected_calls_made = [call('1.1.1.1','abc','xyz','snap_1'),
+                                call('1.1.1.15','abc','xyz','snap_1')]
         js.args.port=None
         js.login("snap_1")
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
@@ -1259,23 +1259,23 @@ class TestSnapAdmin(unittest.TestCase):
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file)
         
-        hosts = ['10.209.16.203','10.209.16.204','10.209.16.205']
-        expected_calls_made = [call('10.209.16.203','abc','def','snap_1',port=100),
-                                call('10.209.16.204','abc','def','snap_1',port=101), 
-                                call('10.209.16.205','abc','def','snap_1',port=102)] 
+        hosts = ['1.1.1.3','1.1.1.4','1.1.1.5']
+        expected_calls_made = [call('1.1.1.3','abc','def','snap_1',port=100),
+                                call('1.1.1.4','abc','def','snap_1',port=101),
+                                call('1.1.1.5','abc','def','snap_1',port=102)]
         
         js.login("snap_1")
         
         self.assertEqual(js.host_list, hosts)
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
-        #    mock_connect.assert_called_with('10.216.193.114','abc','xyz','snap_1',port=44)
+        #    mock_connect.assert_called_with('1.1.1.1','abc','xyz','snap_1',port=44)
         
         
         #Adding the cmd-line port param and checking the precedence b/w cmd and config params
         js.args.port=55
-        expected_calls_made = [call('10.209.16.203','abc','def','snap_1',port=55),
-                                call('10.209.16.204','abc','def','snap_1',port=55), 
-                                call('10.209.16.205','abc','def','snap_1',port=55)]   
+        expected_calls_made = [call('1.1.1.3','abc','def','snap_1',port=55),
+                                call('1.1.1.4','abc','def','snap_1',port=55),
+                                call('1.1.1.5','abc','def','snap_1',port=55)]
         js.login("snap_1")
 
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)

@@ -11,7 +11,7 @@ class TestSqlite(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.diff = False
-        self.hostname = "10.216.193.114"
+        self.hostname = "1.1.1.1"
         self.db = "mock_test.db"
         self.db_dict2 = dict()
         self.db_dict2['cli_command'] = "show version"
@@ -31,19 +31,19 @@ class TestSqlite(unittest.TestCase):
     def test_sqlite_1(self, mock_spath, mock_path, mock_sys):
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         mock_spath.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        js = JsnapSqlite("10.216.193.114", self.db)
+        js = JsnapSqlite("1.1.1.1", self.db)
         js.insert_data(self.db_dict2)
         def fun():
             raise BaseException
         with patch('logging.Logger.error') as mock_log:
             extr = SqliteExtractXml(self.db)
             data, formt = extr.get_xml_using_snapname(
-                "10.216.193.114", self.db_dict2['cli_command'], self.db_dict2['snap_name'])
+                "1.1.1.1", self.db_dict2['cli_command'], self.db_dict2['snap_name'])
             self.assertEqual(data, "mock_data")
             self.assertEqual(formt, "text")
             try:
                 data, format= extr.get_xml_using_snapname(
-                    "10.216.193.114",
+                    "1.1.1.1",
                     self.db_dict2['cli_command'],
                     "mock_ssssnap")
             except BaseException:
@@ -62,7 +62,7 @@ class TestSqlite(unittest.TestCase):
         def fun():
             raise BaseException
         mock_sys.return_value = fun
-        js = JsnapSqlite("10.216.193.114", self.db)
+        js = JsnapSqlite("1.1.1.1", self.db)
         js.insert_data(self.db_dict2)
         with patch('logging.Logger.error') as mock_log:
             extr = SqliteExtractXml(self.db)
@@ -81,15 +81,15 @@ class TestSqlite(unittest.TestCase):
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         mock_spath.return_value = os.path.join(os.path.dirname(__file__), 'configs')
 
-        js = JsnapSqlite("10.216.193.114", self.db)
+        js = JsnapSqlite("1.1.1.1", self.db)
         js.insert_data(self.db_dict2)
         with patch('logging.Logger.error') as mock_log:
             extr = SqliteExtractXml(self.db)
             data, formt = extr.get_xml_using_snap_id(
-                "10.216.193.114", self.db_dict2['cli_command'], 0)
+                "1.1.1.1", self.db_dict2['cli_command'], 0)
             self.assertEqual(data, "mock_data")
             self.assertEqual(formt, "text")
-            extr.get_xml_using_snap_id("10.216.193.114", "show vers", 0)
+            extr.get_xml_using_snap_id("1.1.1.1", "show vers", 0)
             err = [
                 "ERROR!! Complete message is: 'NoneType' object is not iterable"]
             c_list = mock_log.call_args_list[0]
@@ -104,7 +104,7 @@ class TestSqlite(unittest.TestCase):
         def fun():
             raise BaseException
         mock_sys.return_value = fun
-        js = JsnapSqlite("10.216.193.114", self.db)
+        js = JsnapSqlite("1.1.1.1", self.db)
         js.insert_data(self.db_dict2)
         with patch('logging.Logger.error') as mock_log:
             extr = SqliteExtractXml(self.db)
@@ -123,7 +123,7 @@ class TestSqlite(unittest.TestCase):
     def test_sqlite_store_db_not_exist(self, mock_path, mock_connect, mock_log, mock_sys):
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         mock_connect.side_effect = Exception("Connection not possible")
-        sq = JsnapSqlite('10.216.193.114', self.db)
+        sq = JsnapSqlite('1.1.1.1', self.db)
         c_list = mock_log.call_args_list[0]
         err = ['ERROR occurred in database']
         self.assertIn((err[0]), c_list[0][0])

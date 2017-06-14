@@ -11,7 +11,7 @@ class TestComparisonOperator(unittest.TestCase):
     def setUp(self):
 
         self.diff = False
-        self.hostname = "10.216.193.114"
+        self.hostname = "1.1.1.1"
         self.db = dict()
         self.db['store_in_sqlite'] = False
         self.db['check_from_sqlite'] = False
@@ -555,6 +555,7 @@ class TestComparisonOperator(unittest.TestCase):
     @patch('jnpr.jsnapy.check.get_path')
     @patch('jnpr.jsnapy.sqlite_get.get_path')
     def test_no_diff_pass(self, sqlite_mock_path, mock_path):
+        self.hostname = '10.216.193.114'
         self.chk = True
         self.db['check_from_sqlite'] = True
         comp = Comparator()

@@ -14,7 +14,7 @@ class TestCheck(unittest.TestCase):
 
         self.diff = False
         self.chk = False
-        self.hostname = "10.216.193.114"
+        self.hostname = "1.1.1.1"
         self.db = dict()
         self.db['store_in_sqlite'] = False
         self.db['check_from_sqlite'] = False
@@ -51,7 +51,7 @@ class TestCheck(unittest.TestCase):
         op.define_operator(self.hostname, 'all-same', 'mock_xpath', ['ele1'], 'mock_err', 'mock_info', 'mock command',
                            True, ['mock_id'], 'test_name')
         self.assertEqual(op.no_failed, 1)       #xpathError
-        mock_error.assert_called_with('\x1b[31mError in evaluating XPATH, \nComplete Message: Xpath Mock Error', extra='10.216.193.114')
+        mock_error.assert_called_with('\x1b[31mError in evaluating XPATH, \nComplete Message: Xpath Mock Error', extra='1.1.1.1')
 
     @patch('logging.Logger.error')
     def test_operator_exists_1(self, mock_error):
