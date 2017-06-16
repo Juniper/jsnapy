@@ -1,6 +1,6 @@
 # for one device, can be given like this:
 hosts:
-  - devices: 10.216.193.114
+  - devices: 1.1.1.1
     username : abc
     passwd: xyz
 tests:

@@ -1,5 +1,7 @@
 <bgp-information>
 <bgp-peer style="detail">
+<bogus-path>twisted</bogus-path>
+<bogus-path-1>twisted</bogus-path-1>
 <peer-address>10.209.16.145</peer-address>
 <peer-as>8997</peer-as>
 <local-address>unspecified</local-address>
@@ -20,6 +22,7 @@
 <flap-count>0</flap-count>
 </bgp-peer>
 <bgp-peer style="detail">
+<bogus-path>twisted</bogus-path>
 <peer-address>10.209.16.204</peer-address>
 <peer-as>8997</peer-as>
 <local-address>unspecified</local-address>
@@ -40,7 +43,9 @@
 <flap-count>0</flap-count>
 </bgp-peer>
 <bgp-peer style="detail">
-<peer-address>10.216.193.114</peer-address>
+<bogus-path>twisted</bogus-path>
+<bogus-path-1>straight</bogus-path-1>
+<peer-address>1.1.1.1</peer-address>
 <peer-as>8997</peer-as>
 <local-address>unspecified</local-address>
 <local-as>8997</local-as>
