@@ -10,8 +10,10 @@ import sys
 from os.path import expanduser
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-import configparser
-
+if sys.version < '3':
+    from ConfigParser import ConfigParser
+else:
+    from configparser import ConfigParser
 
 
 class OverrideInstall(install):
@@ -61,7 +63,7 @@ class OverrideInstall(install):
             os.chmod(home_folder, mode)
 
         if dir_path != '/etc/jsnapy':
-            config = configparser.ConfigParser()
+            config = ConfigParser()
             config.set('DEFAULT','config_file_path',
                        dir_path)
             config.set('DEFAULT', 'snapshot_path',
