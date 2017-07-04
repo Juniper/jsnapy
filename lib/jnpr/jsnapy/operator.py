@@ -1801,6 +1801,7 @@ class Operator:
                             predict[element] = prenode[k].text
                             postdict[element] = postnode[k].text
                             if (postnode[k].text.find(value) == -1):
+				
 				count_pass = count_pass + 1
                                 message = self._print_message(
                                     info_mssg,
