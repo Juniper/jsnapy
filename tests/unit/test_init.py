@@ -42,7 +42,7 @@ class TestCheck(unittest.TestCase):
                                                       'jsnapy.cfg')]
             loc = get_config_location()
             self.assertEqual(loc, os.path.join(sys.prefix, 'etc', 'jsnapy'))
-        elif 'win' in sys.platform:
+        elif 'win32' in sys.platform:
             mock_is_file.side_effect = lambda arg: arg in [os.path.join(os.path.expanduser('~'),
                                                                         'jsnapy', 'jsnapy.cfg')]
             loc = get_config_location()
@@ -76,7 +76,7 @@ class TestCheck(unittest.TestCase):
     @patch('jnpr.jsnapy.get_config_location')
     def test_get_path_custom(self, mock_config_loc):
         DirStore.custom_dir = '~/bogus'
-        if 'win' in sys.platform:
+        if 'win32' in sys.platform:
             HOME = os.path.join(os.path.expanduser('~'), 'bogus\\')
         else:
             HOME = os.path.join(os.path.expanduser('~'), 'bogus/')

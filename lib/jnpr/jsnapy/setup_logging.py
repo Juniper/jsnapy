@@ -31,7 +31,7 @@ def setup_logging(
                         value['filename'] = (os.path.join
                                              (sys.prefix,
                                               'var/logs/jsnapy/jsnapy.log'))
-                    elif 'win' in sys.platform:
+                    elif 'win32' in sys.platform:
                         value['filename'] = (os.path.join
                                              (os.path.expanduser('~'),
                                               'logs\jsnapy\jsnapy.log'))

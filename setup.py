@@ -31,7 +31,7 @@ class OverrideInstall(install):
             if hasattr(sys, 'real_prefix'):
                 self.install_data = os.path.join(sys.prefix, 'etc',
                                                  'jsnapy')
-            elif 'win' in sys.platform:
+            elif 'win32' in sys.platform:
                 self.install_data = os.path.join(os.path.expanduser('~'),
                                                  'jsnapy')
             else:
@@ -41,7 +41,7 @@ class OverrideInstall(install):
         mode = 0o777
         install.run(self)
 
-        if 'win' not in sys.platform and not hasattr(sys, 'real_prefix'):
+        if 'win32' not in sys.platform and not hasattr(sys, 'real_prefix'):
             os.chmod(dir_path, mode)
             for root, dirs, files in os.walk(dir_path):
                 for directory in dirs:
@@ -75,7 +75,7 @@ class OverrideInstall(install):
                 default_config_location = os.path.join(sys.prefix,
                                                        'etc',
                                                        'jsnapy', 'jsnapy.cfg')
-            elif 'win' in sys.platform:
+            elif 'win32' in sys.platform:
                 default_config_location = os.path.join(expanduser("~"),
                                                        'jsnapy', 'jsnapy.cfg')
             else:
@@ -126,7 +126,7 @@ if hasattr(sys, 'real_prefix'):
                     ]
 
 
-elif 'win' in sys.platform:
+elif 'win32' in sys.platform:
     home = expanduser("~")
     os_data_file = [(os.path.join(home, 'jsnapy'),
                      ['lib/jnpr/jsnapy/logging.yml']),

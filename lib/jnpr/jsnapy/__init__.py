@@ -24,7 +24,7 @@ def get_config_location(file='jsnapy.cfg'):
     if hasattr(sys, 'real_prefix'):
         p_locations.extend([os.path.join(os.path.expanduser("~"), '.jsnapy'),
                             os.path.join(sys.prefix, 'etc', 'jsnapy')])
-    elif 'win' in sys.platform:
+    elif 'win32' in sys.platform:
         p_locations.extend(
             [os.path.join(os.path.expanduser("~"), '.jsnapy'),
              os.path.join(os.path.expanduser('~'), 'jsnapy')])
