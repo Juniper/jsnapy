@@ -113,13 +113,12 @@ exec(open('lib/jnpr/jsnapy/version.py').read())
 os_data_file = []
 
 if hasattr(sys, 'real_prefix'):
-    home = os.path.join(sys.prefix, 'etc')
-    os_data_file = [(os.path.join(home, 'jsnapy'),
+    os_data_file = [('.',
                      ['lib/jnpr/jsnapy/logging.yml']),
-                    (os.path.join(sys.prefix, 'var', 'logs', 'jsnapy'),
+                    ('../../var/logs/jsnapy',
                      log_files),
                     ('samples', example_files),
-                    (os.path.join(home, 'jsnapy'),
+                    ('.',
                      ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
@@ -127,12 +126,11 @@ if hasattr(sys, 'real_prefix'):
 
 
 elif 'win32' in sys.platform:
-    home = expanduser("~")
-    os_data_file = [(os.path.join(home, 'jsnapy'),
+    os_data_file = [('.',
                      ['lib/jnpr/jsnapy/logging.yml']),
-                    (os.path.join(home, 'logs\jsnapy'), log_files),
+                    ('../../var/logs/jsnapy', log_files),
                     ('samples', example_files),
-                    (os.path.join(home, 'jsnapy'),
+                    ('.',
                      ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
