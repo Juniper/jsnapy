@@ -132,7 +132,7 @@ if hasattr(sys, 'real_prefix'):
 
 elif 'win32' in sys.platform:
     os_data_file = [('.', ['lib/jnpr/jsnapy/logging.yml']),
-                    ('../../var/logs/jsnapy', log_files),
+                    ('../var/logs/jsnapy', log_files),
                     ('samples', example_files),
                     ('.', ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
