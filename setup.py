@@ -112,26 +112,29 @@ log_files = [os.path.join('logs', j)
 exec(open('lib/jnpr/jsnapy/version.py').read())
 os_data_file = []
 
+#----------------------------
+# In os_data_file variable,
+# the self.install_data path is taken as default prefix to
+# the new created directories and files.
+# Specifying the '.' means the directory directly specified
+# by self.install_data path.
+# Specifying only 'samples' means 'install_data Path'/samples
+#----------------------------
+
 if hasattr(sys, 'real_prefix'):
-    os_data_file = [('.',
-                     ['lib/jnpr/jsnapy/logging.yml']),
-                    ('../../var/logs/jsnapy',
-                     log_files),
+    os_data_file = [('.', ['lib/jnpr/jsnapy/logging.yml']),
+                    ('../../var/logs/jsnapy', log_files),
                     ('samples', example_files),
-                    ('.',
-                     ['lib/jnpr/jsnapy/jsnapy.cfg']),
+                    ('.', ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
                     ]
 
-
 elif 'win32' in sys.platform:
-    os_data_file = [('.',
-                     ['lib/jnpr/jsnapy/logging.yml']),
+    os_data_file = [('.', ['lib/jnpr/jsnapy/logging.yml']),
                     ('../../var/logs/jsnapy', log_files),
                     ('samples', example_files),
-                    ('.',
-                     ['lib/jnpr/jsnapy/jsnapy.cfg']),
+                    ('.', ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
                     ]
@@ -179,6 +182,7 @@ setup(name="jsnapy",
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
