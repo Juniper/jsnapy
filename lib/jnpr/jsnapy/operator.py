@@ -1536,7 +1536,8 @@ class Operator:
                                     'id': id_val,
                                     'pre': predict,
                                     'post': postdict,
-                                    'actual_node_value': post_nodevalue}
+                                    'actual_node_value': post_nodevalue,
+                                    'message': message}
                                 tresult['failed'].append(
                                     deepcopy(node_value_failed))
                     else:
@@ -2477,22 +2478,23 @@ class Operator:
                             if val2 not in val_list1:
                                 res = False
                                 count_fail = count_fail + 1
-                                node_value_failed = {
-                                    'id': id_val,
-                                    'pre': predict,
-                                    'post': postdict,
-                                    'pre_node_value': '',
-                                    'post_node_value': val2}
-                                tresult['failed'].append(
-                                    deepcopy(node_value_failed))
-                                self.logger_testop.error("Missing node: %s for element tag: %s and parent element %s" % (val2, ele_xpath2[0].tag,
-                                                                                                                         ele_xpath2[0].getparent().tag), extra=self.log_detail)
                                 message = self._print_message(
                                     err_mssg,
                                     iddict,
                                     predict,
                                     postdict,
                                     "info")
+                                node_value_failed = {
+                                    'id': id_val,
+                                    'pre': predict,
+                                    'post': postdict,
+                                    'pre_node_value': '',
+                                    'post_node_value': val2,
+                                    'message': message}
+                                tresult['failed'].append(
+                                    deepcopy(node_value_failed))
+                                self.logger_testop.error("Missing node: %s for element tag: %s and parent element %s" % (val2, ele_xpath2[0].tag,
+                                                                                                                         ele_xpath2[0].getparent().tag), extra=self.log_detail)
                             else:
                                 count_pass = count_pass + 1
                                 message = self._print_message(
