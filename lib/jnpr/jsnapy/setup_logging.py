@@ -35,9 +35,6 @@ def setup_logging(
                         value['filename'] = (os.path.join
                                              (os.path.expanduser('~'),
                                               'logs\jsnapy\jsnapy.log'))
-
-                with open(path, "w") as f:
-                    yaml.dump(config, f, default_flow_style=False)
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
