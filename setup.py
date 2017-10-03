@@ -15,6 +15,31 @@ if sys.version < '3':
 else:
     from configparser import ConfigParser
 
+import yaml
+from six import iteritems
+
+
+def set_logging_path(path):
+    if os.path.exists(path):
+        with open(path, 'rt') as f:
+            config = yaml.load(f.read())
+
+            for (handler, value) in iteritems(config['handlers']):
+                if handler == 'console':
+                    pass
+                else:
+                    if hasattr(sys, 'real_prefix'):
+                        value['filename'] = (os.path.join
+                                             (sys.prefix,
+                                              'var/logs/jsnapy/jsnapy.log'))
+                    elif 'win32' in sys.platform:
+                        value['filename'] = (os.path.join
+                                             (os.path.expanduser('~'),
+                                              'logs\jsnapy\jsnapy.log'))
+
+                with open(path, "w") as f:
+                    yaml.dump(config, f, default_flow_style=False)
+
 
 class OverrideInstall(install):
 
@@ -98,6 +123,13 @@ class OverrideInstall(install):
             else:
                 raise Exception('jsnapy.cfg not found at ' +
                                 default_config_location)
+
+            if hasattr(sys, 'real_prefix'):
+                path = os.path.join(sys.prefix, 'etc', 'jsnapy', 'logging.yml')
+                set_logging_path(path)
+            elif 'win32' in sys.platform:
+                path = os.path.join(expanduser("~"), 'jsnapy', 'logging.yml')
+                set_logging_path(path)
 
 
 req_lines = [line.strip() for line in open(
