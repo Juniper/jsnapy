@@ -6,11 +6,9 @@
 #
 
 import os
-import sys
 import yaml
 import logging.config
 from jnpr.jsnapy import get_config_location
-from six import iteritems
 
 def setup_logging(
         default_path='logging.yml', default_level=logging.INFO,
