@@ -17,6 +17,8 @@ from jnpr.jsnapy.sqlite_get import SqliteExtractXml
 from icdiff import diff, codec_print, get_options, ConsoleDiff
 from jnpr.jsnapy.xml_comparator import XmlComparator
 from jnpr.jsnapy import get_path
+import hashlib
+import bencode
 
 
 class Comparator:
@@ -560,6 +562,12 @@ class Comparator:
         op.device = device
         tests_files = []
         self.log_detail['hostname'] = device
+        # pre_user and post_user are the names of the snapshot files
+        # that the user wants to keep and store the snapfiles
+        # with these names
+        pre_user = pre
+        post_user = post
+
         # get the test files from config.yml
         if main_file.get('tests') is None:
             self.logger_check.error(
@@ -613,6 +621,12 @@ class Comparator:
                         
                             name = '_'.join(command.split())
                             teston = command
+
+                            # this is necessary for the pre and post to be the same that user specified
+                            # In a case when there are multiple rpc's and a command then this is necessary
+
+                            pre = pre_user
+                            post = post_user
                         else:
                             rpc = tests[val][0]['rpc']
                             reply_format = tests[val][0].get('format', 'xml')
@@ -620,6 +634,22 @@ class Comparator:
                                                    rpc + (25) * '*', extra=self.log_detail)
                             name = rpc
                             teston = rpc
+
+                            # this is necessary for the pre and post to be the same that user specified
+                            # In a case when there are multiple rpc's with kwargs and a rpc with no kwargs
+                            pre = pre_user
+                            post = post_user
+
+                            # here the user specified name is being used and the hash value generated for
+                            # kwargs part is appended to the name
+                            if 'kwargs' in tests[val][1]:
+                                data = tests[val][1].get('kwargs')
+                                hash_kwargs = hashlib.md5(bencode.bencode(data)).hexdigest()
+                                if action == 'check' and pre_user is not None and post_user is not None:
+                                    pre = pre_user + '_' + hash_kwargs
+                                    post = post_user + '_' + hash_kwargs
+                                elif action == 'snapcheck' and pre_user is not None and post_user is None:
+                                    pre = pre_user + '_' + hash_kwargs
                     except KeyError:
                         self.logger_check.error(
                             colorama.Fore.RED +

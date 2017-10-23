@@ -15,6 +15,8 @@ from jnpr.jsnapy import get_path
 from jnpr.junos.exception import RpcError
 from jnpr.jsnapy.sqlite_store import JsnapSqlite
 import lxml
+import hashlib
+import bencode
 
 
 class Parser:
@@ -393,14 +395,27 @@ class Parser:
                         hostname,
                         db)
                 elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
-                    self.run_rpc(
+                    if 'kwargs' in test_file[t][1]:
+                        data = test_file[t][1].get('kwargs')
+                        data_md5 = hashlib.md5(bencode.bencode(data)).hexdigest()
+
+                        self.run_rpc(
                         test_file,
                         t,
                         formats,
                         dev,
-                        output_file,
+                        output_file + '_' + data_md5,
                         hostname,
                         db)
+                    else:
+                        self.run_rpc(
+                            test_file,
+                            t,
+                            formats,
+                            dev,
+                            output_file,
+                            hostname,
+                            db)
                 else:
                     self.logger_snap.error(
                         colorama.Fore.RED +
