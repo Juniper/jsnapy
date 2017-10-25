@@ -4,4 +4,3 @@ configparser
 pyparsing
 icdiff
 future
-bencode

@@ -18,7 +18,7 @@ from icdiff import diff, codec_print, get_options, ConsoleDiff
 from jnpr.jsnapy.xml_comparator import XmlComparator
 from jnpr.jsnapy import get_path
 import hashlib
-import bencode
+import json
 
 
 class Comparator:
@@ -644,7 +644,7 @@ class Comparator:
                             # kwargs part is appended to the name
                             if 'kwargs' in tests[val][1]:
                                 data = tests[val][1].get('kwargs')
-                                hash_kwargs = hashlib.md5(bencode.bencode(data)).hexdigest()
+                                hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).hexdigest()
                                 if action == 'check' and pre_user is not None and post_user is not None:
                                     pre = pre_user + '_' + hash_kwargs
                                     post = post_user + '_' + hash_kwargs

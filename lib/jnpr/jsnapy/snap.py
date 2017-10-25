@@ -16,7 +16,7 @@ from jnpr.junos.exception import RpcError
 from jnpr.jsnapy.sqlite_store import JsnapSqlite
 import lxml
 import hashlib
-import bencode
+import json
 
 
 class Parser:
@@ -397,7 +397,7 @@ class Parser:
                 elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
                     if 'kwargs' in test_file[t][1]:
                         data = test_file[t][1].get('kwargs')
-                        data_md5 = hashlib.md5(bencode.bencode(data)).hexdigest()
+                        data_md5 = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).hexdigest()
 
                         self.run_rpc(
                         test_file,
