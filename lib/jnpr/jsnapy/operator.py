@@ -2274,6 +2274,8 @@ class Operator:
                 res = None
 
             for k in predata:
+                predict = {}
+                postdict = {}
                 for length in range(len(k)):
                     iddict['id_' + str(length)] = [k[length][i].strip()
                                                    for i in range(len(k[length]))]
@@ -2355,6 +2357,8 @@ class Operator:
                             'message': message}
                         tresult['passed'].append(deepcopy(node_value_passed))
                 else:
+                    predict, postdict = self._get_nodevalue(predict, postdict, predata[k], etree.Element("fake"),
+                                                            x_path, "", err_mssg)
                     self.logger_testop.error(colorama.Fore.RED +
                                              "ID gone missing !! ", extra=self.log_detail)
                     for length in range(len(k)):
