@@ -2274,6 +2274,8 @@ class Operator:
                 res = None
 
             for k in predata:
+                predict = {}
+                postdict = {}
                 for length in range(len(k)):
                     iddict['id_' + str(length)] = [k[length][i].strip()
                                                    for i in range(len(k[length]))]
@@ -2355,6 +2357,14 @@ class Operator:
                             'message': message}
                         tresult['passed'].append(deepcopy(node_value_passed))
                 else:
+                    predict, postdict = self._get_nodevalue(predict, postdict, predata[k], etree.Element("NoNode"),
+                                                            x_path, ele_list[0], err_mssg)
+                    predict, postdict = self._get_nodevalue(predict, postdict, predata[k], etree.Element("NoNode"),
+                                                            x_path, ele_list[0], info_mssg)
+                    # Since the postdata[k] is not existing so we will handle this
+                    # With a fake etree Element. The Function _get_nodeValue anyways expect
+                    # an etree element to be passed, which in working cases will be one of
+                    # nodes in xml data.
                     self.logger_testop.error(colorama.Fore.RED +
                                              "ID gone missing !! ", extra=self.log_detail)
                     for length in range(len(k)):
@@ -2373,6 +2383,15 @@ class Operator:
                         "info")
                     res = False
                     count_fail = count_fail + 1
+                    node_value_failed = {
+                        'id': id_val,
+                        'pre': predict,
+                        'post': postdict,
+                        'pre_node_value': iddict,
+                        'post_node_value': '',
+                        'message': message}
+                    tresult['failed'].append(
+                        deepcopy(node_value_failed))
         if res is False:
             msg = 'All "{0}" in pre snapshot is not present in post snapshot [ {1} matched / {2} failed ]'.format(
                 tresult['node_name'],
@@ -2449,6 +2468,8 @@ class Operator:
                 res = None
             
             for k in postdata:
+                predict = {}
+                postdict = {}
                 for length in range(len(k)):
                     #iddict['id_' + str(length)] = k[length].strip()
                     iddict['id_' + str(length)] = [k[length][i].strip()
@@ -2527,6 +2548,10 @@ class Operator:
                             'message': message}
                         tresult['passed'].append(deepcopy(node_value_passed))
                 else:
+                    predict, postdict = self._get_nodevalue(predict, postdict, etree.Element("NoNode"), postdata[k],
+                                                            x_path, ele_list[0], err_mssg)
+                    predict, postdict = self._get_nodevalue(predict, postdict, etree.Element("NoNode"), postdata[k],
+                                                            x_path, ele_list[0], info_mssg)
                     self.logger_testop.error(colorama.Fore.RED +
                                              "ID gone missing!!", extra=self.log_detail)
                     for length in range(len(k)):
@@ -2545,6 +2570,15 @@ class Operator:
                         "info")
                     res = False
                     count_fail = count_fail + 1
+                    node_value_failed = {
+                        'id': id_val,
+                        'pre': predict,
+                        'post': postdict,
+                        'pre_node_value': '',
+                        'post_node_value': iddict,
+                        'message': message}
+                    tresult['failed'].append(
+                        deepcopy(node_value_failed))
 
         if res is False:
             msg = 'All "{0}" in post snapshot is not present in pre snapshot [ {1} matched / {2} failed ]'.format(
