@@ -2552,6 +2552,10 @@ class Operator:
                                                             x_path, ele_list[0], err_mssg)
                     predict, postdict = self._get_nodevalue(predict, postdict, etree.Element("NoNode"), postdata[k],
                                                             x_path, ele_list[0], info_mssg)
+                    # Since the postdata[k] is not existing so we will handle this
+                    # With a fake etree Element. The Function _get_nodeValue anyways expect
+                    # an etree element to be passed, which in working cases will be one of
+                    # nodes in xml data.
                     self.logger_testop.error(colorama.Fore.RED +
                                              "ID gone missing!!", extra=self.log_detail)
                     for length in range(len(k)):
