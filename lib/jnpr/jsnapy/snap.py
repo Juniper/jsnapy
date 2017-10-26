@@ -395,16 +395,19 @@ class Parser:
                         hostname,
                         db)
                 elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
-                    if 'kwargs' in test_file[t][1]:
-                        data = test_file[t][1].get('kwargs')
-                        data_md5 = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).hexdigest()
+                    if 'kwargs' or 'args' in test_file[t][1]:
+                        if test_file[t][1].get('kwargs'):
+                            data = test_file[t][1].get('kwargs')
+                        elif test_file[t][1].get('args'):
+                            data = test_file[t][1].get('args')
+                        hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).hexdigest()
 
                         self.run_rpc(
                         test_file,
                         t,
                         formats,
                         dev,
-                        output_file + '_' + data_md5,
+                        output_file + '_' + hash_kwargs,
                         hostname,
                         db)
                     else:

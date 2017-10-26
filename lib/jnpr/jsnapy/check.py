@@ -642,8 +642,11 @@ class Comparator:
 
                             # here the user specified name is being used and the hash value generated for
                             # kwargs part is appended to the name
-                            if 'kwargs' in tests[val][1]:
-                                data = tests[val][1].get('kwargs')
+                            if 'kwargs' or 'args' in tests[val][1]:
+                                if tests[val][1].get('kwargs'):
+                                    data = tests[val][1].get('kwargs')
+                                elif tests[val][1].get('args'):
+                                    data = tests[val][1].get('args')
                                 hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).hexdigest()
                                 if action == 'check' and pre_user is not None and post_user is not None:
                                     pre = pre_user + '_' + hash_kwargs
