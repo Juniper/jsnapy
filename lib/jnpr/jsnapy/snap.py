@@ -395,7 +395,13 @@ class Parser:
                         hostname,
                         db)
                 elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
-                    if 'kwargs' or 'args' in test_file[t][1]:
+                    if 'kwargs' in test_file[t][1] and test_file[t][1].get('kwargs') is None:
+                        del test_file[t][1]['kwargs']
+
+                    if 'args' in test_file[t][1] and test_file[t][1].get('args') is None:
+                        del test_file[t][1]['args']
+
+                    if 'kwargs' in test_file[t][1] or 'args' in test_file[t][1]:
                         if test_file[t][1].get('kwargs'):
                             data = test_file[t][1].get('kwargs')
                         elif test_file[t][1].get('args'):

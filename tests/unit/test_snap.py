@@ -425,16 +425,17 @@ class TestSnap(unittest.TestCase):
                 self.db)
             db_dict = dict()
             db_dict['cli_command'] = 'get-config'
-            db_dict['snap_name'] = "snap_mock"
+            db_dict['snap_name'] = "snap_mock_b5cc63f545240eeeb3f89bf9bc14c1b4"
             db_dict['filename'] = "1.1.1.1" + "_" + \
-                "snap_mock" + "_" + "get-config" + "." + "xml"
+                "snap_mock_b5cc63f545240eeeb3f89bf9bc14c1b4" + "_" + "get-config" + "." + "xml"
             db_dict['format'] = 'xml'
             db_dict['data'] = mock_reply()
             calls.append(call(db_dict))
             db_dict2 = db_dict.copy()
+            db_dict2['snap_name'] = "snap_mock_f04ff3f94a71ab32aea2b2f237ae9f60"
             db_dict2['cli_command'] = 'get-interface-information'
             db_dict2['filename'] = "1.1.1.1" + "_" + \
-                "snap_mock" + "_" + "get-interface-information" + "." + "xml"
+                "snap_mock_f04ff3f94a71ab32aea2b2f237ae9f60" + "_" + "get-interface-information" + "." + "xml"
             calls.append(call(db_dict2))
             mock_insert.assert_has_calls(calls)
         dev.close()

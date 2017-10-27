@@ -642,7 +642,14 @@ class Comparator:
 
                             # here the user specified name is being used and the hash value generated for
                             # kwargs part is appended to the name
-                            if 'kwargs' or 'args' in tests[val][1]:
+
+                            if 'kwargs' in tests[val][1] and tests[val][1].get('kwargs') is None:
+                                del tests[val][1]['kwargs']
+
+                            if 'args' in tests[val][1] and tests[val][1].get('args') is None:
+                                del tests[val][1]['args']
+
+                            if 'kwargs' in tests[val][1] or 'args' in tests[val][1]:
                                 if tests[val][1].get('kwargs'):
                                     data = tests[val][1].get('kwargs')
                                 elif tests[val][1].get('args'):
