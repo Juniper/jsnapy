@@ -1,0 +1,49 @@
+<interface-information style="normal">
+<physical-interface>
+<name>
+dsc
+</name>
+<admin-status format="Enabled">
+up
+</admin-status>
+<oper-status>
+up
+</oper-status>
+<local-index>
+5
+</local-index>
+<snmp-index>
+5
+</snmp-index>
+<if-type>
+Software-Pseudo
+</if-type>
+<mtu>
+Unlimited
+</mtu>
+<if-device-flags>
+<ifdf-present/>
+<ifdf-running/>
+</if-device-flags>
+<ifd-specific-config-flags>
+</ifd-specific-config-flags>
+<if-config-flags>
+<iff-point-to-point/>
+<iff-snmp-traps/>
+</if-config-flags>
+<if-media-flags>
+<ifmf-none/>
+</if-media-flags>
+<interface-flapped seconds="0">
+Never
+</interface-flapped>
+<traffic-statistics style="brief">
+<input-packets>
+0
+</input-packets>
+<output-packets>
+0
+</output-packets>
+</traffic-statistics>
+</physical-interface>
+</interface-information>
