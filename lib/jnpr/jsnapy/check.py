@@ -194,13 +194,15 @@ class Comparator:
         # variables passed for the required test operation
 
         if ele is not None:
-            obj = re.search(r'(.*\[.*(,.*)+\])', ele)
+            obj = re.search(r'(.*\[.*(,.*)+\])(.*)', ele)
             if obj:
                 xml_element = obj.group(1)
                 ele_list = [xml_element]
-                xml_paras = obj.group(2)
-                ele_list = ele_list + [elements.strip() for elements in xml_paras.split(',') if
-                                       elements.strip() is not '']
+                if obj.group(3):
+                    xml_paras = obj.group(3)
+                    ele_list = ele_list + [elements.strip() for elements
+                                           in xml_paras.split(',') if
+                                           elements.strip() is not '']
             else:
                 ele_list = [elements.strip()
                             for elements in ele.split(',')]
