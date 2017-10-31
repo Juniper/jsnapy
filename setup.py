@@ -63,29 +63,31 @@ class OverrideInstall(install):
                 self.install_data = '/etc/jsnapy'
 
         dir_path = self.install_data
-        mode = 0o777
+        dir_mode = 0o755
+        file_mode = 0o644
         install.run(self)
 
         if 'win32' not in sys.platform and not hasattr(sys, 'real_prefix'):
-            os.chmod(dir_path, mode)
+            os.chmod(dir_path, dir_mode)
             for root, dirs, files in os.walk(dir_path):
                 for directory in dirs:
-                    os.chmod(os.path.join(root, directory), mode)
+                    os.chmod(os.path.join(root, directory), dir_mode)
                 for fname in files:
-                    os.chmod(os.path.join(root, fname), mode)
+                    os.chmod(os.path.join(root, fname), file_mode)
 
-            os.chmod('/var/log/jsnapy', mode)
+            os.chmod('/var/log/jsnapy', dir_mode)
             for root, dirs, files in os.walk('/var/log/jsnapy'):
                 for directory in dirs:
-                    os.chmod(os.path.join(root, directory), mode)
+                    os.chmod(os.path.join(root, directory), dir_mode)
                 for fname in files:
-                    os.chmod(os.path.join(root, fname), mode)
+                    os.chmod(os.path.join(root, fname), file_mode)
 
         HOME = expanduser("~")  # correct cross platform way to do it
         home_folder = os.path.join(HOME, '.jsnapy')
+        user_mode = 0o777
         if not os.path.isdir(home_folder):
             os.mkdir(home_folder)
-            os.chmod(home_folder, mode)
+            os.chmod(home_folder, user_mode)
 
         if dir_path != '/etc/jsnapy':
             config = ConfigParser()
