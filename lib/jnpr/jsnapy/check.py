@@ -200,7 +200,8 @@ class Comparator:
                 ele_list = [xml_element]
                 if obj.group(3):
                     xml_paras = obj.group(3)
-                    ele_list = ele_list + [elements.strip() for elements
+                    ele_list = ele_list + [elements.strip()
+                                           for elements
                                            in xml_paras.split(',') if
                                            elements.strip() is not '']
             else:
