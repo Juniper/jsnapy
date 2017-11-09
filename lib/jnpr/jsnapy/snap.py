@@ -15,6 +15,9 @@ from jnpr.jsnapy import get_path
 from jnpr.junos.exception import RpcError
 from jnpr.jsnapy.sqlite_store import JsnapSqlite
 import lxml
+import hashlib
+import json
+import base64
 
 
 class Parser:
@@ -393,14 +396,38 @@ class Parser:
                         hostname,
                         db)
                 elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
-                    self.run_rpc(
+                    if 'kwargs' in test_file[t][1] and test_file[t][1].get('kwargs') is None:
+                        del test_file[t][1]['kwargs']
+
+                    if 'args' in test_file[t][1] and test_file[t][1].get('args') is None:
+                        del test_file[t][1]['args']
+
+                    if 'kwargs' in test_file[t][1] or 'args' in test_file[t][1]:
+                        if test_file[t][1].get('kwargs'):
+                            data = test_file[t][1].get('kwargs')
+                        elif test_file[t][1].get('args'):
+                            data = test_file[t][1].get('args')
+
+                        hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
+                        hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
+
+                        self.run_rpc(
                         test_file,
                         t,
                         formats,
                         dev,
-                        output_file,
+                        output_file + '_' + hash_kwargs.decode('utf-8'),
                         hostname,
                         db)
+                    else:
+                        self.run_rpc(
+                                test_file,
+                                t,
+                                formats,
+                                dev,
+                                output_file,
+                                hostname,
+                                db)
                 else:
                     self.logger_snap.error(
                         colorama.Fore.RED +
