@@ -421,13 +421,13 @@ class Parser:
                         db)
                     else:
                         self.run_rpc(
-                            test_file,
-                            t,
-                            formats,
-                            dev,
-                            output_file,
-                            hostname,
-                            db)
+                                test_file,
+                                t,
+                                formats,
+                                dev,
+                                output_file,
+                                hostname,
+                                db)
                 else:
                     self.logger_snap.error(
                         colorama.Fore.RED +

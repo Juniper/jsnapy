@@ -568,7 +568,6 @@ class Comparator:
         # with these names
         pre_user = pre
         post_user = post
-
         # get the test files from config.yml
         if main_file.get('tests') is None:
             self.logger_check.error(
@@ -624,8 +623,7 @@ class Comparator:
                             teston = command
 
                             # this is necessary for the pre and post to be the same that user specified
-                            # In a case when there are multiple rpc's and a command then this is necessary
-
+                            # In a case when there are multiple rpc's with kwargs and a rpc with no kwargs
                             pre = pre_user
                             post = post_user
                         else:
@@ -635,7 +633,6 @@ class Comparator:
                                                    rpc + (25) * '*', extra=self.log_detail)
                             name = rpc
                             teston = rpc
-
                             # this is necessary for the pre and post to be the same that user specified
                             # In a case when there are multiple rpc's with kwargs and a rpc with no kwargs
                             pre = pre_user
