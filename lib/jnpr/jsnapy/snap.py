@@ -17,6 +17,7 @@ from jnpr.jsnapy.sqlite_store import JsnapSqlite
 import lxml
 import hashlib
 import json
+import base64
 
 
 class Parser:
@@ -406,7 +407,9 @@ class Parser:
                             data = test_file[t][1].get('kwargs')
                         elif test_file[t][1].get('args'):
                             data = test_file[t][1].get('args')
-                        hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).hexdigest()
+
+                        hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
+                        hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
 
                         self.run_rpc(
                         test_file,

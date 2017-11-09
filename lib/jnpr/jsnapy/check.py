@@ -19,6 +19,7 @@ from jnpr.jsnapy.xml_comparator import XmlComparator
 from jnpr.jsnapy import get_path
 import hashlib
 import json
+import base64
 
 
 class Comparator:
@@ -654,7 +655,8 @@ class Comparator:
                                     data = tests[val][1].get('kwargs')
                                 elif tests[val][1].get('args'):
                                     data = tests[val][1].get('args')
-                                hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).hexdigest()
+                                hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
+                                hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
                                 if action == 'check' and pre_user is not None and post_user is not None:
                                     pre = pre_user + '_' + hash_kwargs
                                     post = post_user + '_' + hash_kwargs
