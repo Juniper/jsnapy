@@ -416,7 +416,7 @@ class Parser:
                         t,
                         formats,
                         dev,
-                        output_file + '_' + hash_kwargs,
+                        output_file + '_' + hash_kwargs.decode('utf-8'),
                         hostname,
                         db)
                     else:

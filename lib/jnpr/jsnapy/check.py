@@ -658,10 +658,10 @@ class Comparator:
                                 hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
                                 hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
                                 if action == 'check' and pre_user is not None and post_user is not None:
-                                    pre = pre_user + '_' + hash_kwargs
-                                    post = post_user + '_' + hash_kwargs
+                                    pre = pre_user + '_' + hash_kwargs.decode('utf-8')
+                                    post = post_user + '_' + hash_kwargs.decode('utf-8')
                                 elif action == 'snapcheck' and pre_user is not None and post_user is None:
-                                    pre = pre_user + '_' + hash_kwargs
+                                    pre = pre_user + '_' + hash_kwargs.decode('utf-8')
                     except KeyError:
                         self.logger_check.error(
                             colorama.Fore.RED +
