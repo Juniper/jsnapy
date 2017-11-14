@@ -67,12 +67,6 @@ class OverrideInstall(install):
         install.run(self)
 
         if 'win32' not in sys.platform and not hasattr(sys, 'real_prefix'):
-            os.chmod(dir_path, mode)
-            for root, dirs, files in os.walk(dir_path):
-                for directory in dirs:
-                    os.chmod(os.path.join(root, directory), mode)
-                for fname in files:
-                    os.chmod(os.path.join(root, fname), mode)
 
             os.chmod('/var/log/jsnapy', mode)
             for root, dirs, files in os.walk('/var/log/jsnapy'):
@@ -131,6 +125,35 @@ class OverrideInstall(install):
                 path = os.path.join(expanduser("~"), 'jsnapy', 'logging.yml')
                 set_logging_path(path)
 
+        else:
+            config = ConfigParser()
+            config.set('DEFAULT', 'config_file_path',
+                       dir_path)
+            config.set('DEFAULT', 'snapshot_path',
+                       os.path.join(HOME, 'jsnapy', 'snapshots'))
+            config.set('DEFAULT', 'test_file_path',
+                       os.path.join(HOME, 'jsnapy', 'testfiles'))
+            default_config_location = "/etc/jsnapy/jsnapy.cfg"
+
+            if os.path.isfile(default_config_location):
+                with open(default_config_location, 'w') as cfgfile:
+                    comment = ('# This file can be overwritten\n'
+                               '# It contains default path for\n'
+                               '# config file, snapshots and testfiles\n'
+                               '# If required, overwrite the path with'
+                               '# your path\n'
+                               '# config_file_path: path of main'
+                               '# config file\n'
+                               '# snapshot_path : path of snapshot file\n'
+                               '# test_file_path: path of test file\n\n'
+                               )
+                    cfgfile.write(comment)
+                    config.write(cfgfile)
+            else:
+                raise Exception('jsnapy.cfg not found at ' +
+                                default_config_location)
+
+
 
 req_lines = [line.strip() for line in open(
     'requirements.txt').readlines()]
@@ -175,8 +198,8 @@ else:
     os_data_file = [('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
                     ('samples', example_files),
                     ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
-                    ('testfiles', ['testfiles/README']),
-                    ('snapshots', ['snapshots/README']),
+                    # ('testfiles', ['testfiles/README']),
+                    # ('snapshots', ['snapshots/README']),
                     ('/var/log/jsnapy', log_files)
                     ]
 
