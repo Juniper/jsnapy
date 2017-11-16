@@ -664,7 +664,7 @@ class SnapAdmin:
                     password = getpass.getpass(
                         "\nEnter Password for username <%s> : " %
                         username)
-                    self.connect(
+                    return self.connect(
                         hostname,
                         username,
                         password,
