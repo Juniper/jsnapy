@@ -503,18 +503,18 @@ class TestSnapAdmin(unittest.TestCase):
         mock_log.assert_called()
         mock_dev.assert_called_with(host='1.1.1.1', user='abc', passwd='xyz', gather_facts=False)
 
-    @patch('logging.Logger.info')  # new
-    def test_check_arguments_11(self, mock_log):
-        with self.assertRaises(Exception):
-            js = SnapAdmin()
-            js.args.snap = True
-            js.args.snapcheck = True
-            js.args.local = False
-            js.args.file = os.path.join(os.path.dirname(__file__),
-                                        'configs', 'main_1.yml')
-            config_file = open(js.args.file, 'r')
-            config_data = yaml.load(config_file)
-            js.connect('1.1.1.1', 'abc', None, 'snap_1', config_data)
+    # @patch('logging.Logger.info')  # new
+    # def test_check_arguments_11(self, mock_log):
+    #     with self.assertRaises(Exception):
+    #         js = SnapAdmin()
+    #         js.args.snap = True
+    #         js.args.snapcheck = True
+    #         js.args.local = False
+    #         js.args.file = os.path.join(os.path.dirname(__file__),
+    #                                     'configs', 'main_1.yml')
+    #         config_file = open(js.args.file, 'r')
+    #         config_data = yaml.load(config_file)
+    #         js.connect('1.1.1.1', 'abc', None, 'snap_1', config_data)
 
     @patch('os.path.isfile')  # new
     def test_multiple_devices_1(self, mock_isfile):
@@ -1554,7 +1554,7 @@ class TestSnapAdmin(unittest.TestCase):
             config_data,
             js.args.pre_snapfile,
             None,
-            None)
+            'check')
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.jsnapy.Device')
@@ -1586,7 +1586,7 @@ class TestSnapAdmin(unittest.TestCase):
             config_data,
             js.args.pre_snapfile,
             None,
-            None)
+            'snapcheck')
 
     @patch('jnpr.jsnapy.jsnapy.Device')
     @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
@@ -1612,7 +1612,7 @@ class TestSnapAdmin(unittest.TestCase):
             config_data,
             "mock_snap",
             None,
-            None)
+            'snapcheck')
 
     @patch('jnpr.jsnapy.jsnapy.Device')
     @patch('jnpr.jsnapy.SnapAdmin.compare_tests')
@@ -1633,9 +1633,9 @@ class TestSnapAdmin(unittest.TestCase):
         self.assertFalse(mock_dev.called)
         self.assertFalse(mock_snap.called)
         # we check whether get_test was called, indirectly checking whether compare_tests was called.
-        expected_calls_made = [call('1.1.1.1', config_data, 'PRE', None, None),
-                               call('1.1.1.1', config_data, 'PRE_42', None, None),
-                               call('1.1.1.1', config_data, 'PRE_314', None, None)
+        expected_calls_made = [call('1.1.1.1', config_data, 'PRE', None, 'snapcheck'),
+                               call('1.1.1.1', config_data, 'PRE_42', None, 'snapcheck'),
+                               call('1.1.1.1', config_data, 'PRE_314', None, 'snapcheck')
                                ]
         mock_check.assert_has_calls(expected_calls_made, any_order=True)
 
@@ -1851,18 +1851,18 @@ class TestSnapAdmin(unittest.TestCase):
         mock_log.assert_called()
         mock_dev.assert_called_with(host='1.1.1.1', user='abc', passwd='xyz', gather_facts=False)
 
-    @patch('logging.Logger.info')  # new
-    def test_check_arguments_11(self, mock_log):
-        with self.assertRaises(Exception):
-            js = SnapAdmin()
-            js.args.snap = True
-            js.args.snapcheck = True
-            js.args.local = False
-            js.args.file = os.path.join(os.path.dirname(__file__),
-                                        'configs', 'main_1.yml')
-            config_file = open(js.args.file, 'r')
-            config_data = yaml.load(config_file)
-            js.connect('1.1.1.1', 'abc', None, 'snap_1', config_data)
+    # @patch('logging.Logger.info')  # new
+    # def test_check_arguments_11(self, mock_log):
+    #     with self.assertRaises(Exception):
+    #         js = SnapAdmin()
+    #         js.args.snap = True
+    #         js.args.snapcheck = True
+    #         js.args.local = False
+    #         js.args.file = os.path.join(os.path.dirname(__file__),
+    #                                     'configs', 'main_1.yml')
+    #         config_file = open(js.args.file, 'r')
+    #         config_data = yaml.load(config_file)
+    #         js.connect('1.1.1.1', 'abc', None, 'snap_1', config_data)
 
     @patch('os.path.isfile')  # new
     def test_multiple_devices_1(self, mock_isfile):
