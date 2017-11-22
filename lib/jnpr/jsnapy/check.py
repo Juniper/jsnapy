@@ -659,6 +659,9 @@ class Comparator:
                                     post = post_user + '_' + hash_kwargs.decode('utf-8')
                                 elif action == 'snapcheck' and pre_user is not None and post_user is None:
                                     pre = pre_user + '_' + hash_kwargs.decode('utf-8')
+                                elif diff is True and pre_user is not None and post_user is not None:
+                                    pre = pre_user + '_' + hash_kwargs.decode('utf-8')
+                                    post = post_user + '_' + hash_kwargs.decode('utf-8')
                     except KeyError:
                         self.logger_check.error(
                             colorama.Fore.RED +
