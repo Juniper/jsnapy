@@ -207,7 +207,7 @@ else:
 setup(name="jsnapy",
       version=__version__,
       description="Python version of Junos Snapshot Administrator",
-      author="Priyal Jain",
+      author="Priyal Jain, Nitin Kumar",
       author_email="jnpr-community-netdev@juniper.net",
       license="Apache 2.0",
       keywords="Junos snapshot automation",

@@ -664,7 +664,7 @@ class SnapAdmin:
                     password = getpass.getpass(
                         "\nEnter Password for username <%s> : " %
                         username)
-                    self.connect(
+                    return self.connect(
                         hostname,
                         username,
                         password,
@@ -695,7 +695,10 @@ class SnapAdmin:
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in [
                 "check", "snapcheck"]:
-            
+            if self.args.snapcheck is True:
+                action = "snapcheck"
+            if self.args.check is True:
+                action = "check"
             
             if self.args.local is True and 'local' in config_data:
                 output_file = config_data['local']
