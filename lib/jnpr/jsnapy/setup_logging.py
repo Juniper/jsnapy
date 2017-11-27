@@ -26,3 +26,11 @@ def setup_logging(
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
+
+    ###################################
+    # Creating Folder path for SNAPSHOT
+    ###################################
+    if 'win32' not in sys.platform and not hasattr(sys, 'real_prefix'):
+        snapshots_path = get_path('DEFAULT', 'snapshot_path')
+        if not os.path.isdir(snapshots_path):
+            os.makedirs(snapshots_path)
