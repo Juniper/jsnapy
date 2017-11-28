@@ -32,5 +32,6 @@ def setup_logging(
     ###################################
     if 'win32' not in sys.platform and not hasattr(sys, 'real_prefix'):
         snapshots_path = get_path('DEFAULT', 'snapshot_path')
+        snapshots_path = os.path.expanduser(snapshots_path)
         if not os.path.isdir(snapshots_path):
             os.makedirs(snapshots_path)

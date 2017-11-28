@@ -20,6 +20,7 @@ from jnpr.jsnapy import get_path
 import hashlib
 import json
 import base64
+from os.path import expanduser
 
 
 class Comparator:
@@ -67,9 +68,9 @@ class Comparator:
             sfile = str(device) + '_' + prefix + '_' + \
                 cmd_rpc_name + '.' + reply_format
             snapfile = os.path.join(
-                get_path(
+                expanduser(get_path(
                     'DEFAULT',
-                    'snapshot_path'),
+                    'snapshot_path')),
                 sfile)
             return snapfile
     
@@ -578,9 +579,9 @@ class Comparator:
             for tfile in main_file.get('tests'):
                 if not os.path.isfile(tfile):
                     tfile = os.path.join(
-                        get_path(
+                        expanduser(get_path(
                             'DEFAULT',
-                            'test_file_path'),
+                            'test_file_path')),
                         tfile)
                 if os.path.isfile(tfile):
                     test_file = open(tfile, 'r')

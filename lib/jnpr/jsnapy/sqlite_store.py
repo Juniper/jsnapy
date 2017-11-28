@@ -19,9 +19,9 @@ class JsnapSqlite:
         self.table_name = "table_" + host
         # Creating Schema
         self.db_filename = os.path.join(
-            get_path(
+            os.path.expanduser(get_path(
                 'DEFAULT',
-                'snapshot_path'),
+                'snapshot_path')),
             db_name)
         try:
             with sqlite3.connect(self.db_filename) as conn:

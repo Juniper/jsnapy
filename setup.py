@@ -132,43 +132,11 @@ class OverrideInstall(install):
                 path = os.path.join(expanduser("~"), 'jsnapy', 'logging.yml')
                 set_logging_path(path)
 
-        else:
-            config = ConfigParser()
-            config.set('DEFAULT', 'config_file_path',
-                       dir_path)
-            config.set('DEFAULT', 'snapshot_path',
-                       os.path.join(HOME, 'jsnapy', 'snapshots'))
-            config.set('DEFAULT', 'test_file_path',
-                       os.path.join(HOME, 'jsnapy', 'testfiles'))
-            default_config_location = "/etc/jsnapy/jsnapy.cfg"
-
-            if os.path.isfile(default_config_location):
-                with open(default_config_location, 'w') as cfgfile:
-                    comment = ('# This file can be overwritten\n'
-                               '# It contains default path for\n'
-                               '# config file, snapshots and testfiles\n'
-                               '# If required, overwrite the path with'
-                               '# your path\n'
-                               '# config_file_path: path of main'
-                               '# config file\n'
-                               '# snapshot_path : path of snapshot file\n'
-                               '# test_file_path: path of test file\n\n'
-                               )
-                    cfgfile.write(comment)
-                    config.write(cfgfile)
-            else:
-                raise Exception('jsnapy.cfg not found at ' +
-                                default_config_location)
-
 
 
 req_lines = [line.strip() for line in open(
     'requirements.txt').readlines()]
 install_reqs = list(filter(None, req_lines))
-# example_files = [
-#     os.path.join(
-#         'samples',
-#         i) for i in os.listdir('samples')]
 log_files = [os.path.join('logs', j)
              for j in os.listdir('logs')]
 exec(open('lib/jnpr/jsnapy/version.py').read())
@@ -186,7 +154,6 @@ os_data_file = []
 if hasattr(sys, 'real_prefix'):
     os_data_file = [('.', ['lib/jnpr/jsnapy/logging.yml']),
                     ('../../var/logs/jsnapy', log_files),
-                    # ('samples', example_files),
                     ('.', ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
@@ -195,7 +162,6 @@ if hasattr(sys, 'real_prefix'):
 elif 'win32' in sys.platform:
     os_data_file = [('.', ['lib/jnpr/jsnapy/logging.yml']),
                     ('../logs/jsnapy', log_files),
-                    # ('samples', example_files),
                     ('.', ['lib/jnpr/jsnapy/jsnapy.cfg']),
                     ('testfiles', ['testfiles/README']),
                     ('snapshots', ['snapshots/README'])
@@ -203,10 +169,7 @@ elif 'win32' in sys.platform:
 
 else:
     os_data_file = [('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
-                    # ('samples', example_files),
                     ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
-                    # ('testfiles', ['testfiles/README']),
-                    # ('snapshots', ['snapshots/README']),
                     ('/var/log/jsnapy', log_files)
                     ]
 
