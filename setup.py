@@ -81,12 +81,12 @@ class OverrideInstall(install):
                 for fname in files:
                     os.chmod(os.path.join(root, fname), mode)
 
-        mode = 0o755
-        HOME = expanduser("~")  # correct cross platform way to do it
-        home_folder = os.path.join(HOME, '.jsnapy')
-        if not os.path.isdir(home_folder):
-            os.mkdir(home_folder)
-            os.chmod(home_folder, mode)
+        # mode = 0o755
+        # HOME = expanduser("~")  # correct cross platform way to do it
+        # home_folder = os.path.join(HOME, '.jsnapy')
+        # if not os.path.isdir(home_folder):
+        #     os.mkdir(home_folder)
+        #     os.chmod(home_folder, mode)
 
         if dir_path != '/etc/jsnapy':
             config = ConfigParser()

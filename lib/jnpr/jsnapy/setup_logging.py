@@ -35,3 +35,8 @@ def setup_logging(
         snapshots_path = os.path.expanduser(snapshots_path)
         if not os.path.isdir(snapshots_path):
             os.makedirs(snapshots_path)
+
+    HOME = os.path.expanduser("~")  # correct cross platform way to do it
+    home_folder = os.path.join(HOME, '.jsnapy')
+    if not os.path.isdir(home_folder):
+        os.mkdir(home_folder)
