@@ -20,9 +20,9 @@ class SqliteExtractXml:
         self.logger_sqlite = logging.getLogger(__name__)
         self.sqlite_logs = {'hostname': None}
         self.db_filename = os.path.join(
-            get_path(
+            os.path.expanduser(get_path(
                 'DEFAULT',
-                'snapshot_path'),
+                'snapshot_path')),
             db_name)
         if not os.path.isfile(self.db_filename):
             self.logger_sqlite.error(

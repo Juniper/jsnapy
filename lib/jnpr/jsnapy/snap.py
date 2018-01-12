@@ -97,9 +97,9 @@ class Parser:
             filename = hostname + '_' + output_file + \
                 '_' + cmd_rpc + '.' + cmd_format
             output_file = os.path.join(
-                get_path(
+                os.path.expanduser(get_path(
                     'DEFAULT',
-                    'snapshot_path'),
+                    'snapshot_path')),
                 filename)
             return output_file
 

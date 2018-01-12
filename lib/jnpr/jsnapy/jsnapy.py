@@ -15,6 +15,7 @@ import sys
 import textwrap
 from copy import deepcopy
 from threading import Thread
+from os.path import expanduser
 
 import yaml
 from jnpr.jsnapy import get_path, version, get_config_location, DirStore
@@ -376,9 +377,9 @@ class SnapAdmin:
         for tfile in config_data.get('tests'):
             if not os.path.isfile(tfile):
                 tfile = os.path.join(
-                    get_path(
+                    expanduser(get_path(
                         'DEFAULT',
-                        'test_file_path'),
+                        'test_file_path')),
                     tfile)
             if os.path.isfile(tfile):
                 test_file = open(tfile, 'r')
@@ -473,9 +474,9 @@ class SnapAdmin:
                         lfile = devices_file_name
                     else:
                         lfile = os.path.join(
-                                    get_path(
+                                    expanduser(get_path(
                                         'DEFAULT',
-                                        'test_file_path'),
+                                        'test_file_path')),
                                     devices_file_name)
                     login_file = open(lfile, 'r')
                     dev_file = yaml.load(login_file)
@@ -594,7 +595,7 @@ class SnapAdmin:
                     "ERROR!! Type of mail preferences should be either dictionary or string", extra=self.log_detail)
                     
             if mail_file_path is not None and mail_file_path != '' :
-                mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), mail_file_path)\
+                mfile = os.path.join(expanduser(get_path('DEFAULT', 'test_file_path')), mail_file_path)\
                         if os.path.isfile(mail_file_path) is False else mail_file_path
                 if os.path.isfile(mfile):
                     mail_file = open(mfile, 'r')
@@ -745,9 +746,9 @@ class SnapAdmin:
                 lfile = devices_file_name
             else:
                 lfile = os.path.join(
-                            get_path(
+                            expanduser(get_path(
                                 'DEFAULT',
-                                'test_file_path'),
+                                'test_file_path')),
                             devices_file_name)
             login_file = open(lfile, 'r')
             dev_file = yaml.load(login_file)
