@@ -432,6 +432,27 @@ class TestCheck(unittest.TestCase):
         comp.compare_diff('pre_no_such_file','post_no_such_file',False)
         mock_log.assert_called()
 
+    @patch('jnpr.jsnapy.check.get_path')
+    def test_xpath_with_functions(self, mock_path):
+        self.chk = False
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_xpath_functions.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "post")
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
+        self.assertEqual(oper.result, 'Passed')
+
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(TestCheck)
     unittest.TextTestRunner(verbosity=2).run(suite)

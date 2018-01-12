@@ -191,9 +191,25 @@ class Comparator:
         testop = self._get_testop(elem_test)
 
         ele = elem_test.get(testop)
+        # For compatibility with Xpath Functions, the following has been added
+        # assuming that the function used in XPATH
+        # are defined within '[ ]'.This will help easy splitting of all the
+        # variables passed for the required test operation
+
         if ele is not None:
-            ele_list = [elements.strip()
-                        for elements in ele.split(',')]
+            obj = re.search(r'(.*\[.*(,.*)+\])(.*)', ele)
+            if obj:
+                xml_element = obj.group(1)
+                ele_list = [xml_element]
+                if obj.group(3):
+                    xml_paras = obj.group(3)
+                    ele_list = ele_list + [elements.strip()
+                                           for elements
+                                           in xml_paras.split(',') if
+                                           elements.strip() is not '']
+            else:
+                ele_list = [elements.strip()
+                            for elements in ele.split(',')]
         else:
             ele_list = ['no node']
 
