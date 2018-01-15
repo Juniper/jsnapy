@@ -14,13 +14,12 @@ if sys.version < '3':
     from ConfigParser import ConfigParser
 else:
     from configparser import ConfigParser
-
-import yaml
 from six import iteritems
 
 
 def set_logging_path(path):
     if os.path.exists(path):
+        import yaml
         with open(path, 'rt') as f:
             config = yaml.load(f.read())
 
