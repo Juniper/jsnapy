@@ -4,3 +4,4 @@ configparser
 pyparsing
 icdiff
 future
+six
