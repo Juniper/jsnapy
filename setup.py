@@ -14,12 +14,12 @@ if sys.version < '3':
     from ConfigParser import ConfigParser
 else:
     from configparser import ConfigParser
-from six import iteritems
 
 
 def set_logging_path(path):
     if os.path.exists(path):
         import yaml
+        from six import iteritems
         with open(path, 'rt') as f:
             config = yaml.load(f.read())
 
@@ -36,8 +36,8 @@ def set_logging_path(path):
                                              (os.path.expanduser('~'),
                                               'logs\jsnapy\jsnapy.log'))
 
-                with open(path, "w") as f:
-                    yaml.dump(config, f, default_flow_style=False)
+                with open(path, "w") as dump_f:
+                    yaml.dump(config, dump_f, default_flow_style=False)
 
 
 class OverrideInstall(install):
@@ -48,10 +48,10 @@ class OverrideInstall(install):
             if '--install-data' in arg:
                 break
         else:
-            #--------------------------------
+            # --------------------------------
             # hasattr(sys,'real_prefix') checks whether the
             # user is working in python virtual environment
-            #--------------------------------
+            # --------------------------------
             if hasattr(sys, 'real_prefix'):
                 self.install_data = os.path.join(sys.prefix, 'etc',
                                                  'jsnapy')
@@ -89,7 +89,7 @@ class OverrideInstall(install):
 
         if dir_path != '/etc/jsnapy':
             config = ConfigParser()
-            config.set('DEFAULT','config_file_path',
+            config.set('DEFAULT', 'config_file_path',
                        dir_path)
             config.set('DEFAULT', 'snapshot_path',
                        os.path.join(dir_path, 'snapshots'))
@@ -132,7 +132,6 @@ class OverrideInstall(install):
                 set_logging_path(path)
 
 
-
 req_lines = [line.strip() for line in open(
     'requirements.txt').readlines()]
 install_reqs = list(filter(None, req_lines))
@@ -141,14 +140,14 @@ log_files = [os.path.join('logs', j)
 exec(open('lib/jnpr/jsnapy/version.py').read())
 os_data_file = []
 
-#----------------------------
+# ----------------------------
 # In os_data_file variable,
 # the self.install_data path is taken as default prefix to
 # the new created directories and files.
 # Specifying the '.' means the directory directly specified
 # by self.install_data path.
 # Specifying only 'samples' means 'install_data Path'/samples
-#----------------------------
+# ----------------------------
 
 if hasattr(sys, 'real_prefix'):
     os_data_file = [('.', ['lib/jnpr/jsnapy/logging.yml']),
