@@ -11,6 +11,10 @@ import colorama
 
 colorama.init(autoreset=True)
 
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
 
 class DirStore:
     custom_dir = None
@@ -36,7 +40,7 @@ def get_config_location(file='jsnapy.cfg'):
         possible_location = os.path.join(loc, file)
         if os.path.isfile(possible_location):
             return loc
-    return None
+    raise FileNotFoundError('Could not locate %s' % file)
 
 
 def get_path(section, value):
