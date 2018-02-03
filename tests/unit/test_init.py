@@ -54,9 +54,9 @@ class TestCheck(unittest.TestCase):
 
     @patch('os.path.isfile')   #new
     def test_config_location_wrong_path(self, mock_is_file):
-        mock_is_file.side_effect = lambda arg: arg == '/xyz'
-        loc = get_config_location()
-        self.assertEqual(loc, None)
+        with self.assertRaises(Exception):
+            mock_is_file.side_effect = lambda arg: arg == '/xyz'
+            loc = get_config_location()
 
     @patch('jnpr.jsnapy.get_config_location')  #new
     def test_get_path_config_exception(self, mock_config_location):

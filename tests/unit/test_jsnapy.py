@@ -530,11 +530,12 @@ class TestSnapAdmin(unittest.TestCase):
         hosts_required = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
         self.assertEqual(js.host_list, hosts_required)
 
+    @patch('jnpr.jsnapy.jsnapy.setup_logging.setup_logging')
     @patch('jnpr.jsnapy.jsnapy.get_path')  # new
     @patch('os.path.isfile')
     def test_multiple_devices_2(self,
                                 mock_isfile,
-                                mock_path):  # testing if devices.yml file is not present in the same folder as the test file
+                                mock_path, mock_logging):  # testing if devices.yml file is not present in the same folder as the test file
         mock_isfile.return_value = False  # lambda arg: arg == 'devices.yml'
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         js = SnapAdmin()
@@ -545,6 +546,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.multiple_device_details(hosts, config_data, 'mock_pre', None, 'mock_post')
         hosts_required = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
         self.assertEqual(js.host_list, hosts_required)
+        mock_logging.assert_called()
 
     def test_multiple_devices_3(self):  # new
         js = SnapAdmin()
@@ -593,9 +595,10 @@ class TestSnapAdmin(unittest.TestCase):
         js.extract_data(js.args.file, 'mock_pre', None, 'mock_post')
         mock_multiple.assert_called()
 
+    @patch('jnpr.jsnapy.jsnapy.setup_logging.setup_logging')
     @patch('os.path.isfile')
     @patch('jnpr.jsnapy.jsnapy.SnapAdmin.get_values')  # new
-    def test_extract_data_2(self, mock_getvalue, mock_isfile):
+    def test_extract_data_2(self, mock_getvalue, mock_isfile, mock_logging):
         mock_isfile.return_value = False
         js = SnapAdmin()
         config_data = """
@@ -608,6 +611,7 @@ class TestSnapAdmin(unittest.TestCase):
             """
         js.extract_data(config_data, 'mock_pre', None, 'mock_post')
         mock_getvalue.assert_called()
+        mock_logging.assert_called()
 
     @patch('logging.Logger.info')  # new
     def test_extract_data_3(self, mock_log):
@@ -616,19 +620,22 @@ class TestSnapAdmin(unittest.TestCase):
             js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'no_such_file.yml')
             js.extract_data(js.args.file, 'mock_pre', None, 'mock_post')
 
+    @patch('jnpr.jsnapy.jsnapy.setup_logging.setup_logging')
     @patch('os.path.isfile')  # new
     @patch('logging.Logger.info')
-    def test_extract_data_4(self, mock_log, mock_isfile):
+    def test_extract_data_4(self, mock_log, mock_isfile, mock_logging):
         with self.assertRaises(SystemExit):
             mock_isfile.return_value = False
             js = SnapAdmin()
             config_data = 1  # config_data which is fraud
             js.extract_data(config_data, 'mock_pre', None, 'mock_post')
             mock_log.assert_called()
+            mock_logging.assert_called()
 
+    @patch('jnpr.jsnapy.jsnapy.setup_logging.setup_logging')
     @patch('os.path.isfile')  # new
     @patch('jnpr.jsnapy.jsnapy.SnapAdmin.chk_database')
-    def test_extract_data_5(self, mock_chkdb, mock_isfile):
+    def test_extract_data_5(self, mock_chkdb, mock_isfile, mock_logging):
         mock_isfile.return_value = False
         js = SnapAdmin()
         config_data = """
@@ -646,11 +653,13 @@ class TestSnapAdmin(unittest.TestCase):
                 """
         js.extract_data(config_data, 'mock_pre', None, 'mock_post')
         mock_chkdb.assert_called()
+        mock_logging.assert_called()
 
+    @patch('jnpr.jsnapy.jsnapy.setup_logging.setup_logging')
     @patch('jnpr.jsnapy.jsnapy.SnapAdmin.chk_database')
     @patch('ncclient.manager.connect')
     @patch('os.path.isfile')  # new
-    def test_extract_dev_data_1(self, mock_isfile, mock_dev, mock_chkdb):
+    def test_extract_dev_data_1(self, mock_isfile, mock_dev, mock_chkdb, mock_logging):
         mock_isfile.return_value = False
         dev = Device(user='1.1.1.1', host='abc', passwd='xyz')
         dev.open()
@@ -670,6 +679,7 @@ class TestSnapAdmin(unittest.TestCase):
                 """
         js.extract_dev_data(dev, config_data, 'mock_pre', None, 'mock_post')
         mock_chkdb.assert_called()
+        mock_logging.assert_called()
 
     @patch('ncclient.manager.connect')  # new
     @patch('jnpr.jsnapy.jsnapy.SnapAdmin.generate_rpc_reply')
@@ -714,10 +724,11 @@ class TestSnapAdmin(unittest.TestCase):
         js.extract_dev_data(dev, config_data, 'mock_pre', 'snapcheck', 'mock_post', local=False)
         mock_get_test.assert_called()
 
+    @patch('jnpr.jsnapy.jsnapy.setup_logging.setup_logging')
     @patch('ncclient.manager.connect')
     @patch('os.path.isfile')
     @patch('logging.Logger.info')
-    def test_extract_dev_data_6(self, mock_log, mock_isfile, mock_dev):
+    def test_extract_dev_data_6(self, mock_log, mock_isfile, mock_dev, mock_logging):
         with self.assertRaises(SystemExit):
             mock_isfile.return_value = False
             dev = Device(user='1.1.1.1', host='abc', passwd='xyz')
@@ -726,6 +737,7 @@ class TestSnapAdmin(unittest.TestCase):
             config_data = 1  # config_data no meaning
             js.extract_dev_data(dev, config_data, 'mock_pre', None, 'mock_post')
             mock_log.assert_called()
+            mock_logging.assert_called()
 
     @patch('ncclient.manager.connect')
     def test_extract_dev_data_7(self, mock_dev):

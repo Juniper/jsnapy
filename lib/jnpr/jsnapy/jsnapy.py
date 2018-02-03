@@ -33,10 +33,8 @@ from . import setup_logging
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
-class SnapAdmin:
 
-    # need to call this function to initialize logging
-    setup_logging.setup_logging()
+class SnapAdmin:
 
     def __init__(self):
         """
@@ -179,6 +177,9 @@ class SnapAdmin:
         self.db['second_snap_id'] = None
         
         DirStore.custom_dir=self.args.folder
+
+        # need to call this function to initialize logging
+        setup_logging.setup_logging()
 
     def get_version(self):
         """
