@@ -3,7 +3,7 @@
 # JSNAPy
 Python version of Junos Snapshot Administrator
 
-![PyEZ logo](static/PyEZ.png?raw=true "PyEZ logo")
+![JSNAPy logo](static/JSNAPy.png?raw=true "JSNAPy logo")
 
 Inspired by https://github.com/Juniper/junos-snapshot-administrator
 
