@@ -626,8 +626,9 @@ class Comparator:
                         (val),
                         extra=self.log_detail)
                     try:
-                        if 'command' in list(tests[val][0].keys()):
-                            command = tests[val][0].get('command').split('|')[0].strip()
+                        if any('command' in d for d in tests[val]):
+                            index = next((i for i, x in enumerate(tests[val]) if 'command' in x), 0)
+                            command = tests[val][index].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
                             message = self._print_testmssg("Command: "+command, "*")
                         
@@ -644,8 +645,11 @@ class Comparator:
                             pre = pre_user
                             post = post_user
                         else:
-                            rpc = tests[val][0]['rpc']
-                            reply_format = tests[val][0].get('format', 'xml')
+                            index = next((i for i, x in enumerate(tests[val]) if 'rpc' in x), 0)
+                            index_kwargs = next((i for i, x in enumerate(tests[val]) if 'kwargs' in x or 'args' in x),
+                                                1)
+                            rpc = tests[val][index]['rpc']
+                            reply_format = tests[val][index].get('format', 'xml')
                             self.logger_check.info(colorama.Fore.BLUE + (25) * "*" + "RPC is " +
                                                    rpc + (25) * '*', extra=self.log_detail)
                             name = rpc
@@ -658,17 +662,17 @@ class Comparator:
                             # here the user specified name is being used and the hash value generated for
                             # kwargs part is appended to the name
 
-                            if 'kwargs' in tests[val][1] and tests[val][1].get('kwargs') is None:
-                                del tests[val][1]['kwargs']
+                            if 'kwargs' in tests[val][index_kwargs] and tests[val][index_kwargs].get('kwargs') is None:
+                                del tests[val][index_kwargs]['kwargs']
 
-                            if 'args' in tests[val][1] and tests[val][1].get('args') is None:
-                                del tests[val][1]['args']
+                            if 'args' in tests[val][index_kwargs] and tests[val][index_kwargs].get('args') is None:
+                                del tests[val][index_kwargs]['args']
 
-                            if 'kwargs' in tests[val][1] or 'args' in tests[val][1]:
-                                if tests[val][1].get('kwargs'):
-                                    data = tests[val][1].get('kwargs')
-                                elif tests[val][1].get('args'):
-                                    data = tests[val][1].get('args')
+                            if 'kwargs' in tests[val][index_kwargs] or 'args' in tests[val][index_kwargs]:
+                                if tests[val][index_kwargs].get('kwargs'):
+                                    data = tests[val][index_kwargs].get('kwargs')
+                                elif tests[val][index_kwargs].get('args'):
+                                    data = tests[val][index_kwargs].get('args')
                                 hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
                                 hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
                                 if action == 'check' and pre_user is not None and post_user is not None:
