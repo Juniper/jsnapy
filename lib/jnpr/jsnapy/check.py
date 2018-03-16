@@ -625,6 +625,29 @@ class Comparator:
                         "Tests Included: %s " %
                         (val),
                         extra=self.log_detail)
+
+                    # This is Where we are going to print the description mentioned by the user for the testcase
+                    # Enumerate generate a tuple of index and correspoding element in the list
+                    # index[0] is index and index[1] is the dictionary in which it will search.
+
+                    description_index = [index[0] for index in enumerate(tests[val]) if 'description' in index[1]]
+                    if len(description_index) > 0:
+                        description_index = description_index[0]
+                        description = tests[val][description_index]['description']
+                        if description is not None:
+                            self.logger_check.info(
+                                "Description: %s " %
+                                (description),
+                                extra=self.log_detail)
+                        else:
+                            self.logger_check.info(
+                                "Description: No description is defined for the tescase.",
+                                extra=self.log_detail)
+                    else:
+                        self.logger_check.info(
+                            "Description: No description is defined for the testcase.",
+                            extra=self.log_detail)
+
                     try:
                         if any('command' in d for d in tests[val]):
                             index = next((i for i, x in enumerate(tests[val]) if 'command' in x), 0)
