@@ -40,6 +40,11 @@ class SnapAdmin:
         """
         taking parameters from command line
         """
+
+        # need to call this function to initialize logging
+        # This is needed at the top to have loggin enables for JSNAPy logger
+        setup_logging.setup_logging()
+
         self.q = queue.Queue()
         self.snap_q = queue.Queue()
         self.log_detail = {'hostname': None}
@@ -178,8 +183,7 @@ class SnapAdmin:
         
         DirStore.custom_dir=self.args.folder
 
-        # need to call this function to initialize logging
-        setup_logging.setup_logging()
+
 
     def get_version(self):
         """
