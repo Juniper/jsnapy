@@ -1,6 +1,5 @@
-[![PyPi Version](https://img.shields.io/pypi/v/jsnapy.svg)](https://pypi.python.org/pypi/jsnapy/) 
-[![Coverage Status](https://travis-ci.org/Juniper/jsnapy.svg?branch=master)](https://travis-ci.org/Juniper/jsnapy)
-[![Coverage Status](https://coveralls.io/repos/github/sidhujasminder/jsnapy/badge.svg?branch=master)](https://coveralls.io/github/sidhujasminder/jsnapy?branch=master)
+[![PyPi Version](https://img.shields.io/pypi/v/jsnapy.svg)](https://pypi.python.org/pypi/jsnapy/) [![Coverage Status](https://travis-ci.org/Juniper/jsnapy.svg?branch=master)](https://travis-ci.org/Juniper/jsnapy)
+
 # JSNAPy
 Python version of Junos Snapshot Administrator
 
