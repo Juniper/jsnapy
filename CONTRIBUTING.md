@@ -58,9 +58,15 @@ before filing the request. It is also common that the problem which would be
 solved by the new feature can be easily solved another way, which is a great
 reason to ask first.
 
-LINKS TO EXTERNAL DOCUMENTATION
+LINKS TO DOCUMENTATION
 -------------------------------
+
+For JSNAPy as a tool and Python module, refer to the following links for help:
+1. https://www.youtube.com/watch?v=GmCDR2VDF68&list=PLQ189o7cl3OwWSInb5hYsDfDPETrroAb2
+2. https://github.com/Juniper/jsnapy/wiki
 
 MAILING LIST
 ------------
+
+To be mentioned.
 
