@@ -132,8 +132,15 @@ class Parser:
         This function takes snapshot for given command and write it in
         snapshot file or database
         """
-        command = test_file[t][0].get('command', "unknown command")
-        cmd_format = test_file[t][0].get('format', 'xml')
+        """
+        The following search for index is done for issue #187. To make
+        the writing of testcases independant of the position of where 
+        command is written.
+        """
+        index = next((i for i, x in enumerate(test_file[t]) if 'command' in x), 0)
+        command = test_file[t][index].get('command', "unknown command")
+        cmd_format = test_file[t][index].get('format', 'xml')
+
         cmd_format = cmd_format if cmd_format in formats else 'xml'
         self.command_list.append(command)
         cmd_name = command.split('|')[0].strip()
@@ -213,9 +220,17 @@ class Parser:
         This function takes snapshot for given RPC and write it in
         snapshot file or database
         """
-        rpc = test_file[t][0].get('rpc', "unknown rpc")
+        """
+        The following search for index is done for issue #187. To make
+        the writing of testcases independant of the position of where 
+        command is written.
+        """
+        index = next((i for i, x in enumerate(test_file[t]) if 'rpc' in x), 0)
+        index_kwargs = next((i for i, x in enumerate(test_file[t])
+                             if 'kwargs' in x or 'args' in x), 1)
+        rpc = test_file[t][index].get('rpc', "unknown rpc")
         self.rpc_list.append(rpc)
-        reply_format = test_file[t][0].get('format', 'xml')
+        reply_format = test_file[t][index].get('format', 'xml')
         reply_format = reply_format if reply_format in formats else 'xml'
         self.logger_snap.debug(colorama.Fore.BLUE +
                                "Tests Included : %s " %t,
@@ -224,14 +239,14 @@ class Parser:
                               "Taking snapshot of RPC: %s" %
                               rpc,
                               extra=self.log_detail)
-        if len(test_file[t]) >= 2 and ('args' in test_file[t][1] or
-                                       'kwargs' in test_file[t][1]):
-            args_key = 'args' if 'args' in test_file[t][1] else 'kwargs'
+        if len(test_file[t]) >= 2 and ('args' in test_file[t][index_kwargs] or
+                                       'kwargs' in test_file[t][index_kwargs]):
+            args_key = 'args' if 'args' in test_file[t][index_kwargs] else 'kwargs'
             kwargs = {
                 k.replace(
                     '-',
                     '_'): v for k,
-                v in list(test_file[t][1][args_key].items())}
+                v in list(test_file[t][index_kwargs][args_key].items())}
             if 'filter_xml' in kwargs:
                 from lxml.builder import E
                 filter_data = None
@@ -384,8 +399,15 @@ class Parser:
 
         for t in test_included:
             if t in test_file:
+                """
+                Refer issue #187 for the index defining.
+                """
+                index_rpc = next((i for i, x in enumerate(test_file[t]) if 'rpc' in x), 0)
+                index_command = next((i for i, x in enumerate(test_file[t]) if 'command' in x), 0)
+                index_kwargs = next((i for i, x in enumerate(test_file[t]) if 'kwargs' in x or 'args' in x), 1)
+
                 if test_file.get(t) is not None and (
-                        'command' in test_file[t][0]):
+                        'command' in test_file[t][index_command]):
                     #command = test_file[t][0].get('command',"unknown command")
                     self.run_cmd(
                         test_file,
@@ -395,18 +417,18 @@ class Parser:
                         output_file,
                         hostname,
                         db)
-                elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
-                    if 'kwargs' in test_file[t][1] and test_file[t][1].get('kwargs') is None:
-                        del test_file[t][1]['kwargs']
+                elif test_file.get(t) is not None and 'rpc' in test_file[t][index_rpc]:
+                    if len(test_file[t])>1 and 'kwargs' in test_file[t][index_kwargs] and test_file[t][index_kwargs].get('kwargs') is None:
+                        del test_file[t][index_kwargs]['kwargs']
 
-                    if 'args' in test_file[t][1] and test_file[t][1].get('args') is None:
-                        del test_file[t][1]['args']
+                    if len(test_file[t])>1 and 'args' in test_file[t][index_kwargs] and test_file[t][index_kwargs].get('args') is None:
+                        del test_file[t][index_kwargs]['args']
 
-                    if 'kwargs' in test_file[t][1] or 'args' in test_file[t][1]:
-                        if test_file[t][1].get('kwargs'):
-                            data = test_file[t][1].get('kwargs')
-                        elif test_file[t][1].get('args'):
-                            data = test_file[t][1].get('args')
+                    if len(test_file[t])>1 and ('kwargs' in test_file[t][index_kwargs] or 'args' in test_file[t][index_kwargs]):
+                        if test_file[t][index_kwargs].get('kwargs'):
+                            data = test_file[t][index_kwargs].get('kwargs')
+                        elif test_file[t][index_kwargs].get('args'):
+                            data = test_file[t][index_kwargs].get('args')
 
                         hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
                         hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
