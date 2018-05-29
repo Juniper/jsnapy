@@ -128,6 +128,15 @@ class Operator:
                   extra=self.log_detail)
         return str(message)
 
+    def _get_numeric_val(self, nodevalue):
+        try:
+            value = float(nodevalue)
+        except ValueError:
+            obj = re.search('(\d+\.?[\d]*)', nodevalue)
+            if obj is not None:
+                value = obj.group(1)
+        return value
+
 # two for loops, one for xpath, other for iterating nodes inside xpath, if value is not
 # given for comparision, then it will take first value
 
@@ -1060,8 +1069,9 @@ class Operator:
 
                                 predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                     predict, postdict, element, postnode[k], prenode[k])
-                                if (float(post_nodevalue) >= range1
-                                        and float(post_nodevalue) <= range2):
+
+                                if float(self. _get_numeric_val(post_nodevalue)) >= range1 \
+                                        and float(self. _get_numeric_val(post_nodevalue)) <= range2:
                                     message = self._print_message(
                                         info_mssg,
                                         iddict,
@@ -1219,8 +1229,8 @@ class Operator:
 
                                 predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                     predict, postdict, element, postnode[k], prenode[k])
-                                if float(post_nodevalue) <= range1 or float(
-                                        post_nodevalue) >= range2:
+                                if float(self. _get_numeric_val(post_nodevalue)) <= range1 or float(
+                                        self._get_numeric_val(post_nodevalue)) >= range2:
                                     count_pass = count_pass + 1
                                     message = self._print_message(
                                         info_mssg,
@@ -1366,7 +1376,7 @@ class Operator:
 
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[j], prenode[j])
-                            if (float(post_nodevalue) > val1):
+                            if (float(self. _get_numeric_val(post_nodevalue)) > val1):
                                 message = self._print_message(
                                     info_mssg,
                                     iddict,
@@ -1513,7 +1523,7 @@ class Operator:
 
                             predict, postdict, post_nodevalue, pre_nodevalue = self._find_value(
                                 predict, postdict, element, postnode[k], prenode[k])
-                            if (float(post_nodevalue) < val1):
+                            if (float(self. _get_numeric_val(post_nodevalue)) < val1):
                                 message = self._print_message(
                                     info_mssg,
                                     iddict,
@@ -2861,9 +2871,9 @@ class Operator:
                             ele_xpath2 = postdata.get(k).xpath(node_name)
                             if len(ele_xpath1) and len(ele_xpath2):
                                 val1 = float(
-                                    ele_xpath1[0].text)  # value of desired node for pre snapshot
+                                    self._get_numeric_val(ele_xpath1[0].text))  # value of desired node for pre snapshot
                                 val2 = float(
-                                    ele_xpath2[0].text)  # value of desired node for post snapshot
+                                    self._get_numeric_val(ele_xpath2[0].text))  # value of desired node for post snapshot
                                 del_val = delta_val
                                 predict[node_name] = val1
                                 postdict[node_name] = val2
