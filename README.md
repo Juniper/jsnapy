@@ -124,9 +124,7 @@ Juniper Networks is actively contributing to and maintaining this repo. Please c
 
 Contributors:  
 
-* v1.3.0: [Jasminderpal Singh Sidhu](https://github.com/sidhujasminder)
-* v1.2.1: [Jasminderpal Singh Sidhu](https://github.com/sidhujasminder)
-* v1.2.0: [Jasminderpal Singh Sidhu](https://github.com/sidhujasminder)
+* v1.2.0 - v1.3.2: [Jasminderpal Singh Sidhu](https://github.com/sidhujasminder)
 * v1.1.0: [Ishaan Kumar](https://github.com/eeishaan)
 * v1.0.0: [Priyal Jain](https://github.com/jainpriyal), [Nitin Kumar](https://github.com/vnitinv)
 
