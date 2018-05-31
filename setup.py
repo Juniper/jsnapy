@@ -166,9 +166,9 @@ elif 'win32' in sys.platform:
                     ]
 
 else:
-    os_data_file = [('/etc/jsnapy', ['lib/jnpr/jsnapy/logging.yml']),
-                    ('/etc/jsnapy', ['lib/jnpr/jsnapy/jsnapy.cfg']),
-                    ('/var/log/jsnapy', log_files)
+    os_data_file = [('.', ['lib/jnpr/jsnapy/logging.yml']),
+                    ('.', ['lib/jnpr/jsnapy/jsnapy.cfg']),
+                    ('../../var/log/jsnapy', log_files)
                     ]
 
 setup(name="jsnapy",
