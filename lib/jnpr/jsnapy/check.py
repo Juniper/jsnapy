@@ -5,22 +5,24 @@
 # All rights reserved.
 #
 
+import base64
+import hashlib
+import json
+import logging
 import os
 import re
 import sys
+from os.path import expanduser
+
 import colorama
-import logging
 import yaml
+from icdiff import diff, codec_print, get_options, ConsoleDiff
 from lxml import etree
+
+from jnpr.jsnapy import get_path
 from jnpr.jsnapy.operator import Operator
 from jnpr.jsnapy.sqlite_get import SqliteExtractXml
-from icdiff import diff, codec_print, get_options, ConsoleDiff
 from jnpr.jsnapy.xml_comparator import XmlComparator
-from jnpr.jsnapy import get_path
-import hashlib
-import json
-import base64
-from os.path import expanduser
 
 
 class Comparator:
@@ -639,15 +641,6 @@ class Comparator:
                                 "Description: %s " %
                                 (description),
                                 extra=self.log_detail)
-                        else:
-                            self.logger_check.info(
-                                "Description: No description is defined for the tescase.",
-                                extra=self.log_detail)
-                    else:
-                        self.logger_check.info(
-                            "Description: No description is defined for the testcase.",
-                            extra=self.log_detail)
-
                     try:
                         if any('command' in d for d in tests[val]):
                             index = next((i for i, x in enumerate(tests[val]) if 'command' in x), 0)
