@@ -17,5 +17,6 @@ test_command_version:
                   - contains: //bgp-options, LogUpDown
               - is-equal: local-address, unspecified
   - command: show bgp neighbor
+  - description: "This Test is for bgp flap count"
             
               
