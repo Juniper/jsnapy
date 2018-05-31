@@ -5,22 +5,24 @@
 # All rights reserved.
 #
 
+import base64
+import hashlib
+import json
+import logging
 import os
 import re
 import sys
+from os.path import expanduser
+
 import colorama
-import logging
 import yaml
+from icdiff import diff, codec_print, get_options, ConsoleDiff
 from lxml import etree
+
+from jnpr.jsnapy import get_path
 from jnpr.jsnapy.operator import Operator
 from jnpr.jsnapy.sqlite_get import SqliteExtractXml
-from icdiff import diff, codec_print, get_options, ConsoleDiff
 from jnpr.jsnapy.xml_comparator import XmlComparator
-from jnpr.jsnapy import get_path
-import hashlib
-import json
-import base64
-from os.path import expanduser
 
 
 class Comparator:
@@ -28,7 +30,7 @@ class Comparator:
     def __init__(self):
         self.logger_check = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
-    
+
 
     def is_op(self, op):
         """
@@ -73,7 +75,7 @@ class Comparator:
                     'snapshot_path')),
                 sfile)
             return snapfile
-    
+
     def splitter(self,value):
         f = lambda x: x.split(']')[1].count(',') if '[' in x and ']' in x else x.count(',')
         value_list = [x[::-1].strip() for x in value[::-1].split(",",f(value))][::-1]
@@ -174,9 +176,9 @@ class Comparator:
         Analyze the given elementary test case and call the appopriate operator
         like is_equal() or no_diff()
         call operator.Operator methods to compare snapshots based on given test cases
-        :param elem_test: elementary test operation dictionary 
+        :param elem_test: elementary test operation dictionary
         :param op: operator.Operator object
-        :param x_path: xpath for the command/rpc 
+        :param x_path: xpath for the command/rpc
         :param id_list: id list of elements to use while matching up in different snapshots
         :param iter: True if iterate is specified in the test file
         :param teston: command/rpc to perform test
@@ -286,7 +288,7 @@ class Comparator:
         Recursively builds the boolean expression of the provided sub_expr for evaluation
         :param sub_expr: dictionary object of the sub_expr that needs to be converted
         :param parent_op: parent operator of the sub_expr
-        :param kwargs: dictionary of arguments required by function Comparator.expression_evaluator 
+        :param kwargs: dictionary of arguments required by function Comparator.expression_evaluator
         :return: str object of the boolean expression formed of the provided sub_expr
         """
         ret_expr = []
@@ -295,8 +297,8 @@ class Comparator:
                 or ( len(sub_expr) < 2 and self.is_binary_op(parent_op))):
             self.logger_check.info(
                     colorama.Fore.RED +
-                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
-            return 
+                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)
+            return
         for elem in sub_expr:
             keys = list(elem.keys())
             #this list helps us differentiate b/w conditional and elementary operation
@@ -325,7 +327,7 @@ class Comparator:
                                                   'list-not-more'
                                                   ]):
                     continue
-                    
+
                 ret_expr.append(str(res))
                 if res and parent_op and parent_op.lower() == 'or':
                     break
@@ -334,8 +336,8 @@ class Comparator:
             else:
                 self.logger_check.info(
                     colorama.Fore.RED +
-                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
-                continue  
+                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)
+                continue
 
         expr = ''
         if parent_op is None:
@@ -343,7 +345,7 @@ class Comparator:
                 expr = ' and '.join(ret_expr)
             elif len(ret_expr) == 1 :
                 expr = ret_expr[0]
-        
+
         else:
             parent_op = str(parent_op).lower()
 
@@ -351,10 +353,10 @@ class Comparator:
                 expr = '{0} {1}'.format(parent_op,ret_expr[0])
             elif len(ret_expr) >= 1 :
                 expr = ' {0} '.format(parent_op).join(ret_expr)
-            if expr is not '':    
+            if expr is not '':
                 expr  = '(' +expr+ ')'
         return expr
-    
+
 
     def compare_reply(
             self, op, tests, test_name, teston, check, db, snap1, snap2=None, action=None):
@@ -388,7 +390,7 @@ class Comparator:
             else:
                 op.no_passed = op.no_passed + 1
         else:
-            #this result is going to be associated with the whole test case   
+            #this result is going to be associated with the whole test case
             final_result = None
 
             for test in tests:
@@ -418,10 +420,10 @@ class Comparator:
                         id_list = []
                     testcases = test['item']['tests']
                     iter = False
-      
+
                 kwargs = {'op': op,
-                          'x_path': x_path, 
-                          'id_list': id_list, 
+                          'x_path': x_path,
+                          'id_list': id_list,
                           'iter': iter,
                           'teston': teston,
                           'check': check,
@@ -433,8 +435,8 @@ class Comparator:
                           'top_ignore_null': top_ignore_null
                           }
                 final_boolean_expr = self.expression_builder(testcases, None, **kwargs)
-                #for cases where skip was encountered due to ignore-null 
-                if final_boolean_expr is '' or final_boolean_expr is None or final_boolean_expr == str(None): 
+                #for cases where skip was encountered due to ignore-null
+                if final_boolean_expr is '' or final_boolean_expr is None or final_boolean_expr == str(None):
                     continue
 
                 result = eval(final_boolean_expr)
@@ -443,7 +445,7 @@ class Comparator:
                 if final_result is None:
                     final_result = True # making things normal
                 final_result = final_result and result
-            
+
             op.result_dict[test_name] = final_result
 
     def compare_diff(self, pre_snap_file, post_snap_file, check_from_sqlite):
@@ -625,18 +627,32 @@ class Comparator:
                         "Tests Included: %s " %
                         (val),
                         extra=self.log_detail)
+
+                    # This is Where we are going to print the description mentioned by the user for the testcase
+                    # Enumerate generate a tuple of index and corresponding element in the list
+                    # index[0] is index and index[1] is the dictionary in which it will search.
+
+                    description_index = [index[0] for index in enumerate(tests[val]) if 'description' in index[1]]
+                    if len(description_index) > 0:
+                        description_index = description_index[0]
+                        description = tests[val][description_index]['description']
+                        if description is not None:
+                            self.logger_check.info(
+                                "Description: %s " %
+                                (description),
+                                extra=self.log_detail)
                     try:
                         if any('command' in d for d in tests[val]):
                             index = next((i for i, x in enumerate(tests[val]) if 'command' in x), 0)
                             command = tests[val][index].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
                             message = self._print_testmssg("Command: "+command, "*")
-                        
+
                             self.logger_check.info(
                                 colorama.Fore.BLUE +
                                 message,
                                 extra=self.log_detail)
-                        
+
                             name = '_'.join(command.split())
                             teston = command
 
