@@ -15,6 +15,9 @@ from jnpr.jsnapy import get_path
 from jnpr.junos.exception import RpcError
 from jnpr.jsnapy.sqlite_store import JsnapSqlite
 import lxml
+import hashlib
+import json
+import base64
 
 
 class Parser:
@@ -23,6 +26,9 @@ class Parser:
         self.logger_snap = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
         self.reply = {}
+        self.command_list = []
+        self.rpc_list = []
+        self.test_included = []
 
     def _write_file(self, rpc_reply, format, output_file):
         """
@@ -36,19 +42,19 @@ class Parser:
 
 
         if rpc_reply is True :
-            with open(output_file, 'w') as f:
-                f.write("")
+            with open(output_file, 'wb') as f:
+                f.write("".encode('utf-8'))
             self.logger_snap.info(
                 colorama.Fore.BLUE +
                 "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
         else:
-            with open(output_file, 'w') as f:
+            with open(output_file, 'wb') as f:
                 f.write(etree.tostring(rpc_reply))
 
     def _write_warning(
             self, reply, db, snap_file, hostname, cmd_name, cmd_format, output_file):
-        with open(snap_file, 'w') as f:
-            f.write(reply)
+        with open(snap_file, 'wb') as f:
+            f.write(reply.encode('utf-8'))
         if db['store_in_sqlite'] is True:
             self.store_in_sqlite(
                 db,
@@ -72,7 +78,7 @@ class Parser:
                 "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
             return ""
         else:
-             return etree.tostring(rpc_reply)
+            return etree.tostring(rpc_reply, encoding="unicode")
 
 
     def generate_snap_file(self, output_file, hostname, name, cmd_format):
@@ -91,9 +97,9 @@ class Parser:
             filename = hostname + '_' + output_file + \
                 '_' + cmd_rpc + '.' + cmd_format
             output_file = os.path.join(
-                get_path(
+                os.path.expanduser(get_path(
                     'DEFAULT',
-                    'snapshot_path'),
+                    'snapshot_path')),
                 filename)
             return output_file
 
@@ -126,8 +132,15 @@ class Parser:
         This function takes snapshot for given command and write it in
         snapshot file or database
         """
-        command = test_file[t][0].get('command', "unknown command")
-        cmd_format = test_file[t][0].get('format', 'xml')
+        """
+        The following search for index is done for issue #187. To make
+        the writing of testcases independant of the position of where 
+        command is written.
+        """
+        index = next((i for i, x in enumerate(test_file[t]) if 'command' in x), 0)
+        command = test_file[t][index].get('command', "unknown command")
+        cmd_format = test_file[t][index].get('format', 'xml')
+
         cmd_format = cmd_format if cmd_format in formats else 'xml'
         self.command_list.append(command)
         cmd_name = command.split('|')[0].strip()
@@ -161,7 +174,7 @@ class Parser:
                 cmd_format)
             self._write_warning(
                 etree.tostring(
-                    err.rsp),
+                    err.rsp, encoding="unicode"),
                 db,
                 snap_file,
                 hostname,
@@ -207,9 +220,17 @@ class Parser:
         This function takes snapshot for given RPC and write it in
         snapshot file or database
         """
-        rpc = test_file[t][0].get('rpc', "unknown rpc")
+        """
+        The following search for index is done for issue #187. To make
+        the writing of testcases independant of the position of where 
+        command is written.
+        """
+        index = next((i for i, x in enumerate(test_file[t]) if 'rpc' in x), 0)
+        index_kwargs = next((i for i, x in enumerate(test_file[t])
+                             if 'kwargs' in x or 'args' in x), 1)
+        rpc = test_file[t][index].get('rpc', "unknown rpc")
         self.rpc_list.append(rpc)
-        reply_format = test_file[t][0].get('format', 'xml')
+        reply_format = test_file[t][index].get('format', 'xml')
         reply_format = reply_format if reply_format in formats else 'xml'
         self.logger_snap.debug(colorama.Fore.BLUE +
                                "Tests Included : %s " %t,
@@ -218,14 +239,14 @@ class Parser:
                               "Taking snapshot of RPC: %s" %
                               rpc,
                               extra=self.log_detail)
-        if len(test_file[t]) >= 2 and ('args' in test_file[t][1] or
-                                       'kwargs' in test_file[t][1]):
-            args_key = 'args' if 'args' in test_file[t][1] else 'kwargs'
+        if len(test_file[t]) >= 2 and ('args' in test_file[t][index_kwargs] or
+                                       'kwargs' in test_file[t][index_kwargs]):
+            args_key = 'args' if 'args' in test_file[t][index_kwargs] else 'kwargs'
             kwargs = {
                 k.replace(
                     '-',
                     '_'): v for k,
-                v in test_file[t][1][args_key].items()}
+                v in list(test_file[t][index_kwargs][args_key].items())}
             if 'filter_xml' in kwargs:
                 from lxml.builder import E
                 filter_data = None
@@ -269,7 +290,7 @@ class Parser:
                         reply_format)
                     self._write_warning(
                         etree.tostring(
-                            err.rsp),
+                            err.rsp, encoding="unicode"),
                         db,
                         snap_file,
                         hostname,
@@ -317,7 +338,7 @@ class Parser:
                     reply_format)
                 self._write_warning(
                     etree.tostring(
-                        err.rsp),
+                        err.rsp, encoding="unicode"),
                     db,
                     snap_file,
                     hostname,
@@ -363,22 +384,30 @@ class Parser:
         Analyse test file and call respective functions to generate rpc reply
         for commands and RPC in test file.
         """
-        self.command_list = []
-        self.rpc_list = []
-        self.test_included = []
+        test_included = []
         formats = ['xml', 'text']
         self.log_detail['hostname'] = hostname
 
         if 'tests_include' in test_file:
-            self.test_included = test_file.get('tests_include')
+            test_included = test_file.get('tests_include')
         else:
             for t in test_file:
-                self.test_included.append(t)
+                test_included.append(t)
 
-        for t in self.test_included:
+        # adding test_included into global list
+        self.test_included.extend(test_included)
+
+        for t in test_included:
             if t in test_file:
+                """
+                Refer issue #187 for the index defining.
+                """
+                index_rpc = next((i for i, x in enumerate(test_file[t]) if 'rpc' in x), 0)
+                index_command = next((i for i, x in enumerate(test_file[t]) if 'command' in x), 0)
+                index_kwargs = next((i for i, x in enumerate(test_file[t]) if 'kwargs' in x or 'args' in x), 1)
+
                 if test_file.get(t) is not None and (
-                        'command' in test_file[t][0]):
+                        'command' in test_file[t][index_command]):
                     #command = test_file[t][0].get('command',"unknown command")
                     self.run_cmd(
                         test_file,
@@ -388,15 +417,39 @@ class Parser:
                         output_file,
                         hostname,
                         db)
-                elif test_file.get(t) is not None and 'rpc' in test_file[t][0]:
-                    self.run_rpc(
+                elif test_file.get(t) is not None and 'rpc' in test_file[t][index_rpc]:
+                    if len(test_file[t])>1 and 'kwargs' in test_file[t][index_kwargs] and test_file[t][index_kwargs].get('kwargs') is None:
+                        del test_file[t][index_kwargs]['kwargs']
+
+                    if len(test_file[t])>1 and 'args' in test_file[t][index_kwargs] and test_file[t][index_kwargs].get('args') is None:
+                        del test_file[t][index_kwargs]['args']
+
+                    if len(test_file[t])>1 and ('kwargs' in test_file[t][index_kwargs] or 'args' in test_file[t][index_kwargs]):
+                        if test_file[t][index_kwargs].get('kwargs'):
+                            data = test_file[t][index_kwargs].get('kwargs')
+                        elif test_file[t][index_kwargs].get('args'):
+                            data = test_file[t][index_kwargs].get('args')
+
+                        hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
+                        hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
+
+                        self.run_rpc(
                         test_file,
                         t,
                         formats,
                         dev,
-                        output_file,
+                        output_file + '_' + hash_kwargs.decode('utf-8'),
                         hostname,
                         db)
+                    else:
+                        self.run_rpc(
+                                test_file,
+                                t,
+                                formats,
+                                dev,
+                                output_file,
+                                hostname,
+                                db)
                 else:
                     self.logger_snap.error(
                         colorama.Fore.RED +

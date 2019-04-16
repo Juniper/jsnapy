@@ -1,0 +1,298 @@
+BFD-Check:
+- command: show bfd session 
+- iterate:
+    tests:
+    - err: BFD Session With {{post["session-neighbor"]}}, not UP , rather it's {{post["session-state"]}}
+      info: All BFD Sessions are 'UP'
+      is-equal: session-state, Up
+    xpath: bfd-session
+
+CORE-check:
+- command: show system core-dumps
+- item:
+    id: re-name
+    tests:
+    - err: Core-Dumps found!!!
+      info: Core-Dumps Check No Core dumps generated
+      no-diff: /total-files
+      ignore-null: true
+    xpath: multi-routing-engine-item
+
+Chassis-check:
+- command: show chassis hardware detail
+- iterate:
+    id: name
+    tests:
+    - err: 'The FRU {{pre["chassis-module/name"]}} , Model Name {{pre["chassis-module/model-number"]}} Have
+        Problem '
+      info: Hardware Chassis check
+      list-not-less: null
+    xpath: //chassis
+
+
+FPC-Online-check:
+- command: show chassis fpc
+- iterate:
+    id: slot
+    tests:
+    - err: ' FPC Was {{pre["state"]}}, now it is {{post["state"]}}'
+      info: FPC State check
+      no-diff: state
+    xpath: //fpc
+
+FRU-check:
+- command: show chassis hardware 
+- iterate:
+    id: serial-number
+    tests:
+    - err: 'Hardware list Missing, present in PRE and  gone missing: Serial {{post["serial-number"]}}
+        , {{post["name"]}}\n'
+      info: Hardware item list check Present in PRE
+      list-not-less: null
+    - err: 'Hardware list Missing, present in POST and was missing:  Serial {{post["serial-number"]}}
+        , {{post["name"]}}\n'
+      info: Hardware item list check Present in POST
+      list-not-more: null
+    xpath: //chassis
+    
+
+Interface-state-Check:
+- command: show interfaces terse
+- iterate:
+    id: name
+    tests:
+    - err: ' Interface Was {{pre["oper-status"]}}, now it''s {{post["oper-status"]}}'
+      info: Interface State check
+      no-diff: oper-status
+    xpath: physical-interface
+
+JUNOS-check:
+- command: show version 
+- iterate:
+    id: host-name
+    tests:
+    - err: 'JUNOS Version changed!! N/A '
+      info: JUNOS Version check current version is {{post["junos-version"]}}
+      list-not-less: null
+    xpath: //software-information
+    
+
+active-chassis-alarm-check:
+- command: show chassis alarms 
+- item:
+    tests:
+    - err: There are {{post["active-alarm-count"]}} chassis alarms
+      exists: no-active-alarms
+      info: No chassis alarms
+    xpath: //alarm-summary
+
+
+active-system-alarm-check:
+- command: show system alarms 
+- item:
+    tests:
+    - err: There are {{post["active-alarm-count"]}} chassis alarms
+      exists: no-active-alarms
+      info: No System alarms
+    xpath: //alarm-summary
+
+bgp-checks:
+- command: show bgp summary
+- iterate:
+    id: name
+    tests:
+    - no-diff: //active-prefix-count
+      err: ' pre-check: {{pre["active-prefix-count"]}}, post-check: {{post["active-prefix-count"]}}'
+      info: BGP active prefix count should not change by more than 1%
+    xpath: //bgp-rib
+bgp-peers-estab:
+- command: show bgp summary
+- iterate:
+    id: peer-address
+    tests:
+    - err: ' The BGP Neighbour {{post["peer-address"]}} was in {{pre["peer-state"]}},
+        now it''s {{post["peer-state"]}}'
+      info: BGP State check
+      no-diff: peer-state
+    xpath: bgp-peer
+
+interface-traffic:
+- command: show interfaces ae1 statistics
+- iterate:
+    id: ../name
+    tests:
+    - err: Traffic was Input {{pre["input-bps"]}} bps now Input {{post["input-bps"]}} bps
+      info: Checking Input Traffic on All Interfaces
+      delta: //input-bps, 20%
+- iterate:
+    id: ../name
+    tests:
+    - err: Traffic was Output {{pre["output-bps"]}} bps now Output {{post["output-bps"]}} bps
+      info: Checking Output Traffic on All Interfaces
+      delta: //output-bps, 10%
+    xpath: //traffic-statistics
+
+number_routes-check:
+- command: show route summary
+- iterate:
+    id: table-name
+    tests:
+    - no-diff: active-route-count
+      err: ' Number of routes, pre-check: {{pre["active-route-count"]}}, post-check:
+        {{post["active-route-count"]}}'
+      info: active route count should not changed
+    xpath: route-table
+
+optics:
+- command: show interfaces diagnostics optics
+- iterate:
+    id: ../name
+    tests:
+    - err: Low power alarm state changed on {{post["../name"]}}, Alarm was {{pre["laser-rx-power-low-alarm"]}}
+        now it is {{post["laser-rx-power-low-alarm"]}}
+      info: Checking interface optics
+      no-diff: laser-rx-power-low-alarm
+    xpath: physical-interface/optics-diagnostics
+- iterate:
+    id: ../../name, lane-index
+    tests:
+    - err: 'WARNING: Laser RX power on interface {{post["../../name"]}} lane number
+        {{post["lane-index"]}} changed from {{pre["laser-rx-optical-power"]}} to {{post["laser-rx-optical-power"]}}'
+      info: Checking optics on interfaces
+      delta: laser-rx-optical-power, 1%
+    xpath: //physical-interface/optics-diagnostics/optics-diagnostics-lane-values
+
+ospf-check:
+- command: 'show ospf neighbor instance all '
+- iterate:
+    id: interface-name
+    tests:
+    - err: 'OSPF Neighbour gone missing: {{post["interface-name"]}} going to {{post["neighbor-address"]}}
+        In instance {{post["ospf-instance-name"]}} '
+      info: OSPF interface list check
+      list-not-less: null
+      ignore-null: true
+    xpath: //ospf-neighbor
+    
+fabric-summary:
+- command: show chassis fabric summary
+- item:
+    tests:
+    - err: State of slot {{post["plane-slot"]} changed from {{pre["state"]} to {{post["state"]}
+      info: checking online FPCs 
+      is-in: state, Online
+    xpath: //fm-state-item
+
+    
+pic-check:
+- command: show chassis fpc pic-status 
+- iterate:
+    id: fpc/pic/pic-slot, fpc/slot
+    tests:
+    - err: PIC {{post["fpc/pic/pic-slot"]}} in FPC {{post["fpc/slot"]}} changed status from
+        {{pre["fpc/pic/pic-state"]}} to {{post["fpc/pic/pic-state"]}}
+      info: PIC status check
+      no-diff: fpc/pic/pic-state
+    xpath: //fpc-information
+
+
+    
+system-power-check:
+- command: show chassis power 
+- iterate:
+    tests:
+    - err: 'PEM {{post["power-usage-item/name"]}} is {{post["power-usage-item/state"]}} '
+      info: PEM status changed
+      is-in: power-usage-item/state, Online
+    xpath: //power-usage-information
+    
+number_sessions-check:
+- command: show snmp mib walk jnxJsSPUMonitoringCurrentTotalSession
+- iterate:
+    xpath: snmp-object
+    id: name
+    tests:
+      - err: ' Number of sessions, pre-check: {{pre["object-value"]}}, post-check: {{post["object-value"]}}'
+        info: active sessions count should not change by more than 10%
+        delta: object-value, 10%
+
+
+PFE-Version_Check:
+- command: show pfe version brief
+- item:
+    id: //release
+    xpath: //version-information
+    tests:
+      - err: ' Version is N/A'
+        info: Current PFE Version is post {{post["//release"]}}
+        exists: //release
+
+Fan_Spinning_Check:
+
+- command: show chassis fan 
+- item:
+    xpath: //fan-information
+    id: //name
+    tests:
+      - err: ' Fan {{["//name"]}} is not OK'
+        info: Checking all fans are spinning at normal speed
+        is-in: //status, OK
+
+
+RE-Checks:
+- command: show chassis routing-engine
+- item:
+    xpath: //route-engine-information
+    tests:
+      - err: ' CPU utilization is high, there is low idle CPU'
+        info: Checking RE CPU
+        in-range: //cpu-idle, 70,99
+
+
+LACP-Checks:
+
+- command: show lacp interfaces
+- item:
+    xpath: lacp-interface-information
+    id: .//name
+    tests:
+      - err: 'LACP interface status changed '
+        info: Checking LACP status
+        no-diff: //lacp-activity
+
+Fabric-Plane-Check:
+
+- command: show chassis fabric plane
+- item:
+    id: .//fru-slot
+    xpath: //fm-plane-state-information
+    tests:
+      - err: ' Fabric plane status changed on FPC {{["/fru-slot"]}}'
+        info: checking fabric plane
+        no-diff: //pfe-link-status
+
+tests_include:
+- system-power-check
+- active-chassis-alarm-check
+- active-system-alarm-check
+- bgp-checks
+- ospf-check
+- bgp-peers-estab
+- BFD-Check
+- FPC-Online-check
+- Interface-state-Check
+- Chassis-check
+- pic-check
+- interface-traffic
+- optics
+- number_routes-check
+- JUNOS-check
+- CORE-check
+- FRU-check
+- fabric-summary
+- number_sessions-check
+- PFE-Version_Check
+- Fan_Spinning_Check
+- Fabric-Plane-Check
+- LACP-Checks
+- RE-Checks

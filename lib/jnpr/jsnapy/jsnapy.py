@@ -5,15 +5,17 @@
 # All rights reserved.
 #
 
+from six import iteritems
 import argparse
 import getpass
 import logging
 import os
-import Queue
+import queue
 import sys
 import textwrap
 from copy import deepcopy
 from threading import Thread
+from os.path import expanduser
 
 import yaml
 from jnpr.jsnapy import get_path, version, get_config_location, DirStore
@@ -26,21 +28,25 @@ from jnpr.jsnapy.snap import Parser
 from jnpr.junos.exception import ConnectAuthError
 
 import colorama
-import setup_logging
+from . import setup_logging
+
 
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
-class SnapAdmin:
 
-    # need to call this function to initialize logging
-    setup_logging.setup_logging()
+class SnapAdmin:
 
     def __init__(self):
         """
         taking parameters from command line
         """
-        self.q = Queue.Queue()
-        self.snap_q = Queue.Queue()
+
+        # need to call this function to initialize logging
+        # This is needed at the top to have loggin enables for JSNAPy logger
+        setup_logging.setup_logging()
+
+        self.q = queue.Queue()
+        self.snap_q = queue.Queue()
         self.log_detail = {'hostname': None}
         self.snap_del = False
         self.logger = logging.getLogger(__name__)
@@ -110,6 +116,10 @@ class SnapAdmin:
             help="post snapshot filename",
             type=str)       # make it optional
         self.parser.add_argument(
+            "-T", "--testfiles",
+            nargs="+",
+            help="test file paths")  # Take test file/files as an argument 
+        self.parser.add_argument(
             "-f", "--file",
             help="config file to take snapshot",
             type=str)
@@ -172,6 +182,8 @@ class SnapAdmin:
         self.db['second_snap_id'] = None
         
         DirStore.custom_dir=self.args.folder
+
+
 
     def get_version(self):
         """
@@ -252,7 +264,7 @@ class SnapAdmin:
                     extra=self.log_detail)
                 exit(1)
             if check is True or self.args.diff is True or action is "check":
-                if 'compare' in d.keys() and d['compare'] is not None:
+                if 'compare' in list(d) and d['compare'] is not None:
                     strr = d['compare']
                     if not isinstance(strr, str):
                         self.logger.error(colorama.Fore.RED + "Properly specify ids of first and "
@@ -312,19 +324,30 @@ class SnapAdmin:
         conf_file = self.args.file
         check = self.args.check
         snap = self.args.snap
-        if os.path.isfile(conf_file):
-            config_file = open(conf_file, 'r')
-            self.main_file = yaml.load(config_file)
-        elif os.path.isfile(os.path.join(get_path('DEFAULT', 'config_file_path'), conf_file)):
-            fpath = get_path('DEFAULT', 'config_file_path')
-            config_file = open(os.path.join(fpath, conf_file), 'r')
-            self.main_file = yaml.load(config_file)
+        if conf_file is not None:
+            if os.path.isfile(conf_file):
+                config_file = open(conf_file, 'r')
+                self.main_file = yaml.load(config_file)
+            elif os.path.isfile(os.path.join(get_path('DEFAULT', 'config_file_path'), conf_file)):
+                fpath = get_path('DEFAULT', 'config_file_path')
+                config_file = open(os.path.join(fpath, conf_file), 'r')
+                self.main_file = yaml.load(config_file)
+            else:
+                self.logger.error(
+                    colorama.Fore.RED +
+                    "ERROR!! Config file '%s' is not present " %
+                    conf_file, extra=self.log_detail)
+                sys.exit(1)
         else:
-            self.logger.error(
-                colorama.Fore.RED +
-                "ERROR!! Config file '%s' is not present " %
-                conf_file, extra=self.log_detail)
-            sys.exit(1)
+            if self.args.hostname and self.args.testfiles:
+                temp_dict = {'hosts':[{'device':'', 'username':'', 'passwd':''}], 'tests':[]}
+                temp_dict['hosts'][0]['device'] = self.args.hostname
+                temp_dict['hosts'][0]['username'] = self.args.login
+                temp_dict['hosts'][0]['passwd'] = self.args.passwd
+                for tfile in self.args.testfiles:
+                    temp_dict['tests'].append(tfile)
+                self.main_file = temp_dict
+
 
         #### if --check option is given for sqlite, then snap file name is not compulsory  ####
         #### else exit the function saying arguments not correct  ####
@@ -359,9 +382,9 @@ class SnapAdmin:
         for tfile in config_data.get('tests'):
             if not os.path.isfile(tfile):
                 tfile = os.path.join(
-                    get_path(
+                    expanduser(get_path(
                         'DEFAULT',
-                        'test_file_path'),
+                        'test_file_path')),
                     tfile)
             if os.path.isfile(tfile):
                 test_file = open(tfile, 'r')
@@ -417,7 +440,7 @@ class SnapAdmin:
     def get_values(self, key_value):
         del_value = ['device', 'username', 'passwd' ]
         for v in del_value:
-            if key_value.has_key(v):
+            if v in list(key_value):
                 del key_value[v]
         return key_value
 
@@ -456,9 +479,9 @@ class SnapAdmin:
                         lfile = devices_file_name
                     else:
                         lfile = os.path.join(
-                                    get_path(
+                                    expanduser(get_path(
                                         'DEFAULT',
-                                        'test_file_path'),
+                                        'test_file_path')),
                                     devices_file_name)
                     login_file = open(lfile, 'r')
                     dev_file = yaml.load(login_file)
@@ -468,7 +491,7 @@ class SnapAdmin:
                     for dgp in dev_file:
                         if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                             for val in dev_file[dgp]:
-                                hostname = val.keys()[0]
+                                hostname = list(val)[0]
                                 self.log_detail = {'hostname': hostname}
                                 if val.get(hostname) is not None and hostname not in host_dict:
                                     host_dict[hostname] = deepcopy(val.get(hostname))
@@ -499,7 +522,7 @@ class SnapAdmin:
                                 # host.pop('device')
                                 host_dict[hostname] = deepcopy(host)
 
-            for hostname, key_value in host_dict.iteritems():
+            for (hostname, key_value) in iteritems(host_dict):
                 #The file config takes precedence over cmd line params -- no changes made
                 username = self.args.login or key_value.get('username') 
                 password = self.args.passwd or key_value.get('passwd') 
@@ -571,17 +594,13 @@ class SnapAdmin:
             elif type(mail_pref) is dict: 
                 if mail_condition in mail_pref:
                     mail_file_path = mail_pref.get(mail_condition)
-                else:
-                    self.logger.error(
-                        colorama.Fore.RED +
-                        "ERROR!! File not specified for %s scenario" % mail_condition, extra=self.log_detail)
             else:
                 self.logger.error(
                     colorama.Fore.RED +
                     "ERROR!! Type of mail preferences should be either dictionary or string", extra=self.log_detail)
                     
             if mail_file_path is not None and mail_file_path != '' :
-                mfile = os.path.join(get_path('DEFAULT', 'test_file_path'), mail_file_path)\
+                mfile = os.path.join(expanduser(get_path('DEFAULT', 'test_file_path')), mail_file_path)\
                         if os.path.isfile(mail_file_path) is False else mail_file_path
                 if os.path.isfile(mfile):
                     mail_file = open(mfile, 'r')
@@ -633,7 +652,11 @@ class SnapAdmin:
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................", hostname, extra=self.log_detail)
             if username is None:
-                username = raw_input("\nEnter User name: ")
+                if username is None:
+                    if sys.version < '3':
+                        username = raw_input("\nEnter User name: ")
+                    else:
+                        username = input("\nEnter User name: ")
             dev = Device(
                 host=hostname,
                 user=username,
@@ -647,14 +670,15 @@ class SnapAdmin:
                     password = getpass.getpass(
                         "\nEnter Password for username <%s> : " %
                         username)
-                    self.connect(
+                    return self.connect(
                         hostname,
                         username,
                         password,
                         output_file,
                         config_data,
                         action,
-                        post_snap)
+                        post_snap,
+                        **kwargs)
                 else:
                     self.logger.error(colorama.Fore.RED +
                                       "\nERROR occurred %s" %
@@ -677,7 +701,10 @@ class SnapAdmin:
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in [
                 "check", "snapcheck"]:
-            
+            if self.args.snapcheck is True:
+                action = "snapcheck"
+            if self.args.check is True:
+                action = "check"
             
             if self.args.local is True and 'local' in config_data:
                 output_file = config_data['local']
@@ -724,9 +751,9 @@ class SnapAdmin:
                 lfile = devices_file_name
             else:
                 lfile = os.path.join(
-                            get_path(
+                            expanduser(get_path(
                                 'DEFAULT',
-                                'test_file_path'),
+                                'test_file_path')),
                             devices_file_name)
             login_file = open(lfile, 'r')
             dev_file = yaml.load(login_file)
@@ -736,7 +763,7 @@ class SnapAdmin:
             for dgp in dev_file:
                 if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                     for val in dev_file[dgp]:
-                        hostname = val.keys()[0]
+                        hostname = list(val)[0]
                         self.log_detail = {'hostname': hostname}
                         if val.get(hostname) is not None and hostname not in host_dict:
                             host_dict[hostname] = deepcopy(val.get(hostname))
@@ -762,7 +789,7 @@ class SnapAdmin:
                         self.host_list.append(hostname)
                         host_dict[hostname] = deepcopy(host)
 
-        for hostname, key_value in host_dict.iteritems():
+        for (hostname, key_value) in iteritems(host_dict):
             username = key_value.get('username')
             password = key_value.get('passwd')
             key_value = self.get_values(key_value)
@@ -779,18 +806,20 @@ class SnapAdmin:
                 kwargs= key_value
             )
             t.start()
+            t.join()
             if action == "snap":
-                res_obj.append(self.snap_q.get())
+                if not self.snap_q.empty():
+                    res_obj.append(self.snap_q.get())
             elif action in ["snapcheck", "check"]:
-                res_obj.append(self.q.get())
+                if not self.q.empty():
+                    res_obj.append(self.q.get())
             else:
                 res_obj.append(None)
-            t.join()
 
         return res_obj
 
     def extract_data(
-            self, config_data, pre_name=None, action=None, post_name=None):
+            self, config_data, pre_name=None, action=None, post_name=None, local=False):
         """
         Called when dev= None, i.e. device details are passed inside config file
         It parse details of main config file and call functions to connect to device
@@ -799,6 +828,7 @@ class SnapAdmin:
         :param pre_name: pre snapshot filename or file tag
         :param action: action to be taken, snap, snapcheck, check
         :param post_name: post snapshot filename or file tag
+        :param local: reuse exisiting snapshot when true. Defaults to False        
         :return: return list of object of testop.Operator containing test details or list of dictionary of object of testop.Operator containing test details for each stored snapshot
         """
         val =[]
@@ -822,6 +852,7 @@ class SnapAdmin:
                 extra=self.log_detail)
             raise Exception("config file is not present ", ex)
         else:
+            self.args.local = local
             if config_data.__contains__(
                     'sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
                 self.chk_database(
@@ -869,6 +900,7 @@ class SnapAdmin:
         :param pre_name: pre snapshot filename or file tag
         :param action: action to be taken, snap, check or snapcheck
         :param post_snap: post snapshot filename or file tag
+        :param local: reuse exisiting snapshot when true. Defaults to False
         :return: return list of object of testop.Operator containing test details or list of dictionary of object of testop.Operator containing test details for each stored snapshot
         """
         res = []
@@ -976,7 +1008,7 @@ class SnapAdmin:
         if isinstance(dev, Device):
             res = self.extract_dev_data(dev, data, file_name, "snapcheck", local=local)
         else:
-            res = self.extract_data(data, file_name, "snapcheck")
+            res = self.extract_data(data, file_name, "snapcheck", local=local)
         return res
 
     def check(self, data, pre_file=None, post_file=None, dev=None, folder=None):
@@ -1049,9 +1081,10 @@ class SnapAdmin:
             self.parser.print_help()
             sys.exit(1)
 
-        if((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
+        if(((self.args.snap is True and (self.args.pre_snapfile is None or self.args.file is None)) or
             (self.args.snapcheck is True and self.args.file is None) or
-            (self.args.check is True and self.args.file is None)
+            (self.args.check is True and self.args.file is None)) and 
+            (self.args.testfiles is None or self.args.hostname is None)
            ):
             self.logger.error(colorama.Fore.RED +
                               "Arguments not given correctly, Please refer help message", extra=self.log_detail)
@@ -1067,7 +1100,8 @@ class SnapAdmin:
                     None)
                 sys.exit(1)
             else:
-                if self.args.file is None:
+                if (self.args.file is None) and (
+                    self.args.testfiles is None or self.args.hostname is None):
                     self.parser.print_help()
                     sys.exit(1)
 
@@ -1080,7 +1114,7 @@ def main():
     else:
         js.check_arguments()
         if js.args.version is True:
-            print "JSNAPy version:", version.__version__
+            print ("JSNAPy version: %s" % version.__version__)
         else:
             if js.args.verbosity:
                 js.set_verbosity(10*js.args.verbosity)

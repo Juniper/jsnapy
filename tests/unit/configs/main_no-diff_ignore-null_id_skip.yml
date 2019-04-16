@@ -1,0 +1,14 @@
+
+# for one device, can be given like this:
+hosts:
+  - device: 1.1.1.1
+    username : abc
+    passwd: xyz
+tests:
+  - no-diff_ignore-null_id_skip.yml
+
+# sqlite:
+#   - store_in_sqlite: yes
+#     check_from_sqlite: no
+#     database_name: jbb.db
+

@@ -1,0 +1,2 @@
+tests_include:
+  - check_chassis_fpc

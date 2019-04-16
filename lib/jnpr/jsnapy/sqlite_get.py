@@ -20,9 +20,9 @@ class SqliteExtractXml:
         self.logger_sqlite = logging.getLogger(__name__)
         self.sqlite_logs = {'hostname': None}
         self.db_filename = os.path.join(
-            get_path(
+            os.path.expanduser(get_path(
                 'DEFAULT',
-                'snapshot_path'),
+                'snapshot_path')),
             db_name)
         if not os.path.isfile(self.db_filename):
             self.logger_sqlite.error(
@@ -45,7 +45,7 @@ class SqliteExtractXml:
                 cursor = con.cursor()
                 cursor.execute(
                     "SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
-                cursor.execute("SELECT MIN(id), data_format, data FROM %s WHERE snap_name = :snap AND cli_command = :cli" % table_name,
+                cursor.execute("SELECT MIN(id), data_format, data FROM '%s' WHERE snap_name = :snap AND cli_command = :cli" % table_name,
                                {'snap': snap_name, 'cli': command_name})
                 row = cursor.fetchone()
                 if not row:
@@ -80,7 +80,7 @@ class SqliteExtractXml:
                 cursor = con.cursor()
                 cursor.execute(
                     "SELECT * FROM sqlite_master WHERE name = :name and type='table'; ", {'name': table_name})
-                cursor.execute("SELECT id, data_format, data FROM %s WHERE id = :id AND cli_command = :cli" % table_name,
+                cursor.execute("SELECT id, data_format, data FROM '%s' WHERE id = :id AND cli_command = :cli" % table_name,
                                {'id': snap_id, 'cli': command_name})
                 row = cursor.fetchone()
                 idd, data_format, data = row

@@ -2,7 +2,10 @@ language: python
 sudo: true
 
 python:
-  - "2.7"
+  - "2.7"      
+  - "3.4"
+  - "3.5"
+  - "3.6"
 
 addons:
   apt:
@@ -13,12 +16,13 @@ addons:
 
 install:
   - "pip install -r development.txt"
-  - "sudo python setup.py install --prefix=$VIRTUAL_ENV"
+  - "python setup.py install --prefix=$VIRTUAL_ENV"
 
 before_script:
   - export PYTHONPATH=$VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/site-packages
+  - cd tests/unit
 
-script: 
+script:
   nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
 
 after_success:

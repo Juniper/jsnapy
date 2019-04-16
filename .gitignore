@@ -1,0 +1,57 @@
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+README
+eggs
+parts
+var
+sdist
+develop-eggs
+.installed.cfg
+lib64
+env
+
+# Documentation
+docs/_build
+
+# Installer logs
+pip-log.txt
+#
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+tests/unit/cover
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+MANIFEST
+
+# Testing
+.tox
+
+# Vagrant
+.vagrant
+vagrant_ansible*
+
+# Window File Explorer
+desktop.ini
+
+# Mac OS X Finder
+.DS_Store
+
+# PyCharm
+.idea

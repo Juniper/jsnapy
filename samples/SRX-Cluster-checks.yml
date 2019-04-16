@@ -1,0 +1,454 @@
+BFD-Check:
+- command: 'show bfd session '
+- iterate:
+    tests:
+    - err: BFD Session With {{post["session-neighbor"]}}, not UP , rather it's {{post["session-state"]}}
+      info: All BFD Sessions are 'UP'
+      is-equal: session-state, Up
+    xpath: bfd-session
+
+Node0-CORE-check:
+- command: show system core-dumps node 0
+- item:
+    id: re-name
+    tests:
+    - err: Core-Dumps found!!!
+      info: Core-Dumps Check No Core dumps generated
+      no-diff: /total-files
+    xpath: multi-routing-engine-item
+
+Node1-CORE-check:
+- command: show system core-dumps node 1
+- item:
+    id: re-name
+    tests:
+    - err: Core-Dumps found!!!
+      info: Core-Dumps Check No core dumps generated
+      no-diff: /total-files
+    xpath: multi-routing-engine-item
+
+
+Node0-Chassis-check:
+- command: show chassis hardware detail node 0
+- iterate:
+    id: name
+    tests:
+    - err: 'The FRU {{pre["chassis-module/name"]}} , Model Name {{pre["chassis-module/model-number"]}} Have
+        Problem '
+      info: Hardware Chassis check
+      list-not-less: null
+    xpath: //chassis
+
+Node1-Chassis-check:
+- command: show chassis hardware detail node 1
+- iterate:
+    id: name
+    tests:
+    - err: 'The FRU {{pre["chassis-module/name"]}} , Model Name {{pre["chassis-module/model-number"]}} Have
+        Problem '
+      info: Hardware Chassis check
+      list-not-less: null
+    xpath: //chassis
+    
+Node0-FPC-Online-check:
+- command: show chassis fpc node 0
+- iterate:
+    id: slot
+    tests:
+    - err: ' FPC Was {{pre["state"]}}, now it is {{post["state"]}}'
+      info: FPC State check
+      no-diff: state
+    xpath: //fpc
+
+Node1-FPC-Online-check:
+- command: show chassis fpc node 1
+- iterate:
+    id: slot
+    tests:
+    - err: ' FPC Was {{pre["state"]}}, now it is {{post["state"]}}'
+      info: FPC State check
+      no-diff: state
+    xpath: //fpc
+
+Node0-FRU-check:
+- command: show chassis hardware node 0
+- iterate:
+    id: serial-number
+    tests:
+    - err: 'Hardware list Missing, present in PRE and  gone missing: Serial {{post["serial-number"]}}
+        , {{post["name"]}}\n'
+      info: Hardware item list check Present in PRE
+      list-not-less: null
+    - err: 'Hardware list Missing, present in POST and was missing:  Serial {{post["serial-number"]}}
+        , {{post["name"]}}\n'
+      info: Hardware item list check Present in POST
+      list-not-more: null
+    xpath: //chassis
+    
+Node1-FRU-check:
+- command: show chassis hardware node 1
+- iterate:
+    id: serial-number
+    tests:
+    - err: 'Hardware list Missing, present in PRE and  gone missing: Serial {{post["serial-number"]}}
+        , {{post["name"]}}\n'
+      info: Hardware item list check Present in PRE
+      list-not-less: null
+    - err: 'Hardware list Missing, present in POST and was missing:  Serial {{post["serial-number"]}}
+        , {{post["name"]}}\n'
+      info: Hardware item list check Present in POST
+      list-not-more: null
+    xpath: //chassis
+
+Interface-state-Check:
+- command: show interfaces terse
+- iterate:
+    id: name
+    tests:
+    - err: ' Interface Was {{pre["oper-status"]}}, now it''s {{post["oper-status"]}}'
+      info: Interface State check
+      no-diff: oper-status
+    xpath: physical-interface
+
+Node0-JUNOS-check:
+- command: show version node 0
+- iterate:
+    id: host-name
+    tests:
+    - err: 'JUNOS Version changed!! N/A '
+      info: JUNOS Version check current version is {{post["junos-version"]}}
+      list-not-less: null
+    xpath: //software-information
+    
+Node1-JUNOS-check:
+- command: show version node 1
+- iterate:
+    id: host-name
+    tests:
+    - err: 'JUNOS Version changed!! N/A} '
+      info: JUNOS Version check current version is {{post["junos-version"]}}
+      list-not-less: null
+    xpath: //software-information
+
+Node0-active-chassis-alarm-check:
+- command: show chassis alarms node 0
+- item:
+    tests:
+    - err: There are {{post["active-alarm-count"]}} chassis alarms
+      exists: no-active-alarms
+      info: No chassis alarms
+    xpath: //alarm-summary
+    
+Node1-active-chassis-alarm-check:
+- command: show chassis alarms node 1
+- item:
+    tests:
+    - err: There are {{post["active-alarm-count"]}} chassis alarms
+      exists: no-active-alarms
+      info: No chassis alarms
+    xpath: //alarm-summary
+
+Node0-active-system-alarm-check:
+- command: show system alarms node 0
+- item:
+    tests:
+    - err: There are {{post["active-alarm-count"]}} chassis alarms
+      exists: no-active-alarms
+      info: No System alarms
+    xpath: //alarm-summary
+    
+Node1-active-system-alarm-check:
+- command: show system alarms node 1
+- item:
+    tests:
+    - err: There are {{post["active-alarm-count"]}} chassis alarms
+      exists: no-active-alarms
+      info: No System alarms
+    xpath: //alarm-summary
+
+bgp-checks:
+- command: show bgp summary
+- iterate:
+    id: name
+    tests:
+    - delta: total-prefix-count, 1%
+      err: ' pre-check: {{pre["total-prefix-count"]}}, post-check: {{post["total-prefix-count"]}}'
+      info: BGP total prefix count should not change by more than 1%
+    - delta: active-prefix-count, 1%
+      err: ' pre-check: {{pre["active-prefix-count"]}}, post-check: {{post["active-prefix-count"]}}'
+      info: BGP active prefix count should not change by more than 1%
+    xpath: bgp-rib
+bgp-peers-estab:
+- command: show bgp summary
+- iterate:
+    id: peer-address
+    tests:
+    - err: ' The BGP Neighbour {{post["peer-address"]}} was in {{pre["peer-state"]}},
+        now it''s {{post["peer-state"]}}'
+      info: BGP State check
+      no-diff: peer-state
+    xpath: bgp-peer
+
+interface-traffic:
+- command: show interfaces reth0 statistics
+- iterate:
+    id: ../name
+    tests:
+    - err: Traffic was Input {{pre["input-bps"]}} bps now Input {{post["input-bps"]}} bps
+      info: Checking Input Traffic on All Interfaces
+      delta: input-bps, 10%
+- iterate:
+    id: ../name
+    tests:
+    - err: Traffic was Output {{pre["output-bps"]}} bps now Output {{post["output-bps"]}} bps
+      info: Checking Output Traffic on All Interfaces
+      delta: output-bps, 10%
+    xpath: //physical-interface/traffic-statistics
+
+number_routes-check:
+- command: show route summary
+- iterate:
+    id: table-name
+    tests:
+    - delta: active-route-count, 1%
+      err: ' Number of routes, pre-check: {{pre["active-route-count"]}}, post-check:
+        {{post["active-route-count"]}}'
+      info: active route count should not change by more than 1%
+    xpath: route-table
+
+optics:
+- command: show interfaces diagnostics optics
+- iterate:
+    id: ../name
+    tests:
+    - err: Low power alarm state changed on {{post["../name"]}}, Alarm was {{pre["laser-rx-power-low-alarm"]}}
+        now it is {{post["laser-rx-power-low-alarm"]}}
+      info: Checking interface optics
+      list-not-less: laser-rx-power-low-alarm
+    xpath: physical-interface/optics-diagnostics
+- iterate:
+    id: ../../name, lane-index
+    tests:
+    - err: 'WARNING: Laser RX power on interface {{post["../../name"]}} lane number
+        {{post["lane-index"]}} changed from {{pre["laser-rx-optical-power"]}} to {{post["laser-rx-optical-power"]}}'
+      info: Checking optics on interfaces
+      list-not-less: laser-rx-optical-power
+    xpath: //physical-interface/optics-diagnostics/optics-diagnostics-lane-values
+
+ospf-check:
+- command: 'show ospf neighbor instance all '
+- iterate:
+    id: interface-name
+    tests:
+    - err: 'OSPF Neighbour gone missing: {{post["interface-name"]}} going to {{post["neighbor-address"]}}
+        In instance {{post["ospf-instance-name"]}} '
+      info: OSPF interface list check
+      list-not-less: null
+      ignore-null: true
+    xpath: //ospf-neighbor
+    
+Node0-fabric-summary:
+- command: show chassis fabric summary node 0
+- item:
+    tests:
+    - err: State of slot {{post["plane-slot"]} changed from {{pre["state"]} to {{post["state"]}
+      info: checking online FPCs Node 0 
+      is-in: state, Online
+    xpath: //fm-state-item
+
+Node1-fabric-summary:
+- command: show chassis fabric summary node 1
+- item:
+    tests:
+    - err: Slot {{post["plane-slot"]} is not online
+      info: checking online FPCs Node 1
+      is-in: state, Online
+    xpath: //fm-state-item
+    
+Node0-pic-check:
+- command: show chassis fpc pic-status node 0
+- iterate:
+    id: fpc/pic/pic-slot, fpc/slot
+    tests:
+    - err: PIC {{post["fpc/pic/pic-slot"]}} in FPC {{post["fpc/slot"]}} changed status from
+        {{pre["fpc/pic/pic-state"]}} to {{post["fpc/pic/pic-state"]}}
+      info: PIC status check
+      no-diff: fpc/pic/pic-state
+    xpath: //fpc-information
+    
+Node1-pic-check:
+- command: show chassis fpc pic-status node 1
+- iterate:
+    id: fpc/pic/pic-slot, fpc/slot
+    tests:
+    - err: PIC {{post["fpc/pic/pic-slot"]}} in FPC {{post["fpc/slot"]}} changed status from
+        {{pre["fpc/pic/pic-state"]}} to {{post["fpc/pic/pic-state"]}}
+      info: PIC status check
+      no-diff: fpc/pic/pic-state
+    xpath: //fpc-information
+
+cluster-status:
+- command: show chassis cluster status 
+- item:
+    tests:
+    - err: Monitor for redundancy group {{post["redundancy-group/redundancy-group-id"]}}changed status from {{pre["redundancy-group/device-stats/monitor-failures"]}} to {{post["redundancy-group/device-stats/monitor-failures"]}}
+      info: Monitor failure check
+      is-in: redundancy-group/device-stats/monitor-failures, None
+    xpath: //chassis-cluster-status
+
+    
+Node0-system-power-check:
+- command: show chassis power node 0
+- iterate:
+    tests:
+    - err: 'PEM {{post["power-usage-item/name"]}} is {{post["power-usage-item/state"]}} '
+      info: PEM status changed
+      is-in: power-usage-item/state, Online
+    xpath: //power-usage-information
+    
+Node1-system-power-check:
+- command: show chassis power node 1
+- iterate:
+    tests:
+    - err: 'PEM {{post["power-usage-item/name"]}} is {{post["power-usage-item/state"]}} '
+      info: PEM status changed
+      is-in: power-usage-item/state, Online
+    xpath: //power-usage-information
+    
+    
+Node0-number_sessions-check:
+- command: show security monitoring node 0
+- item:
+    id: fpc-number
+    xpath: .//performance-summary-information/performance-summary-statistics
+    tests:
+      - err: ' Number of sessions, pre-check: {{pre["spu-current-flow-session"]}}, post-check: {{post["spu-current-flow-session"]}}'
+        info: active sessions count should not change by more than 10%
+        delta: //spu-current-flow-session, 10%
+
+Node1-number_sessions-check:
+- command: show security monitoring node 1
+- item:
+    id: fpc-number
+    xpath: .//performance-summary-information/performance-summary-statistics
+    tests:
+      - err: ' Number of sessions, pre-check: {{pre["spu-current-flow-session"]}}, post-check: {{post["spu-current-flow-session"]}}'
+        info: active sessions count should not change by more than 10%
+        delta: //spu-current-flow-session, 10%
+
+
+PFE-Version_Check:
+
+- command: show pfe version brief
+- item:
+    id: //release
+    xpath: //version-information
+    tests:
+      - err: ' Version is N/A'
+        info: Current PFE Version is post {{post["//release"]}}
+        exists: //release
+
+Node0-Fan_Spinning_Check:
+
+- command: show chassis fan node 0
+- item:
+    xpath: //fan-information
+    id: //name
+    tests:
+      - err: ' Fan {{["//name"]}} is not OK'
+        info: Checking all fans are spinning at normal speed
+        is-in: //status, OK
+
+Node1-Fan_Spinning_Check:
+
+- command: show chassis fan node 1
+- item:
+    xpath: //fan-information
+    id: //name
+    tests:
+      - err: ' Fan {{["//name"]}} is not OK'
+        info: Checking all fans are spinning at normal speed
+        is-in: //status, OK
+        
+Node0-RE-Checks:
+
+- command: show chassis routing-engine node 0
+- item:
+    xpath: //route-engine-information
+    tests:
+      - err: ' CPU utilization is high, there is low idle CPU'
+        info: Checking RE CPU
+        in-range: //cpu-idle, 70,99
+
+Node1-RE-Checks:
+
+- command: show chassis routing-engine node 1
+- item:
+    xpath: //route-engine-information
+    tests:
+      - err: ' CPU utilization is high, there is low idle CPU'
+        info: Checking RE CPU
+        in-range: //cpu-idle, 70,99
+
+
+LACP-Checks:
+
+- command: show lacp interfaces
+- item:
+    xpath: lacp-interface-information
+    id: .//name
+    tests:
+      - err: 'LACP interface status changed '
+        info: Checking LACP status
+        no-diff: //lacp-activity
+
+Fabric-Plane-Check:
+
+- command: show chassis fabric plane
+- item:
+    id: .//fru-slot
+    xpath: //fm-plane-state-information
+    tests:
+      - err: ' Fabric plane status changed on FPC {{["/fru-slot"]}}'
+        info: checking fabric plane
+        no-diff: //pfe-link-status
+
+tests_include:
+- Node0-system-power-check
+- Node1-system-power-check
+- Node0-active-chassis-alarm-check
+- Node1-active-chassis-alarm-check
+- Node0-active-system-alarm-check
+- Node1-active-system-alarm-check
+- bgp-checks
+- ospf-check
+- bgp-peers-estab
+- BFD-Check
+- Node0-FPC-Online-check
+- Node1-FPC-Online-check
+- Interface-state-Check
+- Node0-Chassis-check
+- Node1-Chassis-check
+- Node0-pic-check
+- Node1-pic-check
+- interface-traffic
+- optics
+- number_routes-check
+- Node0-JUNOS-check
+- Node1-JUNOS-check
+- Node0-CORE-check
+- Node1-CORE-check
+- Node0-FRU-check
+- Node1-FRU-check
+- cluster-status
+- Node0-fabric-summary
+- Node1-fabric-summary
+- Node0-number_sessions-check
+- Node1-number_sessions-check
+- PFE-Version_Check
+- Node0-Fan_Spinning_Check
+- Node1-Fan_Spinning_Check
+- Fabric-Plane-Check
+- LACP-Checks
+- Node0-RE-Checks
+- Node1-RE-Checks

@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-# Copyright (c) 1999-2016, Juniper Networks Inc.
+# Copyright (c) 1999-2018, Juniper Networks Inc.
 #
 # All rights reserved.
 #
 
-__version__ = "1.0.1"
-DATE = "2016-Aug-26"
+__version__ = "1.3.2"
+DATE = "2018-May-31"

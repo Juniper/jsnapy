@@ -1,0 +1,11 @@
+
+# for one device, can be given like this:
+hosts:
+  - device: 1.1.1.1
+    username : abc
+    passwd: xyz
+tests:
+  - list-not-less_ignore-null_id_skip.yml
+
+
+

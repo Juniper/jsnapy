@@ -1,0 +1,9 @@
+test_interfaces_terse:
+  - command: show interfaces dsc terse
+  - iterate:
+      id: ./name
+      xpath: //physical-interface
+      tests:
+        - exists: ./name[contains(.,'dsc')]
+          err: "No such node exists"
+          info: "A node with such condition exist"

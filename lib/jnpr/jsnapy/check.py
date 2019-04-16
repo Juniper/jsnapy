@@ -5,18 +5,24 @@
 # All rights reserved.
 #
 
+import base64
+import hashlib
+import json
+import logging
 import os
 import re
 import sys
+from os.path import expanduser
+
 import colorama
-import logging
 import yaml
+from icdiff import diff, codec_print, get_options, ConsoleDiff
 from lxml import etree
+
+from jnpr.jsnapy import get_path
 from jnpr.jsnapy.operator import Operator
 from jnpr.jsnapy.sqlite_get import SqliteExtractXml
-from icdiff import diff, codec_print, get_options, ConsoleDiff
 from jnpr.jsnapy.xml_comparator import XmlComparator
-from jnpr.jsnapy import get_path
 
 
 class Comparator:
@@ -24,7 +30,7 @@ class Comparator:
     def __init__(self):
         self.logger_check = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
-    
+
 
     def is_op(self, op):
         """
@@ -64,17 +70,34 @@ class Comparator:
             sfile = str(device) + '_' + prefix + '_' + \
                 cmd_rpc_name + '.' + reply_format
             snapfile = os.path.join(
-                get_path(
+                expanduser(get_path(
                     'DEFAULT',
-                    'snapshot_path'),
+                    'snapshot_path')),
                 sfile)
             return snapfile
 
+    def splitter(self,value):
+        f = lambda x: x.split(']')[1].count(',') if '[' in x and ']' in x else x.count(',')
+        value_list = [x[::-1].strip() for x in value[::-1].split(",",f(value))][::-1]
+        return value_list
 
     def get_err_mssg(self, path, ele_list):
         """
         This function generates error message, if nothing is given then it will generate default error message
         """
+        path_keys = ['err', 'info', 'ignore-null']
+        value_list = []
+        for key, value in path.items():
+            if key not in path_keys and value:
+                value_list = self.splitter(value)
+        val = path.get('err')
+        regex = r"\$(\d+)"
+        i = 0
+        if len(value_list) > 1 and val :
+            for i in range(1,len(value_list)):
+                val = re.sub(regex,value_list[i],val,count=1)
+                i = i + 1
+            path['err'] = val
         err_mssg = path.get('err', "Test FAILED: " +
                             ele_list[
                                 0] + " before was < {{pre['" + ele_list[0] + "']}} >"
@@ -86,6 +109,19 @@ class Comparator:
         """
         This function generates info message, if nothing is given then it will generate default info message
         """
+        path_keys = ['err', 'info', 'ignore-null']
+        value_list = []
+        for key, value in path.items():
+            if key not in path_keys and value:
+                value_list = self.splitter(value)
+        val = path.get('info')
+        regex = r"\$(\d+)"
+        i = 0
+        if len(value_list) > 1 and val :
+            for i in range(1,len(value_list)):
+                val = re.sub(regex,value_list[i],val,count=1)
+                i = i + 1
+            path['info'] = val
         info_mssg = path.get('info', "Test PASSED: " + ele_list[0] +
                              " before was < {{pre['" +
                              ele_list[0] +
@@ -128,16 +164,21 @@ class Comparator:
             return
         return xml_value
 
+    def _get_testop(self, elem_list):
+        exclusion_list = ['err', 'info', 'ignore-null']
+        testop = [key.lower() for key in elem_list if key.lower() not in exclusion_list]
+        testop = testop[0] if testop else "Define test operator"
+        return testop
 
     def expression_evaluator(self, elem_test, op, x_path, id_list, iter, teston,
-                                check, db, snap1, snap2=None, action=None, top_ignore_null=None):
+                                check, db, test_name, snap1, snap2=None, action=None, top_ignore_null=None):
         """
         Analyze the given elementary test case and call the appopriate operator
         like is_equal() or no_diff()
         call operator.Operator methods to compare snapshots based on given test cases
-        :param elem_test: elementary test operation dictionary 
+        :param elem_test: elementary test operation dictionary
         :param op: operator.Operator object
-        :param x_path: xpath for the command/rpc 
+        :param x_path: xpath for the command/rpc
         :param id_list: id list of elements to use while matching up in different snapshots
         :param iter: True if iterate is specified in the test file
         :param teston: command/rpc to perform test
@@ -150,16 +191,28 @@ class Comparator:
         """
         # analyze individual test case and extract element list, info and
         # err message ####
-        values = ['err', 'info']
-        testvalues = elem_test.keys()
-        testop1 = [
-            tvalue for tvalue in testvalues if tvalue not in values]
-        testop = testop1[0] if testop1 else "Define test operator"
+        testop = self._get_testop(elem_test)
 
         ele = elem_test.get(testop)
+        # For compatibility with Xpath Functions, the following has been added
+        # assuming that the function used in XPATH
+        # are defined within '[ ]'.This will help easy splitting of all the
+        # variables passed for the required test operation
+
         if ele is not None:
-            ele_list = [elements.strip()
-                        for elements in ele.split(',')]
+            obj = re.search(r'(.*\[.*(,.*)+\])(.*)', ele)
+            if obj:
+                xml_element = obj.group(1)
+                ele_list = [xml_element]
+                if obj.group(3):
+                    xml_paras = obj.group(3)
+                    ele_list = ele_list + [elements.strip()
+                                           for elements
+                                           in xml_paras.split(',') if
+                                           elements.strip() is not '']
+            else:
+                ele_list = [elements.strip()
+                            for elements in ele.split(',')]
         else:
             ele_list = ['no node']
 
@@ -170,29 +223,34 @@ class Comparator:
         ignore_null = elem_test.get('ignore-null') or top_ignore_null
         # check test operators, below mentioned four are allowed only
         # with --check ####
+        is_skipped = False
         if testop in [
                 'no-diff', 'list-not-less', 'list-not-more', 'delta']:
             if check is True or action is "check":
                 xml1 = self.get_xml_reply(db, snap1)
                 xml2 = self.get_xml_reply(db, snap2)
-                op.define_operator(
-                    self.log_detail,
-                    testop,
-                    x_path,
-                    ele_list,
-                    err_mssg,
-                    info_mssg,
-                    teston,
-                    iter,
-                    id_list,
-                    xml1,
-                    xml2,
-                    ignore_null)
+                if xml2 is None:
+                    is_skipped = True
+                else:
+                    op.define_operator(
+                        self.log_detail,
+                        testop,
+                        x_path,
+                        ele_list,
+                        err_mssg,
+                        info_mssg,
+                        teston,
+                        iter,
+                        id_list,
+                        test_name,
+                        xml1,
+                        xml2,
+                        ignore_null)
             else:
                 self.logger_check.error(
                     colorama.Fore.RED +
                     "Test Operator %s is allowed only with --check" % testop, extra=self.log_detail)
-
+                is_skipped = True
         # if test operators are other than above mentioned four operators
         else:
             # if check is used with uni operand test operator then use
@@ -204,19 +262,25 @@ class Comparator:
                 pre_snap = None
                 post_snap = self.get_xml_reply(db, snap1)
 
-            op.define_operator(
-                self.log_detail,
-                testop,
-                x_path,
-                ele_list,
-                err_mssg,
-                info_mssg,
-                teston,
-                iter,
-                id_list,
-                pre_snap,
-                post_snap,
-                ignore_null)
+            if post_snap is None:
+                is_skipped = True
+            else:
+                op.define_operator(
+                    self.log_detail,
+                    testop,
+                    x_path,
+                    ele_list,
+                    err_mssg,
+                    info_mssg,
+                    teston,
+                    iter,
+                    id_list,
+                    test_name,
+                    pre_snap,
+                    post_snap,
+                    ignore_null)
+        if is_skipped:
+            op.test_details[teston].append({'result': None})
 
 
     def expression_builder(self, sub_expr, parent_op=None, **kwargs):
@@ -224,7 +288,7 @@ class Comparator:
         Recursively builds the boolean expression of the provided sub_expr for evaluation
         :param sub_expr: dictionary object of the sub_expr that needs to be converted
         :param parent_op: parent operator of the sub_expr
-        :param kwargs: dictionary of arguments required by function Comparator.expression_evaluator 
+        :param kwargs: dictionary of arguments required by function Comparator.expression_evaluator
         :return: str object of the boolean expression formed of the provided sub_expr
         """
         ret_expr = []
@@ -233,10 +297,10 @@ class Comparator:
                 or ( len(sub_expr) < 2 and self.is_binary_op(parent_op))):
             self.logger_check.info(
                     colorama.Fore.RED +
-                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
-            return 
+                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)
+            return
         for elem in sub_expr:
-            keys = elem.keys()
+            keys = list(elem.keys())
             #this list helps us differentiate b/w conditional and elementary operation
             op_list = [k for k in keys if self.is_op(k)]
             if len(op_list) == 1:
@@ -253,12 +317,17 @@ class Comparator:
                 #this should be guaranteed by the operator function, never use try-catch here
                 last_test_instance = kwargs['op'].test_details[kwargs['teston']][-1]
                 res = last_test_instance['result']
-                
+
+                testop = self._get_testop(elem)
                 #for skipping cases
-                if res is None or ( last_test_instance['count']['pass'] == 0 \
-                                   and last_test_instance['count']['fail'] == 0 ): 
+                if res is None or (last_test_instance['count']['pass'] == 0 and
+                                   last_test_instance['count']['fail'] == 0 and
+                                   testop not in ['no-diff',
+                                                  'list-not-less',
+                                                  'list-not-more'
+                                                  ]):
                     continue
-                    
+
                 ret_expr.append(str(res))
                 if res and parent_op and parent_op.lower() == 'or':
                     break
@@ -267,8 +336,8 @@ class Comparator:
             else:
                 self.logger_check.info(
                     colorama.Fore.RED +
-                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)  
-                continue  
+                    "ERROR!!! Malformed sub-expression", extra=self.log_detail)
+                continue
 
         expr = ''
         if parent_op is None:
@@ -276,7 +345,7 @@ class Comparator:
                 expr = ' and '.join(ret_expr)
             elif len(ret_expr) == 1 :
                 expr = ret_expr[0]
-        
+
         else:
             parent_op = str(parent_op).lower()
 
@@ -284,10 +353,10 @@ class Comparator:
                 expr = '{0} {1}'.format(parent_op,ret_expr[0])
             elif len(ret_expr) >= 1 :
                 expr = ' {0} '.format(parent_op).join(ret_expr)
-            if expr is not '':    
+            if expr is not '':
                 expr  = '(' +expr+ ')'
         return expr
-    
+
 
     def compare_reply(
             self, op, tests, test_name, teston, check, db, snap1, snap2=None, action=None):
@@ -321,7 +390,7 @@ class Comparator:
             else:
                 op.no_passed = op.no_passed + 1
         else:
-            #this result is going to be associated with the whole test case   
+            #this result is going to be associated with the whole test case
             final_result = None
 
             for test in tests:
@@ -351,22 +420,23 @@ class Comparator:
                         id_list = []
                     testcases = test['item']['tests']
                     iter = False
-      
+
                 kwargs = {'op': op,
-                          'x_path': x_path, 
-                          'id_list': id_list, 
+                          'x_path': x_path,
+                          'id_list': id_list,
                           'iter': iter,
                           'teston': teston,
                           'check': check,
                           'db': db,
+                          'test_name': test_name,
                           'snap1': snap1,
                           'snap2': snap2,
                           'action': action,
                           'top_ignore_null': top_ignore_null
                           }
                 final_boolean_expr = self.expression_builder(testcases, None, **kwargs)
-                #for cases where skip was encountered due to ignore-null 
-                if final_boolean_expr is '' or final_boolean_expr is None or final_boolean_expr == str(None): 
+                #for cases where skip was encountered due to ignore-null
+                if final_boolean_expr is '' or final_boolean_expr is None or final_boolean_expr == str(None):
                     continue
 
                 result = eval(final_boolean_expr)
@@ -375,7 +445,7 @@ class Comparator:
                 if final_result is None:
                     final_result = True # making things normal
                 final_result = final_result and result
-            
+
             op.result_dict[test_name] = final_result
 
     def compare_diff(self, pre_snap_file, post_snap_file, check_from_sqlite):
@@ -512,6 +582,11 @@ class Comparator:
         op.device = device
         tests_files = []
         self.log_detail['hostname'] = device
+        # pre_user and post_user are the names of the snapshot files
+        # that the user wants to keep and store the snapfiles
+        # with these names
+        pre_user = pre
+        post_user = post
         # get the test files from config.yml
         if main_file.get('tests') is None:
             self.logger_check.error(
@@ -522,9 +597,9 @@ class Comparator:
             for tfile in main_file.get('tests'):
                 if not os.path.isfile(tfile):
                     tfile = os.path.join(
-                        get_path(
+                        expanduser(get_path(
                             'DEFAULT',
-                            'test_file_path'),
+                            'test_file_path')),
                         tfile)
                 if os.path.isfile(tfile):
                     test_file = open(tfile, 'r')
@@ -552,26 +627,78 @@ class Comparator:
                         "Tests Included: %s " %
                         (val),
                         extra=self.log_detail)
+
+                    # This is Where we are going to print the description mentioned by the user for the testcase
+                    # Enumerate generate a tuple of index and corresponding element in the list
+                    # index[0] is index and index[1] is the dictionary in which it will search.
+
+                    description_index = [index[0] for index in enumerate(tests[val]) if 'description' in index[1]]
+                    if len(description_index) > 0:
+                        description_index = description_index[0]
+                        description = tests[val][description_index]['description']
+                        if description is not None:
+                            self.logger_check.info(
+                                "Description: %s " %
+                                (description),
+                                extra=self.log_detail)
                     try:
-                        if tests[val][0].keys()[0] == 'command':
-                            command = tests[val][0].get('command').split('|')[0].strip()
+                        if any('command' in d for d in tests[val]):
+                            index = next((i for i, x in enumerate(tests[val]) if 'command' in x), 0)
+                            command = tests[val][index].get('command').split('|')[0].strip()
                             reply_format = tests[val][0].get('format', 'xml')
                             message = self._print_testmssg("Command: "+command, "*")
-                        
+
                             self.logger_check.info(
                                 colorama.Fore.BLUE +
                                 message,
                                 extra=self.log_detail)
-                        
+
                             name = '_'.join(command.split())
                             teston = command
+
+                            # this is necessary for the pre and post to be the same that user specified
+                            # In a case when there are multiple rpc's with kwargs and a rpc with no kwargs
+                            pre = pre_user
+                            post = post_user
                         else:
-                            rpc = tests[val][0]['rpc']
-                            reply_format = tests[val][0].get('format', 'xml')
+                            index = next((i for i, x in enumerate(tests[val]) if 'rpc' in x), 0)
+                            index_kwargs = next((i for i, x in enumerate(tests[val]) if 'kwargs' in x or 'args' in x),
+                                                1)
+                            rpc = tests[val][index]['rpc']
+                            reply_format = tests[val][index].get('format', 'xml')
                             self.logger_check.info(colorama.Fore.BLUE + (25) * "*" + "RPC is " +
                                                    rpc + (25) * '*', extra=self.log_detail)
                             name = rpc
                             teston = rpc
+                            # this is necessary for the pre and post to be the same that user specified
+                            # In a case when there are multiple rpc's with kwargs and a rpc with no kwargs
+                            pre = pre_user
+                            post = post_user
+
+                            # here the user specified name is being used and the hash value generated for
+                            # kwargs part is appended to the name
+
+                            if 'kwargs' in tests[val][index_kwargs] and tests[val][index_kwargs].get('kwargs') is None:
+                                del tests[val][index_kwargs]['kwargs']
+
+                            if 'args' in tests[val][index_kwargs] and tests[val][index_kwargs].get('args') is None:
+                                del tests[val][index_kwargs]['args']
+
+                            if 'kwargs' in tests[val][index_kwargs] or 'args' in tests[val][index_kwargs]:
+                                if tests[val][index_kwargs].get('kwargs'):
+                                    data = tests[val][index_kwargs].get('kwargs')
+                                elif tests[val][index_kwargs].get('args'):
+                                    data = tests[val][index_kwargs].get('args')
+                                hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
+                                hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
+                                if action == 'check' and pre_user is not None and post_user is not None:
+                                    pre = pre_user + '_' + hash_kwargs.decode('utf-8')
+                                    post = post_user + '_' + hash_kwargs.decode('utf-8')
+                                elif action == 'snapcheck' and pre_user is not None and post_user is None:
+                                    pre = pre_user + '_' + hash_kwargs.decode('utf-8')
+                                elif diff is True and pre_user is not None and post_user is not None:
+                                    pre = pre_user + '_' + hash_kwargs.decode('utf-8')
+                                    post = post_user + '_' + hash_kwargs.decode('utf-8')
                     except KeyError:
                         self.logger_check.error(
                             colorama.Fore.RED +
@@ -698,6 +825,6 @@ class Comparator:
         :param testname: test operation like "no-diff", "is-equal"
         """
         msg = ' '+msg+' '
-        ln = (80 - len(msg) - 2) / 2
+        ln = int((80 - len(msg) - 2) / 2)
         testmssg = (ln * delimiter) + msg + (ln * delimiter)
         return testmssg

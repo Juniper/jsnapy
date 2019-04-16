@@ -1,0 +1,5 @@
+tests_include:
+  - test_command_version
+
+test_command_version:
+  - command: show interfaces terse
