@@ -603,7 +603,7 @@ class Comparator:
                         tfile)
                 if os.path.isfile(tfile):
                     test_file = open(tfile, 'r')
-                    tests_files.append(yaml.load(test_file))
+                    tests_files.append(yaml.load(test_file, Loader=yaml.FullLoader))
                 else:
                     self.logger_check.error(
                         colorama.Fore.RED +

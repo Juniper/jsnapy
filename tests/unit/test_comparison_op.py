@@ -29,7 +29,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-less.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -51,7 +51,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-less_ignore-null_fail.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -73,7 +73,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-less_ignore-null_fail_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -95,7 +95,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-less_ignore-null_skip.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -117,7 +117,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-less_ignore-null_skip_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -139,7 +139,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-less_ignore-null_id_skip.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -161,7 +161,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-less.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -183,7 +183,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-more.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -207,7 +207,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-more.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -229,7 +229,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-more_ignore-null_fail.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -251,7 +251,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-more_ignore-null_fail_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -273,7 +273,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-more_ignore-null_skip.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -295,7 +295,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-more_ignore-null_skip_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -317,7 +317,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_list-not-more_ignore-null_id_skip.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -339,7 +339,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_delta.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -361,7 +361,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_delta_ignore-null_fail.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -382,7 +382,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_delta_ignore-null_fail_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -404,7 +404,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_delta_ignore-null_skip.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -426,7 +426,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_delta_ignore-null_skip_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -448,7 +448,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_delta_ignore-null_id_skip.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -470,7 +470,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_delta.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -492,7 +492,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_no-diff.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -514,7 +514,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_dot-dot.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -538,7 +538,7 @@ class TestComparisonOperator(unittest.TestCase):
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         mock_sqlite_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -565,7 +565,7 @@ class TestComparisonOperator(unittest.TestCase):
         sqlite_mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
 
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -587,7 +587,7 @@ class TestComparisonOperator(unittest.TestCase):
                                  'configs', 'main_no-diff_ignore-null_id_skip.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,

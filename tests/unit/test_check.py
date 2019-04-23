@@ -30,7 +30,7 @@ class TestCheck(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_incorrect_1.yml')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         with patch('logging.Logger.error') as mock_error:
             comp.generate_test_files(
                 main_file,
@@ -54,7 +54,7 @@ class TestCheck(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_incorrect_2.yml')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         filename = os.path.join('/etc', 'jsnapy', 'testfiles', "dummy.yml")
         with patch('logging.Logger.error') as mock_error:
             comp.generate_test_files(
@@ -78,7 +78,7 @@ class TestCheck(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_incorrect_3.yml')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         with patch('logging.Logger.error') as mock_log:
             comp.generate_test_files(
                 main_file,
@@ -105,7 +105,7 @@ class TestCheck(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_incorrect_4.yml')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         self.db['check_from_sqlite'] = True
         with patch('logging.Logger.error') as mock_log:
             try:
@@ -132,7 +132,7 @@ class TestCheck(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_incorrect_4.yml')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         with patch('logging.Logger.error') as mock_log:
             comp.generate_test_files(
@@ -158,7 +158,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_empty_test.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         with patch('jnpr.jsnapy.check.XmlComparator.xml_compare') as mock_compare:
             comp.generate_test_files(
                 main_file,
@@ -181,7 +181,7 @@ class TestCheck(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_empty_test.yml')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         with patch('jnpr.jsnapy.check.diff') as mock_compare:
             comp.generate_test_files(
                 main_file,
@@ -204,7 +204,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_conditional_op_fail.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -226,7 +226,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_conditional_op_error_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -247,7 +247,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_conditional_op_error_2.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -269,7 +269,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_conditional_op_error_3.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -291,7 +291,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_conditional_op_error_4.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -312,7 +312,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_conditional_op_pass.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -339,7 +339,7 @@ class TestCheck(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_rpc_test.yml')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         self.db['check_from_sqlite'] = True
         comp = Comparator()
         comp.generate_test_files(
@@ -366,7 +366,7 @@ class TestCheck(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_rpc_test.yml')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         self.db['check_from_sqlite'] = True
         self.db['first_snap_id'] = 0
         self.db['second_snap_id'] = 1
@@ -440,7 +440,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_xpath_functions.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,

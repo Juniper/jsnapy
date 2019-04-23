@@ -25,7 +25,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_contains.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -45,7 +45,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_contains.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -66,7 +66,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_contains_ignore-null_fail.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -86,7 +86,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_contains_ignore-null_fail_1.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -106,7 +106,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_contains_ignore-null_skip.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -126,7 +126,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_contains_ignore-null_skip_1.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -146,7 +146,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_contains_ignore-null_pass.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -166,7 +166,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_is-in.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -186,7 +186,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_is-in.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -206,7 +206,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_is-in_ignore-null_fail.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -226,7 +226,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_is-in_ignore-null_fail_1.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -246,7 +246,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_is-in_ignore-null_skip.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -266,7 +266,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_is-in_ignore-null_skip_1.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -286,7 +286,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_is-in_ignore-null_pass.yml')
         config_file = open(conf_file, 'r')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -306,7 +306,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_not-in.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -326,7 +326,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_not-in_ignore-null_fail.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -346,7 +346,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_not-in_ignore-null_fail_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -366,7 +366,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_not-in_ignore-null_skip.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -386,7 +386,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_not-in_ignore-null_skip_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -406,7 +406,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_not-in_ignore-null_pass.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -426,7 +426,7 @@ class TestStringOperators(unittest.TestCase):
                                  'configs', 'main_not-in.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
