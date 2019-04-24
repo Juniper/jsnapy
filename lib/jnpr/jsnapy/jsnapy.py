@@ -327,11 +327,11 @@ class SnapAdmin:
         if conf_file is not None:
             if os.path.isfile(conf_file):
                 config_file = open(conf_file, 'r')
-                self.main_file = yaml.load(config_file)
+                self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             elif os.path.isfile(os.path.join(get_path('DEFAULT', 'config_file_path'), conf_file)):
                 fpath = get_path('DEFAULT', 'config_file_path')
                 config_file = open(os.path.join(fpath, conf_file), 'r')
-                self.main_file = yaml.load(config_file)
+                self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             else:
                 self.logger.error(
                     colorama.Fore.RED +
@@ -388,7 +388,7 @@ class SnapAdmin:
                     tfile)
             if os.path.isfile(tfile):
                 test_file = open(tfile, 'r')
-                test_files.append(yaml.load(test_file))
+                test_files.append(yaml.load(test_file, Loader=yaml.FullLoader))
             else:
                 self.logger.error(
                     colorama.Fore.RED +
@@ -484,7 +484,7 @@ class SnapAdmin:
                                         'test_file_path')),
                                     devices_file_name)
                     login_file = open(lfile, 'r')
-                    dev_file = yaml.load(login_file)
+                    dev_file = yaml.load(login_file, Loader=yaml.FullLoader)
                     gp = first_entry.get('group', 'all')
 
                     dgroup = [i.strip().lower() for i in gp.split(',')]
@@ -604,7 +604,7 @@ class SnapAdmin:
                         if os.path.isfile(mail_file_path) is False else mail_file_path
                 if os.path.isfile(mfile):
                     mail_file = open(mfile, 'r')
-                    mail_file = yaml.load(mail_file)
+                    mail_file = yaml.load(mail_file, Loader=yaml.FullLoader)
                     if "passwd" not in mail_file:
                         passwd = getpass.getpass(
                             "Please enter ur email password ")
@@ -756,7 +756,7 @@ class SnapAdmin:
                                 'test_file_path')),
                             devices_file_name)
             login_file = open(lfile, 'r')
-            dev_file = yaml.load(login_file)
+            dev_file = yaml.load(login_file, Loader=yaml.FullLoader)
             gp = first_entry.get('group', 'all')
 
             dgroup = [i.strip().lower() for i in gp.split(',')]
@@ -834,9 +834,9 @@ class SnapAdmin:
         val =[]
         if os.path.isfile(config_data):
             data = open(config_data, 'r')
-            config_data = yaml.load(data)
+            config_data = yaml.load(data, Loader=yaml.FullLoader)
         elif isinstance(config_data, str):
-            config_data = yaml.load(config_data)
+            config_data = yaml.load(config_data, Loader=yaml.FullLoader)
         else:
             self.logger.info(
                 colorama.Fore.RED +
@@ -908,9 +908,9 @@ class SnapAdmin:
             pass
         elif os.path.isfile(config_data):
             data = open(config_data, 'r')
-            config_data = yaml.load(data)
+            config_data = yaml.load(data, Loader=yaml.FullLoader)
         elif isinstance(config_data, str):
-            config_data = yaml.load(config_data)
+            config_data = yaml.load(config_data, Loader=yaml.FullLoader)
         else:
             self.logger.info(
                 colorama.Fore.RED +

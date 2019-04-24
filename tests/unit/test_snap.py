@@ -32,7 +32,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'delta.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="user",
@@ -62,7 +62,7 @@ class TestSnap(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main.yml')
         config_file = open(conf_file, 'r')
-        js.main_file = yaml.load(config_file)
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="user",
@@ -86,7 +86,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'delta.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="xyz",
@@ -107,7 +107,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'delta_text.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="xyz",
@@ -128,7 +128,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'delta_error.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="xyz",
@@ -150,7 +150,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'test_rpc.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="user_mock",
@@ -182,7 +182,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'test_rpc.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="xyz",
@@ -211,7 +211,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'test_rpc_error.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="user",
@@ -237,7 +237,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'test_rpc_2.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="xyz",
@@ -262,7 +262,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'test_rpc_error_2.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="xyz",
@@ -285,7 +285,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'test_rpc_2_error.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="xyz",
@@ -308,7 +308,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'delta.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="user",
@@ -337,7 +337,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'delta.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="user",
@@ -367,7 +367,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'delta.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="user",
@@ -407,7 +407,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'test_rpc.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = jnpr.junos.device.Device(
             host="1.1.1.1",
             user="user",
@@ -454,7 +454,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'bogus_testfile_1.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = Device(user='1.1.1.1', host='abc', passwd='xyz')
         dev.open()
         par.generate_reply(test_file, dev, '1.1.1.1_snap_mock', self.hostname, self.db)
@@ -467,7 +467,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'bogus_testfile_2.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = Device(user='1.1.1.1', host='abc', passwd='xyz')
         dev.open()
         par.generate_reply(test_file, dev, '1.1.1.1_snap_mock', self.hostname, self.db)
@@ -485,7 +485,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'bogus_testfile_3.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = Device(host='10.221.136.250', user='abc', passwd='xyz')
         dev.open()
         par.generate_reply(test_file, dev, 'mock.xml', self.hostname, self.db)
@@ -504,7 +504,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'bogus_testfile_4.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = Device(host='10.221.136.250', user='abc', passwd='xyz')
         dev.open()
         par.generate_reply(test_file, dev, 'mock.xml', self.hostname, self.db)
@@ -523,7 +523,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'bogus_testfile_5.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = Device(host='10.221.136.250', user='abc', passwd='xyz')
         dev.open()
         par.generate_reply(test_file, dev, 'mock.xml', self.hostname, self.db)

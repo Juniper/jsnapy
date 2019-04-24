@@ -192,7 +192,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_list_not_more_no_node.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -214,7 +214,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_list_not_more_node_missing.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -238,7 +238,7 @@ class TestCheck(unittest.TestCase):
                                      'configs', 'main_test_delta_index_error.yml')
             mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
             config_file = open(conf_file, 'r')
-            main_file = yaml.load(config_file)
+            main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             oper = comp.generate_test_files(
                 main_file,
                 self.hostname,
@@ -259,7 +259,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_delta_percentage.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -282,7 +282,7 @@ class TestCheck(unittest.TestCase):
                                      'configs', 'main_regex.yml')
             mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
             config_file = open(conf_file, 'r')
-            main_file = yaml.load(config_file)
+            main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             oper = comp.generate_test_files(
                 main_file,
                 self.hostname,
@@ -303,7 +303,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_regex_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -324,7 +324,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_regex_2.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -345,7 +345,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_regex_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -366,7 +366,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_regex_1.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,
@@ -387,7 +387,7 @@ class TestCheck(unittest.TestCase):
                                  'configs', 'main_xml_comparator.yml')
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         config_file = open(conf_file, 'r')
-        main_file = yaml.load(config_file)
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         oper = comp.generate_test_files(
             main_file,
             self.hostname,

@@ -37,7 +37,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'bogus_testfile_1.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = Device(user='1.1.1.1', host='abc', passwd='xyz')
         dev.open()
         par.generate_reply(test_file, dev, '1.1.1.1_snap_mock' ,self.hostname, self.db )
@@ -50,7 +50,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'bogus_testfile_2.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = Device(user='1.1.1.1', host='abc', passwd='xyz')
         dev.open()
         par.generate_reply(test_file, dev, '1.1.1.1_snap_mock', self.hostname, self.db)
@@ -68,7 +68,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'bogus_testfile_3.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = Device(host='10.221.136.250', user='abc', passwd='xyz')
         dev.open()
         par.generate_reply(test_file, dev, 'mock.xml', self.hostname, self.db)
@@ -87,7 +87,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'bogus_testfile_4.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = Device(host='10.221.136.250', user='abc', passwd='xyz')
         dev.open()
         par.generate_reply(test_file, dev, 'mock.xml', self.hostname, self.db)
@@ -106,7 +106,7 @@ class TestSnap(unittest.TestCase):
         test_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'bogus_testfile_5.yml')
         test_file = open(test_file, 'r')
-        test_file = yaml.load(test_file)
+        test_file = yaml.load(test_file, Loader=yaml.FullLoader)
         dev = Device(host='10.221.136.250', user='abc', passwd='xyz')
         dev.open()
         par.generate_reply(test_file, dev, 'mock.xml', self.hostname, self.db)

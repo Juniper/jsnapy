@@ -39,7 +39,7 @@ class TestSnapAdmin(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main.yml')
         config_file = open(conf_file, 'r')
-        js.main_file = yaml.load(config_file)
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         js.generate_rpc_reply(
             None,
             "snap_mock",
@@ -60,7 +60,7 @@ class TestSnapAdmin(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_6.yml')
         config_file = open(conf_file, 'r')
-        js.main_file = yaml.load(config_file)
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         js.login("snap_1")
         expected_calls_made = [call('1.1.1.1', 'abc', 'xyz', 'snap_1'),
                                call('1.1.1.15', 'abc', 'xyz', 'snap_1'),
@@ -87,7 +87,7 @@ class TestSnapAdmin(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main1.yml')
         config_file = open(conf_file, 'r')
-        js.main_file = yaml.load(config_file)
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         js.login("snap_1")
         hosts = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
         self.assertEqual(js.host_list, hosts)
@@ -132,7 +132,7 @@ class TestSnapAdmin(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_false_keyError.yml')
         config_file = open(conf_file, 'r')
-        js.main_file = yaml.load(config_file)
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         js.login("snap_1")
         self.assertTrue(mock_log.called)
         mock_log.assert_called_with("\x1b[31m\nERROR occurred !! Hostname not given properly 'hosts'",
@@ -144,7 +144,7 @@ class TestSnapAdmin(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_false_keyError.yml')
         config_file = open(conf_file, 'r')
-        js.main_file = yaml.load(config_file)
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         js.main_file = None
         js.login("snap_1")
         self.assertTrue(mock_log.called)
@@ -156,7 +156,7 @@ class TestSnapAdmin(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_false_keyError_device.yml')
         config_file = open(conf_file, 'r')
-        js.main_file = yaml.load(config_file)
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         js.login("snap_1")
         self.assertTrue(mock_log.called)
         mock_log.assert_called_with("\x1b[31mERROR!! KeyError 'device' key not found", extra={'hostname': None})
@@ -165,7 +165,7 @@ class TestSnapAdmin(unittest.TestCase):
     def test_multiple_hostname_1(self, mock_connect):
         js = SnapAdmin()
         config_file = open('main1.yml', 'r')
-        js.main_file = yaml.load(config_file)
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         js.login("snap_1")
         hosts = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
         self.assertEqual(js.host_list, hosts)
@@ -196,7 +196,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.file = os.path.join(os.path.dirname(__file__),
                                     'configs', 'main_1.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.args.check = True
         js.args.pre_snapfile = "mock_snap1"
         js.args.post_snapfile = "mock_snap2"
@@ -228,7 +228,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.file = os.path.join(os.path.dirname(__file__),
                                     'configs', 'main_1.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.args.pre_snapfile = "mock_snap"
         js.get_hosts()
         self.assertTrue(mock_snap.called)
@@ -253,7 +253,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.file = os.path.join(os.path.dirname(__file__),
                                     'configs', 'main_1.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.args.pre_snapfile = "mock_snap"
         js.get_hosts()
         self.assertFalse(mock_dev.called)
@@ -278,7 +278,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.file = os.path.join(os.path.dirname(__file__),
                                     'configs', 'main_local_snapcheck.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.args.pre_snapfile = "mock_snap"
         js.get_hosts()
         self.assertTrue(js.args.local)
@@ -306,7 +306,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.file = os.path.join(os.path.dirname(__file__),
                                     'configs', 'main_1.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.args.diff = True
         js.args.pre_snapfile = "mock_snap1"
         js.args.post_snapfile = "mock_snap2"
@@ -481,7 +481,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.file = os.path.join(os.path.dirname(__file__),
                                     'configs', 'main_1.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         with patch(builtin_string + 'input', return_value='abc'):
             js.connect('1.1.1.1', None, 'xyz', 'snap_1', config_data)
             # username='abc'
@@ -498,7 +498,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.args.file = os.path.join(os.path.dirname(__file__),
                                     'configs', 'main_1.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.connect('1.1.1.1', 'abc', 'xyz', 'snap_1', config_data)
         mock_log.assert_called()
         mock_dev.assert_called_with(host='1.1.1.1', user='abc', passwd='xyz', gather_facts=False)
@@ -514,7 +514,7 @@ class TestSnapAdmin(unittest.TestCase):
             js.args.file = os.path.join(os.path.dirname(__file__),
                                         'configs', 'main_1.yml')
             config_file = open(js.args.file, 'r')
-            config_data = yaml.load(config_file)
+            config_data = yaml.load(config_file, Loader=yaml.FullLoader)
             mock_dev.side_effect = Exception()
             js.connect('1.1.1.1', 'abc', None, 'snap_1', config_data)
 
@@ -524,7 +524,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main1.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         hosts = config_data.get('hosts')
         js.multiple_device_details(hosts, config_data, 'mock_pre', None, 'mock_post')
         hosts_required = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
@@ -541,7 +541,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main1.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         hosts = config_data.get('hosts')
         js.multiple_device_details(hosts, config_data, 'mock_pre', None, 'mock_post')
         hosts_required = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
@@ -552,7 +552,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main_6.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         hosts = config_data.get('hosts')
         js.multiple_device_details(hosts, config_data, 'mock_pre', None, 'mock_post')
         hosts_required = ['1.1.1.1', '1.1.1.15', '1.1.1.16']
@@ -563,7 +563,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main_false_keyError_device.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         hosts = config_data.get('hosts')
         js.multiple_device_details(hosts, config_data, 'mock_pre', None, 'mock_post')
         mock_log.assert_called_with("\x1b[31mERROR!! KeyError 'device' key not found", extra={'hostname': None})
@@ -573,7 +573,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main_6.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         hosts = config_data.get('hosts')
         js.multiple_device_details(hosts, config_data, 'mock_pre', 'snap', 'mock_post')
         mock_dev_connect.assert_called()
@@ -583,7 +583,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main_6.yml')
         config_file = open(js.args.file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         hosts = config_data.get('hosts')
         js.multiple_device_details(hosts, config_data, 'mock_pre', 'snapcheck', 'mock_post')
         mock_dev_connect.assert_called()
@@ -720,7 +720,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main_local.yml')
         data = open(js.args.file, 'r')
-        config_data = yaml.load(data)  # providing the data as dictionary
+        config_data = yaml.load(data)  # providing the data as dictionary, Loader=yaml.FullLoader
         js.extract_dev_data(dev, config_data, 'mock_pre', 'snapcheck', 'mock_post', local=False)
         mock_get_test.assert_called()
 
@@ -824,7 +824,7 @@ class TestSnapAdmin(unittest.TestCase):
             js.db['store_in_sqlite'] = True
             js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
             config_file = open(js.args.file, 'r')
-            config_data = yaml.load(config_file)
+            config_data = yaml.load(config_file, Loader=yaml.FullLoader)
             del (config_data['sqlite'][0]['database_name'])  # either we could have a config file with no db name
             del (config_data['sqlite'][0]['store_in_sqlite'])
             del (config_data['sqlite'][0]['check_from_sqlite'])
@@ -836,7 +836,7 @@ class TestSnapAdmin(unittest.TestCase):
             js.db['store_in_sqlite'] = True
             js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
             config_file = open(js.args.file, 'r')
-            config_data = yaml.load(config_file)
+            config_data = yaml.load(config_file, Loader=yaml.FullLoader)
             del (config_data['sqlite'][0]['store_in_sqlite'])
             del (config_data['sqlite'][0]['check_from_sqlite'])
             config_data['sqlite'][0]['compare'] = 0
@@ -848,7 +848,7 @@ class TestSnapAdmin(unittest.TestCase):
             js.db['store_in_sqlite'] = True
             js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
             config_file = open(js.args.file, 'r')
-            config_data = yaml.load(config_file)
+            config_data = yaml.load(config_file, Loader=yaml.FullLoader)
             del (config_data['sqlite'][0]['store_in_sqlite'])
             del (config_data['sqlite'][0]['check_from_sqlite'])
             config_data['sqlite'][0]['compare'] = 'ab'
@@ -860,7 +860,7 @@ class TestSnapAdmin(unittest.TestCase):
             js.db['store_in_sqlite'] = True
             js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
             config_file = open(js.args.file, 'r')
-            config_data = yaml.load(config_file)
+            config_data = yaml.load(config_file, Loader=yaml.FullLoader)
             del (config_data['sqlite'][0]['store_in_sqlite'])
             del (config_data['sqlite'][0]['check_from_sqlite'])
             config_data['sqlite'][0]['compare'] = '0,1,2'
@@ -872,7 +872,7 @@ class TestSnapAdmin(unittest.TestCase):
             js.db['store_in_sqlite'] = True
             js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
             config_file = open(js.args.file, 'r')
-            config_data = yaml.load(config_file)
+            config_data = yaml.load(config_file, Loader=yaml.FullLoader)
             del (config_data['sqlite'][0]['store_in_sqlite'])
             del (config_data['sqlite'][0]['check_from_sqlite'])
             config_data['sqlite'][0]['compare'] = '0'
@@ -1283,7 +1283,7 @@ class TestSnapAdmin(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_with_port.yml')
         config_file = open(conf_file, 'r')
-        js.main_file = yaml.load(config_file)
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         js.login("snap_1")
         hosts = ['1.1.1.1']
         self.assertEqual(js.host_list, hosts)
@@ -1329,7 +1329,7 @@ class TestSnapAdmin(unittest.TestCase):
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main2_with_port.yml')
         config_file = open(conf_file, 'r')
-        js.main_file = yaml.load(config_file)
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
 
         hosts = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
         expected_calls_made = [call('1.1.1.3', 'abc', 'def', 'snap_1', port=100),
