@@ -847,10 +847,10 @@ class SnapAdmin:
         except Exception as ex:
             self.logger.error(
                 colorama.Fore.RED +
-                "ERROR!! config file %s is not present" %
+                "ERROR!! hosts not defined in file or some error in data" %
                 ex,
                 extra=self.log_detail)
-            raise Exception("config file is not present ", ex)
+            raise Exception("Incorrect config file or data ", ex)
         else:
             self.args.local = local
             if config_data.__contains__(
