@@ -2294,10 +2294,11 @@ class Operator:
 
                         ele_xpath1 = data1.get(k).xpath(ele_list[0])
                         ele_xpath2 = data2.get(k).xpath(ele_list[0])
-                        val_list1 = [element.text for element in ele_xpath1] if len(
+
+                        val_list1 = [element.text.strip() if element.text else None for element in ele_xpath1] if len(
                             ele_xpath1) != 0 else None
-                        val_list2 = [element.text for element in ele_xpath2] if len(
-                            ele_xpath2) != 0 else None
+                        val_list2 = [element.text.strip() if element.text else None for element in ele_xpath1] if len(
+                            ele_xpath1) != 0 else None
 
                         predict[ele_list[0]] = val_list1
                         postdict[ele_list[0]] = val_list2
@@ -2384,13 +2385,15 @@ class Operator:
         tresult['count'] = {'pass': count_pass, 'fail': count_fail}
         self.test_details[teston].append(tresult)
 
-
-#list-not-less: Check if the item is present in the first snapshot but not present in the second snapshot.
-
     def list_not_less(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
+        """
+        Checks if all the occurrence of the passed XML element is present in the first snapshot but not present in
+        second snapshot.
+        if ignore-null is set to true and element is not present in first snapshot, the test will be skipped
+        """
         self.print_testmssg("list-not-less")
-        res = True      # variable used to identify the return value for this operator
+        res = True
         tresult = {
             'xpath': x_path,
             'testoperation': "list-not-less",
@@ -2409,7 +2412,7 @@ class Operator:
         id_val = {}
 
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
-        if not pre_nodes:       #item should be present in first snapshot not mandatory in second snapshot
+        if not pre_nodes:
             if self._is_ignore_null(ignore_null):
                 self.logger_testop.debug(colorama.Fore.YELLOW +
                                          "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
@@ -2586,6 +2589,11 @@ class Operator:
 
     def list_not_more(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
+        """
+        Checks if all the occurrence of the passed XML element is present in the second snapshot but not present in
+        first snapshot.
+        if ignore-null is set to true and element is not present in second snapshot, the test will be skipped
+        """
         self.print_testmssg("list-not-more")
         res = True
         tresult = {
@@ -2607,7 +2615,7 @@ class Operator:
 
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
-        if not post_nodes:      #should be present in second snapshot not mandatory in first snapshot
+        if not post_nodes:
 
             if self._is_ignore_null(ignore_null):
                 self.logger_testop.debug(colorama.Fore.YELLOW +

@@ -1,0 +1,17 @@
+tests_include:
+  - test_command_version
+
+# use '/' in your test cases apart from xpath if u want to search all elements irrespective of hierarchy, ex: in id if u use /name instead of name
+# then it will search in all the names in given xpath irrespective of their position
+# for simple, one test using command
+
+test_command_version:
+  - command: show chassis alarms
+  - iterate:
+      xpath: alarm-detail
+      id: alarm-description
+      tests:
+        - list-not-more: alarm-short-description
+          err: "Interface {{pre['name']}} is missing in post snapshot"
+          info: "Interface {{pre['name']}} is present in post snapshot"
+          ignore-null: True
