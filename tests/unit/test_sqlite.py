@@ -90,7 +90,7 @@ class TestSqlite(unittest.TestCase):
             self.assertEqual(data, "mock_data")
             self.assertEqual(formt, "text")
             extr.get_xml_using_snap_id("1.1.1.1", "show vers", 0)
-            if sys.version_info[1] <= 6:
+            if sys.version_info[0] <= 3 and sys.version_info[1] <= 6:
                 err = ["ERROR!! Complete message is: 'NoneType' object is not iterable"]
             else :
                 err = ["ERROR!! Complete message is: cannot unpack non-iterable NoneType object"]
