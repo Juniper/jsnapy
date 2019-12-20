@@ -209,7 +209,7 @@ class Comparator:
                     ele_list = ele_list + [elements.strip()
                                            for elements
                                            in xml_paras.split(',') if
-                                           elements.strip() is not '']
+                                           elements.strip() != '']
             else:
                 ele_list = [elements.strip()
                             for elements in ele.split(',')]
@@ -226,7 +226,7 @@ class Comparator:
         is_skipped = False
         if testop in [
                 'no-diff', 'list-not-less', 'list-not-more', 'delta']:
-            if check is True or action is "check":
+            if check is True or action == "check":
                 xml1 = self.get_xml_reply(db, snap1)
                 xml2 = self.get_xml_reply(db, snap2)
                 if xml2 is None:
@@ -255,7 +255,7 @@ class Comparator:
         else:
             # if check is used with uni operand test operator then use
             # second snapshot file
-            if check is True or action is "check":
+            if check is True or action == "check":
                 pre_snap = self.get_xml_reply(db, snap1)
                 post_snap = self.get_xml_reply(db, snap2)
             else:
@@ -353,7 +353,7 @@ class Comparator:
                 expr = '{0} {1}'.format(parent_op,ret_expr[0])
             elif len(ret_expr) >= 1 :
                 expr = ' {0} '.format(parent_op).join(ret_expr)
-            if expr is not '':
+            if expr != '':
                 expr  = '(' +expr+ ')'
         return expr
 
@@ -383,7 +383,7 @@ class Comparator:
             top_ignore_null =  ignore_null_list[0].get('ignore-null')
         ####     extract all test cases in given test file     ####
         tests = [t for t in tests if ('iterate' in t or 'item' in t)]
-        if not len(tests) and (check is True or action is "check"):
+        if not len(tests) and (check is True or action == "check"):
             res = self.compare_xml(op, db, teston, snap1, snap2)
             if res is False:
                 op.no_failed = op.no_failed + 1
@@ -436,7 +436,7 @@ class Comparator:
                           }
                 final_boolean_expr = self.expression_builder(testcases, None, **kwargs)
                 #for cases where skip was encountered due to ignore-null
-                if final_boolean_expr is '' or final_boolean_expr is None or final_boolean_expr == str(None):
+                if final_boolean_expr == '' or final_boolean_expr is None or final_boolean_expr == str(None):
                     continue
 
                 result = eval(final_boolean_expr)
@@ -752,7 +752,7 @@ class Comparator:
 
                         # if check is true then call function to compare two
                         # snapshots ####
-                        if (check is True or action is "check") and reply_format == 'xml':
+                        if (check is True or action == "check") and reply_format == 'xml':
                             if db.get('check_from_sqlite') is False:
                                 snapfile2 = self.generate_snap_file(
                                     device,

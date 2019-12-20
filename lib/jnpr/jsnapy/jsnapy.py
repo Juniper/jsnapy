@@ -263,7 +263,7 @@ class SnapAdmin:
                     "Specify name of the database.",
                     extra=self.log_detail)
                 exit(1)
-            if check is True or self.args.diff is True or action is "check":
+            if check == True or self.args.diff == True or action == "check":
                 if 'compare' in list(d) and d['compare'] is not None:
                     strr = d['compare']
                     if not isinstance(strr, str):
@@ -647,7 +647,7 @@ class SnapAdmin:
         if 'local' in config_data:
             self.args.local = True
         
-        if (self.args.snap is True or action is "snap") or ( (self.args.snapcheck is True or action is "snapcheck") and self.args.local is not True ):
+        if (self.args.snap is True or action == "snap") or ( (self.args.snapcheck is True or action == "snapcheck") and self.args.local is not True ):
             self.logger.info(
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................", hostname, extra=self.log_detail)
@@ -847,10 +847,10 @@ class SnapAdmin:
         except Exception as ex:
             self.logger.error(
                 colorama.Fore.RED +
-                "ERROR!! config file %s is not present" %
+                "ERROR!! hosts not defined in file or some error in data" %
                 ex,
                 extra=self.log_detail)
-            raise Exception("config file is not present ", ex)
+            raise Exception("Incorrect config file or data ", ex)
         else:
             self.args.local = local
             if config_data.__contains__(
@@ -941,7 +941,7 @@ class SnapAdmin:
             if 'local' in config_data:
                 local = True 
 
-            if action is "snap" or ( action is "snapcheck" and local is False ) :
+            if action == "snap" or ( action == "snapcheck" and local is False ) :
                 try:
                     res.append(self.generate_rpc_reply(
                         dev,
