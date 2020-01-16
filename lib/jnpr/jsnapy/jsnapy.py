@@ -369,7 +369,7 @@ class SnapAdmin:
                 sys.exit(1)
         self.login(output_file)
 
-    def generate_rpc_reply(self, dev, output_file, hostname, config_data):
+    def generate_rpc_reply(self, dev, output_file, hostname, config_data,test_cases=None):
         """
         Generates rpc-reply based on command/rpc given and stores them in snap_files
         :param dev: device handler
@@ -379,22 +379,10 @@ class SnapAdmin:
         """
         val = None
         test_files = []
-        for tfile in config_data.get('tests'):
-            if not os.path.isfile(tfile):
-                tfile = os.path.join(
-                    expanduser(get_path(
-                        'DEFAULT',
-                        'test_file_path')),
-                    tfile)
-            if os.path.isfile(tfile):
-                test_file = open(tfile, 'r')
-                test_files.append(yaml.load(test_file, Loader=yaml.FullLoader))
-            else:
-                self.logger.error(
-                    colorama.Fore.RED +
-                    "ERROR!! File %s is not found for taking snapshots" %
-                    tfile, extra=self.log_detail)
-
+        if test_cases is not None:
+            test_files = test_cases
+        else :
+            test_cases = self.extract_test_cases(config_data)
         g = Parser()
         for tests in test_files:
             val = g.generate_reply(tests, dev, output_file, hostname, self.db)
@@ -453,6 +441,9 @@ class SnapAdmin:
         :param output_file: name of snapshot file
         """
         self.host_list = []
+        config_data = self.main_file
+        if config_data is not None:
+            test_cases = self.extract_test_cases(config_data)
         if self.args.hostname is None:
             host_dict={}
             try:
@@ -537,7 +528,8 @@ class SnapAdmin:
                         hostname,
                         username,
                         password,
-                        output_file
+                        output_file,
+                        test_cases
                     ),
                     kwargs= key_value
                 )
@@ -554,7 +546,7 @@ class SnapAdmin:
             self.host_list.append(hostname)
             port = self.args.port
             key_value = {'port': port} if port is not None else {}
-            self.connect(hostname, username, password, output_file, **key_value)
+            self.connect(hostname, username, password, output_file, test_cases, **key_value)
 
     def get_test(self, config_data, hostname, snap_file, post_snap, action):
         """
@@ -628,7 +620,32 @@ class SnapAdmin:
         self.q.put(res)
         return res
 
-    def connect(self, hostname, username, password, output_file,
+    def extract_test_cases(self,config_data):
+        """
+        :param config_data: the data passed in the config file
+        :return: the list of testcases
+        """
+        test_files = []
+        for tfile in config_data.get('tests'):
+            print(tfile)
+            # tfile gets details of the test/files to be parsed.
+            if not os.path.isfile(tfile):
+                tfile = os.path.join(
+                    expanduser(get_path(
+                        'DEFAULT',
+                        'test_file_path')),
+                    tfile)
+            if os.path.isfile(tfile):
+                test_file = open(tfile, 'r')
+                test_files.append(yaml.load(test_file, Loader=yaml.FullLoader))
+            else:
+                self.logger.error(
+                    colorama.Fore.RED +
+                    "ERROR!! File %s is not found for taking snapshots" %
+                    tfile, extra=self.log_detail)
+        return test_files
+
+    def connect(self, hostname, username, password, output_file, testcases,
                 config_data=None, action=None, post_snap=None, **kwargs):
         """
         connect to device and calls the function either to generate snapshots
@@ -675,6 +692,7 @@ class SnapAdmin:
                         username,
                         password,
                         output_file,
+                        testcases,
                         config_data,
                         action,
                         post_snap,
@@ -696,7 +714,8 @@ class SnapAdmin:
                     dev,
                     output_file,
                     hostname,
-                    config_data)
+                    config_data,
+                    testcases)
                 self.snap_q.put(res)
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in [
@@ -789,6 +808,7 @@ class SnapAdmin:
                         self.host_list.append(hostname)
                         host_dict[hostname] = deepcopy(host)
 
+        test_cases = self.extract_test_cases(config_data)
         for (hostname, key_value) in iteritems(host_dict):
             username = key_value.get('username')
             password = key_value.get('passwd')
@@ -800,6 +820,7 @@ class SnapAdmin:
                     username,
                     password,
                     pre_name,
+                    test_cases,
                     config_data,
                     action,
                     post_name),
@@ -880,11 +901,13 @@ class SnapAdmin:
                 #pre_name = hostname + '_' + pre_name if not os.path.isfile(pre_name) else pre_name
                 # if action is "check":
                 #    post_name= hostname + '_' + post_name if not os.path.isfile(post_name) else post_name
+                testcase = self.extract_test_cases(config_data)
                 val.append(self.connect(
                     hostname,
                     username,
                     password,
                     pre_name,
+                    testcase,
                     config_data,
                     action,
                     post_name,
