@@ -117,12 +117,6 @@ jsnap2py -i test_interface.conf -o interface.yml
 ```
 For more information please refer [jsnap2py-wiki] (https://github.com/Juniper/jsnapy/wiki/7.-jsnap2py)
 
-
-Logging:
---------
-Log related details will be extracted from "logging.yml" in jsnapy.cfg file.
-      Default path is "/etc/jsnapy/logging.yml"
-
 CONTRIBUTORS
 -------------
 

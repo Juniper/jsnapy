@@ -47,9 +47,8 @@ class TestSnapAdmin(unittest.TestCase):
             js.main_file)
         self.assertTrue(mock_parse.called)
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('jnpr.jsnapy.SnapAdmin.connect')
-    def test_hostname(self, mock_connect,mock_extract_test_cases):
+    def test_hostname(self, mock_connect):
         argparse.ArgumentParser.parse_args = MagicMock()
         argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
                                                                              diff=False, file=None, hostname=None,
@@ -57,27 +56,25 @@ class TestSnapAdmin(unittest.TestCase):
                                                                              post_snapfile=None, pre_snapfile=None,
                                                                              snap=False, snapcheck=False,
                                                                              verbosity=None, version=False)
-        mock_extract_test_cases.return_value = "tests"
         js = SnapAdmin()
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_6.yml')
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         js.login("snap_1")
-        expected_calls_made = [call('1.1.1.1', 'abc', 'xyz', 'snap_1',"tests"),
-                               call('1.1.1.15', 'abc', 'xyz', 'snap_1',"tests"),
-                               call('1.1.1.16', 'abc', 'xyz', 'snap_1',"tests"),
+        expected_calls_made = [call('1.1.1.1', 'abc', 'xyz', 'snap_1'),
+                               call('1.1.1.15', 'abc', 'xyz', 'snap_1'),
+                               call('1.1.1.16', 'abc', 'xyz', 'snap_1'),
                                ]
 
         hosts = ['1.1.1.1', '1.1.1.15', '1.1.1.16']
         self.assertEqual(js.host_list, hosts)
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.SnapAdmin.connect')
     @patch('jnpr.jsnapy.jsnapy.get_path')
-    def test_multiple_hostname(self, mock_path, mock_connect, mock_arg,mock_extract_test_cases):
+    def test_multiple_hostname(self, mock_path, mock_connect, mock_arg):
         argparse.ArgumentParser.parse_args = MagicMock()
         argparse.ArgumentParser.parse_args.return_value = argparse.Namespace(check=False,
                                                                              diff=False, file=None, hostname=None,
@@ -86,7 +83,6 @@ class TestSnapAdmin(unittest.TestCase):
                                                                              snap=False, snapcheck=False,
                                                                              verbosity=None, version=False)
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-        mock_extract_test_cases.return_value = "tests"
         js = SnapAdmin()
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main1.yml')
@@ -98,11 +94,11 @@ class TestSnapAdmin(unittest.TestCase):
 
         # extending the test to check for device overlap among groups
         js.main_file['hosts'][0]['group'] = 'MX, EX'
-        expected_calls_made = [call('1.1.1.3', 'abc', 'def', 'snap_1',"tests"),
-                               call('1.1.1.4', 'abc', 'def', 'snap_1',"tests"),
-                               call('1.1.1.5', 'abc', 'def', 'snap_1',"tests"),
-                               call('1.1.1.6', 'abc', 'def', 'snap_1',"tests"),
-                               call('1.1.1.12', 'abc', 'def', 'snap_1',"tests"),
+        expected_calls_made = [call('1.1.1.3', 'abc', 'def', 'snap_1'),
+                               call('1.1.1.4', 'abc', 'def', 'snap_1'),
+                               call('1.1.1.5', 'abc', 'def', 'snap_1'),
+                               call('1.1.1.6', 'abc', 'def', 'snap_1'),
+                               call('1.1.1.12', 'abc', 'def', 'snap_1'),
                                ]
 
         js.login("snap_1")
@@ -130,9 +126,8 @@ class TestSnapAdmin(unittest.TestCase):
         self.assertTrue(mock_gen_reply.called)
         self.assertTrue(mock_dev.called)
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('logging.Logger.error')  # new
-    def test_hostname_keyError(self, mock_log,mock_extract_test_cases):
+    def test_hostname_keyError(self, mock_log):
         js = SnapAdmin()
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_false_keyError.yml')
@@ -155,9 +150,8 @@ class TestSnapAdmin(unittest.TestCase):
         self.assertTrue(mock_log.called)
         mock_log.assert_called()
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('logging.Logger.error')  # new
-    def test_hostname_keyError_device(self, mock_log,mock_extract_test_cases):
+    def test_hostname_keyError_device(self, mock_log):
         js = SnapAdmin()
         conf_file = os.path.join(os.path.dirname(__file__),
                                  'configs', 'main_false_keyError_device.yml')
@@ -176,11 +170,9 @@ class TestSnapAdmin(unittest.TestCase):
         hosts = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
         self.assertEqual(js.host_list, hosts)
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('jnpr.jsnapy.SnapAdmin.connect')  # new
-    def test_hostname_hostname_argument(self, mock_connect,mock_extract_test_cases):
+    def test_hostname_hostname_argument(self, mock_connect):
         js = SnapAdmin()
-        js.main_file = "tests"
         js.args.hostname = '1.1.1.3'
         js.args.login = 'abc'
         js.args.passwd = 'xyz'
@@ -491,7 +483,7 @@ class TestSnapAdmin(unittest.TestCase):
         config_file = open(js.args.file, 'r')
         config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         with patch(builtin_string + 'input', return_value='abc'):
-            js.connect('1.1.1.1', None, 'xyz', 'snap_1', None, config_data)
+            js.connect('1.1.1.1', None, 'xyz', 'snap_1', config_data)
             # username='abc'
             mock_log.assert_called()
             mock_dev.assert_called_with(host='1.1.1.1', user='abc', passwd='xyz', gather_facts=False)
@@ -507,7 +499,7 @@ class TestSnapAdmin(unittest.TestCase):
                                     'configs', 'main_1.yml')
         config_file = open(js.args.file, 'r')
         config_data = yaml.load(config_file, Loader=yaml.FullLoader)
-        js.connect('1.1.1.1', 'abc', 'xyz', 'snap_1', None, config_data)
+        js.connect('1.1.1.1', 'abc', 'xyz', 'snap_1', config_data)
         mock_log.assert_called()
         mock_dev.assert_called_with(host='1.1.1.1', user='abc', passwd='xyz', gather_facts=False)
 
@@ -526,9 +518,8 @@ class TestSnapAdmin(unittest.TestCase):
             mock_dev.side_effect = Exception()
             js.connect('1.1.1.1', 'abc', None, 'snap_1', config_data)
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('os.path.isfile')  # new
-    def test_multiple_devices_1(self, mock_isfile,mock_extract_test_cases):
+    def test_multiple_devices_1(self, mock_isfile):
         mock_isfile.return_value = lambda arg: arg == 'devices.yml'
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main1.yml')
@@ -567,9 +558,8 @@ class TestSnapAdmin(unittest.TestCase):
         hosts_required = ['1.1.1.1', '1.1.1.15', '1.1.1.16']
         self.assertEqual(js.host_list, hosts_required)
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('logging.Logger.error')  # new
-    def test_multiple_devices_4(self, mock_log,mock_extract_test_cases):
+    def test_multiple_devices_4(self, mock_log):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main_false_keyError_device.yml')
         config_file = open(js.args.file, 'r')
@@ -605,13 +595,11 @@ class TestSnapAdmin(unittest.TestCase):
         js.extract_data(js.args.file, 'mock_pre', None, 'mock_post')
         mock_multiple.assert_called()
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('jnpr.jsnapy.jsnapy.setup_logging.setup_logging')
     @patch('os.path.isfile')
     @patch('jnpr.jsnapy.jsnapy.SnapAdmin.get_values')  # new
-    def test_extract_data_2(self, mock_getvalue, mock_isfile, mock_logging,mock_extract_test_cases):
+    def test_extract_data_2(self, mock_getvalue, mock_isfile, mock_logging):
         mock_isfile.return_value = False
-        mock_extract_test_cases.return_value = "tests"
         js = SnapAdmin()
         config_data = """
             hosts:
@@ -644,13 +632,11 @@ class TestSnapAdmin(unittest.TestCase):
             mock_log.assert_called()
             mock_logging.assert_called()
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('jnpr.jsnapy.jsnapy.setup_logging.setup_logging')
     @patch('os.path.isfile')  # new
     @patch('jnpr.jsnapy.jsnapy.SnapAdmin.chk_database')
-    def test_extract_data_5(self, mock_chkdb, mock_isfile, mock_logging,mock_extract_test_cases):
+    def test_extract_data_5(self, mock_chkdb, mock_isfile, mock_logging):
         mock_isfile.return_value = False
-        mock_extract_test_cases.return_value = "tests"
         js = SnapAdmin()
         config_data = """
                 hosts:
@@ -1287,11 +1273,9 @@ class TestSnapAdmin(unittest.TestCase):
         js.get_hosts()
         self.assertEqual(js.db, self.db)
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('jnpr.jsnapy.SnapAdmin.connect')
-    def test_port_without_include(self, mock_connect,mock_extract_test_cases):
+    def test_port_without_include(self, mock_connect):
         # this test case is for scenarios when devices are mentioned in the cfg file itself
-        mock_extract_test_cases.return_value = "tests"
         js = SnapAdmin()
         # js.args.snap = True
         js.args.hostname = None
@@ -1303,7 +1287,7 @@ class TestSnapAdmin(unittest.TestCase):
         js.login("snap_1")
         hosts = ['1.1.1.1']
         self.assertEqual(js.host_list, hosts)
-        mock_connect.assert_called_with('1.1.1.1', 'abc', 'xyz', 'snap_1',"tests",  port=44)
+        mock_connect.assert_called_with('1.1.1.1', 'abc', 'xyz', 'snap_1', port=44)
 
         # adding another device in the config dictionary
         # and checking the precedence b/w cmd and config params
@@ -1313,8 +1297,8 @@ class TestSnapAdmin(unittest.TestCase):
                                       'port': 45})
         js.args.port = 100
 
-        expected_calls_made = [call('1.1.1.1', 'abc', 'xyz', 'snap_1',"tests", port=100),
-                               call('1.1.1.15', 'abc', 'xyz', 'snap_1',"tests", port=100)]
+        expected_calls_made = [call('1.1.1.1', 'abc', 'xyz', 'snap_1', port=100),
+                               call('1.1.1.15', 'abc', 'xyz', 'snap_1', port=100)]
         js.login("snap_1")
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
 
@@ -1327,18 +1311,16 @@ class TestSnapAdmin(unittest.TestCase):
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
 
         # deleting the cmd line port param
-        expected_calls_made = [call('1.1.1.1', 'abc', 'xyz', 'snap_1',"tests"),
-                               call('1.1.1.15', 'abc', 'xyz', 'snap_1',"tests")]
+        expected_calls_made = [call('1.1.1.1', 'abc', 'xyz', 'snap_1'),
+                               call('1.1.1.15', 'abc', 'xyz', 'snap_1')]
         js.args.port = None
         js.login("snap_1")
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
 
-    @patch('jnpr.jsnapy.SnapAdmin.extract_test_cases')
     @patch('jnpr.jsnapy.jsnapy.get_path')
     @patch('jnpr.jsnapy.SnapAdmin.connect')
-    def test_port_with_include(self, mock_connect, mock_path,mock_extract_test_cases):
+    def test_port_with_include(self, mock_connect, mock_path):
         # this test case is for scenarios when devices are included using some other file
-        mock_extract_test_cases.return_value = "tests"
         js = SnapAdmin()
         js.args.snap = True
         js.args.hostname = None
@@ -1350,9 +1332,9 @@ class TestSnapAdmin(unittest.TestCase):
         js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
 
         hosts = ['1.1.1.3', '1.1.1.4', '1.1.1.5']
-        expected_calls_made = [call('1.1.1.3', 'abc', 'def', 'snap_1',"tests", port=100),
-                               call('1.1.1.4', 'abc', 'def', 'snap_1',"tests", port=101),
-                               call('1.1.1.5', 'abc', 'def', 'snap_1',"tests", port=102)]
+        expected_calls_made = [call('1.1.1.3', 'abc', 'def', 'snap_1', port=100),
+                               call('1.1.1.4', 'abc', 'def', 'snap_1', port=101),
+                               call('1.1.1.5', 'abc', 'def', 'snap_1', port=102)]
 
         js.login("snap_1")
 
@@ -1363,9 +1345,9 @@ class TestSnapAdmin(unittest.TestCase):
 
         # Adding the cmd-line port param and checking the precedence b/w cmd and config params
         js.args.port = 55
-        expected_calls_made = [call('1.1.1.3', 'abc', 'def', 'snap_1',"tests", port=55),
-                               call('1.1.1.4', 'abc', 'def', 'snap_1',"tests", port=55),
-                               call('1.1.1.5', 'abc', 'def', 'snap_1',"tests", port=55)]
+        expected_calls_made = [call('1.1.1.3', 'abc', 'def', 'snap_1', port=55),
+                               call('1.1.1.4', 'abc', 'def', 'snap_1', port=55),
+                               call('1.1.1.5', 'abc', 'def', 'snap_1', port=55)]
         js.login("snap_1")
 
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)

@@ -11,9 +11,6 @@ formatters:
         format: "%(asctime)s - %(name)s - %(levelname)s - %(hostname)s ............. \n %(message)s"
     simple:
         format: "%(hostname)s-- %(message)s"
-    debug:
-        format: "%(message)s :::: [%(filename)s:%(lineno)d] [%(hostname)s] [%(levelname)s]"
-        #Helpful in debugging issues in the code
     default:
         format: "%(message)s"
     default_file:
