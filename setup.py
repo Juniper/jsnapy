@@ -30,7 +30,7 @@ def set_logging_path(path):
                     ###
                     # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)) for Python 3.X Support of Virtual Env
                     ###
-                    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)):
+                    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
                         value['filename'] = (os.path.join
                                              (sys.prefix,
                                               'var/logs/jsnapy/jsnapy.log'))
@@ -56,9 +56,9 @@ class OverrideInstall(install):
             # user is working in python virtual environment
             # --------------------------------
             ###
-            # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)) for Python 3.X Support of Virtual Env
+            # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) for Python 3.X Support of Virtual Env
             ###
-            if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)):
+            if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
                 self.install_data = os.path.join(sys.prefix, 'etc',
                                                  'jsnapy')
             elif 'win32' in sys.platform:
@@ -102,9 +102,9 @@ class OverrideInstall(install):
             config.set('DEFAULT', 'test_file_path',
                        os.path.join(dir_path, 'testfiles'))
             ###
-            # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)) for Python 3.X venv Support
+            # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) for Python 3.X venv Support
             ###
-            if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)):
+            if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
                 default_config_location = os.path.join(sys.prefix,
                                                        'etc',
                                                        'jsnapy', 'jsnapy.cfg')
@@ -133,9 +133,9 @@ class OverrideInstall(install):
                                 default_config_location)
             
             ###
-            # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)) for Python 3.X venv support.
+            # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) for Python 3.X venv support.
             ###
-            if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)):
+            if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
                 path = os.path.join(sys.prefix, 'etc', 'jsnapy', 'logging.yml')
                 set_logging_path(path)
             elif 'win32' in sys.platform:
@@ -160,8 +160,9 @@ os_data_file = []
 # Specifying only 'samples' means 'install_data Path'/samples
 # ----------------------------
 ###
-# Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)) for Python 3.X venv Support
-if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)):
+# Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) for Python 3.X venv Support
+###
+if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
     os_data_file = [('.', ['lib/jnpr/jsnapy/logging.yml']),
                     ('../../var/logs/jsnapy', log_files),
                     ('.', ['lib/jnpr/jsnapy/jsnapy.cfg']),
