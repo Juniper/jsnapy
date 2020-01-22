@@ -36,7 +36,8 @@ class TestCheck(unittest.TestCase):
 
     @patch('os.path.isfile')
     def test_config_location_etc(self, mock_is_file):
-        if hasattr(sys, 'real_prefix'):
+        # Add or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) for Python 3.X venv Support.
+        if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
             mock_is_file.side_effect = lambda arg: arg in [os.path.join(sys.prefix, 'etc',
                                                                         'jsnapy',
                                                       'jsnapy.cfg')]
