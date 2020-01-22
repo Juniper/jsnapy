@@ -5,5 +5,5 @@
 # All rights reserved.
 #
 
-__version__ = "1.3.2"
-DATE = "2018-May-31"
+__version__ = "1.3.3.dev0"
+DATE = "2018-June-01"

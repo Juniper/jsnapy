@@ -1,0 +1,14 @@
+<alarm-information>
+<alarm-summary>
+<active-alarm-count>2</active-alarm-count>
+</alarm-summary>
+<alarm-detail>
+<alarm-time seconds="1532001817">
+2019-12-19 14:03:37 CEST
+</alarm-time>
+<alarm-class>Minor</alarm-class>
+<alarm-description>Plane 0 not online</alarm-description>
+<alarm-short-description>Plane 0 not online</alarm-short-description>
+<alarm-type>Chassis</alarm-type>
+</alarm-detail>
+</alarm-information>

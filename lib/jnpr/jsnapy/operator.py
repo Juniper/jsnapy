@@ -2389,6 +2389,11 @@ class Operator:
 
     def list_not_less(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
+        """
+        Checks if all the occurrence of the passed XML element is present in the first snapshot but not present in
+        second snapshot.
+        if ignore-null is set to true and element is not present in first snapshot, the test will be skipped
+        """
         self.print_testmssg("list-not-less")
         res = True      # variable used to identify the return value for this operator
         tresult = {
@@ -2586,6 +2591,11 @@ class Operator:
 
     def list_not_more(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
+        """
+        Checks if all the occurrence of the passed XML element is present in the second snapshot but not present in
+        first snapshot.
+        if ignore-null is set to true and element is not present in second snapshot, the test will be skipped
+        """
         self.print_testmssg("list-not-more")
         res = True
         tresult = {
@@ -2608,7 +2618,6 @@ class Operator:
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         if not post_nodes:      #should be present in second snapshot not mandatory in first snapshot
-
             if self._is_ignore_null(ignore_null):
                 self.logger_testop.debug(colorama.Fore.YELLOW +
                                          "SKIPPING!! Nodes are not present in given Xpath: <{}>".format(
