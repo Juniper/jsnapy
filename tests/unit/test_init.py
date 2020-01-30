@@ -4,7 +4,7 @@ import sys
 import yaml
 from mock import patch, MagicMock
 from nose.plugins.attrib import attr
-from jnpr.jsnapy import get_config_location, get_path, DirStore
+from jnpr.jsnapy import get_config_location, get_path, DirStore, venv_check
 @attr('unit')
 class TestCheck(unittest.TestCase):
 
@@ -36,8 +36,8 @@ class TestCheck(unittest.TestCase):
 
     @patch('os.path.isfile')
     def test_config_location_etc(self, mock_is_file):
-        # Add or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) for Python 3.X venv Support.
-        if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+        # Modified by @gcasella to use the function created on lines in __init__.py.
+        if venv_check():
             mock_is_file.side_effect = lambda arg: arg in [os.path.join(sys.prefix, 'etc',
                                                                         'jsnapy',
                                                       'jsnapy.cfg')]

@@ -15,6 +15,14 @@ if sys.version < '3':
 else:
     from configparser import ConfigParser
 
+# Function added by @gcasella
+# To check if the user is currently running the installation inside of a virtual environment that was installed using the `python3 -m venv venv` command.
+def venv_check():
+
+    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+        return True
+    else:
+        return False
 
 def set_logging_path(path):
     if os.path.exists(path):
@@ -27,10 +35,8 @@ def set_logging_path(path):
                 if handler == 'console':
                     pass
                 else:
-                    ###
-                    # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)) for Python 3.X Support of Virtual Env
-                    ###
-                    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+                    # Modified by @gcasella to use the function created on lines 20-25.
+                    if venv_check() is True:
                         value['filename'] = (os.path.join
                                              (sys.prefix,
                                               'var/logs/jsnapy/jsnapy.log'))
@@ -55,10 +61,8 @@ class OverrideInstall(install):
             # hasattr(sys,'real_prefix') checks whether the
             # user is working in python virtual environment
             # --------------------------------
-            ###
-            # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) for Python 3.X Support of Virtual Env
-            ###
-            if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+            # Modified by @gcasella to use the function created on lines 20-25.
+            if venv_check() is True:
                 self.install_data = os.path.join(sys.prefix, 'etc',
                                                  'jsnapy')
             elif 'win32' in sys.platform:
@@ -71,8 +75,8 @@ class OverrideInstall(install):
         mode = 0o777
         install.run(self)
 
-        # Added and not (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) to support Virtual Enviroments in Python 3.X for the logging.yml export        
-        if 'win32' not in sys.platform and not hasattr(sys, 'real_prefix') and not (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+        # Modified by @gcasella to use the function created on lines 20-25.
+        if 'win32' not in sys.platform and not venv_check():
             dir_mode = 0o755
             file_mode = 0o644
             os.chmod(dir_path, dir_mode)
@@ -102,10 +106,9 @@ class OverrideInstall(install):
                        os.path.join(dir_path, 'snapshots'))
             config.set('DEFAULT', 'test_file_path',
                        os.path.join(dir_path, 'testfiles'))
-            ###
-            # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) for Python 3.X venv Support
-            ###
-            if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+
+            # Modified by @gcasella to use the function created on lines 20-25.
+            if venv_check() is True:
                 default_config_location = os.path.join(sys.prefix,
                                                        'etc',
                                                        'jsnapy', 'jsnapy.cfg')
@@ -133,10 +136,8 @@ class OverrideInstall(install):
                 raise Exception('jsnapy.cfg not found at ' +
                                 default_config_location)
             
-            ###
-            # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) for Python 3.X venv support.
-            ###
-            if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+            # Modified by @gcasella to use the function created on lines 20-25.
+            if venv_check() is True:
                 path = os.path.join(sys.prefix, 'etc', 'jsnapy', 'logging.yml')
                 set_logging_path(path)
             elif 'win32' in sys.platform:
@@ -160,10 +161,9 @@ os_data_file = []
 # by self.install_data path.
 # Specifying only 'samples' means 'install_data Path'/samples
 # ----------------------------
-###
-# Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) for Python 3.X venv Support
-###
-if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+
+# Modified by @gcasella to use the function created on lines 20-25.
+if venv_check() is True:
     os_data_file = [('.', ['lib/jnpr/jsnapy/logging.yml']),
                     ('../../var/logs/jsnapy', log_files),
                     ('.', ['lib/jnpr/jsnapy/jsnapy.cfg']),

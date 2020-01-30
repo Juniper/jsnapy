@@ -19,14 +19,22 @@ except NameError:
 class DirStore:
     custom_dir = None
 
+# Function added by @gcasella
+# To check if the user is currently running the installation inside of a virtual environment that was installed using the `python3 -m venv venv` command.
+def venv_check():
+
+    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+        return True
+    else:
+        return False
 
 def get_config_location(file='jsnapy.cfg'):
     p_locations = []
     if 'JSNAPY_HOME' in os.environ:
         p_locations = [os.environ['JSNAPY_HOME']]
-        
-    # Added (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix): to support Python 3.X venv environments.
-    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+
+    # Modified by @gcasella to use the function created on lines 22-29.
+    if venv_check() is True:
         p_locations.extend([os.path.join(os.path.expanduser("~"), '.jsnapy'),
                             os.path.join(sys.prefix, 'etc', 'jsnapy')])
     elif 'win32' in sys.platform:
