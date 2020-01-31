@@ -312,16 +312,17 @@ class SnapAdmin:
         if conf_file is not None:
             if os.path.isfile(conf_file):
                 config_file = open(conf_file, 'r')
+                self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             elif os.path.isfile(os.path.join(get_path('DEFAULT', 'config_file_path'), conf_file)):
                 fpath = get_path('DEFAULT', 'config_file_path')
                 config_file = open(os.path.join(fpath, conf_file), 'r')
+                self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             else:
                 self.logger.error(
                     colorama.Fore.RED +
                     "ERROR!! Config file '%s' is not present " %
                     conf_file, extra=self.log_detail)
                 sys.exit(1)
-            self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         else:
             if self.args.hostname and self.args.testfiles:
                 temp_dict = {'hosts':[{'device':'', 'username':'', 'passwd':''}], 'tests':[]}
@@ -331,6 +332,7 @@ class SnapAdmin:
                 for tfile in self.args.testfiles:
                     temp_dict['tests'].append(tfile)
                 self.main_file = temp_dict
+                print(self.main_file)
 
     def check_dff_as_arg(self):
         """
@@ -563,7 +565,7 @@ class SnapAdmin:
             self.args.local = True
         
         if action is None:
-            action = self.set_action_cmd()
+            action = self.set_action_cmd(action)
 
         if (action == "snap") or ( (action == "snapcheck") and self.args.local is not True ):
             self.logger.info(
@@ -883,7 +885,7 @@ class SnapAdmin:
             res = self.extract_data(config_data, pre_name, action,post_snap, local=local)
         return res
 
-    def set_action_cmd(self):
+    def set_action_cmd(self,action):
         """
         Function to set action based on arguments
         :return: action type
@@ -909,41 +911,24 @@ class SnapAdmin:
         #rearrange the test conditions. We will check the presence of each command in if else blocks, which will reduce the multiple steps of check currently present. Also moved the
         # check for wrong arguments for "check" command to this function.
         # it is faster to return if the arguments are fine than traversing multiple checks.
-        if (self.args.snap is True):
-            if not ((self.args.pre_snapfile is None or self.args.file is None) and (self.args.testfiles is None or self.args.hostname is None)) :
+        if not ((self.args.file is None) and ((self.args.testfiles is None or self.args.hostname is None))):
+            action = None
+            if self.set_action_cmd(action) is not None:
                 return None
 
-        elif (self.args.snapcheck is True):
-            if not ((self.args.file is None) and ((self.args.testfiles is None or self.args.hostname is None))) :
-                return None
+        elif (self.args.check is True) and self.main_file.__contains__(
+                            'sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
+            self.chk_database(
+                self.main_file,
+                self.args.pre_snapfile,
+                self.args.post_snapfile,
+                self.args.check,
+                self.args.snap)
 
-        elif (self.args.check is True):
-            if not (self.args.pre_snapfile is None or self.args.post_snapfile is None):
-                if not ((self.args.file is None) and ((self.args.testfiles is None or self.args.hostname is None))):
-                    return None
-            elif self.main_file.__contains__(
-                        'sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
-                    #### if --check option is given for sqlite, then snap file name is not compulsory  ####
-                    self.chk_database(
-                        self.main_file,
-                        self.args.pre_snapfile,
-                        self.args.post_snapfile,
-                        self.args.check,
-                        self.args.snap)
-
-        elif (self.args.diff is True):
-            if not ((self.args.file is None) and ((self.args.testfiles is None or self.args.hostname is None))) :
-                return None
-
-        #moved the code which directly called the diff api to another function, "get_hosts". It should not be part of this api.
-
-        #if it reaches this block of code.
-        # 1) it is either missing the operation as only four operations are permitted.
-        # 2) it has some wrong argument given
-            self.logger.error(colorama.Fore.RED +
+        self.logger.error(colorama.Fore.RED +
                               "Arguments not given correctly, Please refer help message", extra=self.log_detail)
-            self.parser.print_help()
-            sys.exit(1)
+        self.parser.print_help()
+        sys.exit(1)
 
     def get_hosts_list(self, hosts_val, host_dict):
         """
@@ -1050,9 +1035,6 @@ def main():
                 js.set_verbosity(10*js.args.verbosity)
             try:
                 js.start_process()
-            except yaml.scanner.ScannerError as ex:
-                js.logger.error(colorama.Fore.RED +
-                                "ERROR!! YAML file not defined properly, \nComplete Message: %s" % str(ex), extra=js.log_detail)
             except Exception as ex:
                 js.logger.error(colorama.Fore.RED +
                                 "ERROR!! %s \nComplete Message:  %s" % (type(ex).__name__, str(ex)), extra=js.log_detail)

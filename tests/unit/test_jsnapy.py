@@ -31,8 +31,138 @@ class TestSnapAdmin(unittest.TestCase):
         self.db['first_snap_id'] = None
         self.db['second_snap_id'] = None
 
+
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.jsnapy.argparse.ArgumentParser.print_help')
+    def test_main_no_arguments(self,mock_help,mock_exit):
+        #test to assert that no arguments passed in main will print help and exit
+        from jnpr.jsnapy.jsnapy import main
+        main()
+        mock_help.assert_called()
+        mock_exit.assert_called_with(1)
+
+    @patch('jnpr.jsnapy.SnapAdmin.check_arguments')
+    @patch('jnpr.jsnapy.SnapAdmin.start_process')
+    def test_main_with_arguments_check_version(self,mock_process,mock_check):
+        #test to assert that if arguments are passed with version as one fo the argument
+        # then it will print version and exit
+        from jnpr.jsnapy.jsnapy import main
+        sys.argv = ["snap","--version"]
+        main()
+        self.assertTrue(mock_check.called)
+        self.assertFalse(mock_process.called)
+
+    @patch('jnpr.jsnapy.SnapAdmin.check_arguments')
+    @patch('jnpr.jsnapy.SnapAdmin.start_process')
+    def test_main_with_arguments_check_verbosity(self, mock_check, mock_process):
+        # test to assert that if arguments are passed properly it will work fine. Added verbosity as the parameter
+        from jnpr.jsnapy.jsnapy import main
+        sys.argv = ["--snapcheck", "pre", "post", "-f", "main.yml", "-v"]
+        main()
+        self.assertTrue(mock_check.called)
+        self.assertTrue(mock_process.called)
+
+    @patch('jnpr.jsnapy.SnapAdmin.check_arguments')
+    def test_main_exception_yaml_file_parsing(self, mock_check):
+        #test to assert that if there is an error in parsing the YAML file.
+        # An exception is raised in the main and it exits.
+        from jnpr.jsnapy.jsnapy import main
+        sys.argv = ["--snapcheck", "pre", "post", "-f", "configs/main_false_keyError.yml", "-v"]
+        self.assertRaises(TypeError,main())
+
+
+
+
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.jsnapy.argparse.ArgumentParser.print_help')
+    def test_check_arguments_wrong_operation(self,mock_help,mock_exit):
+        js = SnapAdmin()
+        js.args.snap = False
+        js.args.snapcheck = False
+        js.args.diff = False
+        js.args.check = False
+        js.check_arguments()
+        mock_help.assert_called()
+        mock_exit.assert_called_with(1)
+
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.jsnapy.argparse.ArgumentParser.print_help')
+    def test_check_arguments_diff_operation(self, mock_help, mock_exit):
+        js = SnapAdmin()
+        js.args.diff = True
+        js.args.file = "main.yml"
+        js.check_arguments()
+        self.assertFalse(mock_exit.called)
+        self.assertFalse(mock_help.called)
+
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.jsnapy.argparse.ArgumentParser.print_help')
+    def test_check_arguments_check_operation(self, mock_help, mock_exit):
+        js = SnapAdmin()
+        js.args.check = True
+        js.args.file = "main.yml"
+        js.args.pre_snapfile = "pre"
+        js.args.post_snapfile = "post"
+        js.check_arguments()
+        self.assertFalse(mock_exit.called)
+        self.assertFalse(mock_help.called)
+
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.jsnapy.argparse.ArgumentParser.print_help')
+    def test_check_arguments_snapcheck_operation(self, mock_help, mock_exit):
+        js = SnapAdmin()
+        js.args.snapcheck = True
+        js.args.file = "main.yml"
+        js.check_arguments()
+        self.assertFalse(mock_exit.called)
+        self.assertFalse(mock_help.called)
+
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.jsnapy.argparse.ArgumentParser.print_help')
+    def test_check_arguments_snap_operation(self, mock_help, mock_exit):
+        js = SnapAdmin()
+        js.args.snapcheck = True
+        js.args.file = "main.yml"
+        js.check_arguments()
+        self.assertFalse(mock_exit.called)
+        self.assertFalse(mock_help.called)
+
+
+
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    def test_get_config_file_no_file(self,mock_exit):
+        js = SnapAdmin()
+        js.args.file = "file_not_found.yml"
+        js.get_config_file()
+        mock_exit.assert_called_with(1)
+
+    def test_get_config_file_from_file(self):
+        js = SnapAdmin()
+        js.args.file = "configs/main.yml"
+        js.get_config_file()
+        config_file = open(js.args.file, 'r')
+        config_file = yaml.load(config_file, Loader=yaml.FullLoader)
+        self.assertEqual(js.main_file,config_file)
+
+    def test_get_config_file_from_arguments(self):
+        js = SnapAdmin()
+        js.args.hostname = '1.1.1.1'
+        js.args.login = 'abc'
+        js.args.passwd = '123'
+        js.args.testfiles = ["main.yml"]
+        js.get_config_file()
+        local_dict = {'hosts': [{'device': '1.1.1.1', 'username': 'abc', 'passwd': '123'}], 'tests': ['main.yml']}
+        self.assertEqual(js.main_file,local_dict)
+
+
+
+
+
+
     @patch('jnpr.jsnapy.jsnapy.Parser')
-    def test_snap(self, mock_parse):
+    def test_generate_rpc_reply_arguments(self, mock_parse):
+        #Testcase to check if proper config_data is passed to generate_rpc_reply
+        #it should not give an error in that function
         argparse.ArgumentParser.parse_args = MagicMock()
         argparse.ArgumentParser.parse_args.return_value = argparse.Namespace()
         js = SnapAdmin()
