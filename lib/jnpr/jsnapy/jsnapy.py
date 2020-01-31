@@ -369,20 +369,21 @@ class SnapAdmin:
                 sys.exit(1)
         self.login(output_file)
 
-    def generate_rpc_reply(self, dev, output_file, hostname, config_data,test_cases=None):
+    def generate_rpc_reply(self, dev, output_file, hostname, config_data, test_cases=None):
         """
         Generates rpc-reply based on command/rpc given and stores them in snap_files
         :param dev: device handler
         :param output_file: filename to store snapshots
         :param hostname: hostname of device
         :param config_data : data of main config file
+        :param test_cases : list of test cases to be executed
         """
         val = None
         test_files = []
         if test_cases is not None:
             test_files = test_cases
         else :
-            test_cases = self.extract_test_cases(config_data)
+            test_files = self.extract_test_cases(config_data)
         g = Parser()
         for tests in test_files:
             val = g.generate_reply(tests, dev, output_file, hostname, self.db)
@@ -620,14 +621,14 @@ class SnapAdmin:
         self.q.put(res)
         return res
 
-    def extract_test_cases(self,config_data):
+    def extract_test_cases(self, config_data):
         """
+        extract the test cases from the file and returns them
         :param config_data: the data passed in the config file
         :return: the list of testcases
         """
         test_files = []
         for tfile in config_data.get('tests'):
-            print(tfile)
             # tfile gets details of the test/files to be parsed.
             if not os.path.isfile(tfile):
                 tfile = os.path.join(
