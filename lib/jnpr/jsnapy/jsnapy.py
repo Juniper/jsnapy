@@ -369,7 +369,7 @@ class SnapAdmin:
                 sys.exit(1)
         self.login(output_file)
 
-    def generate_rpc_reply(self, dev, output_file, hostname, config_data,**kwargs):
+    def generate_rpc_reply(self, dev, output_file, hostname, config_data, **kwargs):
         """
         Generates rpc-reply based on command/rpc given and stores them in snap_files
         :param dev: device handler
@@ -377,7 +377,6 @@ class SnapAdmin:
         :param hostname: hostname of device
         :param config_data : data of main config file
         """
-        port = kwargs.get('port', None)
         val = None
         test_files = []
         for tfile in config_data.get('tests'):
@@ -488,18 +487,19 @@ class SnapAdmin:
                     gp = first_entry.get('group', 'all')
 
                     dgroup = [i.strip().lower() for i in gp.split(',')]
-                    iter = 0;
                     for dgp in dev_file:
                         if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
-                            for val in dev_file[dgp]:
+                            for counter, val in enumerate(dev_file[dgp]):
+                                # There can be multiple values of device/hostname
+                                # The values can have same hostname but different port
+                                # key for the dictionary modified from hostname to enumerate value to keep distinction
                                 hostname = list(val)[0]
-                                iter+=1
                                 self.log_detail = {'hostname': hostname}
                                 if val.get(hostname) is not None and hostname not in self.host_list:
                                     #host_dict[hostname] = deepcopy(val.get(hostname))
                                     self.host_list.append(hostname)
-                                host_dict[iter] = deepcopy(val.get(hostname))
-                                host_dict[iter]["device"] = hostname
+                                host_dict[counter] = deepcopy(val.get(hostname))
+                                host_dict[counter]["device"] = hostname
 
                 # login credentials are given in main config file, can connect to multiple devices
                 else:
@@ -542,7 +542,7 @@ class SnapAdmin:
             key_value = {'port': port} if port is not None else {}
             self.connect(hostname, username, password, output_file, **key_value)
 
-    def get_test(self, config_data, hostname, snap_file, post_snap, action,**kwargs):
+    def get_test(self, config_data, hostname, snap_file, post_snap, action, **kwargs):
         """
         Analyse testfile and return object of operator.Operator containing test details
         called by connect() function and other functions of Jsnapy module functions
@@ -1016,9 +1016,8 @@ class SnapAdmin:
         :param hosts_val: has the list of hosts to be parsed
         :param host_dict: The dictionary to be created to store the parsed values
         """
-        iter = -1       #iterator keeps count of number of hosts
-        for host in hosts_val:
-            iter += 1
+
+        for counter, host in enumerate(hosts_val):
             try:
                 hostname = host['device']
                 self.log_detail = {'hostname': hostname}
@@ -1036,7 +1035,10 @@ class SnapAdmin:
             else:
                 if hostname not in self.host_list:
                     self.host_list.append(hostname)
-                host_dict[iter] = deepcopy(host)
+                # There can be multiple values of device/hostname
+                # The values can have same hostname but different port
+                # key for the dictionary modified from hostname to enumerate value to keep distinction
+                host_dict[counter] = deepcopy(host)
 
     #######  generate init folder ######
     '''
