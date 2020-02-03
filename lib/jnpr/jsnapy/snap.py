@@ -22,13 +22,19 @@ import base64
 
 class Parser:
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        """
+        Parser object constructor.
+        :param int port.
+
+        """
         self.logger_snap = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
         self.reply = {}
         self.command_list = []
         self.rpc_list = []
         self.test_included = []
+        self.port = kwargs.get('port', None)
 
     def _write_file(self, rpc_reply, format, output_file):
         """
@@ -89,6 +95,8 @@ class Parser:
         :param cmd_format: xml/text
         :return: return output file
         """
+        if self.port is not None:
+            hostname = "{}_{}".format(hostname, self.port)
         name = name.split('|')[0].strip()
         cmd_rpc = re.sub('/|\*|\.|-|\|', '_', name)
         if os.path.isfile(output_file):
