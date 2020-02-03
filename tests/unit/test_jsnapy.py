@@ -98,11 +98,11 @@ class TestSnapAdmin(unittest.TestCase):
 
         # extending the test to check for device overlap among groups
         js.main_file['hosts'][0]['group'] = 'MX, EX'
-        expected_calls_made = [call('1.1.1.3', 'abc', 'def', 'snap_1',"tests"),
-                               call('1.1.1.4', 'abc', 'def', 'snap_1',"tests"),
-                               call('1.1.1.5', 'abc', 'def', 'snap_1',"tests"),
-                               call('1.1.1.6', 'abc', 'def', 'snap_1',"tests"),
-                               call('1.1.1.12', 'abc', 'def', 'snap_1',"tests"),
+        expected_calls_made = [call('1.1.1.3', 'abc', 'def', 'snap_1', "tests"),
+                               call('1.1.1.4', 'abc', 'def', 'snap_1', "tests"),
+                               call('1.1.1.5', 'abc', 'def', 'snap_1', "tests"),
+                               call('1.1.1.6', 'abc', 'def', 'snap_1', "tests"),
+                               call('1.1.1.12', 'abc', 'def', 'snap_1', "tests"),
                                ]
 
         js.login("snap_1")

@@ -480,19 +480,21 @@ class SnapAdmin:
                     gp = first_entry.get('group', 'all')
 
                     dgroup = [i.strip().lower() for i in gp.split(',')]
+                    iter = 0
                     for dgp in dev_file:
                         if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
-                            for counter, val in enumerate(dev_file[dgp]):
+                            for val in dev_file[dgp]:
                                 # There can be multiple values of device/hostname
                                 # The values can have same hostname but different port
                                 # key for the dictionary modified from hostname to enumerate value to keep distinction
                                 hostname = list(val)[0]
+                                iter += 1
                                 self.log_detail = {'hostname': hostname}
                                 if val.get(hostname) is not None and hostname not in self.host_list:
                                     #host_dict[hostname] = deepcopy(val.get(hostname))
                                     self.host_list.append(hostname)
-                                host_dict[counter] = deepcopy(val.get(hostname))
-                                host_dict[counter]["device"] = hostname
+                                host_dict[iter] = deepcopy(val.get(hostname))
+                                host_dict[iter]["device"] = hostname
 
                 # login credentials are given in main config file, can connect to multiple devices
                 else:
