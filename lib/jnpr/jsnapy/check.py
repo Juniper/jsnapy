@@ -27,10 +27,15 @@ from jnpr.jsnapy.xml_comparator import XmlComparator
 
 class Comparator:
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        """
+        Comparator object constructor.
+        :param int port.
+
+        """
         self.logger_check = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
-
+        self.port = kwargs.get('port', None)
 
     def is_op(self, op):
         """
@@ -63,6 +68,8 @@ class Comparator:
         """
         This function generates name of snapshot files
         """
+        if self.port is not None:
+            device = "{}_{}".format(device, self.port)
         if os.path.isfile(prefix):
             return prefix
         else:
