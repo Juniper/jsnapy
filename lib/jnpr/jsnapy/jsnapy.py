@@ -332,9 +332,8 @@ class SnapAdmin:
                 for tfile in self.args.testfiles:
                     temp_dict['tests'].append(tfile)
                 self.main_file = temp_dict
-                print(self.main_file)
 
-    def check_dff_as_arg(self):
+    def check_diff_as_arg(self):
         """
         If diff is called with both pre_snapfile and post_snap_file then just process the diff and exit
         """
@@ -359,10 +358,12 @@ class SnapAdmin:
         """
         val = None
         test_files = []
+        print(config_data)
         if test_cases is not None:
             test_files = test_cases
         else:
             test_files = self.extract_test_cases(config_data)
+        print(test_files)
 
         g = Parser(**kwargs)
         for tests in test_files:
@@ -418,9 +419,7 @@ class SnapAdmin:
         Extract device information from main config file. Stores device information
         :param host_dict:create a dictionary of hosts
         """
-
         self.host_list = []
-
         if self.args.hostname is None:
             try:
                 hosts_val = self.main_file['hosts']
@@ -443,9 +442,9 @@ class SnapAdmin:
 
         else:
         # login credentials are given from command line
-            host_dict[0]["device"] = self.args.hostname
-            host_dict[0]["username"] = self.args.login
-            host_dict[0]["passwd"] = self.args.passwd
+            host_dict['0'] = {'device' : self.args.hostname,
+                              'username' : self.args.login,
+                              'passwd' : self.args.passwd}
             self.host_list.append(self.args.hostname)
 
     def get_test(self, config_data, hostname, snap_file, post_snap, action,**kwargs):
@@ -660,9 +659,11 @@ class SnapAdmin:
         :return: return object of testop.Operator containing test details
         """
         res_obj = []
-
         if config_data is not None:
             test_cases = self.extract_test_cases(config_data)  # extract testcases
+
+        print(config_data)
+        print(test_cases)
 
         for (iter, key_value) in iteritems(host_dict):
             hostname = key_value.get('device')
@@ -1004,7 +1005,7 @@ class SnapAdmin:
 
         self.get_config_file()              # extract config file data in self.main_file
 
-        self.check_dff_as_arg()             # if self.args.diff is true, check if snapfile details are provided and process it
+        self.check_diff_as_arg()             # if self.args.diff is true, check if snapfile details are provided and process it
 
         host_dict = {}
         if self.args.pre_snapfile is not None:

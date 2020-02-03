@@ -31,6 +31,14 @@ class TestSnapAdmin(unittest.TestCase):
         self.db['first_snap_id'] = None
         self.db['second_snap_id'] = None
 
+    def set_hardcoded_value_for_device(self, js):
+        """
+        The function set some hardcoded values to passed SnapAdmin instance
+        :param js: an instance of SnapAdmin
+        """
+        js.args.hostname = '1.1.1.1'
+        js.args.login = 'abc'
+        js.args.passwd = '123'
 
     @patch('jnpr.jsnapy.jsnapy.sys.exit')
     @patch('jnpr.jsnapy.jsnapy.argparse.ArgumentParser.print_help')
@@ -146,9 +154,7 @@ class TestSnapAdmin(unittest.TestCase):
 
     def test_get_config_file_from_arguments(self):
         js = SnapAdmin()
-        js.args.hostname = '1.1.1.1'
-        js.args.login = 'abc'
-        js.args.passwd = '123'
+        self.set_hardcoded_value_for_device(js)
         js.args.testfiles = ["main.yml"]
         js.get_config_file()
         local_dict = {'hosts': [{'device': '1.1.1.1', 'username': 'abc', 'passwd': '123'}], 'tests': ['main.yml']}
@@ -156,11 +162,50 @@ class TestSnapAdmin(unittest.TestCase):
 
 
 
+    @patch('jnpr.jsnapy.jsnapy.Comparator')
+    def test_check_dff_as_arg_test_empty_file(self, mock_comp):
+        js = SnapAdmin()
+        js.args.diff = True
+        js.args.pre_snapfile = "first_file.xml"
+        js.args.post_snapfile = "second_file.xml"
+        js.check_diff_as_arg()
+        self.assertFalse(mock_comp.called)
+
+    @patch('jnpr.jsnapy.jsnapy.sys.exit')
+    @patch('jnpr.jsnapy.jsnapy.Comparator')
+    def test_check_dff_as_arg_test_file(self, mock_comp, mock_exit):
+        js = SnapAdmin()
+        js.args.diff = True
+        js.args.pre_snapfile = "configs/1.1.1.1_snap_not-range_pre_show_chassis_fpc.xml"
+        js.args.post_snapfile = "configs/1.1.1.1_snap_is-lt_pre_show_chassis_fpc.xml"
+        js.check_diff_as_arg()
+        self.assertTrue(mock_comp.called)
 
 
 
+    def test_extract_device_information_from_file(self):
+        js = SnapAdmin()
+        js.args.file = "configs/main_1.yml"
+        config_file = open(js.args.file, 'r')
+        js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
+        host_dict = {}
+        js.extract_device_information(host_dict)
+        hosts = ['1.1.1.1']
+        self.assertEqual(js.host_list,hosts)
+
+    def test_extract_device_information_from_file(self):
+        js = SnapAdmin()
+        self.set_hardcoded_value_for_device(js)
+        host_dict = {}
+        js.extract_device_information(host_dict)
+        hosts = ['1.1.1.1']
+        self.assertEqual(js.host_list,hosts)
+
+
+
+    @patch('jnpr.jsnapy.jsnapy.get_path')
     @patch('jnpr.jsnapy.jsnapy.Parser')
-    def test_generate_rpc_reply_arguments(self, mock_parse):
+    def test_generate_rpc_reply_arguments(self, mock_parse,mock_path):
         #Testcase to check if proper config_data is passed to generate_rpc_reply
         #it should not give an error in that function
         argparse.ArgumentParser.parse_args = MagicMock()
@@ -170,12 +215,54 @@ class TestSnapAdmin(unittest.TestCase):
                                  'configs', 'main.yml')
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         js.generate_rpc_reply(
             None,
             "snap_mock",
             "1.1.1.1",
             js.main_file)
         self.assertTrue(mock_parse.called)
+
+    @patch('jnpr.jsnapy.jsnapy.get_path')
+    @patch('jnpr.jsnapy.SnapAdmin.connect')
+    def test_start_process_full_flow_cmd_line_files(self, mock_connect,mock_path):
+        #Testcase to check complete call flow till connect when data passed in command line as files
+        js = SnapAdmin()
+        js.args.snapcheck = True
+        js.args.file = "main_1.yml"
+        js.args.pre_snapfile = "pre"
+        js.args.post_snapfile = "post"
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        js.start_process()
+
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_1.yml')
+        temp_file = open(conf_file, 'r')
+        config_file = yaml.load(temp_file, Loader=yaml.FullLoader)
+
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'delta.yml')
+        temp_file = open(conf_file, 'r')
+        testcase = yaml.load(temp_file, Loader=yaml.FullLoader)
+
+        print(config_file)
+        print(testcase)
+
+        expected_calls_made = [call('1.1.1.1', 'abc', 'xyz', 'pre',testcase,config_file)]
+
+        self.assertTrue(mock_connect.called)
+        mock_connect.assert_has_calls(expected_calls_made, any_order=True)
+
+
+
+
+
+
+
+
+
+
+
 
     @patch('jnpr.jsnapy.SnapAdmin.connect')
     def test_hostname(self, mock_connect):
