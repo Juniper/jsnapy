@@ -1303,7 +1303,7 @@ class TestSnapAdmin(unittest.TestCase):
                                  'configs', 'main_with_port.yml')
         config_file = open(conf_file, 'r')
         js.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
-\        js.login("snap_1")
+        js.login("snap_1")
         hosts = ['1.1.1.1']
         self.assertEqual(js.host_list, hosts)
         mock_connect.assert_called_with('1.1.1.1', 'abc', 'xyz', 'snap_1', "tests",  port=44)
