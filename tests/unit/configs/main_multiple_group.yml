@@ -1,0 +1,5 @@
+hosts:
+  - include: devices.yml
+    group: MX, EX
+tests:
+  - tests.yml
