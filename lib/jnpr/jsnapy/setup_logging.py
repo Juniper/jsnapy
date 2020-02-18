@@ -10,6 +10,7 @@ import yaml
 import logging.config
 from jnpr.jsnapy import get_config_location
 from jnpr.jsnapy import get_path
+from jnpr.jsnapy import venv_check
 import sys
 
 def setup_logging(
@@ -30,7 +31,8 @@ def setup_logging(
     ###################################
     # Creating Folder path for SNAPSHOT
     ###################################
-    if 'win32' not in sys.platform and not hasattr(sys, 'real_prefix'):
+    # Modified by @gcasella to use the function created on lines 24-29 in the __init__.py.
+    if 'win32' not in sys.platform and not venv_check:
         snapshots_path = get_path('DEFAULT', 'snapshot_path')
         snapshots_path = os.path.expanduser(snapshots_path)
         if not os.path.isdir(snapshots_path):

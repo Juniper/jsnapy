@@ -383,7 +383,7 @@ class SnapAdmin:
             test_files = self.test_cases
         else:
             test_files = self.extract_test_cases(config_data)
-
+            
         g = Parser(**kwargs)
         for tests in test_files:
             val = g.generate_reply(tests, dev, output_file, hostname, self.db)
@@ -458,7 +458,6 @@ class SnapAdmin:
                 # when group of devices are given, searching for include keyword in
                 # hosts in main.yaml file
                 self.get_hosts_list(hosts_val, host_dict)
-
         else:
             # login credentials are given from command line
             host_dict['0'] = {'device': self.args.hostname,

@@ -1,0 +1,431 @@
+bgp_authentication_check:
+    - command: show bgp neighbor
+    - iterate:
+        xpath: '//bgp-option-information'
+        tests:
+            - exists: authentication-configured
+              info: "Test Succeeded!! BGP Authentication is set for <{{post['..//peer-address']}}>."
+              err: "Test Failed!!! BGP Authentication is NOT set for <{{post['..//peer-address']}}>!!!"
+
+re_filter_compliance_check:
+  - command: show interfaces lo0.0 detail
+  - iterate:
+      xpath: /interface-information/logical-interface/address-family
+      tests:
+        - exists: filter-information/filter-input
+          err: "Test Failed!! Firewall-input-filter on Routing-Engine is NOT set!!!"
+          info: "Test succeeded!! Firewall-input-filter on Routing-Engine is set to <{{post['filter-input']}}>."
+
+interface_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/interfaces
+  - iterate:
+      xpath: /configuration/interfaces/interface/unit
+      tests:
+        - not-exists: proxy-arp
+          err: "Test Failed!! Proxy-arp is set on interface <{{post['../name']}}>!!!"
+          info: "Test succeeded!! Proxy-arp is not set."
+  - iterate:
+      xpath: /configuration/interfaces/interface/unit
+      tests:
+        - not-exists: family/inet/targeted-broadcast
+          err: "Test Failed!! Targeted-broadcast is set on interface <{{post['../name']}}>!!!"
+          info: "Test succeeded!! Targeted-broadcast is not set."
+
+arp_policer_check:
+    - command: show policer
+    - iterate:
+        xpath: /firewall-information/filter-information/policer
+        tests:
+            - exists: policer-name, __default_arp_policer__
+              err: "Default ARP Policer is NOT active. Check is there is a custom policer defined!"
+              info: "Default ARP Policer {{post['policer-name']}} is active"
+
+insecure_services_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system
+  - iterate:
+      xpath: //services
+      tests:
+        - not-exists: //rsh
+          info: "Test Succeeded!! Rsh Service is not enabled."
+          err: "Test Failed!!! Insecure service rsh is enabled !!"
+        - not-exists: //rlogin
+          info: "Test Succeeded!! Rlogin Service is not enabled."
+          err: "Test Failed!!! Insecure service rlogin is enabled !!"
+        - not-exists: //ftp
+          err: "Test Failed!!! Insecure service ftp is enabled !!"
+          info: "Test Succeeded!! Ftp Service is not enabled."
+        - not-exists: //finger
+          err: "Test Failed!!! Insecure service finger is enabled !!"
+          info: "Test Succeeded!! Finger Service is not enabled."
+        - not-exists: //telnet
+          err: "Test Failed!!! Insecure service telnet is enabled !!"
+          info: "Test Succeeded!! Telnet Service is not enabled."
+        - not-exists: //xnm-clear-text
+          err: "Test Failed!!! Insecure service xnm-clear-text is enabled !!"
+          info: "Test Succeeded!! Xnm-clear-text Service is not enabled."
+        - not-exists: //web-management
+          err: "Test Failed!!! Insecure service web-management is enabled !!"
+          info: "Test Succeeded!! Web-management Service is not enabled."
+        - not-exists: //tftp-server
+          err: "Test Failed!!! Insecure service tftp-server is enabled !!"
+          info: "Test Succeeded!! Tftp-server is not enabled."
+        - not-exists: //rest
+          err: "Test Failed!!! Insecure service rest is enabled !!"
+          info: "Test Succeeded!! Rest is not enabled."
+        - not-exists: //dhcp-local-server
+          err: "Test Failed!!! Insecure dhcp-local-server is enabled !!"
+          info: "Test Succeeded!! Dhcp-local-server is not enabled."
+        - not-exists: //service-deployment
+          err: "Test Failed!!! Insecure service service-deployment is enabled !!"
+          info: "Test Succeeded!! Service-deployment is not enabled."
+        - not-exists: //webapi
+          err: "Test Failed!!! Insecure service webapi is enabled !!"
+          info: "Test Succeeded!! Webapi is not enabled."
+        - not-exists: //xnm-ssl
+          err: "Test Failed!!! Insecure service xnm-ssl is enabled !!"
+          info: "Test Succeeded!! Xnm-ssl is not enabled."
+        - not-exists: //dns
+          err: "Test Failed!!! Insecure service dns is enabled !!"
+          info: "Test Succeeded!! Dns-server is not enabled."
+        - not-exists: //dynamic-dns
+          err: "Test Failed!!! Insecure service dynamic-dns is enabled !!"
+          info: "Test Succeeded!! Dynamic-dns is not enabled."
+
+ssh_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system/services
+  - item:
+      xpath: //ssh
+      tests:
+        - is-equal: //root-login, deny
+          info: "Test Succeeded!! Root login is equal to <{{post['//root-login']}}>."
+          err: "Test Failed!!!, root-login is not equal to deny, it is  <{{post['//root-login']}}>."
+        - is-equal: //protocol-version, v2
+          info: "Test Succeeded!! SSH Protocol version is equal to <{{post['//protocol-version']}}>."
+          err: "Test Failed!!! SSH Protocol version it not equal to v2, it is <{{post['//protocol-version']}}>."
+        - exists: //no-tcp-forwarding
+          info: "Test Succeeded!! SSH TCP Forwarding is disabled."
+          err: "Test Failed!!! SSH TCP Forwarding is enabled!!!"
+        - exists: //connection-limit
+          info: "Test Succeeded!! SSH connection-limit is enabled with a value of <{{post['//connection-limit']}}>."
+          err: "Test Failed!!! There is no SSH connection-limit configured!!!"
+        - exists: //rate-limit
+          info: "Test Succeeded!! SSH rate-limit is enabled with a value of <{{post['//rate-limit']}}>."
+          err: "Test Failed!!! There is no SSH rate-limit configured!!!"
+        - exists: //max-sessions-per-connection
+          info: "Test Succeeded!! SSH max-sessions-per-connection is enabled with a value of <{{post['//max-sessions-per-connection']}}>."
+          err: "Test Failed!!! There is no SSH max-sessions-per-connection configured!!!"
+        - exists: //client-alive-interval
+          info: "Test Succeeded!! SSH client-alive-interval is enabled with a value of <{{post['//client-alive-interval']}}>."
+          err: "Test Failed!!! There is no SSH client-alive-interval configured!!!"
+        - exists: //client-alive-count-max
+          info: "Test Succeeded!! SSH client-alive-count-max is enabled with a value of <{{post['//client-alive-count-max']}}>."
+          err: "Test Failed!!! There is no SSH client-alive-count-max configured!!!"
+
+netconf_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system/services
+  - item:
+      xpath: //netconf
+      tests:
+        - exists: //connection-limit
+          info: "Test Succeeded!! SSH connection-limit is enabled with a value of <{{post['//connection-limit']}}>."
+          err: "Test Failed!!! There is no SSH connection-limit configured!!!"
+        - exists: //rate-limit
+          info: "Test Succeeded!! SSH rate-limit is enabled with a value of <{{post['//rate-limit']}}>."
+          err: "Test Failed!!! There is no SSH rate-limit configured!!!"
+
+snmp_compliance_check:
+  - rpc: get-config
+  - item:
+      xpath: //snmp
+      tests:
+        - OR:
+          - contains: interface, me
+            info: "Test Succeeded!! SNMPv3 interface is set."
+            err: "Test Failed!!! SNMPv3 is not set to OOB management only!!!"
+          - contains: interface, em
+            info: "Test Succeeded!! SNMPv3 interface is set."
+            err: "Test Failed!!! SNMPv3 is not set to OOB management only!!!"
+          - contains: interface, fxp
+            info: "Test Succeeded!! SNMPv3 interface is set."
+            err: "Test Failed!!! SNMPv3 is not set to OOB management only!!!"
+  - iterate:
+      xpath: /configuration/snmp/community
+      tests:
+        - not-in:  name, public,private,admin,monitor,security
+          info: "Test Succeeded!! Common snmp community strings are not used."
+          err: "Test Failed!!! Common snmp community strings are in use <{{post['name']}}>!!!"
+  - iterate:
+      xpath: /configuration/snmp/v3/usm/local-engine/user
+      tests:
+        - exists: authentication-sha
+          info: "Test Succeeded!! SNMPv3 authentication-sha is set."
+          err: "Test Failed!!! Authentication-sha is not set for SNMPv3 user <{{post['name']}}>!!!"
+        - exists: privacy-aes128
+          info: "Test Succeeded!! SNMPv3 privacy-aes128 is set."
+          err: "Test Failed!!! Privacy-aes128 is not set for SNMPv3 user <{{post['name']}}>!!!"
+
+aaa_compliance_check:
+  - rpc: get-config
+  - item:
+      xpath: /configuration/system
+      tests:
+        - contains: //authentication-order[1], tacplus, radius
+          info: "Test Succeeded!! Tacplus or radius are used as external AAA."
+          err: "Test Failed!!! Neither tacplus nor radius are used for external AAA!!!"
+  - iterate:
+      xpath: /configuration/system/tacplus-server
+      tests:
+        - exists: secret
+          info: "Test Succeeded!! Secret is set for tacplus-server <{{post['name[1]']}}>."
+          err: "Test Failed!!! Secret is NOT set for tacplus-server <{{post['name[1]']}}>!!!"
+        - exists: source-address
+          info: "Test Succeeded!! Source-address is set for  tacplus-server <{{post['name[1]']}}>."
+          err: "Test Failed!!! Source-address is NOT set for tacplus-server <{{post['name[1]']}}>!!!"
+
+login_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system
+  - item:
+      xpath: /configuration/system/login
+      tests:
+        - exists: //message
+          info: "Test Succeeded!! Login message is set."
+          err: "Test Failed!!! No login message set!!!"
+  - iterate:
+      xpath: /configuration/system/login/user
+      tests:
+        - exists: class
+          info: "Test Succeeded!! Login classes for all users set."
+          err: "Test Failed!!! No login class for user <{{post['name']}}>!!!"
+        - not-in: class, super-user, read-only, operator, unauthorized
+          info: "Test Succeeded!! No predefined login classes in use."
+          err: "Test Failed!!! Predefined login class in use for user <{{post['name']}}>!!!"
+  - item:
+      xpath: /configuration/system/login/password
+      tests:
+        - is-equal: format, sha512
+          info: "Test Succeeded!! Password Login Format is set to sha512."
+          err: "Test Failed!!! Password Login Format is NOT set to sha512, it is <{{post['format']}}>!!!"
+        - is-equal: change-type, character-sets
+          info: "Test Succeeded!! Local passwords are configured to require character set changes"
+          err: "Test Failed!!! Local passwords are NOT configured to require character set changes!!!"
+        - is-gt: minimum-length, 9
+          info: "Test Succeeded!! Local passwords are limited to at least 10 characters.It is set to <{{post['minimum-length']}}>"
+          err: "Test Failed!!! Local passwords are NOT limited to at least 10 characters, set to <{{post['minimum-length']}}>!!!"
+        - is-gt: minimum-changes, 3
+          info: "Test Succeeded!! Local passwords require at least 4 character set changes. It is set to <{{post['minimum-changes']}}>"
+          err: "Test Failed!!! Local passwords do NOT require at least 4 character set changes, set to <{{post['minimum-changes']}}>!!!"
+  - item:
+      xpath: /configuration/system/root-authentication
+      tests:
+        - exists: no-public-keys
+          info: "Test Succeeded!! Public-key authentication is disabled for root account."
+          err: "Test Failed!!! Public-key authentication is possible for root account!!!"
+
+ntp_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system/ntp
+  - item:
+      xpath: /configuration/system/ntp
+      tests:
+        - exists: //boot-server
+          info: "Test Succeeded!! NTP boot-server is set."
+          err: "Test Failed!!! NTP boot-server is NOT set!!!"
+        - exists: //server[1]/name
+          info: "Test Succeeded!! First NTP is set to <{{post['//server[1]/name']}}>."
+          err: "Test Failed!!! No NTP Server is set!!!"
+        - exists: //server[2]/name
+          info: "Test Succeeded!! Second NTP is set to <{{post['//server[2]/name']}}>."
+          err: "Test Failed!!! No Second NTP server is NOT set!!!"
+        - exists: //authentication-key
+          info: "Test Succeeded!! NTP Authentication Key is set."
+          err: "Test Failed!!! NTP Authentication Key is NOT set!!!"
+  - iterate:
+      xpath: //server
+      tests:
+        - is-equal: version, 4
+          info: "Test Succeeded!! NTP Version for server <{{post['name']}}> is equal to 4."
+          err: "Test Failed!!! NTP Version for server <{{post['name']}}> is NOT equal to 4, it is: <{{post['version']}}>!!!"
+
+login_retries_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system/login/retry-options
+  - item:
+      xpath: /configuration/system/login/retry-options
+      tests:
+        - exists: tries-before-disconnect
+          err: "Test Failed!! System login retry-options tries-before-disconnect NOT set!!!"
+          info: "Test succeeded!! System login retry-options tries-before-disconnect is set to <{{post['tries-before-disconnect']}}>"
+        - exists: backoff-threshold
+          err: "Test Failed!! System login retry-options backoff-threshold NOT set!!!"
+          info: "Test succeeded!! System login retry-options backoff-threshold is set to <{{post['backoff-threshold']}}>"
+        - exists: backoff-factor
+          err: "Test Failed!! System login retry-options backoff-factorNOT set!!!"
+          info: "Test succeeded!! System login retry-options backoff-factor is set to <{{post['backoff-factor']}}>"
+        - exists: minimum-time
+          err: "Test Failed!! System login retry-options minimum-time NOT set!!!"
+          info: "Test succeeded!! System login retry-options minimum-time is set to <{{post['minimum-time']}}>"
+        - exists: maximum-time
+          err: "Test Failed!!  System login retry-options maximum-time NOT set!!!"
+          info: "Test succeeded!! System login retry-options maximum-time is set to <{{post['maximum-time']}}>"
+        - exists: lockout-period
+          err: "Test Failed!!  System login retry-options lockout-period NOT set!!!"
+          info: "Test succeeded!!  System login retry-options lockout-period is set to <{{post['lockout-period']}}>"
+
+system_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system
+  - item:
+      xpath: /configuration/system
+      tests:
+        - exists: no-multicast-echo
+          err: "Test Failed!! System no-multicast-echo NOT set!!!"
+          info: "Test succeeded!! System no-multicast-echo is set."
+        - exists: no-redirects
+          err: "Test Failed!! System no-redirects NOT set!!!"
+          info: "Test succeeded!! System no-redirects is set."
+        - exists: no-redirects-ipv6
+          err: "Test Failed!! System no-redirects-ipv6 NOT set!!!"
+          info: "Test succeeded!! System no-redirects-ipv6 is set."
+        - exists: no-ping-record-route
+          err: "Test Failed!! System no-ping-record-route NOT set!!!"
+          info: "Test succeeded!! System no-ping-record-route is set."
+        - exists: no-ping-time-stamp
+          err: "Test Failed!! System no-ping-time-stamp NOT set!!!"
+          info: "Test succeeded!! System no-ping-time-stamp is set."
+        - exists: default-address-selection
+          err: "Test Failed!! System default-address-selection NOT set!!!"
+          info: "Test succeeded!! System default-address-selection is set."
+        - is-equal: time-zone, Europe/Berlin
+          err: "Test Failed!! System timezone NOT set to Europe/Berlin, it is set to <{{post['time-zone']}}>!!!"
+          info: "Test succeeded!! System timezone is set to <{{post['time-zone']}}>."
+        - not-contains: host-name, juniper
+          err: "Test Failed!! System hostname contains device make or model <{{post['host-name']}}>!!!"
+          info: "Test succeeded!! System hostname does not contain device make or model <{{post['time-zone']}}>."
+        - not-contains: host-name, srx
+          err: "Test Failed!! System hostname contains device make or model <{{post['host-name']}}>!!!"
+          info: "Test succeeded!! System hostname does not contain device make or model <{{post['time-zone']}}>."
+  - item:
+      xpath: /configuration/system
+      tests:
+        - exists: accounting
+          err: "Test Failed!! System accounting NOT set!!!"
+          info: "Test succeeded!! System accounting is set."
+        - exists: accounting/destination
+          err: "Test Failed!! System accounting destination NOT set!!!"
+          info: "Test succeeded!! System accounting destination is set."
+  - item:
+      xpath: /configuration/system/accounting
+      tests:
+        - is-equal: events[1], login
+          err: "Test Failed!! System accounting of logins NOT set!!!"
+          info: "Test succeeded!! System accounting of logins is set."
+        - is-equal: events[2], change-log
+          err: "Test Failed!! System accounting of configuration changes NOT set!!!"
+          info: "Test succeeded!! System accounting of configuration changes is set."
+        - is-equal: events[3], interactive-commands
+          err: "Test Failed!! System accounting of interactive commands NOT set!!!"
+          info: "Test succeeded!! System accounting of interactive commands is set."
+  - iterate:
+      xpath: /configuration/system/archival/configuration
+      tests:
+        - exists: transfer-on-commit
+          err: "Test Failed!! System archival on commit NOT set!!!"
+          info: "Test succeeded!! System  archival on commit is set."
+        - contains: archive-sites/name, scp://
+          err: "Test Failed!! System archive-site NOT set to scp!!!"
+          info: "Test succeeded!! System archive-site is set to scp."
+
+system_internet_options_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system/internet-options
+  - item:
+      xpath: /configuration/system/internet-options
+      tests:
+        - exists: icmpv4-rate-limit
+          err: "Test Failed!! System internet-options icmpv4-rate-limit NOT set!!!"
+          info: "Test succeeded!! System internet-options icmpv4-rate-limit is set."
+        - exists: icmpv6-rate-limit
+          err: "Test Failed!! System internet-options icmpv6-rate-limit NOT set!!!"
+          info: "Test succeeded!! System internet-options icmpv6-rate-limit is set."
+        - exists: no-source-quench
+          err: "Test Failed!! System internet-options no-source-quench NOT set!!!"
+          info: "Test succeeded!! System internet-options no-source-quench is set."
+        - exists: no-tcp-reset
+          err: "Test Failed!! System internet-options no-tcp-reset NOT set!!!"
+          info: "Test succeeded!! System internet-options no-tcp-reset is set."
+        - exists: tcp-drop-synfin-set
+          err: "Test Failed!! System internet-options tcp-drop-synfin-set NOT set!!!"
+          info: "Test succeeded!! System internet-options tcp-drop-synfin-set is set."
+
+console_port_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system
+  - item:
+      xpath: /configuration/system
+      tests:
+        - OR:
+          - AND:
+            - exists: //ports/console/log-out-on-disconnect
+              err: "Test Failed!! System console port log-out-on-disconnect NOT set!!!"
+              info: "Test succeeded!! System console port log-out-on-disconnect is set."
+            - exists: //ports/console/insecure
+              err: "Test Failed!! System console port insecure NOT set!!!"
+              info: "Test succeeded!! System console port insecure is set."
+          # Necessary because 'or' operator needs more than 1 statement...
+          - OR:
+            - exists: //ports/console/disable
+              err: "Test Failed!! System console port is NOT disabled!!!"
+              info: "Test succeeded!! System console port is disabled."
+            - exists: //ports/console/disable
+              err: "Test Failed!! System console port is NOT disabled!!!"
+              info: "Test succeeded!! System console port is disabled."
+
+auxiliary_port_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system
+  - item:
+      xpath: /configuration/system
+      tests:
+        - OR:
+          - exists: //ports/auxiliary/disable
+            err: "Test Failed!! System auxiliary port is NOT disabled!!!"
+            info: "Test succeeded!! System auxiliary port is disabled."
+          - exists: //ports/auxiliary/insecure
+            err: "Test Failed!! System auxiliary port insecure NOT set!!!"
+            info: "Test succeeded!! System auxiliary port insecure is set."
+
+diag_and_pic_ports_compliance_check:
+  - rpc: get-config
+  - kwargs:
+      filter_xml: configuration/system
+  - item:
+      xpath: /configuration/system
+      tests:
+        - exists: //diag-port-authentication
+          err: "Test Failed!! System diag-port-authentication is NOT set!!!"
+          info: "Test succeeded!! System diag-port-authentication is set."
+        - exists: //diag-port-authentication/encrypted-password
+          err: "Test Failed!! System diag-port-authentication is NOT set to encrypted-password!!!"
+          info: "Test succeeded!! System diag-port-authentication is set to encrypted-password."
+        - exists: //pic-console-authentication
+          err: "Test Failed!! System pic-console-authentication is NOT set!!!"
+          info: "Test succeeded!! System pic-console-authentication is set."
+        - exists: //pic-console-authentication/encrypted-password
+          err: "Test Failed!! System pic-console-authentication is NOT set to encrypted-password!!!"
+          info: "Test succeeded!! System pic-console-authentication is set to encrypted-password."

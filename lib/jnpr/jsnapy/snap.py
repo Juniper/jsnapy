@@ -28,13 +28,13 @@ class Parser:
         :param int port.
 
         """
-        self.port = kwargs.get('port', None)
         self.logger_snap = logging.getLogger(__name__)
         self.log_detail = {'hostname': None}
         self.reply = {}
         self.command_list = []
         self.rpc_list = []
         self.test_included = []
+        self.port = kwargs.get('port', None)
 
     def _write_file(self, rpc_reply, format, output_file):
         """
@@ -96,7 +96,7 @@ class Parser:
         :return: return output file
         """
         if self.port is not None:
-            hostname = hostname + "_" + str(self.port)
+            hostname = "{}_{}".format(hostname, self.port)
         name = name.split('|')[0].strip()
         cmd_rpc = re.sub('/|\*|\.|-|\|', '_', name)
         if os.path.isfile(output_file):
