@@ -2387,11 +2387,6 @@ class Operator:
 
     def list_not_less(
             self, x_path, ele_list, err_mssg, info_mssg, teston, iter, id_list, test_name, xml1, xml2, ignore_null=None):
-        """
-        Checks if all the occurrence of the passed XML element is present in the first snapshot but not present in
-        second snapshot.
-        if ignore-null is set to true and element is not present in first snapshot, the test will be skipped
-        """
         self.print_testmssg("list-not-less")
         res = True
         tresult = {
