@@ -2297,8 +2297,8 @@ class Operator:
 
                         val_list1 = [element.text.strip() if element.text else None for element in ele_xpath1] if len(
                             ele_xpath1) != 0 else None
-                        val_list2 = [element.text.strip() if element.text else None for element in ele_xpath1] if len(
-                            ele_xpath1) != 0 else None
+                        val_list2 = [element.text.strip() if element.text else None for element in ele_xpath2] if len(
+                            ele_xpath2) != 0 else None
 
                         predict[ele_list[0]] = val_list1
                         postdict[ele_list[0]] = val_list2
