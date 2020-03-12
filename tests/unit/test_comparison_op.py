@@ -575,8 +575,8 @@ class TestComparisonOperator(unittest.TestCase):
             "snap_no-diff_pre",
             self.action,
             "snap_no-diff_post")
-        self.assertEqual(oper.no_passed, 3)
-        self.assertEqual(oper.no_failed, 3)
+        self.assertEqual(oper.no_passed, 2)
+        self.assertEqual(oper.no_failed, 4)
     
     @patch('jnpr.jsnapy.check.get_path')
     def test_no_diff_2(self, mock_path):
