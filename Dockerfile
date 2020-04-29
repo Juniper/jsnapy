@@ -7,10 +7,6 @@ ADD setup.py setup.py
 ADD requirements.txt requirements.txt
 ADD lib lib
 ADD tools tools
-ADD samples samples
-ADD logs logs
-ADD testfiles testfiles
-ADD snapshots snapshots
 
 #2 Install netconify install Ansible + Junos module
 # Install Jsnapy from source
