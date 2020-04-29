@@ -1,4 +1,4 @@
-junos-eznc
+ansible
 colorama
 configparser
 pyparsing

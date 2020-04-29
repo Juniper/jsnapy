@@ -1,7 +1,4 @@
-FROM juniper/pyez:2.0.1
-
-RUN rm -rf /source \
-    && mkdir /source
+FROM juniper/pyez:2.4.1
 
 WORKDIR /source
 
@@ -18,16 +15,15 @@ ADD snapshots snapshots
 #2 Install netconify install Ansible + Junos module
 # Install Jsnapy from source
 # Clean up everything
-RUN apk update \
-    && apk add git ansible \
+RUN apk add -q --no-cache git \
+    && pip3 -q --disable-pip-version-check install -r requirements.txt \
     && ansible-galaxy install Juniper.junos \
-    && pip install -r requirements.txt \
-    && pip install . \
-    && rm -rf /var/cache/apk/* \
+    && pip3 install . \
     && rm -rf /source
 
 WORKDIR /scripts
 
-VOLUME ["$PWD:/scripts"]
+VOLUME [/script]
 
-#ENTRYPOINT "/bin/ash"
+ENTRYPOINT ["/usr/bin/jsnapy"]
+

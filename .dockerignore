@@ -1,0 +1,9 @@
+docs/
+logs/
+samples/
+static/
+LICENSE
+*.md
+README*
+CONTRIBUTING*
+COPYRIGHT

@@ -9,15 +9,14 @@ Python version of Junos Snapshot Administrator
 
 Inspired by https://github.com/Juniper/junos-snapshot-administrator
 
-Abstract
-========
+## Abstract
 
-  Junos Snapshot Administrator enables you to capture and audit runtime environment snapshots of your networked devices running   the Junos operating system (Junos OS).
+Junos Snapshot Administrator enables you to capture and audit runtime environment snapshots of your networked devices running   the Junos operating system (Junos OS).
   
-  You can write your test cases in yaml file and run those tests cases against pre and post snapshots.
+You can write your test cases in yaml file and run those tests cases against pre and post snapshots.
   
-Installation
-=============
+## Installation
+
 Installation requires Python 2.7 and associated pip tool
       
     1. Install using pip command
@@ -34,13 +33,14 @@ Installation requires Python 2.7 and associated pip tool
           sudo python setup.py sdist
           sudo pip install dist/jsnapy-x.x.tar.gz
           
-Hello, World
-=============
+## Hello, World
+
 JSNAPy requires one main config file and test files.
 Config file contains device details and test files to be executed.
 
 config_check.yml:
-```
+
+```yaml
 # for one device, can be given like this:
     hosts:
       - device: router 
@@ -49,8 +49,10 @@ config_check.yml:
     tests:
       - test_no_diff.yml 
 ```
+
 test_no_diff.yml
-```
+
+```yaml
 test_command_version:
   - command: show interfaces terse lo* 
   - iterate:
@@ -63,7 +65,8 @@ test_command_version:
 ```
 
 To run this test execute following command:
-```
+
+```text
 1. jsnapy --snap pre -f config_check.yml (for taking pre snapshot)
 2. jsnapy --snap post -f config_check.yml (for taking post snapshot after some modification)
 3. jsnapy --check pre post -f config_check.yml (compares pre post snapshot as per test cases)
@@ -71,7 +74,8 @@ To run this test execute following command:
 ```
 
 Output will look something like this:
-```
+
+```bash
 (venv)sh-3.2# jsnapy --check pre post -f config_single_check.yml 
 *************************Performing test on Device: 10.209.16.204*************************
 Tests Included: test_command_version 
@@ -85,27 +89,25 @@ Total No of tests failed: 0
 Overall Tests passed!!! 
 ```
 
-File Paths:
---------------
-```
-1. config file   
-   can give either:
+## File Paths
+
+1. config file (can give either):
     - full file path  
     - only file name, in this case JSNAPy will first look in present working 
       directory, if file is not present then it will take file path from "config_file_path" 
       in jsnapy.cfg file. Default config file path is "/etc/jsnapy"
-2. test file: 
+2. test file (either)
     - full file path  
     - only file name, in this case it will take path from "test_file_path" in jsnapy.cfg file. 
       Default test file path is "/etc/jsnapy/testfiles"
-3. snap file:
+3. snap file (either)
     - full file path
     - tag, in this case file name is formed automatically (<devicename>_<tag>_<command/rpc>.<xml/text>)
       Snap files will be taken from "snapshot_path" in jsnapy.cfg file. 
-      Default path is "/etc/jsnapy/snapshots"
-```
-jsnap2py: 
-----------
+      Default path is `/etc/jsnapy/snapshots`
+
+## jsnap2py: 
+
 Tool to convert conf file of JSNAP slax into yaml file that can be consumed by JSNAPy.
 ```
 jsnap2py -i test_interface.conf
