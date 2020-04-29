@@ -29,7 +29,7 @@ def set_logging_path(path):
         import yaml
         from six import iteritems
         with open(path, 'rt') as f:
-            config = yaml.load(f.read())
+            config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
             for (handler, value) in iteritems(config['handlers']):
                 if handler == 'console':

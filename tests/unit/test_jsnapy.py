@@ -720,7 +720,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main_local.yml')
         data = open(js.args.file, 'r')
-        config_data = yaml.load(data)  # providing the data as dictionary, Loader=yaml.FullLoader
+        config_data = yaml.load(data, Loader=yaml.FullLoader)  # providing the data as dictionary, Loader=yaml.FullLoader
         js.extract_dev_data(dev, config_data, 'mock_pre', 'snapcheck', 'mock_post', local=False)
         mock_get_test.assert_called()
 
