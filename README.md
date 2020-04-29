@@ -33,6 +33,22 @@ Installation requires Python 2.7 and associated pip tool
           sudo python setup.py sdist
           sudo pip install dist/jsnapy-x.x.tar.gz
           
+## Docker
+
+JSNAPy can also be run as a Docker container. Until the build pushes the image to Docker Hub, build it from Github:
+
+```bash
+$ docker build -t jsnapy https://github.com/Juniper/jsnapy.git
+<... snipped ...>
+Successfully tagged jsnapy:test
+```
+
+Bind mount the directory containing the tests to the container and append the usual arguments. Assuming the tests are in the current directory, this should work.
+
+```bash
+$ docker run -it -v $PWD:/scripts jsnapy --snap pre -f config_check.yml
+```
+
 ## Hello, World
 
 JSNAPy requires one main config file and test files.
