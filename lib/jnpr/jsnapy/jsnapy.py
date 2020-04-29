@@ -263,7 +263,7 @@ class SnapAdmin:
                     "Specify name of the database.",
                     extra=self.log_detail)
                 exit(1)
-            if check is True or self.args.diff is True or action is "check":
+            if check == True or self.args.diff == True or action == "check":
                 if 'compare' in list(d) and d['compare'] is not None:
                     strr = d['compare']
                     if not isinstance(strr, str):
@@ -327,11 +327,11 @@ class SnapAdmin:
         if conf_file is not None:
             if os.path.isfile(conf_file):
                 config_file = open(conf_file, 'r')
-                self.main_file = yaml.load(config_file)
+                self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             elif os.path.isfile(os.path.join(get_path('DEFAULT', 'config_file_path'), conf_file)):
                 fpath = get_path('DEFAULT', 'config_file_path')
                 config_file = open(os.path.join(fpath, conf_file), 'r')
-                self.main_file = yaml.load(config_file)
+                self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             else:
                 self.logger.error(
                     colorama.Fore.RED +
@@ -369,7 +369,7 @@ class SnapAdmin:
                 sys.exit(1)
         self.login(output_file)
 
-    def generate_rpc_reply(self, dev, output_file, hostname, config_data):
+    def generate_rpc_reply(self, dev, output_file, hostname, config_data, **kwargs):
         """
         Generates rpc-reply based on command/rpc given and stores them in snap_files
         :param dev: device handler
@@ -388,20 +388,19 @@ class SnapAdmin:
                     tfile)
             if os.path.isfile(tfile):
                 test_file = open(tfile, 'r')
-                test_files.append(yaml.load(test_file))
+                test_files.append(yaml.load(test_file, Loader=yaml.FullLoader))
             else:
                 self.logger.error(
                     colorama.Fore.RED +
                     "ERROR!! File %s is not found for taking snapshots" %
                     tfile, extra=self.log_detail)
-
-        g = Parser()
+        g = Parser(**kwargs)
         for tests in test_files:
             val = g.generate_reply(tests, dev, output_file, hostname, self.db)
         return val
 
     def compare_tests(
-            self, hostname, config_data, pre_snap=None, post_snap=None, action=None):
+            self, hostname, config_data, pre_snap=None, post_snap=None, action=None, **kwargs):
         """
         called by check and snapcheck argument, to compare snap files
         calls the function to compare snapshots based on arguments given
@@ -409,7 +408,7 @@ class SnapAdmin:
         :param hostname: device name
         :return: return object of Operator containing test details
         """
-        comp = Comparator()
+        comp = Comparator(**kwargs)
         chk = self.args.check
         diff = self.args.diff
         pre_snap_file = self.args.pre_snapfile if pre_snap is None else pre_snap
@@ -484,45 +483,34 @@ class SnapAdmin:
                                         'test_file_path')),
                                     devices_file_name)
                     login_file = open(lfile, 'r')
-                    dev_file = yaml.load(login_file)
+                    dev_file = yaml.load(login_file, Loader=yaml.FullLoader)
                     gp = first_entry.get('group', 'all')
 
                     dgroup = [i.strip().lower() for i in gp.split(',')]
+                    iter = 0
                     for dgp in dev_file:
                         if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                             for val in dev_file[dgp]:
+                                # There can be multiple values of device/hostname
+                                # The values can have same hostname but different port
+                                # key for the dictionary modified from hostname to enumerate value to keep distinction
+                                iter += 1
                                 hostname = list(val)[0]
                                 self.log_detail = {'hostname': hostname}
-                                if val.get(hostname) is not None and hostname not in host_dict:
-                                    host_dict[hostname] = deepcopy(val.get(hostname))
+                                if val.get(hostname) is not None and hostname not in self.host_list:
+                                    #host_dict[hostname] = deepcopy(val.get(hostname))
                                     self.host_list.append(hostname)
+                                host_dict[iter] = deepcopy(val.get(hostname))
+                                host_dict[iter]["device"] = hostname
+
                 # login credentials are given in main config file, can connect to multiple devices
                 else:
                     #key_value = deepcopy(k)
-                    for host in hosts_val:
-                        try:
-                            hostname = host['device']
-                            self.log_detail = {'hostname': hostname}
-                        except KeyError as ex:
-                            self.logger.error(
-                            colorama.Fore.RED +
-                            "ERROR!! KeyError 'device' key not found",
-                            extra=self.log_detail)
-                            #raise Exception(ex)
-                        except Exception as ex:
-                            self.logger.error(
-                            colorama.Fore.RED +
-                            "ERROR!! %s" %
-                            ex,
-                            extra=self.log_detail)
-                            #raise Exception(ex)
-                        else:
-                            if hostname not in host_dict:
-                                self.host_list.append(hostname)
-                                # host.pop('device')
-                                host_dict[hostname] = deepcopy(host)
+                    self.get_hosts_list(hosts_val,host_dict)
 
-            for (hostname, key_value) in iteritems(host_dict):
+            for (iter, key_value) in iteritems(host_dict):
+                hostname = key_value.get('device')
+                #it is under check that args.hostname is None
                 #The file config takes precedence over cmd line params -- no changes made
                 username = self.args.login or key_value.get('username') 
                 password = self.args.passwd or key_value.get('passwd') 
@@ -556,7 +544,7 @@ class SnapAdmin:
             key_value = {'port': port} if port is not None else {}
             self.connect(hostname, username, password, output_file, **key_value)
 
-    def get_test(self, config_data, hostname, snap_file, post_snap, action):
+    def get_test(self, config_data, hostname, snap_file, post_snap, action, **kwargs):
         """
         Analyse testfile and return object of operator.Operator containing test details
         called by connect() function and other functions of Jsnapy module functions
@@ -574,7 +562,8 @@ class SnapAdmin:
                 config_data,
                 snap_file,
                 post_snap,
-                action)
+                action,
+                **kwargs)
 
         result_status = res.result
         
@@ -604,7 +593,7 @@ class SnapAdmin:
                         if os.path.isfile(mail_file_path) is False else mail_file_path
                 if os.path.isfile(mfile):
                     mail_file = open(mfile, 'r')
-                    mail_file = yaml.load(mail_file)
+                    mail_file = yaml.load(mail_file, Loader=yaml.FullLoader)
                     if "passwd" not in mail_file:
                         passwd = getpass.getpass(
                             "Please enter ur email password ")
@@ -647,7 +636,7 @@ class SnapAdmin:
         if 'local' in config_data:
             self.args.local = True
         
-        if (self.args.snap is True or action is "snap") or ( (self.args.snapcheck is True or action is "snapcheck") and self.args.local is not True ):
+        if (self.args.snap is True or action == "snap") or ( (self.args.snapcheck is True or action == "snapcheck") and self.args.local is not True ):
             self.logger.info(
                 colorama.Fore.BLUE +
                 "Connecting to device %s ................", hostname, extra=self.log_detail)
@@ -696,7 +685,8 @@ class SnapAdmin:
                     dev,
                     output_file,
                     hostname,
-                    config_data)
+                    config_data,
+                    **kwargs)
                 self.snap_q.put(res)
                 dev.close()
         if self.args.check is True or self.args.snapcheck is True or self.args.diff is True or action in [
@@ -715,7 +705,8 @@ class SnapAdmin:
                                 hostname,
                                 local_snap,
                                 post_snap,
-                                action)
+                                action,
+                                **kwargs)
                     res[local_snap] = ret_obj
             else:
                 res = self.get_test(
@@ -723,8 +714,9 @@ class SnapAdmin:
                             hostname,
                             output_file,
                             post_snap,
-                            action)     
-                
+                            action,
+                            **kwargs)
+
         return res
 
     ############################### functions to support module ##############
@@ -756,40 +748,27 @@ class SnapAdmin:
                                 'test_file_path')),
                             devices_file_name)
             login_file = open(lfile, 'r')
-            dev_file = yaml.load(login_file)
+            dev_file = yaml.load(login_file, Loader=yaml.FullLoader)
             gp = first_entry.get('group', 'all')
 
             dgroup = [i.strip().lower() for i in gp.split(',')]
+            iter = 0
             for dgp in dev_file:
                 if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
                     for val in dev_file[dgp]:
                         hostname = list(val)[0]
                         self.log_detail = {'hostname': hostname}
-                        if val.get(hostname) is not None and hostname not in host_dict:
-                            host_dict[hostname] = deepcopy(val.get(hostname))
+                        iter += 1
+                        if val.get(hostname) is not None and hostname not in self.host_list:
                             self.host_list.append(hostname)
+                        host_dict[iter] = deepcopy(val.get(hostname))
+                        host_dict[iter]["device"] = hostname
         else:
-            for host in hosts:
-                try:
-                    hostname = host['device']
-                    self.log_detail = {'hostname': hostname}
-                except KeyError as ex:
-                    self.logger.error(
-                    colorama.Fore.RED +
-                    "ERROR!! KeyError 'device' key not found",
-                    extra=self.log_detail)
-                except Exception as ex:
-                    self.logger.error(
-                    colorama.Fore.RED +
-                    "ERROR!! %s" %
-                    ex,
-                    extra=self.log_detail)
-                else:
-                    if hostname not in host_dict:
-                        self.host_list.append(hostname)
-                        host_dict[hostname] = deepcopy(host)
+            # changes to support port
+            self.get_hosts_list(hosts, host_dict)
 
-        for (hostname, key_value) in iteritems(host_dict):
+        for (iter, key_value) in iteritems(host_dict):
+            hostname = key_value.get('device')
             username = key_value.get('username')
             password = key_value.get('passwd')
             key_value = self.get_values(key_value)
@@ -834,9 +813,9 @@ class SnapAdmin:
         val =[]
         if os.path.isfile(config_data):
             data = open(config_data, 'r')
-            config_data = yaml.load(data)
+            config_data = yaml.load(data, Loader=yaml.FullLoader)
         elif isinstance(config_data, str):
-            config_data = yaml.load(config_data)
+            config_data = yaml.load(config_data, Loader=yaml.FullLoader)
         else:
             self.logger.info(
                 colorama.Fore.RED +
@@ -847,10 +826,10 @@ class SnapAdmin:
         except Exception as ex:
             self.logger.error(
                 colorama.Fore.RED +
-                "ERROR!! config file %s is not present" %
+                "ERROR!! hosts not defined in file or some error in data" %
                 ex,
                 extra=self.log_detail)
-            raise Exception("config file is not present ", ex)
+            raise Exception("Incorrect config file or data ", ex)
         else:
             self.args.local = local
             if config_data.__contains__(
@@ -908,9 +887,9 @@ class SnapAdmin:
             pass
         elif os.path.isfile(config_data):
             data = open(config_data, 'r')
-            config_data = yaml.load(data)
+            config_data = yaml.load(data, Loader=yaml.FullLoader)
         elif isinstance(config_data, str):
-            config_data = yaml.load(config_data)
+            config_data = yaml.load(config_data, Loader=yaml.FullLoader)
         else:
             self.logger.info(
                 colorama.Fore.RED +
@@ -941,7 +920,7 @@ class SnapAdmin:
             if 'local' in config_data:
                 local = True 
 
-            if action is "snap" or ( action is "snapcheck" and local is False ) :
+            if action == "snap" or ( action == "snapcheck" and local is False ) :
                 try:
                     res.append(self.generate_rpc_reply(
                         dev,
@@ -1032,6 +1011,36 @@ class SnapAdmin:
         else:
             res = self.extract_data(data, pre_file, "check", post_file)
         return res
+
+    def get_hosts_list(self, hosts_val, host_dict):
+        """
+        Function extracts list of hosts from the details given.
+        :param hosts_val: has the list of hosts to be parsed
+        :param host_dict: The dictionary to be created to store the parsed values
+        """
+
+        for counter, host in enumerate(hosts_val):
+            try:
+                hostname = host['device']
+                self.log_detail = {'hostname': hostname}
+            except KeyError as ex:
+                self.logger.error(
+                    colorama.Fore.RED +
+                    "ERROR!! KeyError 'device' key not found",
+                    extra=self.log_detail)
+            except Exception as ex:
+                self.logger.error(
+                    colorama.Fore.RED +
+                    "ERROR!! %s" %
+                    ex,
+                    extra=self.log_detail)
+            else:
+                if hostname not in self.host_list:
+                    self.host_list.append(hostname)
+                # There can be multiple values of device/hostname
+                # The values can have same hostname but different port
+                # key for the dictionary modified from hostname to enumerate value to keep distinction
+                host_dict[counter] = deepcopy(host)
 
     #######  generate init folder ######
     '''

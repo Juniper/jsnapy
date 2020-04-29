@@ -1,5 +1,6 @@
 import unittest
 import os
+import sys
 from jnpr.jsnapy.sqlite_store import JsnapSqlite
 from jnpr.jsnapy.sqlite_get import SqliteExtractXml
 from mock import patch
@@ -80,7 +81,6 @@ class TestSqlite(unittest.TestCase):
     def test_sqlite_3(self, mock_spath, mock_path, mock_sys):
         mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
         mock_spath.return_value = os.path.join(os.path.dirname(__file__), 'configs')
-
         js = JsnapSqlite("1.1.1.1", self.db)
         js.insert_data(self.db_dict2)
         with patch('logging.Logger.error') as mock_log:
@@ -90,8 +90,11 @@ class TestSqlite(unittest.TestCase):
             self.assertEqual(data, "mock_data")
             self.assertEqual(formt, "text")
             extr.get_xml_using_snap_id("1.1.1.1", "show vers", 0)
-            err = [
-                "ERROR!! Complete message is: 'NoneType' object is not iterable"]
+            if sys.version_info[0] == 2 or (sys.version_info[0] == 3 and sys.version_info[1] <= 6):
+                err = ["ERROR!! Complete message is: 'NoneType' object is not iterable"]
+            else :
+                err = ["ERROR!! Complete message is: cannot unpack non-iterable NoneType object"]
+
             c_list = mock_log.call_args_list[0]
             self.assertNotEqual(c_list[0][0].find(err[0]), -1)
 
