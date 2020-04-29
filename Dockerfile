@@ -6,7 +6,6 @@ ADD setup.py setup.py
 ADD requirements.txt requirements.txt
 ADD lib lib
 ADD tools tools
-ADD logs logs
 
 RUN apk add -q --no-cache git \
     && pip3 -q --disable-pip-version-check install -r requirements.txt \
