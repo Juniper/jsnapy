@@ -5,3 +5,4 @@ pyparsing
 icdiff
 future
 lxml
+junos-eznc
