@@ -14,9 +14,12 @@ RUN apk add -q --no-cache git \
     && pip3 install . \
     && rm -rf /source
 
-WORKDIR /scripts
+WORKDIR /usr/local/bin
+ADD entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
+WORKDIR /scripts
 VOLUME [/scripts]
 
-ENTRYPOINT ["/usr/bin/jsnapy"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
