@@ -1,5 +1,7 @@
 FROM juniper/pyez:2.4.1
 
+LABEL maintainer="Stephen Steiner <ssteiner@juniper.net>"
+
 WORKDIR /source
 
 ADD setup.py setup.py
