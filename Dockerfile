@@ -16,7 +16,7 @@ RUN apk add -q --no-cache git \
 
 WORKDIR /scripts
 
-VOLUME [/script]
+VOLUME [/scripts]
 
 ENTRYPOINT ["/usr/bin/jsnapy"]
 
