@@ -3,6 +3,8 @@
 if [ -z "$1" ]
   then /bin/ash 
 
-else /usr/bin/jsnapy $1
+else 
+  echo $@
+  /usr/bin/jsnapy "$@"
 
 fi
