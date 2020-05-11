@@ -49,6 +49,14 @@ Bind mount the directory containing the tests to the container and append the us
 $ docker run -it -v $PWD:/scripts jsnapy --snap pre -f config_check.yml
 ```
 
+### Build Arguments
+
+The following build arguments are currently supported:
+
+| ARG           | Default Value |
+|---------------|---------------|
+| `JSNAPY_HOME` | `/jsnapy`     |
+
 ## Hello, World
 
 JSNAPy requires one main config file and test files.
