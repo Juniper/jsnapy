@@ -97,6 +97,8 @@ class OverrideInstall(install):
         # if not os.path.isdir(home_folder):
         #     os.mkdir(home_folder)
         #     os.chmod(home_folder, mode)
+        if 'JSNAPY_HOME' in os.environ:
+            dir_path = os.environ['JSNAPY_HOME']
 
         if dir_path != '/etc/jsnapy':
             config = ConfigParser()
