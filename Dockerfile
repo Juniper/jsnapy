@@ -1,4 +1,4 @@
-FROM juniper/pyez:2.5.0
+FROM juniper/pyez:2.4.1
 ARG JSNAPY_HOME="/jsnapy"
 ENV JSNAPY_HOME=$JSNAPY_HOME
 
