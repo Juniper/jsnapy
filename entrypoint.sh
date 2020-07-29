@@ -3,5 +3,5 @@
 if [ -z "$1" ]
   then /bin/ash 
 else 
-  /usr/bin/jsnapy "$@"
+  exec /usr/bin/jsnapy "$@"
 fi
