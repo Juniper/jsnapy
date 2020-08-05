@@ -414,9 +414,8 @@ class Parser:
                 index_command = next((i for i, x in enumerate(test_file[t]) if 'command' in x), 0)
                 index_kwargs = next((i for i, x in enumerate(test_file[t]) if 'kwargs' in x or 'args' in x), 1)
 
-                #if test_file.get(t) is not None and (
-                #        'command' in test_file[t][index_command]):
-                if 'command' in test_file[t][index_command]:
+                if test_file.get(t) is not None and (
+                        'command' in test_file[t][index_command]):
                     #command = test_file[t][0].get('command',"unknown command")
                     self.run_cmd(
                         test_file,
@@ -426,39 +425,37 @@ class Parser:
                         output_file,
                         hostname,
                         db)
-                elif 'rpc' in test_file[t][index_rpc]:
-                    if not ('kwargs' in test_file[t][index_kwargs] or 'args' in test_file[t][index_kwargs]):
+                elif test_file.get(t) is not None and 'rpc' in test_file[t][index_rpc]:
+                    if len(test_file[t])>1 and 'kwargs' in test_file[t][index_kwargs] and test_file[t][index_kwargs].get('kwargs') is None:
+                        del test_file[t][index_kwargs]['kwargs']
+
+                    if len(test_file[t])>1 and 'args' in test_file[t][index_kwargs] and test_file[t][index_kwargs].get('args') is None:
+                        del test_file[t][index_kwargs]['args']
+
+                    if len(test_file[t])>1 and ('kwargs' in test_file[t][index_kwargs] or 'args' in test_file[t][index_kwargs]):
+                        if test_file[t][index_kwargs].get('kwargs'):
+                            data = test_file[t][index_kwargs].get('kwargs')
+                        elif test_file[t][index_kwargs].get('args'):
+                            data = test_file[t][index_kwargs].get('args')
+
+                        hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
+                        hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
+
                         self.run_rpc(
                         test_file,
                         t,
                         formats,
                         dev,
-                            output_file,
+                        output_file + '_' + hash_kwargs.decode('utf-8'),
                         hostname,
                         db)
-                    else :
-                        data=[]
-                        if 'kwargs' in test_file[t][index_kwargs]:
-                            if test_file[t][index_kwargs].get('kwargs'):
-                                data = test_file[t][index_kwargs].get('kwargs')
-                            else:
-                                del test_file[t][index_kwargs]['kwargs']
-                        elif 'args' in test_file[t][index_kwargs]:
-                            if test_file[t][index_kwargs].get('args'):
-                                data = test_file[t][index_kwargs].get('args')
-                            else:
-                                del test_file[t][index_kwargs]['args']
-
-                        if data is not None:
-                            hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
-                            hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
-
+                    else:
                         self.run_rpc(
                                 test_file,
                                 t,
                                 formats,
                                 dev,
-                        output_file + '_' + hash_kwargs.decode('utf-8'),
+                                output_file,
                                 hostname,
                                 db)
                 else:

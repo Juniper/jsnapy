@@ -444,15 +444,15 @@ class SnapAdmin:
                 hosts_val = self.main_file['hosts']
             except KeyError as ex:
                 self.logger.error(colorama.Fore.RED +
-                                  "\nERROR occurred !! Hostname not given properly %s" %
-                                  str(ex),
-                                  extra=self.log_detail)
+                    "\nERROR occurred !! Hostname not given properly %s" %
+                    str(ex),
+                    extra=self.log_detail)
                 # raise Exception(ex)
             except Exception as ex:
                 self.logger.error(colorama.Fore.RED +
-                                  "\nERROR occurred !! %s" %
-                                  str(ex),
-                                  extra=self.log_detail)
+                    "\nERROR occurred !! %s" %
+                    str(ex),
+                    extra=self.log_detail)
                 # raise Exception(ex)
             else:
                 # when group of devices are given, searching for include keyword in
@@ -719,7 +719,7 @@ class SnapAdmin:
 
         return res_obj
 
-    def extract_data(self, config_data, pre_name=None, action=None, post_name=None, local=False):
+    def api_based_handling(self, config_data, pre_name=None, action=None, post_name=None, local=False):
         """
         Called when dev= None, i.e. device details are passed inside config file
         It parse details of main config file and call functions to connect to device
@@ -763,7 +763,7 @@ class SnapAdmin:
 
             return val
 
-    def extract_dev_data(
+    def api_based_handling_with_dev(
             self, dev, config_data, pre_name=None, action=None, post_snap=None, local=False):
         """
         Used to parse details given in main config file, when device object is passed in function
@@ -900,9 +900,9 @@ class SnapAdmin:
             exit(1)
 
         if isinstance(dev, Device):
-            res = self.extract_dev_data(dev, config_data, pre_name, action, post_snap, local=local)
+            res = self.api_based_handling_with_dev(dev, config_data, pre_name, action, post_snap, local=local)
         else:
-            res = self.extract_data(config_data, pre_name, action, post_snap, local=local)
+            res = self.api_based_handling(config_data, pre_name, action, post_snap, local=local)
         return res
 
     def set_action_cmd(self, action):
@@ -1007,7 +1007,7 @@ class SnapAdmin:
 
     def start_process(self):
         """
-        The function takes command line argument and starts call flow for the operation
+        The function starts call flow for the operation
         """
 
         self.pre_process_information()  # process the information based on config files
