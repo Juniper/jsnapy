@@ -568,54 +568,54 @@ class TestSnapAdmin(unittest.TestCase):
         self.assertTrue(mock_connect.called)
         mock_connect.assert_has_calls(expected_calls_made, any_order=True)
 
-    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.extract_data')
-    def test_snap(self, mock_extract_data):
+    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.api_based_handling')
+    def test_snap(self, mock_data):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
         config_file = open(js.args.file, 'r')
         data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.snap(js.args.file, 'mock_file')
-        mock_extract_data.assert_called_with(data, 'mock_file', "snap", None, local=False)
+        mock_data.assert_called_with(data, 'mock_file', "snap", None, local=False)
 
-    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.extract_data')
-    def test_check(self, mock_extract_data):
+    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.api_based_handling')
+    def test_check(self, mock_data):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
         config_file = open(js.args.file, 'r')
         data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.check(js.args.file, 'mock_file')
-        mock_extract_data.assert_called_with(data, 'mock_file', "check", None, local=False)
+        mock_data.assert_called_with(data, 'mock_file', "check", None, local=False)
 
-    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.extract_data')
-    def test_snapcheck(self, mock_extract_data):
+    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.api_based_handling')
+    def test_snapcheck(self, mock_data):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
         config_file = open(js.args.file, 'r')
         data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.snapcheck(js.args.file, 'mock_file')
-        mock_extract_data.assert_called_with(data, 'mock_file', "snapcheck", None, local=False)
+        mock_data.assert_called_with(data, 'mock_file', "snapcheck", None, local=False)
 
     @patch('sys.exit')
-    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.extract_data')
-    def test_action_api_based_error_file(self, mock_extract_data, mock_exit):
+    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.api_based_handling')
+    def test_action_api_based_error_file(self, mock_data, mock_exit):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
         js.snapcheck(js.args.file, 'mock_file')
         mock_exit.assert_called()
 
-    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.extract_data')
-    def test_action_api_based_data_passed_in_string(self, mock_extract_data):
+    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.api_based_handling')
+    def test_action_api_based_data_passed_in_string(self, mock_data):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
         config_file = open(js.args.file, 'r')
         data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.snapcheck(data, 'mock_file')
-        mock_extract_data.assert_called_with(data, 'mock_file', "snapcheck", None, local=False)
+        mock_data.assert_called_with(data, 'mock_file', "snapcheck", None, local=False)
 
     @patch('ncclient.manager.connect')
-    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.extract_dev_data')
-    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.extract_data')
-    def test_action_api_based_data_passed_in_string_with_device(self, mock_extract_data, mock_extract_dev_data,
+    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.api_based_handling_with_dev')
+    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.api_based_handling')
+    def test_action_api_based_data_passed_in_string_with_device(self, mock_data, mock_dev_data,
                                                                 mock_connect):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
@@ -624,8 +624,8 @@ class TestSnapAdmin(unittest.TestCase):
         dev = Device(user='1.1.1.1', host='abc', passwd='xyz')
         dev.open()
         js.snapcheck(data, 'mock_file', dev)
-        self.assertFalse(mock_extract_data.called)
-        self.assertTrue(mock_extract_dev_data.called)
+        self.assertFalse(mock_data.called)
+        self.assertTrue(mock_dev_data.called)
 
     @patch('argparse.ArgumentParser.exit')
     @patch('jnpr.jsnapy.SnapAdmin.connect_multiple_device')
