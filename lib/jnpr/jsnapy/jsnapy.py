@@ -1044,6 +1044,7 @@ def main():
         if js.args.version is True:
             print("JSNAPy version: %s" % version.__version__)
         else:
+            js.check_arguments()
             if js.args.verbosity:
                 js.set_verbosity(10 * js.args.verbosity)
             try:
