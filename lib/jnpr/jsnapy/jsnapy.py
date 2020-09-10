@@ -1040,7 +1040,6 @@ def main():
         js.parser.print_help()
         sys.exit(1)
     else:
-        js.check_arguments()
         if js.args.version is True:
             print("JSNAPy version: %s" % version.__version__)
         else:
