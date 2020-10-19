@@ -1056,3 +1056,5 @@ class TestSnapAdmin(unittest.TestCase):
                                call('1.1.1.1', config_data, 'PRE_314', None, 'snapcheck')
                                ]
         mock_check.assert_has_calls(expected_calls_made, any_order=True)
+
+        
