@@ -15,9 +15,10 @@ Junos Snapshot Administrator enables you to capture and audit runtime environmen
   
 You can write your test cases in yaml file and run those tests cases against pre and post snapshots.
   
+
 ## Installation
 
-Installation requires Python 2.7 and associated pip tool
+Installation requires Python > 3.5 and associated pip tool
       
     1. Install using pip command
           sudo pip install jsnapy
@@ -142,6 +143,12 @@ If you want to give different output file name, then use -o option
 jsnap2py -i test_interface.conf -o interface.yml
 ```
 For more information please refer [jsnap2py-wiki] (https://github.com/Juniper/jsnapy/wiki/7.-jsnap2py)
+
+
+Logging:
+--------
+Log related details will be extracted from "logging.yml" in jsnapy.cfg file.
+      Default path is "/etc/jsnapy/logging.yml"
 
 CONTRIBUTORS
 -------------
