@@ -1036,22 +1036,22 @@ class SnapAdmin:
 
 def main():
     js = SnapAdmin()
+    if js.args.version is True:
+        print("JSNAPy version: %s" % version.__version__)
+        return
     if len(sys.argv) == 1:
         js.parser.print_help()
         sys.exit(1)
     else:
         js.check_arguments()
-        if js.args.version is True:
-            print("JSNAPy version: %s" % version.__version__)
-        else:
-            if js.args.verbosity:
-                js.set_verbosity(10 * js.args.verbosity)
-            try:
-                js.start_process()
-            except Exception as ex:
-                js.logger.error(colorama.Fore.RED +
-                                "ERROR!! %s \nComplete Message:  %s" % (type(ex).__name__, str(ex)),
-                                extra=js.log_detail)
+        if js.args.verbosity:
+            js.set_verbosity(10 * js.args.verbosity)
+        try:
+            js.start_process()
+        except Exception as ex:
+            js.logger.error(colorama.Fore.RED +
+                            "ERROR!! %s \nComplete Message:  %s" % (type(ex).__name__, str(ex)),
+                            extra=js.log_detail)
 
 
 if __name__ == '__main__':

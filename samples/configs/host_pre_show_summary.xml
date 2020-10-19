@@ -1,0 +1,29 @@
+<summary>
+  <count style="state">
+    <active>70663</active>
+    <key>z</key>
+    <total>69775</total>
+    <style>45</style>
+    <status>34</status>
+  </count>
+  <count style="type">
+    <id>a</id>
+    <session>24261</session>
+  </count>
+  <count style="type">
+    <id>2</id>
+    <session>24543</session>
+  </count>
+  <count style="value">
+    <id>first</id>
+    <session>24</session>
+  </count>
+  <count style="value">
+    <id>second</id>
+    <session>512</session>
+  </count>
+  <system>
+    <status>2</status>
+    <count>125</count>
+  </system>
+</summary>
