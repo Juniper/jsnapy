@@ -29,7 +29,7 @@ def set_logging_path(path):
         import yaml
         from six import iteritems
         with open(path, 'rt') as f:
-            config = yaml.load(f.read())
+            config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
             for (handler, value) in iteritems(config['handlers']):
                 if handler == 'console':
@@ -97,6 +97,8 @@ class OverrideInstall(install):
         # if not os.path.isdir(home_folder):
         #     os.mkdir(home_folder)
         #     os.chmod(home_folder, mode)
+        if 'JSNAPY_HOME' in os.environ:
+            dir_path = os.environ['JSNAPY_HOME']
 
         if dir_path != '/etc/jsnapy':
             config = ConfigParser()

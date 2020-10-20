@@ -1,2 +1,0 @@
-mkdir priyal
-#sudo docker build -t juniper/jsnapy .

@@ -30,7 +30,7 @@ class TestCheck(unittest.TestCase):
         res.result = 'Passed'
         mfile = os.path.join(os.path.dirname(__file__), 'configs', 'mail.yml')
         mail_file = open(mfile, 'r')
-        mail_file = yaml.load(mail_file)   #smtplib.SMTP#connectsocket.getfqdn, Loader=yaml.FullLoader
+        mail_file = yaml.load(mail_file, Loader=yaml.FullLoader)   #smtplib.SMTP#connectsocket.getfqdn, Loader=yaml.FullLoader
         passwd = mail_file['passwd']
         notf = Notification()
         notf.notify(mail_file, self.hostname, passwd, res)
@@ -53,7 +53,7 @@ class TestCheck(unittest.TestCase):
         res.result = 'Passed'
         mfile = os.path.join(os.path.dirname(__file__), 'configs', 'mail.yml')
         mail_file = open(mfile, 'r')
-        mail_file = yaml.load(mail_file)   #smtplib.SMTP#connectsocket.getfqdn, Loader=yaml.FullLoader
+        mail_file = yaml.load(mail_file, Loader=yaml.FullLoader)   #smtplib.SMTP#connectsocket.getfqdn, Loader=yaml.FullLoader
         passwd = mail_file['passwd']
         notf = Notification()
         notf.notify(mail_file, self.hostname, passwd, res)

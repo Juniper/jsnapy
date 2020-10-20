@@ -1,0 +1,9 @@
+development.txt
+docs/
+samples/
+static/
+LICENSE
+*.md
+README*
+CONTRIBUTING*
+COPYRIGHT

@@ -1,33 +1,28 @@
-FROM juniper/pyez:2.0.1
+FROM juniper/pyez:2.4.1
+ARG JSNAPY_HOME="/jsnapy"
+ENV JSNAPY_HOME=$JSNAPY_HOME
 
-RUN rm -rf /source \
-    && mkdir /source
+LABEL maintainer="Stephen Steiner <ssteiner@juniper.net>"
 
 WORKDIR /source
 
-#1 Copy project inside the container
-ADD setup.py setup.py
-ADD requirements.txt requirements.txt
+ADD setup.py . 
+ADD requirements.txt . 
 ADD lib lib
 ADD tools tools
-ADD samples samples
 ADD logs logs
-ADD testfiles testfiles
-ADD snapshots snapshots
 
-#2 Install netconify install Ansible + Junos module
-# Install Jsnapy from source
-# Clean up everything
-RUN apk update \
-    && apk add git ansible \
-    && ansible-galaxy install Juniper.junos \
-    && pip install -r requirements.txt \
-    && pip install . \
-    && rm -rf /var/cache/apk/* \
+RUN apk add -q --no-cache git \
+#    && pip3 -q --disable-pip-version-check install -r requirements.txt \
+    && pip3 install . \
     && rm -rf /source
 
-WORKDIR /scripts
+WORKDIR /usr/local/bin
+ADD entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
-VOLUME ["$PWD:/scripts"]
+WORKDIR $JSNAPY_HOME
+VOLUME [$JSNAPY_HOME]
 
-#ENTRYPOINT "/bin/ash"
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
