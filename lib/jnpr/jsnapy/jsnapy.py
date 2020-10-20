@@ -1043,16 +1043,18 @@ def main():
         js.parser.print_help()
         sys.exit(1)
     else:
-        js.check_arguments()
-        if js.args.verbosity:
-            js.set_verbosity(10 * js.args.verbosity)
-        try:
-            js.start_process()
-        except Exception as ex:
-            js.logger.error(colorama.Fore.RED +
-                            "ERROR!! %s \nComplete Message:  %s" % (type(ex).__name__, str(ex)),
-                            extra=js.log_detail)
-
+        if js.args.version is True:
+            print("JSNAPy version: %s" % version.__version__)
+        else:
+            js.check_arguments()
+            if js.args.verbosity:
+                js.set_verbosity(10 * js.args.verbosity)
+            try:
+                js.start_process()
+            except Exception as ex:
+                js.logger.error(colorama.Fore.RED +
+                                "ERROR!! %s \nComplete Message:  %s" % (type(ex).__name__, str(ex)),
+                                extra=js.log_detail)
 
 if __name__ == '__main__':
     main()

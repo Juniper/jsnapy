@@ -50,15 +50,15 @@ class TestSnapAdmin(unittest.TestCase):
         mock_exit.assert_called_with(1)
 
     @patch('jnpr.jsnapy.SnapAdmin.check_arguments')
-    @patch('jnpr.jsnapy.SnapAdmin.start_process')
-    def test_main_with_arguments_check_version(self, mock_process, mock_check):
+    @patch('jnpr.jsnapy.jsnapy.argparse.ArgumentParser.print_help')
+    def test_main_with_arguments_check_version(self, mock_help, mock_check):
         # assert that if arguments are passed with version as one of the argument
         # then it will print version and exit
         from jnpr.jsnapy.jsnapy import main
         sys.argv = ["snap", "--version"]
         main()
-        self.assertTrue(mock_check.called)
-        self.assertFalse(mock_process.called)
+        self.assertFalse(mock_help.called)
+        self.assertFalse(mock_check.called)
 
     @patch('jnpr.jsnapy.SnapAdmin.check_arguments')
     @patch('jnpr.jsnapy.SnapAdmin.start_process')
@@ -1056,3 +1056,5 @@ class TestSnapAdmin(unittest.TestCase):
                                call('1.1.1.1', config_data, 'PRE_314', None, 'snapcheck')
                                ]
         mock_check.assert_has_calls(expected_calls_made, any_order=True)
+
+        
