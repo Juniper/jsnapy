@@ -1036,9 +1036,6 @@ class SnapAdmin:
 
 def main():
     js = SnapAdmin()
-    if js.args.version is True:
-        print("JSNAPy version: %s" % version.__version__)
-        return
     if len(sys.argv) == 1:
         js.parser.print_help()
         sys.exit(1)

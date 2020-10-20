@@ -291,10 +291,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -409,10 +409,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -520,10 +520,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -551,10 +551,10 @@ class Operator:
                 # continue when ignore_null is None
                 if value is None:
                     if self._is_ignore_null(ignore_null):
-                        self._debug_nodes_logger(self, "Xpath", x_path + '/' + ele_list[0])
+                        self._debug_nodes_logger("Xpath", x_path + '/' + ele_list[0])
                         res = None
                     else:
-                        self._error_nodes_logger(self, "Xpath", x_path+'/' + ele_list[0])
+                        self._error_nodes_logger("Xpath", x_path+'/' + ele_list[0])
                         res = False
                         count_fail = count_fail + 1
                         node_value_failed = {
@@ -700,10 +700,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -847,10 +847,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -1001,10 +1001,10 @@ class Operator:
                     iter, x_path, xml1, xml2)
                 if not post_nodes:
                     if self._is_ignore_null(ignore_null):
-                        self._debug_nodes_logger(self, "Xpath", x_path)
+                        self._debug_nodes_logger("Xpath", x_path)
                         res = None
                     else:
-                        self._error_nodes_logger(self, "Xpath", x_path)
+                        self._error_nodes_logger("Xpath", x_path)
                         res = False
                         count_fail = count_fail + 1
                         node_value_failed = {
@@ -1157,10 +1157,10 @@ class Operator:
                 if not post_nodes:
 
                     if self._is_ignore_null(ignore_null):
-                        self._debug_nodes_logger(self, "Xpath", x_path)
+                        self._debug_nodes_logger("Xpath", x_path)
                         res = None
                     else:
-                        self._error_nodes_logger(self, "Xpath", x_path)
+                        self._error_nodes_logger("Xpath", x_path)
                         res = False
                         count_fail = count_fail + 1
                         node_value_failed = {
@@ -1301,10 +1301,10 @@ class Operator:
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "XPath", x_path)
+                    self._debug_nodes_logger("XPath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -1445,10 +1445,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -1588,10 +1588,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -1734,10 +1734,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -1879,10 +1879,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -2030,10 +2030,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     res = False
                     count_fail = count_fail + 1
                     node_value_failed = {
@@ -2175,7 +2175,7 @@ class Operator:
             if (not pre_nodes) or (not post_nodes):
                 # if ignore_null is True, just skip
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
                     # provide proper log, missing in which snapshot.
@@ -2206,7 +2206,7 @@ class Operator:
                 keys_union = data1_key.union(data2_key)
 
                 if not keys_union:
-                    self._debug_nodes_logger(self, "ID", id_list)
+                    self._debug_nodes_logger("ID", id_list)
                     res = None
                 # iterating through ids which are present either in pre
                 # snapshot or post snapshot or both
@@ -2362,10 +2362,10 @@ class Operator:
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
         if not pre_nodes:
             if self._is_ignore_null(ignore_null):
-                self._debug_nodes_logger(self, "Xpath", x_path)
+                self._debug_nodes_logger("Xpath", x_path)
                 res = None
             else:
-                self._error_nodes_logger(self, "Xpath", x_path)
+                self._error_nodes_logger("Xpath", x_path)
                 res = False
                 count_fail = count_fail + 1
                 node_value_failed = {
@@ -2383,7 +2383,7 @@ class Operator:
             postdata = self._get_data(id_list, post_nodes, ignore_null)
 
             if not predata:
-                self._debug_nodes_logger(self, "ID", id_list)
+                self._debug_nodes_logger("ID", id_list)
                 res = None
 
             for k in predata:
@@ -2471,11 +2471,11 @@ class Operator:
                         tresult['passed'].append(deepcopy(node_value_passed))
                 else:
                     predict, postdict = self._get_nodevalue(predict, postdict, predata[k],
-                                                            None,
+                                                            etree.Element("NoNode"),
                                                             x_path, ele_list[0], err_mssg)
                     # predict, postdict = self._get_nodevalue(predict, postdict, predata[k],
                     predict, postdict=self._get_nodevalue(predict, postdict, predata[k],
-                                                            None,
+                                                            etree.Element("NoNode"),
                                                             x_path, ele_list[0], info_mssg)
                     postdict[ele_list[0]] = None
                     ele_xpath1 = predata.get(k).xpath(ele_list[0])
@@ -2551,10 +2551,10 @@ class Operator:
         if not post_nodes:
 
             if self._is_ignore_null(ignore_null):
-                self._debug_nodes_logger(self, "Xpath", x_path)
+                self._debug_nodes_logger("Xpath", x_path)
                 res = None
             else:
-                self._error_nodes_logger(self, "Xpath", x_path)
+                self._error_nodes_logger("Xpath", x_path)
                 res = False
                 count_fail = count_fail + 1
                 node_value_failed = {
@@ -2571,7 +2571,7 @@ class Operator:
             postdata = self._get_data(id_list, post_nodes, ignore_null)
 
             if not postdata:
-                self._debug_nodes_logger(self, "ID", id_list)
+                self._debug_nodes_logger("ID", id_list)
                 res = None
 
             for k in postdata:
@@ -2656,10 +2656,10 @@ class Operator:
                         tresult['passed'].append(deepcopy(node_value_passed))
                 else:
                     predict, postdict = self._get_nodevalue(predict, postdict,
-                                                            None, postdata[k],
+                                                            etree.Element("NoNode"), postdata[k],
                                                             x_path, ele_list[0], err_mssg)
                     predict, postdict = self._get_nodevalue(predict, postdict,
-                                                            None, postdata[k],
+                                                            etree.Element("NoNode"), postdata[k],
                                                             x_path, ele_list[0], info_mssg)
                     predict[ele_list[0]] = None
                     ele_xpath2 = postdata.get(k).xpath(ele_list[0])
@@ -2942,7 +2942,7 @@ class Operator:
                             id_val[id_list[length]] = k[length][0].strip()
                         if k in predata:
                             predict, postdict = self._get_nodevalue(
-                                predict, postdict, predata[k], None, x_path, node_name, err_mssg)
+                                predict, postdict, predata[k], etree.Element("NoNode"), x_path, node_name, err_mssg)
                             ele_xpath1 = predata.get(k).xpath(node_name)
                             if len(ele_xpath1):
                                 predict[node_name] = ele_xpath1[0].text.strip()
@@ -2953,7 +2953,7 @@ class Operator:
                                 {'id_missing_post': deepcopy(id_val)})
                         else:
                             predict, postdict = self._get_nodevalue(
-                                predict, postdict, None, postdata[k], x_path, node_name, err_mssg)
+                                predict, postdict, etree.Element("NoNode"), postdata[k], x_path, node_name, err_mssg)
                             ele_xpath2 = postdata.get(k).xpath(node_name)
                             if len(ele_xpath2):
                                 postdict[node_name] = ele_xpath2[0].text.strip()
@@ -3022,10 +3022,10 @@ class Operator:
             if not post_nodes:
 
                 if self._is_ignore_null(ignore_null):
-                    self._debug_nodes_logger(self, "Xpath", x_path)
+                    self._debug_nodes_logger("Xpath", x_path)
                     res = None
                 else:
-                    self._error_nodes_logger(self, "Xpath", x_path)
+                    self._error_nodes_logger("Xpath", x_path)
                     count_fail = count_fail + 1
                     res = False
                     node_value_failed = {
@@ -3203,12 +3203,12 @@ class Operator:
 
     def _error_nodes_logger(self, text, data):
         self.logger_testop.error(colorama.Fore.RED +
-                                 "ERROR!! Nodes are not present in given <{}>".format(
-                                    text + ":" + data ),
+                                 "ERROR!! Nodes are not present in given <{}> : <{}>".format(
+                                    text, data),
                                  extra=self.log_detail)
 
     def _debug_nodes_logger(self, text, data):
         self.logger_testop.debug(colorama.Fore.YELLOW +
-                                 "SKIPPING!! Nodes are not present for given IDs: {}".format(
-                                     text + ":" + data ),
+                                 "SKIPPING!! Nodes are not present for given <{}>: <{}>".format(
+                                     text, data),
                                  extra=self.log_detail)
