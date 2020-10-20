@@ -1053,6 +1053,5 @@ def main():
                                 "ERROR!! %s \nComplete Message:  %s" % (type(ex).__name__, str(ex)),
                                 extra=js.log_detail)
 
-
 if __name__ == '__main__':
     main()

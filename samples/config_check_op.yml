@@ -1,0 +1,14 @@
+hosts:
+  - device: host
+#  - device: 10.221.140.168
+    username: regress
+    passwd: MaRtInI
+#    port: 22
+tests:
+#  - test_is_equal.yml
+#  - issue_377.yml
+#  - issue_377_customer.yml
+  - test_delta_op.py
+#  - test_no_diff_op.py
+#  - test_list_not_less_op.py
+#  - test_list_not_more_op.py
