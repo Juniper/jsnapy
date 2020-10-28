@@ -208,13 +208,17 @@ class Operator:
         for path in nodes:
          #   i = i + 1
             xlist = []
+            val = []
             for id in id_list:
+                # if "." empty id is passed, do not process it, just append it.
+                if id == ".":
+                    val.append(tuple(["."]))
+                    continue
                 id_nodes = path.findall(id)
                 if self._is_ignore_null(ignore_null) and not id_nodes:
                     continue
                 xlist.append(id_nodes)
             # xlist = [path.findall(id) for id in id_list]
-            val = []
             for values in xlist:
                 if values is not None:
                     if isinstance(values, list):
