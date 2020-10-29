@@ -535,6 +535,28 @@ class TestComparisonOperator(unittest.TestCase):
         self.assertEqual(oper.no_failed, 0)
 
     @patch('jnpr.jsnapy.check.get_path')
+    def test_delta_empty_id(self, mock_path):
+        self.chk = True
+        comp = Comparator()
+        conf_file = os.path.join(os.path.dirname(__file__),
+                                 'configs', 'main_delta_empty_id.yml')
+        mock_path.return_value = os.path.join(os.path.dirname(__file__), 'configs')
+        config_file = open(conf_file, 'r')
+        main_file = yaml.load(config_file, Loader=yaml.FullLoader)
+        oper = comp.generate_test_files(
+            main_file,
+            self.hostname,
+            self.chk,
+            self.diff,
+            self.db,
+            self.snap_del,
+            "snap_delta_pre",
+            self.action,
+            "snap_delta_post")
+        self.assertEqual(oper.no_passed, 1)
+        self.assertEqual(oper.no_failed, 0)
+
+    @patch('jnpr.jsnapy.check.get_path')
     def test_delta_fail(self, mock_path):
         self.chk = True
         comp = Comparator()

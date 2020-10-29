@@ -1,0 +1,10 @@
+check_chassis_fpc:
+  - command: show chassis fpc
+  - item: 
+      xpath: //fpc
+      id: "."
+      tests:
+        - delta: memory-heap-utilization, 50%
+          info: "Test Succeeded!! Memory heap utilisation of the FPC {{id_0}} has changed less than 50%"
+          err: "Test Failed!!! Memory heap utilisation of the FPC {{id_0}} has changed less than 50%"
+          ignore-null: True
