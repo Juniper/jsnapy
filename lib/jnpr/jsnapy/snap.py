@@ -269,6 +269,10 @@ class Parser:
                     #     "Taking snapshot of RPC: %s" %
                     #     rpc,
                     #     extra=self.log_detail)
+                    options_rpc = {'format': reply_format}
+                    if 'options' in kwargs:
+                        options_rpc.update(kwargs['options'])
+                        kwargs.pop('options')
                     rpc_reply = getattr(
                         dev.rpc,
                         rpc.replace(
