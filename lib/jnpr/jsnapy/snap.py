@@ -278,8 +278,7 @@ class Parser:
                         rpc.replace(
                             '-',
                             '_'))(
-                        options={
-                            'format': reply_format},
+                        options=options_rpc,
                         **kwargs)
                 else:
                     self.logger_snap.error(
