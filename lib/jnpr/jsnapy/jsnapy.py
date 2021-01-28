@@ -858,6 +858,9 @@ class SnapAdmin:
         :return: return list of object of testop.Operator containing test details or list of dictionary of object
                     of testop.Operator containing test details for each stored snapshot
         """
+        if pre_file is None:
+            pre_file = "snap_temp"
+            self.snap_del = True
         return self.action_api_based(dev, data, pre_file, "snapcheck", folder, local=local)
 
     def check(self, data, pre_file=None, post_file=None, dev=None, folder=None):
