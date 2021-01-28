@@ -732,6 +732,7 @@ class SnapAdmin:
         :return: return list of object of testop.Operator containing test details or list of dictionary of object
                     of testop.Operator containing test details for each stored snapshot
         """
+        self.host_list = []
         try:
             host = config_data.get('hosts')[0]
         except Exception as ex:

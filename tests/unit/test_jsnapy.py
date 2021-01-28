@@ -334,7 +334,7 @@ class TestSnapAdmin(unittest.TestCase):
         mock_connect.assert_called_with('1.1.1.1', 'abc', 'xyz', 'mock_pre', config_data, 'snapcheck', None)
 
     @patch('jnpr.jsnapy.jsnapy.SnapAdmin.connect')
-    def test_extract_data_text_string(self, mock_connect):
+    def test_snapcheck_no_file_passed(self, mock_connect):
         js = SnapAdmin()
         config_data = """
                 hosts:
