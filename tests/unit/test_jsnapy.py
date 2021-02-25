@@ -333,6 +333,21 @@ class TestSnapAdmin(unittest.TestCase):
         config_data = yaml.load(config_data, Loader=yaml.FullLoader)
         mock_connect.assert_called_with('1.1.1.1', 'abc', 'xyz', 'mock_pre', config_data, 'snapcheck', None)
 
+    @patch('jnpr.jsnapy.jsnapy.SnapAdmin.connect')
+    def test_snapcheck_no_file_passed(self, mock_connect):
+        js = SnapAdmin()
+        config_data = """
+                hosts:
+                  - device: 1.1.1.1
+                    username : abc
+                    passwd: xyz
+                tests:
+                  - test_anything.yml
+                """
+        js.snapcheck(config_data)
+        config_data = yaml.load(config_data, Loader=yaml.FullLoader)
+        mock_connect.assert_called_with('1.1.1.1', 'abc', 'xyz', 'snap_temp', config_data, 'snapcheck', None)
+
     def test_extract_data_error(self):
         with self.assertRaises(Exception):
             js = SnapAdmin()
