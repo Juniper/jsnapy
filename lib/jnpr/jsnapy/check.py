@@ -16,7 +16,7 @@ from os.path import expanduser
 
 import colorama
 import yaml
-from icdiff import diff, codec_print, create_option_parser, ConsoleDiff
+from icdiff import diff, codec_print, get_options, ConsoleDiff
 from lxml import etree
 
 from jnpr.jsnapy import get_path
@@ -463,8 +463,7 @@ class Comparator:
             lines_a = pre_snap_file.splitlines(True)
             lines_b = post_snap_file.splitlines(True)
             headers = ("Snap_1", "Snap_2")
-            parser = create_option_parser()
-            options, args = parser.parse_args()
+            options = get_options()[0]
             cd = ConsoleDiff(cols=int(options.cols),
                      show_all_spaces=options.show_all_spaces,
                      highlight=options.highlight,
