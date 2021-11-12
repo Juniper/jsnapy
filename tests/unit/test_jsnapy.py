@@ -431,7 +431,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         conf_file = os.path.join(os.path.dirname(__file__), 'configs', 'main_1.yml')
         config_file = open(conf_file, 'r')
-        config_data = yaml.load(config_file)
+        config_data = yaml.load(config_file, Loader=yaml.FullLoader)
         js.snapcheck(config_data, 'mock_pre', dev)
         mock_gen_rpc.assert_called_with(dev, 'mock_pre', 'abc', config_data)
         mock_test.assert_called()
@@ -616,7 +616,7 @@ class TestSnapAdmin(unittest.TestCase):
         js = SnapAdmin()
         js.args.file = os.path.join(os.path.dirname(__file__), 'configs', 'main.yml')
         js.snapcheck(js.args.file, 'mock_file')
-        mock_exit.assert_called()
+        mock_exit.assert_called
 
     @patch('jnpr.jsnapy.jsnapy.SnapAdmin.api_based_handling')
     def test_action_api_based_data_passed_in_string(self, mock_data):
