@@ -2290,7 +2290,7 @@ class Operator:
                             id_val[id_list[length]] = k[length][0].strip()
                         if k in data1:
                             predict, postdict = self._get_nodevalue(
-                                predict, postdict, data1[k], None, x_path, ele_list[0], err_mssg)
+                                predict, postdict, data1[k], etree.Element("NoNode"), x_path, ele_list[0], err_mssg)
                             ele_xpath1 = data1.get(k).xpath(ele_list[0])
                             if len(ele_xpath1):
                                 predict[ele_list[0]] = ele_xpath1[0].text.strip()
@@ -2301,7 +2301,7 @@ class Operator:
                                 {'id_missing_post': deepcopy(id_val)})
                         else:
                             predict, postdict = self._get_nodevalue(
-                                predict, postdict, None, data2[k], x_path, ele_list[0], err_mssg)
+                                predict, postdict, etree.Element("NoNode"), data2[k], x_path, ele_list[0], err_mssg)
                             ele_xpath2 = data2.get(k).xpath(ele_list[0])
                             if len(ele_xpath2):
                                 postdict[ele_list[0]] = ele_xpath2[0].text.strip()
