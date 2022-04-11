@@ -2844,7 +2844,7 @@ class Operator:
                                         re.search('-', del_val)):
                                     dvalue = abs(float(delta_val.strip('%')))
                                     mvalue = val1 - ((val1 * dvalue) / 100)
-                                    if (val2 > val1 or val2 < mvalue):
+                                    if (val2 < mvalue):
                                         flag_pass = False
                                     else:
                                         flag_pass = True
@@ -2853,7 +2853,7 @@ class Operator:
                                 elif re.search('%', del_val) and (re.search('\+', del_val)):
                                     dvalue = float(delta_val.strip('%'))
                                     mvalue = val1 + ((val1 * dvalue) / 100)
-                                    if (val2 < val1 or val2 > mvalue):
+                                    if (val2 > mvalue):
                                         flag_pass = False
                                     else:
                                         flag_pass = True
