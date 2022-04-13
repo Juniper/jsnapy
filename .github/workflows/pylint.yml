@@ -31,7 +31,7 @@ jobs:
         pip install pylint
         pip install -r requirements.txt
         pip install -r development.txt
-        pip install .
+        sudo pip install .
 
     - name: Analysing the code with pylint
       run: |
