@@ -33,6 +33,7 @@ jobs:
         pip install -r requirements.txt
         pip install -r development.txt
         sudo python setup.py install
+        pip install junos-eznc
 
     - name: Analysing the code with pylint
       run: |
