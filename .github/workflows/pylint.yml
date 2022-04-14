@@ -50,6 +50,6 @@ jobs:
         python -m pip install -U black;
         black --check --exclude="docs|build|tests|samples|venv" .
     
-    - name: Run unit tests
+    - name: Run unit test
       run: |
         sudo nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a tests/unit
