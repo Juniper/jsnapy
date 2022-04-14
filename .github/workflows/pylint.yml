@@ -28,16 +28,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip uninstall -r requirements.txt -y
-        pip uninstall -r development.txt -y
-        pip install icdiff==1.9.1
         pip install pylint
         pip install -r requirements.txt
         pip install -r development.txt
-        sudo python setup.py sdist
-        sudo python setup.py install
-        pip uninstall -y junos-eznc
-        pip install junos-eznc
+        python setup.py install
 
     - name: Analysing the code with pylint
       run: |
