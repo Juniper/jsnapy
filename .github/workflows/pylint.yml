@@ -20,14 +20,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: ./
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Validate version
       run: |
         $pythonVersion = (python --version)
-        if ("Python ${{ matrix.python }}" -ne "$pythonVersion"){
-          Write-Host "The current version is $pythonVersion; expected version is ${{ matrix.python }}"
+        if ("Python ${{ matrix.python-version }}" -ne "$pythonVersion"){
+          Write-Host "The current version is $pythonVersion; expected version is ${{ matrix.python-version }}"
           exit 1
         }
         $pythonVersion
