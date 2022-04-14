@@ -45,7 +45,6 @@ jobs:
     - name: Run unit tests
       run: |
         pip install icdiff==1.9.1
-        pip install --no-cache junos-eznc
         pip install nose
         pip install mock
         pip install coverage
