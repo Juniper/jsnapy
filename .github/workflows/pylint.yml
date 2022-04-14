@@ -46,4 +46,7 @@ jobs:
       run: |
         pip install icdiff==1.9.1
         pip install junos-eznc
+        pip install nose
+        pip install mock
+        pip install coverage
         nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
