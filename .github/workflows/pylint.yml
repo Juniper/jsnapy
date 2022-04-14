@@ -52,6 +52,5 @@ jobs:
     
     - name: Run unit test
       run: |
-        sudo pip install junos-eznc
-        sudo pip list -v
-        sudo nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a tests/unit
+        cd tests/unit
+        sudo nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
