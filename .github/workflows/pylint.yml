@@ -20,16 +20,26 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: ./
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Validate version
+      run: |
+        $pythonVersion = (python --version)
+        if ("Python ${{ matrix.python }}" -ne "$pythonVersion"){
+          Write-Host "The current version is $pythonVersion; expected version is ${{ matrix.python }}"
+          exit 1
+        }
+        $pythonVersion
+      shell: pwsh
+
     - name: Install dependencies
       run: |
-        python3.7 -m pip install --upgrade pip
-        python3.7 -m pip install pylint
-        python3.7 -m pip install -r requirements.txt
-        python3.7 -m pip install -r development.txt
-        sudo python3.7 setup.py install
+        python -m pip install --upgrade pip
+        python -m pip install pylint
+        python -m pip install -r requirements.txt
+        python -m pip install -r development.txt
+        sudo python setup.py install
 
     - name: Analysing the code with pylint
       run: |
@@ -37,12 +47,12 @@ jobs:
     
     - name: Run black tool
       run: |
-        python3.7 -m pip install -U black;
+        python -m pip install -U black;
         black --check --exclude="docs|build|tests|samples|venv" .
     
     - name: Run unit tests
       run: |
-        sudo python3.7 -m pip install -r requirements.txt
-        sudo python3.7 -m pip install -r development.txt
-        sudo python3.7 -m pip install junos-eznc
+        sudo python -m pip install -r requirements.txt
+        sudo python -m pip install -r development.txt
+        sudo python -m pip install junos-eznc
         nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a tests/unit
