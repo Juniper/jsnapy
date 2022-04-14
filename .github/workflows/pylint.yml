@@ -52,4 +52,4 @@ jobs:
     
     - name: Run unit tests
       run: |
-        nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a tests/unit
+        sudo nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a tests/unit
