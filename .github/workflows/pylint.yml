@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.7.12]
+        python-version: [3.8]
 
 
     steps:
@@ -39,7 +39,7 @@ jobs:
         python -m pip install pylint
         python -m pip install -r requirements.txt
         python -m pip install -r development.txt
-        sudo python3.7 setup.py install
+        sudo python setup.py install
 
     - name: Analysing the code with pylint
       run: |
