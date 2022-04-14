@@ -36,9 +36,6 @@ jobs:
     - name: Install dependencies
       run: |
         sudo python -m pip install --upgrade pip
-        sudo python -m pip install virtualenv
-        sudo virtualenv jsnapyenv
-        sudo . jsnapyenv/bin/activate
         sudo python -m pip install pylint
         sudo python -m pip install -r requirements.txt
         sudo python -m pip install -r development.txt
@@ -56,4 +53,5 @@ jobs:
     - name: Run unit test
       run: |
         sudo pip install junos-eznc
+        sudo pip list -v
         sudo nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a tests/unit
