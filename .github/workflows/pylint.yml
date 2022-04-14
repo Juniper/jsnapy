@@ -34,6 +34,7 @@ jobs:
         pip install pylint
         pip install -r requirements.txt
         pip install -r development.txt
+        sudo python setup.py sdist
         sudo python setup.py install
         pip uninstall -y junos-eznc
         pip install junos-eznc
