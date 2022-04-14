@@ -21,7 +21,6 @@ import base64
 
 
 class Parser:
-
     def __init__(self, **kwargs):
         """
         Parser object constructor.
@@ -29,12 +28,12 @@ class Parser:
 
         """
         self.logger_snap = logging.getLogger(__name__)
-        self.log_detail = {'hostname': None}
+        self.log_detail = {"hostname": None}
         self.reply = {}
         self.command_list = []
         self.rpc_list = []
         self.test_included = []
-        self.port = kwargs.get('port', None)
+        self.port = kwargs.get("port", None)
 
     def _write_file(self, rpc_reply, format, output_file):
         """
@@ -46,30 +45,26 @@ class Parser:
         ### pyEz returns true if there is no output of given command ###
         ### Ex. show configuration security certificates returns nothing if its not set
 
-
-        if rpc_reply is True :
-            with open(output_file, 'wb') as f:
-                f.write("".encode('utf-8'))
+        if rpc_reply is True:
+            with open(output_file, "wb") as f:
+                f.write("".encode("utf-8"))
             self.logger_snap.info(
-                colorama.Fore.BLUE +
-                "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
+                colorama.Fore.BLUE + "\nOutput of requested Command/RPC is empty",
+                extra=self.log_detail,
+            )
         else:
-            with open(output_file, 'wb') as f:
+            with open(output_file, "wb") as f:
                 f.write(etree.tostring(rpc_reply))
 
     def _write_warning(
-            self, reply, db, snap_file, hostname, cmd_name, cmd_format, output_file):
-        with open(snap_file, 'wb') as f:
-            f.write(reply.encode('utf-8'))
-        if db['store_in_sqlite'] is True:
+        self, reply, db, snap_file, hostname, cmd_name, cmd_format, output_file
+    ):
+        with open(snap_file, "wb") as f:
+            f.write(reply.encode("utf-8"))
+        if db["store_in_sqlite"] is True:
             self.store_in_sqlite(
-                db,
-                hostname,
-                cmd_name,
-                cmd_format,
-                reply,
-                output_file,
-                warning=True)
+                db, hostname, cmd_name, cmd_format, reply, output_file, warning=True
+            )
 
     def _check_reply(self, rpc_reply, format):
         """
@@ -78,14 +73,14 @@ class Parser:
         :param format: xml/ text
         :return: return false if reply contains error ow return rpc reply
         """
-        if rpc_reply is True :
+        if rpc_reply is True:
             self.logger_snap.info(
-                colorama.Fore.BLUE +
-                "\nOutput of requested Command/RPC is empty", extra=self.log_detail)
+                colorama.Fore.BLUE + "\nOutput of requested Command/RPC is empty",
+                extra=self.log_detail,
+            )
             return ""
         else:
             return etree.tostring(rpc_reply, encoding="unicode")
-
 
     def generate_snap_file(self, output_file, hostname, name, cmd_format):
         """
@@ -97,22 +92,27 @@ class Parser:
         """
         if self.port is not None:
             hostname = "{}_{}".format(hostname, self.port)
-        name = name.split('|')[0].strip()
-        cmd_rpc = re.sub('/|\*|\.|-|\|', '_', name)
+        name = name.split("|")[0].strip()
+        cmd_rpc = re.sub("/|\*|\.|-|\|", "_", name)
         if os.path.isfile(output_file):
             return output_file
         else:
-            filename = hostname + '_' + output_file + \
-                '_' + cmd_rpc + '.' + cmd_format
+            filename = hostname + "_" + output_file + "_" + cmd_rpc + "." + cmd_format
             output_file = os.path.join(
-                os.path.expanduser(get_path(
-                    'DEFAULT',
-                    'snapshot_path')),
-                filename)
+                os.path.expanduser(get_path("DEFAULT", "snapshot_path")), filename
+            )
             return output_file
 
     def store_in_sqlite(
-            self, db, hostname, cmd_rpc_name, reply_format, rpc_reply, snap_name, warning=False):
+        self,
+        db,
+        hostname,
+        cmd_rpc_name,
+        reply_format,
+        rpc_reply,
+        snap_name,
+        warning=False,
+    ):
         """
         Store reply in database
         :param db: database name
@@ -122,17 +122,18 @@ class Parser:
         :param rpc_reply: RPC reply
         :param snap_name: snap filename
         """
-        sqlite_jsnap = JsnapSqlite(hostname, db['db_name'])
+        sqlite_jsnap = JsnapSqlite(hostname, db["db_name"])
         db_dict = dict()
-        db_dict['cli_command'] = cmd_rpc_name
-        db_dict['snap_name'] = snap_name
-        db_dict['filename'] = hostname + '_' + snap_name + \
-            '_' + cmd_rpc_name + '.' + reply_format
-        db_dict['format'] = reply_format
+        db_dict["cli_command"] = cmd_rpc_name
+        db_dict["snap_name"] = snap_name
+        db_dict["filename"] = (
+            hostname + "_" + snap_name + "_" + cmd_rpc_name + "." + reply_format
+        )
+        db_dict["format"] = reply_format
         if warning is False:
-            db_dict['data'] = self._check_reply(rpc_reply, reply_format)
+            db_dict["data"] = self._check_reply(rpc_reply, reply_format)
         else:
-            db_dict['data'] = rpc_reply
+            db_dict["data"] = rpc_reply
         sqlite_jsnap.insert_data(db_dict)
 
     def run_cmd(self, test_file, t, formats, dev, output_file, hostname, db):
@@ -145,22 +146,21 @@ class Parser:
         the writing of testcases independant of the position of where 
         command is written.
         """
-        index = next((i for i, x in enumerate(test_file[t]) if 'command' in x), 0)
-        command = test_file[t][index].get('command', "unknown command")
-        cmd_format = test_file[t][index].get('format', 'xml')
+        index = next((i for i, x in enumerate(test_file[t]) if "command" in x), 0)
+        command = test_file[t][index].get("command", "unknown command")
+        cmd_format = test_file[t][index].get("format", "xml")
 
-        cmd_format = cmd_format if cmd_format in formats else 'xml'
+        cmd_format = cmd_format if cmd_format in formats else "xml"
         self.command_list.append(command)
-        cmd_name = command.split('|')[0].strip()
-        cmd_name = '_'.join(cmd_name.split())
-        self.logger_snap.debug(colorama.Fore.BLUE +
-                               "Tests Included: %s " %t,
-                               extra=self.log_detail)
+        cmd_name = command.split("|")[0].strip()
+        cmd_name = "_".join(cmd_name.split())
+        self.logger_snap.debug(
+            colorama.Fore.BLUE + "Tests Included: %s " % t, extra=self.log_detail
+        )
         self.logger_snap.info(
-            colorama.Fore.BLUE +
-            "Taking snapshot of COMMAND: %s " %
-            command,
-            extra=self.log_detail)
+            colorama.Fore.BLUE + "Taking snapshot of COMMAND: %s " % command,
+            extra=self.log_detail,
+        )
         try:
             # self.logger_snap.info(
             #     colorama.Fore.BLUE +
@@ -168,60 +168,59 @@ class Parser:
             #     command,
             #     extra=self.log_detail)
             ##### for commands containing "| display xml" only text format works in PyEz
-            if re.search('\|\s+display\s+xml',command):
-                rpc_reply_command = dev.rpc.cli(command, format='text')
+            if re.search("\|\s+display\s+xml", command):
+                rpc_reply_command = dev.rpc.cli(command, format="text")
             else:
                 rpc_reply_command = dev.rpc.cli(command, format=cmd_format)
             self.reply[command] = rpc_reply_command
 
         except RpcError as err:
             snap_file = self.generate_snap_file(
-                output_file,
-                hostname,
-                cmd_name,
-                cmd_format)
+                output_file, hostname, cmd_name, cmd_format
+            )
             self._write_warning(
-                etree.tostring(
-                    err.rsp, encoding="unicode"),
+                etree.tostring(err.rsp, encoding="unicode"),
                 db,
                 snap_file,
                 hostname,
                 cmd_name,
                 cmd_format,
-                output_file)
-            self.logger_snap.error(colorama.Fore.RED +
-                                   "ERROR occurred %s" %
-                                   str(sys.exc_info()[0]), extra=self.log_detail)
-            self.logger_snap.error(colorama.Fore.RED +
-                                   "\n**********Complete error message***********\n %s" %
-                                   str(sys.exc_info()), extra=self.log_detail)
+                output_file,
+            )
+            self.logger_snap.error(
+                colorama.Fore.RED + "ERROR occurred %s" % str(sys.exc_info()[0]),
+                extra=self.log_detail,
+            )
+            self.logger_snap.error(
+                colorama.Fore.RED
+                + "\n**********Complete error message***********\n %s"
+                % str(sys.exc_info()),
+                extra=self.log_detail,
+            )
             return
         except Exception:
-            self.logger_snap.error(colorama.Fore.RED +
-                                   "ERROR occurred %s" %
-                                   str(sys.exc_info()[0]), extra=self.log_detail)
-            self.logger_snap.error(colorama.Fore.RED +
-                                   "\n**********Complete error message***********\n %s" %
-                                   str(sys.exc_info()), extra=self.log_detail)
-            #raise Exception("Error in command")
+            self.logger_snap.error(
+                colorama.Fore.RED + "ERROR occurred %s" % str(sys.exc_info()[0]),
+                extra=self.log_detail,
+            )
+            self.logger_snap.error(
+                colorama.Fore.RED
+                + "\n**********Complete error message***********\n %s"
+                % str(sys.exc_info()),
+                extra=self.log_detail,
+            )
+            # raise Exception("Error in command")
             # sys.exc_clear()
             return
         else:
             snap_file = self.generate_snap_file(
-                output_file,
-                hostname,
-                cmd_name,
-                cmd_format)
+                output_file, hostname, cmd_name, cmd_format
+            )
             self._write_file(rpc_reply_command, cmd_format, snap_file)
-            if db['store_in_sqlite'] is True:
+            if db["store_in_sqlite"] is True:
                 self.store_in_sqlite(
-                    db,
-                    hostname,
-                    cmd_name,
-                    cmd_format,
-                    rpc_reply_command,
-                    output_file)
-
+                    db, hostname, cmd_name, cmd_format, rpc_reply_command, output_file
+                )
 
     def run_rpc(self, test_file, t, formats, dev, output_file, hostname, db):
         """
@@ -233,54 +232,51 @@ class Parser:
         the writing of testcases independant of the position of where 
         command is written.
         """
-        index = next((i for i, x in enumerate(test_file[t]) if 'rpc' in x), 0)
-        index_kwargs = next((i for i, x in enumerate(test_file[t])
-                             if 'kwargs' in x or 'args' in x), 1)
-        rpc = test_file[t][index].get('rpc', "unknown rpc")
+        index = next((i for i, x in enumerate(test_file[t]) if "rpc" in x), 0)
+        index_kwargs = next(
+            (i for i, x in enumerate(test_file[t]) if "kwargs" in x or "args" in x), 1
+        )
+        rpc = test_file[t][index].get("rpc", "unknown rpc")
         self.rpc_list.append(rpc)
-        reply_format = test_file[t][index].get('format', 'xml')
-        reply_format = reply_format if reply_format in formats else 'xml'
-        self.logger_snap.debug(colorama.Fore.BLUE +
-                               "Tests Included : %s " %t,
-                               extra=self.log_detail)
-        self.logger_snap.info(colorama.Fore.BLUE +
-                              "Taking snapshot of RPC: %s" %
-                              rpc,
-                              extra=self.log_detail)
-        if len(test_file[t]) >= 2 and ('args' in test_file[t][index_kwargs] or
-                                       'kwargs' in test_file[t][index_kwargs]):
-            args_key = 'args' if 'args' in test_file[t][index_kwargs] else 'kwargs'
+        reply_format = test_file[t][index].get("format", "xml")
+        reply_format = reply_format if reply_format in formats else "xml"
+        self.logger_snap.debug(
+            colorama.Fore.BLUE + "Tests Included : %s " % t, extra=self.log_detail
+        )
+        self.logger_snap.info(
+            colorama.Fore.BLUE + "Taking snapshot of RPC: %s" % rpc,
+            extra=self.log_detail,
+        )
+        if len(test_file[t]) >= 2 and (
+            "args" in test_file[t][index_kwargs]
+            or "kwargs" in test_file[t][index_kwargs]
+        ):
+            args_key = "args" if "args" in test_file[t][index_kwargs] else "kwargs"
             kwargs = {
-                k.replace(
-                    '-',
-                    '_'): v for k,
-                v in list(test_file[t][index_kwargs][args_key].items())}
-            if 'filter_xml' in kwargs:
+                k.replace("-", "_"): v
+                for k, v in list(test_file[t][index_kwargs][args_key].items())
+            }
+            if "filter_xml" in kwargs:
                 from lxml.builder import E
+
                 filter_data = None
-                for tag in kwargs['filter_xml'].split('/')[::-1]:
-                    filter_data = E(tag) if filter_data is None else E(
-                        tag,
-                        filter_data)
-                kwargs['filter_xml'] = filter_data
-                if rpc == 'get-config':
+                for tag in kwargs["filter_xml"].split("/")[::-1]:
+                    filter_data = E(tag) if filter_data is None else E(tag, filter_data)
+                kwargs["filter_xml"] = filter_data
+                if rpc == "get-config":
                     # self.logger_snap.info(
                     #     colorama.Fore.BLUE +
                     #     "Taking snapshot of RPC: %s" %
                     #     rpc,
                     #     extra=self.log_detail)
-                    rpc_reply = getattr(
-                        dev.rpc,
-                        rpc.replace(
-                            '-',
-                            '_'))(
-                        options={
-                            'format': reply_format},
-                        **kwargs)
+                    rpc_reply = getattr(dev.rpc, rpc.replace("-", "_"))(
+                        options={"format": reply_format}, **kwargs
+                    )
                 else:
                     self.logger_snap.error(
-                        colorama.Fore.RED +
-                        "ERROR!!, filtering rpc works only for 'get-config' rpc")
+                        colorama.Fore.RED
+                        + "ERROR!!, filtering rpc works only for 'get-config' rpc"
+                    )
             else:
                 try:
                     # self.logger_snap.info(
@@ -288,37 +284,46 @@ class Parser:
                     #     "Taking snapshot of %s......." %
                     #     rpc,
                     #     extra=self.log_detail)
-                    rpc_reply = getattr(
-                        dev.rpc, rpc.replace('-', '_'))({'format': reply_format}, **kwargs)
+                    rpc_reply = getattr(dev.rpc, rpc.replace("-", "_"))(
+                        {"format": reply_format}, **kwargs
+                    )
                 except RpcError as err:
                     snap_file = self.generate_snap_file(
-                        output_file,
-                        hostname,
-                        rpc,
-                        reply_format)
+                        output_file, hostname, rpc, reply_format
+                    )
                     self._write_warning(
-                        etree.tostring(
-                            err.rsp, encoding="unicode"),
+                        etree.tostring(err.rsp, encoding="unicode"),
                         db,
                         snap_file,
                         hostname,
                         rpc,
                         reply_format,
-                        output_file)
-                    self.logger_snap.error(colorama.Fore.RED +
-                                           "ERROR occurred:\n %s" %
-                                           str(sys.exc_info()[0]), extra=self.log_detail)
-                    self.logger_snap.error(colorama.Fore.RED +
-                                           "\n**********Complete error message***********\n%s" %
-                                           str(sys.exc_info()), extra=self.log_detail)
+                        output_file,
+                    )
+                    self.logger_snap.error(
+                        colorama.Fore.RED
+                        + "ERROR occurred:\n %s" % str(sys.exc_info()[0]),
+                        extra=self.log_detail,
+                    )
+                    self.logger_snap.error(
+                        colorama.Fore.RED
+                        + "\n**********Complete error message***********\n%s"
+                        % str(sys.exc_info()),
+                        extra=self.log_detail,
+                    )
                     return
                 except Exception:
-                    self.logger_snap.error(colorama.Fore.RED +
-                                           "ERROR occurred:\n %s" %
-                                           str(sys.exc_info()[0]), extra=self.log_detail)
-                    self.logger_snap.error(colorama.Fore.RED +
-                                           "\n**********Complete error message***********\n%s" %
-                                           str(sys.exc_info()), extra=self.log_detail)
+                    self.logger_snap.error(
+                        colorama.Fore.RED
+                        + "ERROR occurred:\n %s" % str(sys.exc_info()[0]),
+                        extra=self.log_detail,
+                    )
+                    self.logger_snap.error(
+                        colorama.Fore.RED
+                        + "\n**********Complete error message***********\n%s"
+                        % str(sys.exc_info()),
+                        extra=self.log_detail,
+                    )
                     return
         else:
             try:
@@ -327,65 +332,62 @@ class Parser:
                 #     "Taking snapshot of %s............" %
                 #     rpc,
                 #     extra=self.log_detail)
-                if rpc == 'get-config':
-                    rpc_reply = getattr(
-                        dev.rpc,
-                        rpc.replace(
-                            '-',
-                            '_'))(
-                        options={
-                            'format': reply_format})
+                if rpc == "get-config":
+                    rpc_reply = getattr(dev.rpc, rpc.replace("-", "_"))(
+                        options={"format": reply_format}
+                    )
                 else:
-                    rpc_reply = getattr(
-                        dev.rpc, rpc.replace('-', '_'))({'format': reply_format})
+                    rpc_reply = getattr(dev.rpc, rpc.replace("-", "_"))(
+                        {"format": reply_format}
+                    )
             except RpcError as err:
                 snap_file = self.generate_snap_file(
-                    output_file,
-                    hostname,
-                    rpc,
-                    reply_format)
+                    output_file, hostname, rpc, reply_format
+                )
                 self._write_warning(
-                    etree.tostring(
-                        err.rsp, encoding="unicode"),
+                    etree.tostring(err.rsp, encoding="unicode"),
                     db,
                     snap_file,
                     hostname,
                     rpc,
                     reply_format,
-                    output_file)
-                self.logger_snap.error(colorama.Fore.RED +
-                                       "ERROR occurred: \n%s" %
-                                       str(sys.exc_info()[0]), extra=self.log_detail)
-                self.logger_snap.error(colorama.Fore.RED +
-                                       "\n**********Complete error message***********\n%s" %
-                                       str(sys.exc_info()), extra=self.log_detail)
+                    output_file,
+                )
+                self.logger_snap.error(
+                    colorama.Fore.RED + "ERROR occurred: \n%s" % str(sys.exc_info()[0]),
+                    extra=self.log_detail,
+                )
+                self.logger_snap.error(
+                    colorama.Fore.RED
+                    + "\n**********Complete error message***********\n%s"
+                    % str(sys.exc_info()),
+                    extra=self.log_detail,
+                )
                 return
             except Exception:
-                self.logger_snap.error(colorama.Fore.RED +
-                                       "ERROR occurred: \n%s" %
-                                       str(sys.exc_info()[0]), extra=self.log_detail)
-                self.logger_snap.error(colorama.Fore.RED +
-                                       "\n**********Complete error message***********\n%s" %
-                                       str(sys.exc_info()), extra=self.log_detail)
+                self.logger_snap.error(
+                    colorama.Fore.RED + "ERROR occurred: \n%s" % str(sys.exc_info()[0]),
+                    extra=self.log_detail,
+                )
+                self.logger_snap.error(
+                    colorama.Fore.RED
+                    + "\n**********Complete error message***********\n%s"
+                    % str(sys.exc_info()),
+                    extra=self.log_detail,
+                )
                 return
 
-        if 'rpc_reply' in locals():
+        if "rpc_reply" in locals():
             snap_file = self.generate_snap_file(
-                output_file,
-                hostname,
-                rpc,
-                reply_format)
+                output_file, hostname, rpc, reply_format
+            )
             self._write_file(rpc_reply, reply_format, snap_file)
             self.reply[rpc] = rpc_reply
 
-        if db['store_in_sqlite'] is True:
+        if db["store_in_sqlite"] is True:
             self.store_in_sqlite(
-                db,
-                hostname,
-                rpc,
-                reply_format,
-                rpc_reply,
-                output_file)
+                db, hostname, rpc, reply_format, rpc_reply, output_file
+            )
 
     def generate_reply(self, test_file, dev, output_file, hostname, db):
         """
@@ -393,11 +395,11 @@ class Parser:
         for commands and RPC in test file.
         """
         test_included = []
-        formats = ['xml', 'text']
-        self.log_detail['hostname'] = hostname
+        formats = ["xml", "text"]
+        self.log_detail["hostname"] = hostname
 
-        if 'tests_include' in test_file:
-            test_included = test_file.get('tests_include')
+        if "tests_include" in test_file:
+            test_included = test_file.get("tests_include")
         else:
             for t in test_file:
                 test_included.append(t)
@@ -410,60 +412,77 @@ class Parser:
                 """
                 Refer issue #187 for the index defining.
                 """
-                index_rpc = next((i for i, x in enumerate(test_file[t]) if 'rpc' in x), 0)
-                index_command = next((i for i, x in enumerate(test_file[t]) if 'command' in x), 0)
-                index_kwargs = next((i for i, x in enumerate(test_file[t]) if 'kwargs' in x or 'args' in x), 1)
+                index_rpc = next(
+                    (i for i, x in enumerate(test_file[t]) if "rpc" in x), 0
+                )
+                index_command = next(
+                    (i for i, x in enumerate(test_file[t]) if "command" in x), 0
+                )
+                index_kwargs = next(
+                    (
+                        i
+                        for i, x in enumerate(test_file[t])
+                        if "kwargs" in x or "args" in x
+                    ),
+                    1,
+                )
 
                 if test_file.get(t) is not None and (
-                        'command' in test_file[t][index_command]):
-                    #command = test_file[t][0].get('command',"unknown command")
-                    self.run_cmd(
-                        test_file,
-                        t,
-                        formats,
-                        dev,
-                        output_file,
-                        hostname,
-                        db)
-                elif test_file.get(t) is not None and 'rpc' in test_file[t][index_rpc]:
-                    if len(test_file[t])>1 and 'kwargs' in test_file[t][index_kwargs] and test_file[t][index_kwargs].get('kwargs') is None:
-                        del test_file[t][index_kwargs]['kwargs']
+                    "command" in test_file[t][index_command]
+                ):
+                    # command = test_file[t][0].get('command',"unknown command")
+                    self.run_cmd(test_file, t, formats, dev, output_file, hostname, db)
+                elif test_file.get(t) is not None and "rpc" in test_file[t][index_rpc]:
+                    if (
+                        len(test_file[t]) > 1
+                        and "kwargs" in test_file[t][index_kwargs]
+                        and test_file[t][index_kwargs].get("kwargs") is None
+                    ):
+                        del test_file[t][index_kwargs]["kwargs"]
 
-                    if len(test_file[t])>1 and 'args' in test_file[t][index_kwargs] and test_file[t][index_kwargs].get('args') is None:
-                        del test_file[t][index_kwargs]['args']
+                    if (
+                        len(test_file[t]) > 1
+                        and "args" in test_file[t][index_kwargs]
+                        and test_file[t][index_kwargs].get("args") is None
+                    ):
+                        del test_file[t][index_kwargs]["args"]
 
-                    if len(test_file[t])>1 and ('kwargs' in test_file[t][index_kwargs] or 'args' in test_file[t][index_kwargs]):
-                        if test_file[t][index_kwargs].get('kwargs'):
-                            data = test_file[t][index_kwargs].get('kwargs')
-                        elif test_file[t][index_kwargs].get('args'):
-                            data = test_file[t][index_kwargs].get('args')
+                    if len(test_file[t]) > 1 and (
+                        "kwargs" in test_file[t][index_kwargs]
+                        or "args" in test_file[t][index_kwargs]
+                    ):
+                        if test_file[t][index_kwargs].get("kwargs"):
+                            data = test_file[t][index_kwargs].get("kwargs")
+                        elif test_file[t][index_kwargs].get("args"):
+                            data = test_file[t][index_kwargs].get("args")
 
-                        hash_kwargs = hashlib.md5(json.dumps(data, sort_keys=True).encode('utf-8')).digest()
+                        hash_kwargs = hashlib.md5(
+                            json.dumps(data, sort_keys=True).encode("utf-8")
+                        ).digest()
                         hash_kwargs = base64.urlsafe_b64encode(hash_kwargs).strip()
 
                         self.run_rpc(
-                        test_file,
-                        t,
-                        formats,
-                        dev,
-                        output_file + '_' + hash_kwargs.decode('utf-8'),
-                        hostname,
-                        db)
+                            test_file,
+                            t,
+                            formats,
+                            dev,
+                            output_file + "_" + hash_kwargs.decode("utf-8"),
+                            hostname,
+                            db,
+                        )
                     else:
                         self.run_rpc(
-                                test_file,
-                                t,
-                                formats,
-                                dev,
-                                output_file,
-                                hostname,
-                                db)
+                            test_file, t, formats, dev, output_file, hostname, db
+                        )
                 else:
                     self.logger_snap.error(
-                        colorama.Fore.RED +
-                        "ERROR!!! Test case: '%s' not defined properly" % t, extra=self.log_detail)
+                        colorama.Fore.RED
+                        + "ERROR!!! Test case: '%s' not defined properly" % t,
+                        extra=self.log_detail,
+                    )
             else:
                 self.logger_snap.error(
-                    colorama.Fore.RED +
-                    "ERROR!!! Test case: '%s' not defined !!!!" % t, extra=self.log_detail)
+                    colorama.Fore.RED + "ERROR!!! Test case: '%s' not defined !!!!" % t,
+                    extra=self.log_detail,
+                )
         return self

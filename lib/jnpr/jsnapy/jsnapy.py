@@ -34,7 +34,6 @@ logging.getLogger("paramiko").setLevel(logging.WARNING)
 
 
 class SnapAdmin:
-
     def __init__(self):
         """
         taking parameters from command line
@@ -46,13 +45,14 @@ class SnapAdmin:
 
         self.q = queue.Queue()
         self.snap_q = queue.Queue()
-        self.log_detail = {'hostname': None}
+        self.log_detail = {"hostname": None}
         self.snap_del = False
         self.logger = logging.getLogger(__name__)
         self.test_cases = None
         self.parser = argparse.ArgumentParser(
             formatter_class=argparse.RawTextHelpFormatter,
-            description=textwrap.dedent('''\
+            description=textwrap.dedent(
+                """\
                                         Tool to capture snapshots and compare them
                                         It supports four subcommands:
                                          --snap, --check, --snapcheck, --diff
@@ -64,124 +64,114 @@ class SnapAdmin:
                                                 jsnapy --snapcheck snapfile -f main_configfile
                                         4. Take diff without specifying test case:
                                                 jsnapy --diff pre_snapfile post_snapfile -f main_configfile
-                                            '''),
+                                            """
+            ),
             usage="\nThis tool enables you to capture and audit runtime environment of "
-                  "\nnetworked devices running the Junos operating system (Junos OS)\n")
+            "\nnetworked devices running the Junos operating system (Junos OS)\n",
+        )
 
         group = self.parser.add_mutually_exclusive_group()
         # for mutually exclusive gp, can not use two or more options at a time
         group.add_argument(
-            '--snap',
-            action='store_true',
-            help="take the snapshot for commands specified in test file")
+            "--snap",
+            action="store_true",
+            help="take the snapshot for commands specified in test file",
+        )
         group.add_argument(
-            '--check',
-            action='store_true',
-            help=" compare pre and post snapshots based on test operators specified in test file")
-        
+            "--check",
+            action="store_true",
+            help=" compare pre and post snapshots based on test operators specified in test file",
+        )
+
         group.add_argument(
-            '--snapcheck',
-            action='store_true',
-            help='check current snapshot based on test file')
-        
-      #########
-      # will supoort it later
-      # for windows
-      ########
-      #  group.add_argument(
-      #      "--init",
-      #      action="store_true",
-      #      help="generate init folders: snapshots, configs and main.yml",
-      #  )
-      #########
+            "--snapcheck",
+            action="store_true",
+            help="check current snapshot based on test file",
+        )
+
+        #########
+        # will supoort it later
+        # for windows
+        ########
+        #  group.add_argument(
+        #      "--init",
+        #      action="store_true",
+        #      help="generate init folders: snapshots, configs and main.yml",
+        #  )
+        #########
 
         group.add_argument(
             "--diff",
             action="store_true",
-            help="display difference between two snapshots"
+            help="display difference between two snapshots",
         )
         group.add_argument(
-            "-V", "--version",
-            action="store_true",
-            help="displays version"
+            "-V", "--version", action="store_true", help="displays version"
         )
 
         self.parser.add_argument(
-            "pre_snapfile",
-            nargs='?',
-            help="pre snapshot filename")       # make it optional
+            "pre_snapfile", nargs="?", help="pre snapshot filename"
+        )  # make it optional
         self.parser.add_argument(
-            "post_snapfile",
-            nargs='?',
-            help="post snapshot filename",
-            type=str)       # make it optional
+            "post_snapfile", nargs="?", help="post snapshot filename", type=str
+        )  # make it optional
         self.parser.add_argument(
-            "-T", "--testfiles",
-            nargs="+",
-            help="test file paths")  # Take test file/files as an argument 
+            "-T", "--testfiles", nargs="+", help="test file paths"
+        )  # Take test file/files as an argument
         self.parser.add_argument(
-            "-f", "--file",
-            help="config file to take snapshot",
-            type=str)
+            "-f", "--file", help="config file to take snapshot", type=str
+        )
         self.parser.add_argument(
             "--local",
             action="store_true",
-            help="whether to run snapcheck on local snapshot")
-        self.parser.add_argument(
-            "--folder",
-            help="custom directory path for lookup",
-            type=str)
-        self.parser.add_argument("-t", "--hostname", help="hostname", type=str)
-        self.parser.add_argument(
-            "-p",
-            "--passwd",
-            help="password to login",
-            type=str)
-        self.parser.add_argument(
-            "-l",
-            "--login",
-            help="username to login",
-            type=str)
-        self.parser.add_argument(
-            "-P",
-            "--port",
-            help="port no to connect to device",
-            type=int
+            help="whether to run snapcheck on local snapshot",
         )
         self.parser.add_argument(
-            "-v", "--verbosity",
+            "--folder", help="custom directory path for lookup", type=str
+        )
+        self.parser.add_argument("-t", "--hostname", help="hostname", type=str)
+        self.parser.add_argument("-p", "--passwd", help="password to login", type=str)
+        self.parser.add_argument("-l", "--login", help="username to login", type=str)
+        self.parser.add_argument(
+            "-P", "--port", help="port no to connect to device", type=int
+        )
+        self.parser.add_argument(
+            "-v",
+            "--verbosity",
             action="count",
-            help=textwrap.dedent('''\
+            help=textwrap.dedent(
+                """\
             Set verbosity
             -v: Debug level messages
             -vv: Info level messages
             -vvv: Warning level messages
             -vvvv: Error level messages
-            -vvvvv: Critical level messages''')
+            -vvvvv: Critical level messages"""
+            ),
         )
-       # self.parser.add_argument(
-       #     "-m",
-       #     "--mail",
-       #     help="mail result to given id",
-       #     type=str)
+        # self.parser.add_argument(
+        #     "-m",
+        #     "--mail",
+        #     help="mail result to given id",
+        #     type=str)
         # self.parser.add_argument(
         #    "-o",
         #    "--overwrite",
         #    action='store_true',
         #    help="overwrite directories and files generated by init",
-        #)
+        # )
 
-        #self.args = self.parser.parse_args()
+        # self.args = self.parser.parse_args()
         self.args, unknown = self.parser.parse_known_args()
 
         self.db = dict()
-        self.db['store_in_sqlite'] = False
-        self.db['check_from_sqlite'] = False
-        self.db['db_name'] = ""
-        self.db['first_snap_id'] = None
-        self.db['second_snap_id'] = None
-        
-        DirStore.custom_dir=self.args.folder
+        self.db["store_in_sqlite"] = False
+        self.db["check_from_sqlite"] = False
+        self.db["db_name"] = ""
+        self.db["first_snap_id"] = None
+        self.db["second_snap_id"] = None
+
+        DirStore.custom_dir = self.args.folder
 
     def get_version(self):
         """
@@ -228,11 +218,18 @@ class SnapAdmin:
         self.logger.root.setLevel(val)
         handlers = self.logger.root.handlers
         for handle in handlers:
-            if handle.__class__.__name__ == 'StreamHandler':
+            if handle.__class__.__name__ == "StreamHandler":
                 handle.setLevel(val)
 
-    def chk_database(self, config_file, pre_snapfile,
-                     post_snapfile, check=None, snap=None, action=None):
+    def chk_database(
+        self,
+        config_file,
+        pre_snapfile,
+        post_snapfile,
+        check=None,
+        snap=None,
+        action=None,
+    ):
         """
         This function test parameters for sqlite and then update database accordingly
         :param config_file: main config file
@@ -242,65 +239,83 @@ class SnapAdmin:
         :param snap:
         :param action: used by module version, either snap, check or snapcheck
         """
-        d = config_file['sqlite'][0]
+        d = config_file["sqlite"][0]
         compare_from_id = False
-        if d.__contains__('store_in_sqlite'):
-            self.db['store_in_sqlite'] = d['store_in_sqlite']
-        if d.__contains__('check_from_sqlite'):
-            self.db['check_from_sqlite'] = d['check_from_sqlite']
+        if d.__contains__("store_in_sqlite"):
+            self.db["store_in_sqlite"] = d["store_in_sqlite"]
+        if d.__contains__("check_from_sqlite"):
+            self.db["check_from_sqlite"] = d["check_from_sqlite"]
 
-        if (self.db['store_in_sqlite']) or (self.db['check_from_sqlite']):
-                                            # and (check is True or action is
-                                            # "check")):
-            if d.__contains__('database_name'):
-                self.db['db_name'] = d['database_name']
+        if (self.db["store_in_sqlite"]) or (self.db["check_from_sqlite"]):
+            # and (check is True or action is
+            # "check")):
+            if d.__contains__("database_name"):
+                self.db["db_name"] = d["database_name"]
 
             else:
                 self.logger.error(
-                    colorama.Fore.RED +
-                    "Specify name of the database.",
-                    extra=self.log_detail)
+                    colorama.Fore.RED + "Specify name of the database.",
+                    extra=self.log_detail,
+                )
                 exit(1)
             if check == True or self.args.diff == True or action == "check":
-                if 'compare' in list(d) and d['compare'] is not None:
-                    strr = d['compare']
+                if "compare" in list(d) and d["compare"] is not None:
+                    strr = d["compare"]
                     if not isinstance(strr, str):
-                        self.logger.error(colorama.Fore.RED + "Properly specify ids of first and "
-                                                              "second snapshot in format: first_snapshot_id, second_snapshot_id",
-                                          extra=self.log_detail)
+                        self.logger.error(
+                            colorama.Fore.RED + "Properly specify ids of first and "
+                            "second snapshot in format: first_snapshot_id, second_snapshot_id",
+                            extra=self.log_detail,
+                        )
                         exit(1)
                     compare_from_id = True
-                    lst = [val.strip() for val in strr.split(',')]
+                    lst = [val.strip() for val in strr.split(",")]
                     try:
                         lst = [int(x) for x in lst]
                     except ValueError as ex:
                         self.logger.error(
-                            colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
-                                                " in format: first_snapshot_id, second_snapshot_id",
-                            extra=self.log_detail)
+                            colorama.Fore.RED
+                            + "Properly specify id numbers of first and second snapshots"
+                            " in format: first_snapshot_id, second_snapshot_id",
+                            extra=self.log_detail,
+                        )
                         # raise Exception(ex)
                         exit(1)
                     if len(lst) > 2:
-                        self.logger.error(colorama.Fore.RED + "No. of snapshots specified is more than two."
-                                                              " Please specify only two snapshots.",
-                                          extra=self.log_detail)
+                        self.logger.error(
+                            colorama.Fore.RED
+                            + "No. of snapshots specified is more than two."
+                            " Please specify only two snapshots.",
+                            extra=self.log_detail,
+                        )
                         exit(1)
-                    if len(lst) == 2 and isinstance(
-                            lst[0], int) and isinstance(lst[1], int):
-                        self.db['first_snap_id'] = lst[0]
-                        self.db['second_snap_id'] = lst[1]
+                    if (
+                        len(lst) == 2
+                        and isinstance(lst[0], int)
+                        and isinstance(lst[1], int)
+                    ):
+                        self.db["first_snap_id"] = lst[0]
+                        self.db["second_snap_id"] = lst[1]
                     else:
                         self.logger.error(
-                            colorama.Fore.RED + "Properly specify id numbers of first and second snapshots"
-                                                " in format: first_snapshot_id, second_snapshot_id",
-                            extra=self.log_detail)
+                            colorama.Fore.RED
+                            + "Properly specify id numbers of first and second snapshots"
+                            " in format: first_snapshot_id, second_snapshot_id",
+                            extra=self.log_detail,
+                        )
                         exit(1)
-        if self.db['check_from_sqlite'] is False or compare_from_id is False:
-            if (check is True and (pre_snapfile is None or post_snapfile is None) or
-                    self.args.diff is True and (pre_snapfile is None or post_snapfile is None)):
+        if self.db["check_from_sqlite"] is False or compare_from_id is False:
+            if (
+                check is True
+                and (pre_snapfile is None or post_snapfile is None)
+                or self.args.diff is True
+                and (pre_snapfile is None or post_snapfile is None)
+            ):
                 self.logger.error(
-                    colorama.Fore.RED +
-                    "Arguments not given correctly, Please refer below help message", extra=self.log_detail)
+                    colorama.Fore.RED
+                    + "Arguments not given correctly, Please refer below help message",
+                    extra=self.log_detail,
+                )
                 self.parser.print_help()
                 sys.exit(1)
 
@@ -314,44 +329,57 @@ class SnapAdmin:
         conf_file = self.args.file
         if conf_file is not None:
             if os.path.isfile(conf_file):
-                config_file = open(conf_file, 'r')
+                config_file = open(conf_file, "r")
                 self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
-            elif os.path.isfile(os.path.join(get_path('DEFAULT', 'config_file_path'), conf_file)):
-                fpath = get_path('DEFAULT', 'config_file_path')
-                config_file = open(os.path.join(fpath, conf_file), 'r')
+            elif os.path.isfile(
+                os.path.join(get_path("DEFAULT", "config_file_path"), conf_file)
+            ):
+                fpath = get_path("DEFAULT", "config_file_path")
+                config_file = open(os.path.join(fpath, conf_file), "r")
                 self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             else:
                 self.logger.error(
-                    colorama.Fore.RED +
-                    "ERROR!! Config file '%s' is not present " %
-                    conf_file, extra=self.log_detail)
+                    colorama.Fore.RED
+                    + "ERROR!! Config file '%s' is not present " % conf_file,
+                    extra=self.log_detail,
+                )
                 sys.exit(1)
         else:
             if self.args.hostname and self.args.testfiles:
-                temp_dict = {'hosts': [{'device': '', 'username': '', 'passwd': ''}], 'tests': []}
-                temp_dict['hosts'][0]['device'] = self.args.hostname
-                temp_dict['hosts'][0]['username'] = self.args.login
-                temp_dict['hosts'][0]['passwd'] = self.args.passwd
+                temp_dict = {
+                    "hosts": [{"device": "", "username": "", "passwd": ""}],
+                    "tests": [],
+                }
+                temp_dict["hosts"][0]["device"] = self.args.hostname
+                temp_dict["hosts"][0]["username"] = self.args.login
+                temp_dict["hosts"][0]["passwd"] = self.args.passwd
                 for tfile in self.args.testfiles:
-                    temp_dict['tests'].append(tfile)
+                    temp_dict["tests"].append(tfile)
                 self.main_file = temp_dict
 
-        if self.main_file.__contains__(
-                'sqlite') and self.main_file['sqlite'] and self.main_file['sqlite'][0]:
+        if (
+            self.main_file.__contains__("sqlite")
+            and self.main_file["sqlite"]
+            and self.main_file["sqlite"][0]
+        ):
             self.chk_database(
                 self.main_file,
                 self.args.pre_snapfile,
                 self.args.post_snapfile,
                 self.args.check,
-                self.args.snap)
+                self.args.snap,
+            )
         else:
             # if --check option is given for sqlite, then snap file name is not compulsory
             # else exit the function saying arguments not correct
-            if (self.args.check is True and (
-                    self.args.pre_snapfile is None or self.args.post_snapfile is None)):
-                self.logger.error(colorama.Fore.RED +
-                                  "Arguments not given correctly, Please refer help message",
-                                  extra=self.log_detail)
+            if self.args.check is True and (
+                self.args.pre_snapfile is None or self.args.post_snapfile is None
+            ):
+                self.logger.error(
+                    colorama.Fore.RED
+                    + "Arguments not given correctly, Please refer help message",
+                    extra=self.log_detail,
+                )
                 self.parser.print_help()
                 sys.exit(1)
 
@@ -360,13 +388,15 @@ class SnapAdmin:
         If diff is called with both pre_snapfile and post_snap_file then just process the diff and exit
         """
         if self.args.diff is True:
-            if (self.args.pre_snapfile is not None and os.path.isfile(self.args.pre_snapfile)) and (
-                    self.args.post_snapfile is not None and os.path.isfile(self.args.post_snapfile)):
+            if (
+                self.args.pre_snapfile is not None
+                and os.path.isfile(self.args.pre_snapfile)
+            ) and (
+                self.args.post_snapfile is not None
+                and os.path.isfile(self.args.post_snapfile)
+            ):
                 comp = Comparator()
-                comp.compare_diff(
-                    self.args.pre_snapfile,
-                    self.args.post_snapfile,
-                    None)
+                comp.compare_diff(self.args.pre_snapfile, self.args.post_snapfile, None)
                 sys.exit(1)
 
     def generate_rpc_reply(self, dev, output_file, hostname, config_data, **kwargs):
@@ -390,7 +420,14 @@ class SnapAdmin:
         return val
 
     def compare_tests(
-            self, hostname, config_data, pre_snap=None, post_snap=None, action=None, **kwargs):
+        self,
+        hostname,
+        config_data,
+        pre_snap=None,
+        post_snap=None,
+        action=None,
+        **kwargs
+    ):
         """
         called by check and snapcheck argument, to compare snap files
         calls the function to compare snapshots based on arguments given
@@ -402,7 +439,7 @@ class SnapAdmin:
         chk = self.args.check
         diff = self.args.diff
         pre_snap_file = self.args.pre_snapfile if pre_snap is None else pre_snap
-        if (chk or diff or action in ["check", "diff"]):
+        if chk or diff or action in ["check", "diff"]:
             post_snap_file = self.args.post_snapfile if post_snap is None else post_snap
             test_obj = comp.generate_test_files(
                 config_data,
@@ -413,7 +450,8 @@ class SnapAdmin:
                 self.snap_del,
                 pre_snap_file,
                 action,
-                post_snap_file)
+                post_snap_file,
+            )
         else:
             test_obj = comp.generate_test_files(
                 config_data,
@@ -423,11 +461,12 @@ class SnapAdmin:
                 self.db,
                 self.snap_del,
                 pre_snap_file,
-                action)
+                action,
+            )
         return test_obj
 
     def get_values(self, key_value):
-        del_value = ['device', 'username', 'passwd']
+        del_value = ["device", "username", "passwd"]
         for v in del_value:
             if v in list(key_value):
                 del key_value[v]
@@ -441,18 +480,19 @@ class SnapAdmin:
         self.host_list = []
         if self.args.hostname is None:
             try:
-                hosts_val = self.main_file['hosts']
+                hosts_val = self.main_file["hosts"]
             except KeyError as ex:
-                self.logger.error(colorama.Fore.RED +
-                    "\nERROR occurred !! Hostname not given properly %s" %
-                    str(ex),
-                    extra=self.log_detail)
+                self.logger.error(
+                    colorama.Fore.RED
+                    + "\nERROR occurred !! Hostname not given properly %s" % str(ex),
+                    extra=self.log_detail,
+                )
                 # raise Exception(ex)
             except Exception as ex:
-                self.logger.error(colorama.Fore.RED +
-                    "\nERROR occurred !! %s" %
-                    str(ex),
-                    extra=self.log_detail)
+                self.logger.error(
+                    colorama.Fore.RED + "\nERROR occurred !! %s" % str(ex),
+                    extra=self.log_detail,
+                )
                 # raise Exception(ex)
             else:
                 # when group of devices are given, searching for include keyword in
@@ -460,9 +500,11 @@ class SnapAdmin:
                 self.get_hosts_list(hosts_val, host_dict)
         else:
             # login credentials are given from command line
-            host_dict['0'] = {'device': self.args.hostname,
-                              'username': self.args.login,
-                              'passwd': self.args.passwd}
+            host_dict["0"] = {
+                "device": self.args.hostname,
+                "username": self.args.login,
+                "passwd": self.args.passwd,
+            }
             self.host_list.append(self.args.hostname)
 
     def get_test(self, config_data, hostname, snap_file, post_snap, action, **kwargs):
@@ -479,20 +521,16 @@ class SnapAdmin:
         res = Operator()
 
         res = self.compare_tests(
-            hostname,
-            config_data,
-            snap_file,
-            post_snap,
-            action,
-            **kwargs)
+            hostname, config_data, snap_file, post_snap, action, **kwargs
+        )
 
         result_status = res.result
 
-        mail_condition = 'all'
-        if result_status == 'Passed':
-            mail_condition = 'pass'
-        elif result_status == 'Failed':
-            mail_condition = 'fail'
+        mail_condition = "all"
+        if result_status == "Passed":
+            mail_condition = "pass"
+        elif result_status == "Failed":
+            mail_condition = "fail"
 
         mail_pref = config_data.get("mail")
 
@@ -506,27 +544,36 @@ class SnapAdmin:
                     mail_file_path = mail_pref.get(mail_condition)
             else:
                 self.logger.error(
-                    colorama.Fore.RED +
-                    "ERROR!! Type of mail preferences should be either dictionary or string", extra=self.log_detail)
+                    colorama.Fore.RED
+                    + "ERROR!! Type of mail preferences should be either dictionary or string",
+                    extra=self.log_detail,
+                )
 
-            if mail_file_path is not None and mail_file_path != '':
-                mfile = os.path.join(expanduser(get_path('DEFAULT', 'test_file_path')), mail_file_path) \
-                    if os.path.isfile(mail_file_path) is False else mail_file_path
+            if mail_file_path is not None and mail_file_path != "":
+                mfile = (
+                    os.path.join(
+                        expanduser(get_path("DEFAULT", "test_file_path")),
+                        mail_file_path,
+                    )
+                    if os.path.isfile(mail_file_path) is False
+                    else mail_file_path
+                )
                 if os.path.isfile(mfile):
-                    mail_file = open(mfile, 'r')
+                    mail_file = open(mfile, "r")
                     mail_file = yaml.load(mail_file, Loader=yaml.FullLoader)
                     if "passwd" not in mail_file:
-                        passwd = getpass.getpass(
-                            "Please enter ur email password ")
+                        passwd = getpass.getpass("Please enter ur email password ")
                     else:
-                        passwd = mail_file['passwd']
+                        passwd = mail_file["passwd"]
 
                     send_mail = Notification()
                     send_mail.notify(mail_file, hostname, passwd, res)
                 else:
                     self.logger.error(
-                        colorama.Fore.RED +
-                        "ERROR!! Path of file containing mail content is not correct", extra=self.log_detail)
+                        colorama.Fore.RED
+                        + "ERROR!! Path of file containing mail content is not correct",
+                        extra=self.log_detail,
+                    )
         # else:
         #     res = self.compare_tests(
         #         hostname,
@@ -544,26 +591,34 @@ class SnapAdmin:
         :return: the list of testcases
         """
         test_files = []
-        for tfile in config_data.get('tests'):
+        for tfile in config_data.get("tests"):
             # tfile gets details of the test/files to be parsed.
             if not os.path.isfile(tfile):
                 tfile = os.path.join(
-                    expanduser(get_path(
-                        'DEFAULT',
-                        'test_file_path')),
-                    tfile)
+                    expanduser(get_path("DEFAULT", "test_file_path")), tfile
+                )
             if os.path.isfile(tfile):
-                test_file = open(tfile, 'r')
+                test_file = open(tfile, "r")
                 test_files.append(yaml.load(test_file, Loader=yaml.FullLoader))
             else:
                 self.logger.error(
-                    colorama.Fore.RED +
-                    "ERROR!! File %s is not found for extracting test case" %
-                    tfile, extra=self.log_detail)
+                    colorama.Fore.RED
+                    + "ERROR!! File %s is not found for extracting test case" % tfile,
+                    extra=self.log_detail,
+                )
         return test_files
 
-    def connect(self, hostname, username, password, output_file,
-                config_data=None, action=None, post_snap=None, **kwargs):
+    def connect(
+        self,
+        hostname,
+        username,
+        password,
+        output_file,
+        config_data=None,
+        action=None,
+        post_snap=None,
+        **kwargs
+    ):
         """
         connect to device and calls the function either to generate snapshots
         or compare them based on option given (--snap, --check, --snapcheck, --diff)
@@ -581,19 +636,23 @@ class SnapAdmin:
         if config_data is None:
             config_data = self.main_file
 
-        if 'local' in config_data:
+        if "local" in config_data:
             self.args.local = True
 
         if action is None:
             action = self.set_action_cmd(action)
 
-        if (action == "snap") or ((action == "snapcheck") and self.args.local is not True):
+        if (action == "snap") or (
+            (action == "snapcheck") and self.args.local is not True
+        ):
             self.logger.info(
-                colorama.Fore.BLUE +
-                "Connecting to device %s ................", hostname, extra=self.log_detail)
+                colorama.Fore.BLUE + "Connecting to device %s ................",
+                hostname,
+                extra=self.log_detail,
+            )
             if username is None:
                 if username is None:
-                    if sys.version < '3':
+                    if sys.version < "3":
                         username = raw_input("\nEnter User name: ")
                     else:
                         username = input("\nEnter User name: ")
@@ -602,14 +661,15 @@ class SnapAdmin:
                 user=username,
                 passwd=password,
                 gather_facts=False,
-                **kwargs)
+                **kwargs
+            )
             try:
                 dev.open()
             except ConnectAuthError as ex:
                 if password is None and action is None:
                     password = getpass.getpass(
-                        "\nEnter Password for username <%s> : " %
-                        username)
+                        "\nEnter Password for username <%s> : " % username
+                    )
                     return self.connect(
                         hostname,
                         username,
@@ -618,55 +678,46 @@ class SnapAdmin:
                         config_data,
                         action,
                         post_snap,
-                        **kwargs)
+                        **kwargs
+                    )
                 else:
-                    self.logger.error(colorama.Fore.RED +
-                                      "\nERROR occurred %s" %
-                                      str(ex),
-                                      extra=self.log_detail)
+                    self.logger.error(
+                        colorama.Fore.RED + "\nERROR occurred %s" % str(ex),
+                        extra=self.log_detail,
+                    )
                     raise Exception(ex)
             except Exception as ex:
-                self.logger.error(colorama.Fore.RED +
-                                  "\nERROR occurred %s" %
-                                  str(ex),
-                                  extra=self.log_detail)
+                self.logger.error(
+                    colorama.Fore.RED + "\nERROR occurred %s" % str(ex),
+                    extra=self.log_detail,
+                )
                 raise Exception(ex)
             else:
                 res = self.generate_rpc_reply(
-                    dev,
-                    output_file,
-                    hostname,
-                    config_data,
-                    **kwargs)
+                    dev, output_file, hostname, config_data, **kwargs
+                )
                 self.snap_q.put(res)
                 dev.close()
 
         if action in ["check", "snapcheck", "diff"]:
             if self.args.local is True:
-                output_file = config_data['local']
+                output_file = config_data["local"]
                 res = {}
                 for local_snap in output_file:
                     ret_obj = self.get_test(
-                        config_data,
-                        hostname,
-                        local_snap,
-                        post_snap,
-                        action,
-                        **kwargs)
+                        config_data, hostname, local_snap, post_snap, action, **kwargs
+                    )
                     res[local_snap] = ret_obj
             else:
                 res = self.get_test(
-                    config_data,
-                    hostname,
-                    output_file,
-                    post_snap,
-                    action,
-                    **kwargs)
+                    config_data, hostname, output_file, post_snap, action, **kwargs
+                )
 
         return res
 
     def connect_multiple_device(
-            self, host_dict, config_data, pre_name, action=None, post_name=None):
+        self, host_dict, config_data, pre_name, action=None, post_name=None
+    ):
         """
         Connect to devices based on host_dict
         :param host_dict: List of devices
@@ -681,16 +732,16 @@ class SnapAdmin:
             self.test_cases = self.extract_test_cases(config_data)  # extract test cases
 
         for (iter, key_value) in iteritems(host_dict):
-            hostname = key_value.get('device')
-            username = self.args.login or key_value.get('username')
-            password = self.args.passwd or key_value.get('passwd')
+            hostname = key_value.get("device")
+            username = self.args.login or key_value.get("username")
+            password = self.args.passwd or key_value.get("passwd")
             key_value = self.get_values(key_value)
             # extract the other arguments passed in file.
             # port passed in argument has higher precedence than in file
             port = self.args.port
             if port is not None:
-                key_value['port'] = port
-            self.log_detail = {'hostname': hostname}
+                key_value["port"] = port
+            self.log_detail = {"hostname": hostname}
             # create a new thread for the device to be connected
             t = Thread(
                 target=self.connect,
@@ -701,8 +752,9 @@ class SnapAdmin:
                     pre_name,
                     config_data,
                     action,
-                    post_name),
-                kwargs=key_value
+                    post_name,
+                ),
+                kwargs=key_value,
             )
             t.start()
             # can be optimised further with different logging buffer to have parallel processing
@@ -719,7 +771,9 @@ class SnapAdmin:
 
         return res_obj
 
-    def api_based_handling(self, config_data, pre_name=None, action=None, post_name=None, local=False):
+    def api_based_handling(
+        self, config_data, pre_name=None, action=None, post_name=None, local=False
+    ):
         """
         Called when dev= None, i.e. device details are passed inside config file
         It parse details of main config file and call functions to connect to device
@@ -728,44 +782,44 @@ class SnapAdmin:
         :param pre_name: pre snapshot filename or file tag
         :param action: action to be taken, snap, snapcheck, check
         :param post_name: post snapshot filename or file tag
-        :param local: reuse exisiting snapshot when true. Defaults to False        
+        :param local: reuse exisiting snapshot when true. Defaults to False
         :return: return list of object of testop.Operator containing test details or list of dictionary of object
                     of testop.Operator containing test details for each stored snapshot
         """
         self.host_list = []
         try:
-            host = config_data.get('hosts')[0]
+            host = config_data.get("hosts")[0]
         except Exception as ex:
             self.logger.error(
-                colorama.Fore.RED +
-                "ERROR!! hosts not defined in file or some error in data" %
-                ex,
-                extra=self.log_detail)
+                colorama.Fore.RED
+                + "ERROR!! hosts not defined in file or some error in data" % ex,
+                extra=self.log_detail,
+            )
             raise Exception("Incorrect config file or data ", ex)
         else:
             self.args.local = local
-            if config_data.__contains__(
-                    'sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
-                self.chk_database(
-                    config_data,
-                    pre_name,
-                    post_name,
-                    None,
-                    None,
-                    action)
+            if (
+                config_data.__contains__("sqlite")
+                and config_data["sqlite"]
+                and config_data["sqlite"][0]
+            ):
+                self.chk_database(config_data, pre_name, post_name, None, None, action)
 
             host_dict = {}
-            if host.__contains__('include') or len(config_data.get('hosts')) > 1:
-                self.get_hosts_list(config_data.get('hosts'), host_dict)
+            if host.__contains__("include") or len(config_data.get("hosts")) > 1:
+                self.get_hosts_list(config_data.get("hosts"), host_dict)
             else:
                 host_dict[iter] = deepcopy(host)
 
-            val = self.connect_multiple_device(host_dict, config_data, pre_name, action, post_name)
+            val = self.connect_multiple_device(
+                host_dict, config_data, pre_name, action, post_name
+            )
 
             return val
 
     def api_based_handling_with_dev(
-            self, dev, config_data, pre_name=None, action=None, post_snap=None, local=False):
+        self, dev, config_data, pre_name=None, action=None, post_snap=None, local=False
+    ):
         """
         Used to parse details given in main config file, when device object is passed in function
         :param dev: Device object
@@ -780,62 +834,50 @@ class SnapAdmin:
         res = []
         try:
             hostname = dev.hostname
-            self.log_detail = {'hostname': hostname}
+            self.log_detail = {"hostname": hostname}
         except Exception as ex:
             self.logger.error(
-                colorama.Fore.RED +
-                "ERROR!! message is: %s" %
-                ex,
-                extra=self.log_detail)
+                colorama.Fore.RED + "ERROR!! message is: %s" % ex, extra=self.log_detail
+            )
             raise Exception(ex)
         else:
-            if config_data.__contains__(
-                    'sqlite') and config_data['sqlite'] and config_data['sqlite'][0]:
-                self.chk_database(
-                    config_data,
-                    pre_name,
-                    post_snap,
-                    None,
-                    None,
-                    action)
+            if (
+                config_data.__contains__("sqlite")
+                and config_data["sqlite"]
+                and config_data["sqlite"][0]
+            ):
+                self.chk_database(config_data, pre_name, post_snap, None, None, action)
 
-            if 'local' in config_data:
+            if "local" in config_data:
                 local = True
 
             if action == "snap" or (action == "snapcheck" and local is False):
                 try:
-                    res.append(self.generate_rpc_reply(
-                        dev,
-                        pre_name,
-                        hostname,
-                        config_data))
+                    res.append(
+                        self.generate_rpc_reply(dev, pre_name, hostname, config_data)
+                    )
                 except Exception as ex:
-                    self.logger.error(colorama.Fore.RED +
-                                      "\nERROR occurred %s" %
-                                      str(ex),
-                                      extra=self.log_detail)
+                    self.logger.error(
+                        colorama.Fore.RED + "\nERROR occurred %s" % str(ex),
+                        extra=self.log_detail,
+                    )
                     res.append(None)
 
             if action in ["snapcheck", "check"]:
-                if local and 'local' in config_data:
+                if local and "local" in config_data:
                     res = {}
-                    for local_snap in config_data['local']:
+                    for local_snap in config_data["local"]:
                         res[local_snap] = self.get_test(
-                            config_data,
-                            hostname,
-                            pre_name,
-                            post_snap,
-                            action)
+                            config_data, hostname, pre_name, post_snap, action
+                        )
                     res = [res]
                 else:
                     res = []
                     res.append(
                         self.get_test(
-                            config_data,
-                            hostname,
-                            pre_name,
-                            post_snap,
-                            action))
+                            config_data, hostname, pre_name, post_snap, action
+                        )
+                    )
             return res
 
     def snap(self, data, file_name, dev=None, folder=None):
@@ -862,7 +904,9 @@ class SnapAdmin:
         if pre_file is None:
             pre_file = "snap_temp"
             self.snap_del = True
-        return self.action_api_based(dev, data, pre_file, "snapcheck", folder, local=local)
+        return self.action_api_based(
+            dev, data, pre_file, "snapcheck", folder, local=local
+        )
 
     def check(self, data, pre_file=None, post_file=None, dev=None, folder=None):
         """
@@ -876,7 +920,16 @@ class SnapAdmin:
         """
         return self.action_api_based(dev, data, pre_file, "check", folder, post_file)
 
-    def action_api_based(self, dev, data, pre_name=None, action=None, folder=None, post_snap=None, local=False):
+    def action_api_based(
+        self,
+        dev,
+        data,
+        pre_name=None,
+        action=None,
+        folder=None,
+        post_snap=None,
+        local=False,
+    ):
         """
         Function checks if device passed in config file or not and handles it.
         :param dev: Device object
@@ -893,20 +946,25 @@ class SnapAdmin:
         if isinstance(data, dict):  # check if data is passed as dictionary
             config_data = data
         elif os.path.isfile(data):  # check if data is passed as file
-            temp = open(data, 'r')
+            temp = open(data, "r")
             config_data = yaml.load(temp, Loader=yaml.FullLoader)
         elif isinstance(data, str):  # check if data is passed as string
             config_data = yaml.load(data, Loader=yaml.FullLoader)
         else:
             self.logger.info(
-                colorama.Fore.RED +
-                "Incorrect config file or data, please chk !!!!", extra=self.log_detail)
+                colorama.Fore.RED + "Incorrect config file or data, please chk !!!!",
+                extra=self.log_detail,
+            )
             exit(1)
 
         if isinstance(dev, Device):
-            res = self.api_based_handling_with_dev(dev, config_data, pre_name, action, post_snap, local=local)
+            res = self.api_based_handling_with_dev(
+                dev, config_data, pre_name, action, post_snap, local=local
+            )
         else:
-            res = self.api_based_handling(config_data, pre_name, action, post_snap, local=local)
+            res = self.api_based_handling(
+                config_data, pre_name, action, post_snap, local=local
+            )
         return res
 
     def set_action_cmd(self, action):
@@ -932,14 +990,20 @@ class SnapAdmin:
         """
         # only four test operation is permitted, if given anything apart from this,
         # then it should print error message.
-        if not ((self.args.file is None) and ((self.args.testfiles is None or self.args.hostname is None))):
+        if not (
+            (self.args.file is None)
+            and ((self.args.testfiles is None or self.args.hostname is None))
+        ):
             action = None
             if self.set_action_cmd(action) is not None:
                 # the operation is checked in above function
                 return None
 
-        self.logger.error(colorama.Fore.RED +
-                          "Arguments not given correctly, Please refer help message", extra=self.log_detail)
+        self.logger.error(
+            colorama.Fore.RED
+            + "Arguments not given correctly, Please refer help message",
+            extra=self.log_detail,
+        )
         self.parser.print_help()
         sys.exit(1)
 
@@ -950,28 +1014,29 @@ class SnapAdmin:
         :param host_dict: The dictionary to be created to store the parsed values
         """
         first_entry = hosts_val[0]
-        if 'include' in first_entry:    # check if hosts are group based
-            devices_file_name = first_entry['include']
+        if "include" in first_entry:  # check if hosts are group based
+            devices_file_name = first_entry["include"]
             if os.path.isfile(devices_file_name):
                 lfile = devices_file_name
             else:
                 lfile = os.path.join(
-                    expanduser(get_path(
-                        'DEFAULT',
-                        'test_file_path')),
-                    devices_file_name)
-            login_file = open(lfile, 'r')
+                    expanduser(get_path("DEFAULT", "test_file_path")), devices_file_name
+                )
+            login_file = open(lfile, "r")
             dev_file = yaml.load(login_file, Loader=yaml.FullLoader)
-            gp = first_entry.get('group', 'all')
+            gp = first_entry.get("group", "all")
 
-            dgroup = [i.strip().lower() for i in gp.split(',')]
+            dgroup = [i.strip().lower() for i in gp.split(",")]
             iter = 0  # initialize the counter from 0 to keep count of hosts
             for dgp in dev_file:
-                if dgroup[0].lower() == 'all' or dgp.lower() in dgroup:
+                if dgroup[0].lower() == "all" or dgp.lower() in dgroup:
                     for val in dev_file[dgp]:
                         hostname = list(val)[0]
                         iter += 1
-                        if val.get(hostname) is not None and hostname not in self.host_list:
+                        if (
+                            val.get(hostname) is not None
+                            and hostname not in self.host_list
+                        ):
                             self.host_list.append(hostname)
                         host_dict[iter] = deepcopy(val.get(hostname))
                         host_dict[iter]["device"] = hostname
@@ -980,19 +1045,17 @@ class SnapAdmin:
             for host in hosts_val:
                 iter += 1
                 try:
-                    hostname = host['device']
-                    self.log_detail = {'hostname': hostname}
+                    hostname = host["device"]
+                    self.log_detail = {"hostname": hostname}
                 except KeyError as ex:
                     self.logger.error(
-                        colorama.Fore.RED +
-                        "ERROR!! KeyError 'device' key not found",
-                        extra=self.log_detail)
+                        colorama.Fore.RED + "ERROR!! KeyError 'device' key not found",
+                        extra=self.log_detail,
+                    )
                 except Exception as ex:
                     self.logger.error(
-                        colorama.Fore.RED +
-                        "ERROR!! %s" %
-                        ex,
-                        extra=self.log_detail)
+                        colorama.Fore.RED + "ERROR!! %s" % ex, extra=self.log_detail
+                    )
                 else:
                     if hostname not in self.host_list:
                         self.host_list.append(hostname)
@@ -1002,12 +1065,17 @@ class SnapAdmin:
         """
         The function provides the information mentioned in the configuration files
         """
-        self.logger.debug(colorama.Fore.BLUE +
-                          "jsnapy.cfg file location used : %s" %
-                          get_config_location(), extra=self.log_detail)
-        self.logger.debug(colorama.Fore.BLUE +
-                          "Configuration file location used : %s" %
-                          get_path('DEFAULT', 'config_file_path'), extra=self.log_detail)
+        self.logger.debug(
+            colorama.Fore.BLUE
+            + "jsnapy.cfg file location used : %s" % get_config_location(),
+            extra=self.log_detail,
+        )
+        self.logger.debug(
+            colorama.Fore.BLUE
+            + "Configuration file location used : %s"
+            % get_path("DEFAULT", "config_file_path"),
+            extra=self.log_detail,
+        )
 
     def start_process(self):
         """
@@ -1021,7 +1089,9 @@ class SnapAdmin:
         self.check_diff_as_arg()
         # if self.args.diff is true, check if snap file (yaml) details are provided and process it
 
-        host_dict = {}  # an empty dictionary created in which we will store lists of hosts
+        host_dict = (
+            {}
+        )  # an empty dictionary created in which we will store lists of hosts
 
         if self.args.pre_snapfile is not None:
             output_file = self.args.pre_snapfile
@@ -1031,7 +1101,9 @@ class SnapAdmin:
         else:
             output_file = ""
 
-        self.extract_device_information(host_dict)  # extract information from the config file or arguments
+        self.extract_device_information(
+            host_dict
+        )  # extract information from the config file or arguments
 
         config_data = self.main_file
         self.connect_multiple_device(host_dict, config_data, output_file)
@@ -1053,9 +1125,13 @@ def main():
             try:
                 js.start_process()
             except Exception as ex:
-                js.logger.error(colorama.Fore.RED +
-                                "ERROR!! %s \nComplete Message:  %s" % (type(ex).__name__, str(ex)),
-                                extra=js.log_detail)
+                js.logger.error(
+                    colorama.Fore.RED
+                    + "ERROR!! %s \nComplete Message:  %s"
+                    % (type(ex).__name__, str(ex)),
+                    extra=js.log_detail,
+                )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
