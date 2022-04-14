@@ -16,40 +16,53 @@ try:
 except NameError:
     FileNotFoundError = IOError
 
+
 class DirStore:
     custom_dir = None
+
 
 # Function added by @gcasella
 # To check if the user is currently running the installation inside of a virtual environment that was installed using the `python3 -m venv venv` command.
 def venv_check():
 
-    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+    if hasattr(sys, "real_prefix") or (
+        hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
+    ):
         return True
     else:
         return False
 
-def get_config_location(file='jsnapy.cfg'):
+
+def get_config_location(file="jsnapy.cfg"):
     p_locations = []
-    if 'JSNAPY_HOME' in os.environ:
-        p_locations = [os.environ['JSNAPY_HOME']]
+    if "JSNAPY_HOME" in os.environ:
+        p_locations = [os.environ["JSNAPY_HOME"]]
 
     # Modified by @gcasella to use the function created on lines 22-29.
     if venv_check() is True:
-        p_locations.extend([os.path.join(os.path.expanduser("~"), '.jsnapy'),
-                            os.path.join(sys.prefix, 'etc', 'jsnapy')])
-    elif 'win32' in sys.platform:
         p_locations.extend(
-            [os.path.join(os.path.expanduser("~"), '.jsnapy'),
-             os.path.join(os.path.expanduser('~'), 'jsnapy')])
+            [
+                os.path.join(os.path.expanduser("~"), ".jsnapy"),
+                os.path.join(sys.prefix, "etc", "jsnapy"),
+            ]
+        )
+    elif "win32" in sys.platform:
+        p_locations.extend(
+            [
+                os.path.join(os.path.expanduser("~"), ".jsnapy"),
+                os.path.join(os.path.expanduser("~"), "jsnapy"),
+            ]
+        )
     else:
-        p_locations.extend([os.path.join(os.path.expanduser("~"), '.jsnapy'),
-                            '/etc/jsnapy'])
+        p_locations.extend(
+            [os.path.join(os.path.expanduser("~"), ".jsnapy"), "/etc/jsnapy"]
+        )
 
     for loc in p_locations:
         possible_location = os.path.join(loc, file)
         if os.path.isfile(possible_location):
             return loc
-    raise FileNotFoundError('Could not locate %s' % file)
+    raise FileNotFoundError("Could not locate %s" % file)
 
 
 def get_path(section, value):
@@ -60,11 +73,13 @@ def get_path(section, value):
     #           'log_file_path': '/var/log/jsnapy'})
     custom_dir = DirStore.custom_dir
     if custom_dir:
-        paths = {'config_file_path': '',
-                 'snapshot_path': 'snapshots',
-                 'test_file_path': 'testfiles'}
-        if custom_dir.startswith('~/'):
-            custom_dir = os.path.join(os.path.expanduser('~'), custom_dir[2:])
+        paths = {
+            "config_file_path": "",
+            "snapshot_path": "snapshots",
+            "test_file_path": "testfiles",
+        }
+        if custom_dir.startswith("~/"):
+            custom_dir = os.path.join(os.path.expanduser("~"), custom_dir[2:])
         complete_paths = {}
         for p in paths:
             complete_paths[p] = os.path.join(custom_dir, paths[p])
@@ -73,8 +88,8 @@ def get_path(section, value):
         config = configparser.ConfigParser()
         config_location = get_config_location()
         if config_location is None:
-            raise Exception('Config file not found')
-        config_location = os.path.join(config_location, 'jsnapy.cfg')
+            raise Exception("Config file not found")
+        config_location = os.path.join(config_location, "jsnapy.cfg")
         config.read(config_location)
         path = config.get(section, value)
     return path
