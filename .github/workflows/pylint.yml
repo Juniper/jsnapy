@@ -44,4 +44,5 @@ jobs:
     
     - name: Run unit tests
       run: |
+        pip install icdiff==1.9.1
         nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
