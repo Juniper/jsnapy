@@ -52,7 +52,8 @@ jobs:
     
     - name: Run unit tests
       run: |
-        sudo python -m pip install -r requirements.txt
-        sudo python -m pip install -r development.txt
-        sudo python -m pip install junos-eznc
+
+        sudo python${{ matrix.python-version }} -m pip install -r requirements.txt
+        sudo python${{ matrix.python-version }} -m pip install -r development.txt
+        sudo python${{ matrix.python-version }} -m pip install junos-eznc
         nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a tests/unit
