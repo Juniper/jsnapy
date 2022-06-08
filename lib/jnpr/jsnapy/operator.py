@@ -2896,7 +2896,7 @@ class Operator:
                                 predict,
                                 postdict,
                                 data1[k],
-                                None,
+                                etree.Element("NoNode"),
                                 x_path,
                                 ele_list[0],
                                 err_mssg,
@@ -2914,7 +2914,7 @@ class Operator:
                             predict, postdict = self._get_nodevalue(
                                 predict,
                                 postdict,
-                                None,
+                                etree.Element("NoNode"),
                                 data2[k],
                                 x_path,
                                 ele_list[0],
