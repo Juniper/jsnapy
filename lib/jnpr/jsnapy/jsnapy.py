@@ -666,7 +666,7 @@ class SnapAdmin:
             try:
                 dev.open()
             except ConnectAuthError as ex:
-                if password is None and action is None:
+                if password is None:
                     password = getpass.getpass(
                         "\nEnter Password for username <%s> : " % username
                     )
