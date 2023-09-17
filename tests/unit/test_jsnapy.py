@@ -1,14 +1,18 @@
-import unittest
-import yaml
-import os
-import sys
+# from contextlib import nested
+from contextlib import contextmanager
+from io import StringIO
 from jnpr.jsnapy import version
 from jnpr.jsnapy.jsnapy import SnapAdmin
-from mock import patch, MagicMock, call, ANY
-# from contextlib import nested
-from nose.plugins.attrib import attr
-import argparse
 from jnpr.junos.device import Device
+from nose.plugins.attrib import attr
+
+from unittest.mock import patch, MagicMock, call, ANY
+
+import argparse
+import os
+import sys
+import unittest
+import yaml
 
 # try: input = raw_input
 # except NameError: pass
@@ -18,6 +22,15 @@ if sys.version < '3':
 else:
     builtin_string = 'builtins.'
 
+@contextmanager
+def input(arg):
+    with patch("sys.stdin", StringIO(f"{arg}")):
+        yield
+
+@contextmanager
+def secret_input(arg):
+    with patch("getpass.getpass", side_effect=arg):
+        yield
 
 @attr('unit')
 class TestSnapAdmin(unittest.TestCase):
@@ -1071,3 +1084,17 @@ class TestSnapAdmin(unittest.TestCase):
                                call('1.1.1.1', config_data, 'PRE_314', None, 'snapcheck')
                                ]
         mock_check.assert_has_calls(expected_calls_made, any_order=True)
+
+    def test_get_device_login(self):
+        """test getting the password from user"""
+        js = SnapAdmin()
+        with input("dummy.username"):
+            self.assertEqual(js.get_device_login(), "dummy.username")
+
+    def test_get_device_passwd(self):
+        """ test getting hidden text from the user """
+        js = SnapAdmin()
+        with secret_input("a$$w0rd"):
+            self.asserEqual(js.get_device_login(), "a$$w0rd")
+
+
