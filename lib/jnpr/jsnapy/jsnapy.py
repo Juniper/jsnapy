@@ -22,7 +22,6 @@ from jnpr.jsnapy import get_path, version, get_config_location, DirStore
 from jnpr.jsnapy.check import Comparator
 from jnpr.jsnapy.notify import Notification
 from jnpr.junos import Device
-from jnpr.jsnapy import version
 from jnpr.jsnapy.operator import Operator
 from jnpr.jsnapy.snap import Parser
 from jnpr.junos.exception import ConnectAuthError
@@ -514,7 +513,7 @@ class SnapAdmin:
             # if both fail prompt for a password
             passwd = getpass.getpass(prompt="Password: ")
         return passwd
-        
+
     def get_device_login(self):
         """ Login finder and/or asker """
         # take either environment variable or the cli parsed login
@@ -748,7 +747,7 @@ class SnapAdmin:
 
         for (iter, key_value) in iteritems(host_dict):
             hostname = key_value.get("device")
-            # get username and password from check config file or other 
+            # get username and password from check config file or other
             # location, see get_device_XXXXXX methods
             username = key_value.get("username", self.get_device_login())
             password = key_value.get("passwd", self.get_device_passwd())
