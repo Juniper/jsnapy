@@ -51,5 +51,10 @@ jobs:
     
     - name: Run unit test
       run: |
+        sudo python -m pip install nose
+        sudo python -m pip install mock
+        sudo python -m pip install coverage
+        sudo python -m pip install ntc_templates==1.4.1
+        sudo python -m pip install textfsm==0.4.1
         cd tests/unit
         sudo nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
