@@ -36,7 +36,7 @@ def set_logging_path(path):
         with open(path, "rt") as f:
             config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-            for (handler, value) in iteritems(config["handlers"]):
+            for handler, value in iteritems(config["handlers"]):
                 if handler == "console":
                     pass
                 else:

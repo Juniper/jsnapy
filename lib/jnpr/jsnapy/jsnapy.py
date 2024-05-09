@@ -731,7 +731,7 @@ class SnapAdmin:
         if config_data is not None:
             self.test_cases = self.extract_test_cases(config_data)  # extract test cases
 
-        for (iter, key_value) in iteritems(host_dict):
+        for iter, key_value in iteritems(host_dict):
             hostname = key_value.get("device")
             username = self.args.login or key_value.get("username")
             password = self.args.passwd or key_value.get("passwd")
