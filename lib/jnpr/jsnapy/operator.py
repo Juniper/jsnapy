@@ -303,8 +303,6 @@ class Operator:
             "passed": [],
             "failed": [],
             "test_name": test_name
-            #     'pre_xml': xml1,
-            #     'post_xml': xml2
         }
         count_pass = 0
         count_fail = 0
