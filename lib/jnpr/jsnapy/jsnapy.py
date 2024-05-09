@@ -961,7 +961,7 @@ class SnapAdmin:
             res = self.api_based_handling_with_dev(
                 dev, config_data, pre_name, action, post_snap, local=local
             )
-        elif dev is not None:# To hadle mode = telnet
+        elif dev is not None:  # To handle mode = telnet
             res = self.api_based_handling_with_dev(
                 dev, config_data, pre_name, action, post_snap, local=local
             )

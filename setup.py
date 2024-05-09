@@ -16,6 +16,7 @@ if sys.version < "3":
 else:
     from configparser import ConfigParser
 
+
 # Function added by @gcasella
 # To check if the user is currently running the installation inside of a virtual environment that was installed using the `python3 -m venv venv` command.
 def venv_check():
