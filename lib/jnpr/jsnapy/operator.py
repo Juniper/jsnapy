@@ -302,7 +302,9 @@ class Operator:
             "testoperation": "exists",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
         }
         count_pass = 0
         count_fail = 0
@@ -458,7 +460,7 @@ class Operator:
             "testoperation": "not-exists",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -610,7 +612,7 @@ class Operator:
             "testoperation": "all-same",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -829,7 +831,7 @@ class Operator:
             "testoperation": "is-equal",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1020,7 +1022,7 @@ class Operator:
             "testoperation": "not-equal",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1212,7 +1214,7 @@ class Operator:
             "testoperation": "in-range",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1419,7 +1421,7 @@ class Operator:
             "testoperation": "not-range",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1625,7 +1627,7 @@ class Operator:
             "testoperation": "is-gt",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1812,7 +1814,7 @@ class Operator:
             "testoperation": "is-lt",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1999,7 +2001,7 @@ class Operator:
             "testoperation": "contains",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2182,7 +2184,7 @@ class Operator:
             "testoperation": "not_contains",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2365,7 +2367,7 @@ class Operator:
             "testoperation": "is-in",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2552,7 +2554,7 @@ class Operator:
             "testoperation": "not-in",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2739,7 +2741,7 @@ class Operator:
             "node_name": ele_list[0],
             "failed": [],
             "passed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2977,7 +2979,7 @@ class Operator:
             "node_name": ele_list[0],
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -3733,7 +3735,7 @@ class Operator:
             "testoperation": "regex",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
