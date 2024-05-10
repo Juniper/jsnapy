@@ -51,6 +51,7 @@ jobs:
 
     - name: Analysing the code with pylint
       run: |
+        pip install pylint
         sudo find . -type f -name "*.py" | xargs pylint | grep .
     
     - name: Run black tool
