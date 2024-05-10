@@ -61,6 +61,7 @@ jobs:
     
     - name: Run unit test
       run: |
+        source venv/bin/activate
         pip install nose
         pip install mock
         pip install coverage
@@ -68,5 +69,6 @@ jobs:
         pip install textfsm==0.4.1
         pip install colorama
         pip install icdiff==1.9.1
+        pip install pyyaml
         cd tests/
         nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
