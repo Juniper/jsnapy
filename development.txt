@@ -11,3 +11,4 @@ pytest
 pyyaml
 ntc_templates==1.4.1
 textfsm==0.4.1
+nose2
