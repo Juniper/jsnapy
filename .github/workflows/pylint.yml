@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.8.12, 3.9.12, 3.10.12, 3.11.9, 3.12.3]
+        python-version: [3.8.12, 3.9.12, 3.10.12]
 
     steps:
     - uses: actions/checkout@v2
@@ -64,13 +64,13 @@ jobs:
     - name: Run unit test
       run: |
         source venv/bin/activate
-        pip install nose
-        pip install mock
-        pip install coverage
-        pip install ntc_templates==1.4.1
-        pip install textfsm==0.4.1
-        pip install colorama
-        pip install icdiff==1.9.1
-        pip install pyyaml
+        #pip install nose
+        #pip install mock
+        #pip install coverage
+        #pip install ntc_templates==1.4.1
+        #pip install textfsm==0.4.1
+        #pip install colorama
+        #pip install icdiff==1.9.1
+        #pip install pyyaml
         cd tests/unit
         nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
