@@ -24,7 +24,6 @@ class DirStore:
 # Function added by @gcasella
 # To check if the user is currently running the installation inside of a virtual environment that was installed using the `python3 -m venv venv` command.
 def venv_check():
-
     if hasattr(sys, "real_prefix") or (
         hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
     ):
