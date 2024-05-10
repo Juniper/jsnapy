@@ -34,11 +34,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo python -m pip install --upgrade pip
-        sudo python -m pip install pylint
-        sudo python -m pip install -r requirements.txt
-        sudo python -m pip install -r development.txt
-        sudo python setup.py install
+        pip install --upgrade pip
+        pip install pylint
+        pip install -r requirements.txt
+        pip install -r development.txt
+        pip install .
 
     - name: Analysing the code with pylint
       run: |
@@ -46,15 +46,15 @@ jobs:
     
     - name: Run black tool
       run: |
-        sudo python -m pip install -U black;
-        sudo black --check --diff --exclude="docs|build|tests|samples|venv" .
+        pip install -U black;
+        black --check --diff --exclude="docs|build|tests|samples|venv" .
     
     - name: Run unit test
       run: |
-        sudo pip install nose
-        sudo python -m pip install mock
-        sudo python -m pip install coverage
-        sudo python -m pip install ntc_templates==1.4.1
-        sudo python -m pip install textfsm==0.4.1
-        cd tests/unit
+        pip install nose
+        pip install mock
+        pip install coverage
+        pip install ntc_templates==1.4.1
+        pip install textfsm==0.4.1
+        cd tests/
         nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
