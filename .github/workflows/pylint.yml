@@ -52,8 +52,6 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pip install pylint
-        pwd
-        ls -l
         sudo find ./lib/jnpr/jsnapy -type f -name "*.py" | xargs pylint | grep .
     
     - name: Run black tool
@@ -66,5 +64,4 @@ jobs:
         source venv/bin/activate
         pip install -r development.txt
         cd tests/unit
-        #nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
         nose2 --with-coverage -vvvv
