@@ -3742,7 +3742,6 @@ class Operator:
             tresult["expected_node_value"] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
