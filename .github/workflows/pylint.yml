@@ -54,7 +54,7 @@ jobs:
         pip install pylint
         pwd
         ls -l
-        #sudo find . -type f -name "*.py" | xargs pylint | grep .
+        sudo find ./lib/jnpr/jsnapy -type f -name "*.py" | xargs pylint | grep .
     
     - name: Run black tool
       run: |
