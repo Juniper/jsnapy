@@ -40,7 +40,7 @@ jobs:
         pip install -r development.txt
         python setup.py sdist
         ls dist/
-        cp jsnapy-*.dev0.tar.gz ../
+        cp dist/jsnapy-*.dev0.tar.gz ../
         cd ../
         tar -xzvf jsnapy-*.dev0.tar.gz
         cd jsnapy-*.dev0
