@@ -73,6 +73,6 @@ jobs:
         #pip install icdiff==1.9.1
         #pip install pyyaml
         pip install -r development.txt
-        #cd tests/unit
+        cd tests/unit
         #nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
-        nose2 --with-coverage -vvvv tests.unit
+        nose2 --with-coverage -vvvv
