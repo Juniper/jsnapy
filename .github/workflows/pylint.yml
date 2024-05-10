@@ -52,7 +52,7 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pip install pylint
-        sudo find .jsnapy/ -type f -name "*.py" | xargs pylint | grep .
+        sudo find ../jsnapy/ -type f -name "*.py" | xargs pylint | grep .
     
     - name: Run black tool
       run: |
