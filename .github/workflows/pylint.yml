@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.7.12, 3.8.12, 3.9.12]
+        python-version: [3.8.12, 3.9.12, 3.10.12, 3.11.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -34,22 +34,34 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo python -m pip install --upgrade pip
-        sudo python -m pip install pylint
-        sudo python -m pip install -r requirements.txt
-        sudo python -m pip install -r development.txt
-        sudo python setup.py install
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install pylint
+        pip install -r requirements.txt
+        pip install -r development.txt
+        python setup.py sdist
+        ls dist/
+        cp dist/jsnapy-*.dev0.tar.gz ../
+        cd ../
+        tar -xzvf jsnapy-*.dev0.tar.gz
+        cd jsnapy-*.dev0
+        python setup.py install
+        
 
     - name: Analysing the code with pylint
       run: |
-        sudo find . -type f -name "*.py" | xargs pylint | grep .
+        pip install pylint
+        sudo find ./lib/jnpr/jsnapy -type f -name "*.py" | xargs pylint | grep .
     
     - name: Run black tool
       run: |
-        sudo python -m pip install -U black;
-        sudo black --check --exclude="docs|build|tests|samples|venv" .
+        pip install -U black;
+        black --check --diff --exclude="docs|build|tests|samples|venv" .
     
     - name: Run unit test
       run: |
+        source venv/bin/activate
+        pip install -r development.txt
         cd tests/unit
-        sudo nosetests -v --with-coverage --cover-package=jnpr.jsnapy --cover-inclusive -a unit
+        nose2 --with-coverage -vvvv

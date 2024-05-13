@@ -8,3 +8,7 @@ pyflakes     # https://launchpad.net/pyflakes
 coveralls    # https://coveralls.io/
 unittest2>=0.5.1  # https://pypi.python.org/pypi/unittest2
 pytest
+pyyaml
+ntc_templates==1.4.1
+textfsm==0.4.1
+nose2

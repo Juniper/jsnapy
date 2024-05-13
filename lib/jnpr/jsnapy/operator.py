@@ -302,9 +302,9 @@ class Operator:
             "testoperation": "exists",
             "passed": [],
             "failed": [],
-            "test_name": test_name
-            #     'pre_xml': xml1,
-            #     'post_xml': xml2
+            "test_name": test_name,
+            # 'pre_xml': xml1,
+            # 'post_xml': xml2
         }
         count_pass = 0
         count_fail = 0
@@ -326,7 +326,6 @@ class Operator:
             # this function will find set of pre and post nodes for given Xpath
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -375,7 +374,6 @@ class Operator:
                     )
                     #### check only in postnode   ####
                     if postnode:
-
                         for k in range(len(postnode)):
                             # if length of pre node is less than post node,
                             # assign sample node
@@ -460,7 +458,7 @@ class Operator:
             "testoperation": "not-exists",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -483,7 +481,6 @@ class Operator:
             tresult["node_name"] = element
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -612,7 +609,7 @@ class Operator:
             "testoperation": "all-same",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -631,7 +628,6 @@ class Operator:
             tresult["node_name"] = element
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -676,7 +672,6 @@ class Operator:
                         tresult["failed"].append(deepcopy(node_value_failed))
 
                 else:
-
                     tresult["expected_node_value"] = value
                     for i in range(len(post_nodes)):
                         # if length of pre node is less than post node, assign
@@ -831,7 +826,7 @@ class Operator:
             "testoperation": "is-equal",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -854,7 +849,6 @@ class Operator:
             tresult["expected_node_value"] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -1022,7 +1016,7 @@ class Operator:
             "testoperation": "not-equal",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1047,7 +1041,6 @@ class Operator:
             tresult["expected_node_value"] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -1214,7 +1207,7 @@ class Operator:
             "testoperation": "in-range",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1421,7 +1414,7 @@ class Operator:
             "testoperation": "not-range",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1454,7 +1447,6 @@ class Operator:
                 tresult["expected_node_value"] = [range1, range2]
                 pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
                 if not post_nodes:
-
                     if self._is_ignore_null(ignore_null):
                         self._debug_nodes_logger("Xpath", x_path)
                         res = None
@@ -1627,7 +1619,7 @@ class Operator:
             "testoperation": "is-gt",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1814,7 +1806,7 @@ class Operator:
             "testoperation": "is-lt",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -1839,7 +1831,6 @@ class Operator:
             tresult["expected_node_value"] = val1
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -2001,7 +1992,7 @@ class Operator:
             "testoperation": "contains",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2026,7 +2017,6 @@ class Operator:
             tresult["expected_node_value"] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -2108,7 +2098,6 @@ class Operator:
                                 }
                                 tresult["passed"].append(deepcopy(node_value_passed))
                     else:
-
                         ##
                         if self._is_ignore_null(ignore_null):
                             self.logger_testop.debug(
@@ -2184,7 +2173,7 @@ class Operator:
             "testoperation": "not_contains",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2209,7 +2198,6 @@ class Operator:
             tresult["expected_node_value"] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -2291,7 +2279,6 @@ class Operator:
                                 }
                                 tresult["failed"].append(deepcopy(node_value_failed))
                     else:
-
                         ##
                         if self._is_ignore_null(ignore_null):
                             self.logger_testop.debug(
@@ -2367,7 +2354,7 @@ class Operator:
             "testoperation": "is-in",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2392,7 +2379,6 @@ class Operator:
             tresult["expected_node_value"] = value_list
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -2481,7 +2467,6 @@ class Operator:
                                 }
                                 tresult["failed"].append(deepcopy(node_value_failed))
                     else:
-
                         ##
                         if self._is_ignore_null(ignore_null):
                             self.logger_testop.debug(
@@ -2554,7 +2539,7 @@ class Operator:
             "testoperation": "not-in",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2579,7 +2564,6 @@ class Operator:
             tresult["expected_node_value"] = value_list
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -2668,7 +2652,6 @@ class Operator:
                                 }
                                 tresult["failed"].append(deepcopy(node_value_failed))
                     else:
-
                         ##
                         if self._is_ignore_null(ignore_null):
                             self.logger_testop.debug(
@@ -2741,7 +2724,7 @@ class Operator:
             "node_name": ele_list[0],
             "failed": [],
             "passed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -2979,7 +2962,7 @@ class Operator:
             "node_name": ele_list[0],
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -3207,7 +3190,6 @@ class Operator:
         pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
 
         if not post_nodes:
-
             if self._is_ignore_null(ignore_null):
                 self._debug_nodes_logger("Xpath", x_path)
                 res = None
@@ -3735,7 +3717,7 @@ class Operator:
             "testoperation": "regex",
             "passed": [],
             "failed": [],
-            "test_name": test_name
+            "test_name": test_name,
             # 'pre_xml': xml1,
             # 'post_xml': xml2
         }
@@ -3760,7 +3742,6 @@ class Operator:
             tresult["expected_node_value"] = value
             pre_nodes, post_nodes = self._find_xpath(iter, x_path, xml1, xml2)
             if not post_nodes:
-
                 if self._is_ignore_null(ignore_null):
                     self._debug_nodes_logger("Xpath", x_path)
                     res = None
@@ -3855,7 +3836,6 @@ class Operator:
                                 }
                                 tresult["failed"].append(deepcopy(node_value_failed))
                     else:
-
                         if self._is_ignore_null(ignore_null):
                             self.logger_testop.debug(
                                 colorama.Fore.YELLOW

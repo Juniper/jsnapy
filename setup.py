@@ -16,10 +16,10 @@ if sys.version < "3":
 else:
     from configparser import ConfigParser
 
+
 # Function added by @gcasella
 # To check if the user is currently running the installation inside of a virtual environment that was installed using the `python3 -m venv venv` command.
 def venv_check():
-
     if hasattr(sys, "real_prefix") or (
         hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
     ):
@@ -36,7 +36,7 @@ def set_logging_path(path):
         with open(path, "rt") as f:
             config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-            for (handler, value) in iteritems(config["handlers"]):
+            for handler, value in iteritems(config["handlers"]):
                 if handler == "console":
                     pass
                 else:
@@ -56,7 +56,6 @@ def set_logging_path(path):
 
 class OverrideInstall(install):
     def run(self):
-
         for arg in sys.argv:
             if "--install-data" in arg:
                 break

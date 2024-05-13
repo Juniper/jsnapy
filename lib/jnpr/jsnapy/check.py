@@ -77,10 +77,8 @@ class Comparator:
             return snapfile
 
     def splitter(self, value):
-        f = (
-            lambda x: x.split("]")[1].count(",")
-            if "[" in x and "]" in x
-            else x.count(",")
+        f = lambda x: (
+            x.split("]")[1].count(",") if "[" in x and "]" in x else x.count(",")
         )
         value_list = [x[::-1].strip() for x in value[::-1].split(",", f(value))][::-1]
         return value_list

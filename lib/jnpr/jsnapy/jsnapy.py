@@ -731,7 +731,7 @@ class SnapAdmin:
         if config_data is not None:
             self.test_cases = self.extract_test_cases(config_data)  # extract test cases
 
-        for (iter, key_value) in iteritems(host_dict):
+        for iter, key_value in iteritems(host_dict):
             hostname = key_value.get("device")
             username = self.args.login or key_value.get("username")
             password = self.args.passwd or key_value.get("passwd")
@@ -958,6 +958,10 @@ class SnapAdmin:
             exit(1)
 
         if isinstance(dev, Device):
+            res = self.api_based_handling_with_dev(
+                dev, config_data, pre_name, action, post_snap, local=local
+            )
+        elif dev is not None:  # To handle mode = telnet
             res = self.api_based_handling_with_dev(
                 dev, config_data, pre_name, action, post_snap, local=local
             )
