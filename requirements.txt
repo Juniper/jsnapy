@@ -2,6 +2,5 @@ colorama
 configparser
 pyparsing
 icdiff==1.9.1
-future
 lxml
 junos-eznc
