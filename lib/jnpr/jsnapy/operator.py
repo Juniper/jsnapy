@@ -2739,6 +2739,18 @@ class Operator:
                 + "ERROR!! 'no-diff' operator requires node value to test !!",
                 extra=self.log_detail,
             )
+        elif xml1 is None or xml2 is None:
+            self._error_nodes_logger("Xpath for snapshot", x_path)
+            res = False
+            count_fail = count_fail + 1
+            node_value_failed = {
+                "id": iddict,
+                "pre": predict,
+                "post": postdict,
+                "actual_node_value": None,
+                "xpath_error": True,
+            }
+            tresult["failed"].append(deepcopy(node_value_failed))
         else:
             if (not pre_nodes) or (not post_nodes):
                 # if ignore_null is True, just skip
@@ -2873,7 +2885,8 @@ class Operator:
                     else:
                         # mapping id name to its value
                         for length in range(len(k)):
-                            id_val[id_list[length]] = k[length][0].strip()
+                            if (len(k[0]) > 0):
+                                id_val[id_list[length]] = k[length][0].strip()
                         if k in data1:
                             predict, postdict = self._get_nodevalue(
                                 predict,
