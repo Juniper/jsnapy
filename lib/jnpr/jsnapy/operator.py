@@ -559,8 +559,8 @@ class Operator:
                         count_pass = count_pass + 1
                         node_value_passed = {
                             "id": id_val,
-                            "PRE": predict,
-                            "POST": postdict,
+                            "pre": predict,
+                            "post": postdict,
                             "message": message,
                         }
                         tresult["passed"].append(deepcopy(node_value_passed))
