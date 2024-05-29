@@ -2885,7 +2885,7 @@ class Operator:
                     else:
                         # mapping id name to its value
                         for length in range(len(k)):
-                            if (len(k[0]) > 0):
+                            if len(k[0]) > 0:
                                 id_val[id_list[length]] = k[length][0].strip()
                         if k in data1:
                             predict, postdict = self._get_nodevalue(
