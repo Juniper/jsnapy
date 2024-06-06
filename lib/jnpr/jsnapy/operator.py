@@ -420,6 +420,7 @@ class Operator:
                 % (element, x_path, count_pass, count_fail)
             )
             self._print_result(msg, res)
+            self._print_result(err_mssg, res)
             tresult["err"] = err_mssg  # Updating the user specified err message
         elif res is True:
             msg = 'All "%s" exists at xpath "%s" [ %d value matched ]' % (
@@ -428,6 +429,7 @@ class Operator:
                 count_pass,
             )
             self._print_result(msg, res)
+            self._print_result(info_mssg, res)
             tresult["info"] = info_mssg  # Updating the user specified info message
 
         # tresult['info'] = info_mssg
