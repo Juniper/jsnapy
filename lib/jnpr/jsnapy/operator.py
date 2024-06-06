@@ -117,6 +117,7 @@ class Operator:
             self.logger_testop.info(
                 colorama.Fore.GREEN + "PASS | " + testmssg, extra=self.log_detail
             )
+
     def _print_mssg(self, testmssg, result):
         if result is False:
             self.logger_testop.info(
@@ -126,7 +127,6 @@ class Operator:
             self.logger_testop.info(
                 colorama.Fore.GREEN + "PASS | " + testmssg, extra=self.log_detail
             )
-
     def print_testmssg(self, testname):
         """
         Print info and error messages
