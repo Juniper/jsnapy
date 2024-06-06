@@ -428,7 +428,7 @@ class Operator:
                 count_pass,
             )
             self._print_result(msg, res)
-            tresult['info'] = info_mssg # Updating the user specified err message
+            tresult['info'] = info_mssg # Updating the user specified info message
 
         # tresult['info'] = info_mssg
         # tresult['err'] = err_mssg
