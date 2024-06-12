@@ -40,7 +40,7 @@ class Operator:
                 test["command"] = cmd
                 testname_result_dict.setdefault(test["test_name"], [])
                 testname_result_dict[test["test_name"]].append(test)
-                #del test["test_name"]
+                # del test["test_name"]
         return testname_result_dict
 
     def define_operator(
