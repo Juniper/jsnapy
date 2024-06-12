@@ -40,7 +40,7 @@ class Operator:
                 test["command"] = cmd
                 testname_result_dict.setdefault(test["test_name"], [])
                 testname_result_dict[test["test_name"]].append(test)
-                del test["test_name"]
+                # del test["test_name"]
         return testname_result_dict
 
     def define_operator(
@@ -114,6 +114,16 @@ class Operator:
             )
         elif result is True:
             self.no_passed = self.no_passed + 1
+            self.logger_testop.info(
+                colorama.Fore.GREEN + "PASS | " + testmssg, extra=self.log_detail
+            )
+
+    def _print_mssg(self, testmssg, result):
+        if result is False:
+            self.logger_testop.info(
+                colorama.Fore.RED + "FAIL | " + testmssg, extra=self.log_detail
+            )
+        elif result is True:
             self.logger_testop.info(
                 colorama.Fore.GREEN + "PASS | " + testmssg, extra=self.log_detail
             )
@@ -420,6 +430,8 @@ class Operator:
                 % (element, x_path, count_pass, count_fail)
             )
             self._print_result(msg, res)
+            self._print_mssg(err_mssg, res)
+            tresult["err"] = err_mssg  # Updating the user specified err message
         elif res is True:
             msg = 'All "%s" exists at xpath "%s" [ %d value matched ]' % (
                 element,
@@ -427,6 +439,8 @@ class Operator:
                 count_pass,
             )
             self._print_result(msg, res)
+            self._print_mssg(info_mssg, res)
+            tresult["info"] = info_mssg  # Updating the user specified info message
 
         # tresult['info'] = info_mssg
         # tresult['err'] = err_mssg
