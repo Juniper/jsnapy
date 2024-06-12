@@ -27,7 +27,7 @@ def msg_change(x):
             data = (data[0],data[1][1:])
         if data[0] in ['id', 'ID']:
             data = (data[0], int(data[1])-1)
-	    msg = "{{%s_%s}}" % (data)
+            msg = "{{%s_%s}}" % (data)
         elif data[0] in ['PRE', 'POST']:
             msg = '{{%s["%s"]}}' % (data)
         else:
@@ -120,7 +120,7 @@ else:
                                     '\$id\.\d|\$pre\s?/?\.?/\s?[\w-]+/?[\w-]*|\$post\s?/?\.?/\s?[\w-]+/?[\w-]*|,\s?\.{0,2}/?\.{0,2}/?[\w-]+/?[\w-]*/?[\w-]*',
                                     data.group(2),
                                     re.I)
-                                inputs = map(msg_change, inputs)
+                                inputs = list(map(msg_change, inputs))
                             to_format = re.search('"(.*?)"', obj.group(2))
                             if len(inputs) > 0:
                                 if to_format:
