@@ -52,11 +52,21 @@ $ docker run -it -v $PWD:/scripts jsnapy --snap pre -f config_check.yml
 
 ### Build Arguments
 
-The following build arguments are currently supported:
+The following environment variable are currently supported:
 
-| ARG           | Default Value |
-|---------------|---------------|
-| `JSNAPY_HOME` | `/jsnapy`     |
+| ARG               | Default Value |
+|-------------------|---------------|
+| `JSNAPY_HOME`     | `/jsnapy`     |
+| `JSNAPY_USERNAME` | ``            |
+| `JSNAPY_PASSWORD` | ``            |
+
+`JSNAPY_USERNAME` and `JSNAPY_PASSWORD` can be used to set the username and
+password for device logins.
+
+Username and password order of precedence
+1. configuration file
+2. Environment variable
+3. command line
 
 ## Hello, World
 

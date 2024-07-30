@@ -22,7 +22,6 @@ from jnpr.jsnapy import get_path, version, get_config_location, DirStore
 from jnpr.jsnapy.check import Comparator
 from jnpr.jsnapy.notify import Notification
 from jnpr.junos import Device
-from jnpr.jsnapy import version
 from jnpr.jsnapy.operator import Operator
 from jnpr.jsnapy.snap import Parser
 from jnpr.junos.exception import ConnectAuthError
@@ -330,13 +329,11 @@ class SnapAdmin:
         if conf_file is not None:
             if os.path.isfile(conf_file):
                 config_file = open(conf_file, "r")
-                self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             elif os.path.isfile(
                 os.path.join(get_path("DEFAULT", "config_file_path"), conf_file)
             ):
                 fpath = get_path("DEFAULT", "config_file_path")
                 config_file = open(os.path.join(fpath, conf_file), "r")
-                self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
             else:
                 self.logger.error(
                     colorama.Fore.RED
@@ -344,6 +341,7 @@ class SnapAdmin:
                     extra=self.log_detail,
                 )
                 sys.exit(1)
+            self.main_file = yaml.load(config_file, Loader=yaml.FullLoader)
         else:
             if self.args.hostname and self.args.testfiles:
                 temp_dict = {
@@ -351,8 +349,8 @@ class SnapAdmin:
                     "tests": [],
                 }
                 temp_dict["hosts"][0]["device"] = self.args.hostname
-                temp_dict["hosts"][0]["username"] = self.args.login
-                temp_dict["hosts"][0]["passwd"] = self.args.passwd
+                temp_dict["hosts"][0]["username"] = self.get_device_login()
+                temp_dict["hosts"][0]["passwd"] = self.get_device_passwd()
                 for tfile in self.args.testfiles:
                     temp_dict["tests"].append(tfile)
                 self.main_file = temp_dict
@@ -502,10 +500,28 @@ class SnapAdmin:
             # login credentials are given from command line
             host_dict["0"] = {
                 "device": self.args.hostname,
-                "username": self.args.login,
-                "passwd": self.args.passwd,
+                "username": self.get_device_login(),
+                "passwd": self.get_device_passwd(),
             }
             self.host_list.append(self.args.hostname)
+
+    def get_device_passwd(self):
+        """ Password finder and/or asker """
+        # take either environment variable or the cli parsed password
+        passwd = os.environ.get('JSNAPY_PASSWORD', self.args.passwd)
+        if passwd == "":
+            # if both fail prompt for a password
+            passwd = getpass.getpass(prompt="Password: ")
+        return passwd
+
+    def get_device_login(self):
+        """ Login finder and/or asker """
+        # take either environment variable or the cli parsed login
+        login = os.environ.get('JSNAPY_LOGIN', self.args.login)
+        if login == "":
+            # if both fail prompt for a login -- drop support for Python2
+            login = input(prompt="Username: ")
+        return login
 
     def get_test(self, config_data, hostname, snap_file, post_snap, action, **kwargs):
         """
@@ -652,10 +668,8 @@ class SnapAdmin:
             )
             if username is None:
                 if username is None:
-                    if sys.version < "3":
-                        username = raw_input("\nEnter User name: ")
-                    else:
-                        username = input("\nEnter User name: ")
+                    # Py3 only
+                    username = input("\nEnter User name: ")
             dev = Device(
                 host=hostname,
                 user=username,
@@ -733,8 +747,10 @@ class SnapAdmin:
 
         for iter, key_value in iteritems(host_dict):
             hostname = key_value.get("device")
-            username = self.args.login or key_value.get("username")
-            password = self.args.passwd or key_value.get("passwd")
+            # get username and password from check config file or other
+            # location, see get_device_XXXXXX methods
+            username = key_value.get("username", self.get_device_login())
+            password = key_value.get("passwd", self.get_device_passwd())
             key_value = self.get_values(key_value)
             # extract the other arguments passed in file.
             # port passed in argument has higher precedence than in file
