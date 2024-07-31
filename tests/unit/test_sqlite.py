@@ -3,10 +3,9 @@ import os
 import sys
 from jnpr.jsnapy.sqlite_store import JsnapSqlite
 from jnpr.jsnapy.sqlite_get import SqliteExtractXml
-from mock import patch
-from nose.plugins.attrib import attr
+from unittest.mock import patch
+import nose2
 
-@attr('unit')
 class TestSqlite(unittest.TestCase):
    
     @classmethod

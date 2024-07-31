@@ -2,10 +2,10 @@ import unittest
 import os
 import sys
 import yaml
-from mock import patch, MagicMock
-from nose.plugins.attrib import attr
+from unittest.mock import patch, MagicMock
+import nose2
 from jnpr.jsnapy import get_config_location, get_path, DirStore, venv_check
-@attr('unit')
+
 class TestCheck(unittest.TestCase):
 
     def setUp(self):

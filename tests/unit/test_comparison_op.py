@@ -1,11 +1,11 @@
 import unittest
 import yaml
 from jnpr.jsnapy.check import Comparator
-from mock import patch
-from nose.plugins.attrib import attr
+from unittest.mock import patch
+import nose2
 import os
 
-@attr('unit')
+
 class TestComparisonOperator(unittest.TestCase):
 
     def setUp(self):
