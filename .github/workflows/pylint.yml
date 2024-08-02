@@ -45,7 +45,7 @@ jobs:
         cp dist/jsnapy-*.tar.gz ../
         cd ../
         tar -xzvf jsnapy-*.tar.gz
-        cd jsnapy-*
+        cd jsnapy-1.3.*
         python setup.py install
         
 
