@@ -1,10 +1,10 @@
 import unittest
 import yaml
 from jnpr.jsnapy.check import Comparator
-from mock import patch
+from unittest.mock import patch
 import os
-from nose.plugins.attrib import attr
-@attr('unit')
+import nose2
+
 class TestStrNumericOperators(unittest.TestCase):
 
     def setUp(self):

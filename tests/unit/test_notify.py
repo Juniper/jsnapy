@@ -4,10 +4,10 @@ from jnpr.jsnapy.notify import Notification
 import os
 import yaml
 from jnpr.jsnapy.check import Comparator
-from mock import patch, MagicMock
-from nose.plugins.attrib import attr
+from unittest.mock import patch, MagicMock
+import nose2
 
-@attr('unit')
+
 class TestCheck(unittest.TestCase):
 
     def setUp(self):

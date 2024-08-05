@@ -5,10 +5,9 @@ from jnpr.jsnapy.snap import Parser
 from jnpr.junos.device import Device
 from jnpr.jsnapy import SnapAdmin
 import jnpr.junos.device
-from mock import patch, mock_open, ANY, call, MagicMock
-from nose.plugins.attrib import attr
+from unittest.mock import patch, mock_open, ANY, call, MagicMock
+import nose2
 
-@attr('unit')
 class TestSnap(unittest.TestCase):
 
     def setUp(self):

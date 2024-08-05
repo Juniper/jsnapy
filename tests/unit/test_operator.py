@@ -3,11 +3,10 @@ import os
 import yaml
 from jnpr.jsnapy.check import Comparator
 from jnpr.jsnapy.operator import Operator
-from mock import patch, MagicMock
-from nose.plugins.attrib import attr
+from unittest.mock import patch, MagicMock
+import nose2
 from lxml import etree
 
-@attr('unit')
 class TestCheck(unittest.TestCase):
 
     def setUp(self):

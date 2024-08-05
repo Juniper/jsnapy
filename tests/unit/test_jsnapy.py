@@ -4,9 +4,9 @@ import os
 import sys
 from jnpr.jsnapy import version
 from jnpr.jsnapy.jsnapy import SnapAdmin
-from mock import patch, MagicMock, call, ANY
+from unittest.mock import patch, MagicMock, call, ANY
 # from contextlib import nested
-from nose.plugins.attrib import attr
+import nose2
 import argparse
 from jnpr.junos.device import Device
 
@@ -19,7 +19,7 @@ else:
     builtin_string = 'builtins.'
 
 
-@attr('unit')
+
 class TestSnapAdmin(unittest.TestCase):
     def setUp(self):
         self.diff = False
