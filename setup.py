@@ -47,7 +47,7 @@ def set_logging_path(path):
                         )
                     elif "win32" in sys.platform:
                         value["filename"] = os.path.join(
-                            os.path.expanduser("~"), "logs\jsnapy\jsnapy.log"
+                            os.path.expanduser("~"), "logs", "jsnapy", "jsnapy.log"
                         )
 
                 with open(path, "w") as dump_f:

@@ -426,7 +426,7 @@ class SnapAdmin:
         pre_snap=None,
         post_snap=None,
         action=None,
-        **kwargs
+        **kwargs,
     ):
         """
         called by check and snapcheck argument, to compare snap files
@@ -617,7 +617,7 @@ class SnapAdmin:
         config_data=None,
         action=None,
         post_snap=None,
-        **kwargs
+        **kwargs,
     ):
         """
         connect to device and calls the function either to generate snapshots
@@ -661,7 +661,7 @@ class SnapAdmin:
                 user=username,
                 passwd=password,
                 gather_facts=False,
-                **kwargs
+                **kwargs,
             )
             try:
                 dev.open()
@@ -678,7 +678,7 @@ class SnapAdmin:
                         config_data,
                         action,
                         post_snap,
-                        **kwargs
+                        **kwargs,
                     )
                 else:
                     self.logger.error(
@@ -996,7 +996,7 @@ class SnapAdmin:
         # then it should print error message.
         if not (
             (self.args.file is None)
-            and ((self.args.testfiles is None or self.args.hostname is None))
+            and (self.args.testfiles is None or self.args.hostname is None)
         ):
             action = None
             if self.set_action_cmd(action) is not None:

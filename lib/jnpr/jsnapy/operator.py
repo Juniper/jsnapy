@@ -54,7 +54,7 @@ class Operator:
         iter,
         id,
         test_name,
-        *args
+        *args,
     ):
         """
         It will call functions according to test operator
@@ -82,7 +82,7 @@ class Operator:
                 iter,
                 id,
                 test_name,
-                *args
+                *args,
             )
         except AttributeError as e:
             self.logger_testop.error(

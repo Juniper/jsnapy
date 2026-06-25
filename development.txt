@@ -1,5 +1,6 @@
 -r requirements.txt
 
+black==24.8.0  # pinned: last version supporting Python 3.8 (24.10.0 requires >=3.9)
 coverage     # http://nedbatchelder.com/code/coverage/
 mock==1.0.1  # http://www.voidspace.org.uk/python/mock/
 nose         # http://nose.readthedocs.org/en/latest/

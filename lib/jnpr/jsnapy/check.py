@@ -245,7 +245,7 @@ class Comparator:
         # default error and info message
         err_mssg = self.get_err_mssg(elem_test, ele_list)
         info_mssg = self.get_info_mssg(elem_test, ele_list)
-        ignore_null = elem_test.get("ignore-null") or top_ignore_null
+        ignore_null = elem_test.get("ignore-null", top_ignore_null)
         # check test operators, below mentioned four are allowed only
         # with --check ####
         is_skipped = False
